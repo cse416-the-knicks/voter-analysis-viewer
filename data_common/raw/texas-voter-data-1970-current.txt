@@ -1,0 +1,1601 @@
+2024 – November (Presidential)
+Registered Voters 	
+18,623,931
+Voting Age Population (VAP) 	
+22,938,482
+Percentage of VAP Registered 	
+81.19%
+Turnout 	
+11,388,674
+Percent of Turnout to Registered 	
+61.15%
+Percent of Turnout to VAP 	
+49.65%
+2024 – Primary, March (Presidential) Republican
+Registered Voters 	
+17,948,242
+Voting Age Population (VAP) 	
+21,925,627
+Percentage of VAP Registered 	
+81.86%
+Turnout 	
+2,323,019
+Percent of Turnout to Registered 	
+12.94%
+Percent of Turnout to VAP 	
+10.59%
+2024 – Primary, March (Presidential) Democratic
+Registered Voters 	
+17,948,242
+Voting Age Population (VAP) 	
+21,925,627
+Percentage of VAP Registered 	
+81.86%
+Turnout 	
+982,069
+Percent of Turnout to Registered 	
+5.47%
+Percent of Turnout to VAP 	
+4.48%
+2023 – November (Constitutional)
+Registered Voters 	
+17,759,273
+Voting Age Population (VAP) 	
+21,925,627
+Percentage of VAP Registered 	
+81.00%
+Turnout 	
+2,563,469
+Percent of Turnout to Registered 	
+14.43%
+Percent of Turnout to VAP 	
+11.69%
+2022 – November (Gubernatorial)
+Registered Voters 	
+17,672,143
+Voting Age Population (VAP) 	
+21,866,700
+Percentage of VAP Registered 	
+80.82%
+Turnout 	
+8,102,908
+Percent of Turnout to Registered 	
+45.85%
+Percent of Turnout to VAP 	
+37.06%
+2022 – Primary, March (Gubernatorial) Republican
+Registered Voters 	
+17,183,996
+Voting Age Population (VAP) 	
+21,866,700
+Percentage of VAP Registered 	
+78.59%
+Turnout 	
+1,954,172
+Percent of Turnout to Registered 	
+11.37%
+Percent of Turnout to VAP 	
+8.94%
+2022 – Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+17,183,996
+Voting Age Population (VAP) 	
+21,866,700
+Percentage of VAP Registered 	
+78.59%
+Turnout 	
+1,075,601
+Percent of Turnout to Registered 	
+6.26%
+Percent of Turnout to VAP 	
+4.92%
+2021 - November (Constitutional)
+Registered Voters 	
+16,968,756
+Voting Age Population (VAP) 	
+21,866,700
+Percentage of VAP Registered 	
+77.60%
+Turnout 	
+1,485,066
+Percent of Turnout to Registered 	
+8.75%
+Percent of Turnout to VAP 	
+6.79%
+2020 – November (Presidential)
+Registered Voters 	
+16,955,519
+Voting Age Population (VAP) 	
+21,596,071
+Percentage of VAP Registered 	
+78.51%
+Turnout 	
+11,315,056
+Percent of Turnout to Registered 	
+66.73%
+Percent of Turnout to VAP 	
+52.39%
+2020 – Primary, March (Presidential) Republican
+Registered Voters 	
+16,211,198
+Voting Age Population (VAP) 	
+21,596,071
+Percentage of VAP Registered 	
+75.07%
+Turnout 	
+2,017,167
+Percent of Turnout to Registered 	
+12.44%
+Percent of Turnout to VAP 	
+9.34%
+2020 – Primary, March (Presidential) Democratic
+Registered Voters 	
+16,211,198
+Voting Age Population (VAP) 	
+21,596,071
+Percentage of VAP Registered 	
+75.07%
+Turnout 	
+2,094,428
+Percent of Turnout to Registered 	
+12.92%
+Percent of Turnout to VAP 	
+9.70%
+2019 - November (Constitutional)
+Registered Voters 	
+15,962,988
+Voting Age Population (VAP) 	
+21,596,071
+Percentage of VAP Registered 	
+73.92%
+Turnout 	
+1,984,693
+Percent of Turnout to Registered 	
+12.43%
+Percent of Turnout to VAP 	
+9.19%
+2018 - November (Gubernatorial)
+Registered Voters 	
+15,793,257
+Voting Age Population (VAP) 	
+19,900,980
+Percentage of VAP Registered 	
+79.36%
+Turnout 	
+8,371,655
+Percent of Turnout to Registered 	
+53.01%
+Percent of Turnout to VAP 	
+42.07%
+2018 - Primary, March (Gubernatorial) Republican
+Registered Voters 	
+15,249,541
+Voting Age Population (VAP) 	
+19,900,980
+Percentage of VAP Registered 	
+76.63%
+Turnout 	
+1,549,573
+Percent of Turnout to Registered Voters 	
+10.16%
+Percent of Turnout to VAP 	
+7.79%
+2018 - Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+15,249,541
+Voting Age Population (VAP) 	
+19,900,980
+Percentage of VAP Registered 	
+76.63%
+Turnout 	
+1,068,463
+Percent of Turnout to Registered Voters 	
+7.01%
+Percent of Turnout to VAP 	
+5.37%
+2017 - November (Constitutional)
+Registered Voters 	
+15,099,137
+Voting Age Population (VAP) 	
+ 19,502,633
+Percentage of VAP Registered 	
+77.42%
+Turnout 	
+      877,603
+Percent of Turnout to Registered 	
+5.81%
+Percent of Turnout to VAP 	
+4.50%
+2016 - November (Presidential)
+Registered Voters 	
+15,101,087
+Voting Age Population (VAP) 	
+          19,307,355
+Percentage of VAP Registered 	
+78.21%
+Turnout 	
+      8,969,226
+Percent of Turnout to Registered 	
+59.39%
+Percent of Turnout to VAP 	
+46.45%
+2016 - Primary Runoff, May (Presidential) Republican
+Registered Voters 	
+14,238,436
+Voting Age Population (VAP) 	
+19,307,355
+Percentage of VAP Registered 	
+73.75%
+Turnout 	
+376,387
+Percent of Turnout to Registered 	
+2.64%
+Percent of Turnout to VAP 	
+1.95%
+2016 - Primary Runoff, May (Presidential) *Democratic*
+Registered Voters 	
+14,238,436
+Voting Age Population (VAP) 	
+19,307,355
+Percentage of VAP Registered 	
+73.75%
+Turnout 	
+186,912
+Percent of Turnout to Registered 	
+1.31%
+Percent of Turnout to VAP 	
+0.97%
+2016 - Primary, March (Presidential) Republican
+Registered Voters 	
+14,238,436
+Voting Age Population (VAP) 	
+19,307,355
+Percentage of VAP Registered 	
+73.75%
+Turnout 	
+2,836,488
+Percent of Turnout to Registered 	
+19.92%
+Percent of Turnout to VAP 	
+14.69%
+2016 - Primary, March (Presidential) Democratic
+Registered Voters 	
+14,238,436
+Voting Age Population (VAP) 	
+19,307,355
+Percentage of VAP Registered 	
+73.75%
+Turnout 	
+1,435,895
+Percent of Turnout to Registered 	
+10.08%
+Percent of Turnout to VAP 	
+7.44%
+2015 - November (Constitutional)
+Registered Voters 	
+13,988,920
+Voting Age Population (VAP) 	
+19,110,272
+Percentage of VAP Registered 	
+73.20%
+Turnout 	
+1,585,845
+Percent of Turnout to Registered 	
+11.34%
+Percent of Turnout to VAP 	
+8.30%
+2014 - November (Gubernatorial)
+Registered Voters 	
+14,025,441
+Voting Age Population (VAP) 	
+18,915,297
+Percentage of VAP Registered 	
+74.15%
+Turnout 	
+4,727,208
+Percent of Turnout to Registered 	
+33.70%
+Percent of Turnout to VAP 	
+24.99%
+2014 - Primary Runoff, May (Gubernatorial) Republican
+Registered Voters 	
+13,601,324
+Voting Age Population (VAP) 	
+18,915,297
+Percentage of VAP Registered 	
+71.91%
+Turnout 	
+752,780
+Percent of Turnout to Registered Voters 	
+5.53%
+Percent of Turnout to VAP 	
+3.98%
+2014 - Primary Runoff, May (Gubernatorial) Democratic
+Registered Voters 	
+13,601,324
+Voting Age Population (VAP) 	
+18,915,297
+Percentage of VAP Registered 	
+71.91%
+Turnout 	
+201,283
+Percent of Turnout to Registered Voters 	
+1.48%
+Percent of Turnout to VAP 	
+1.06%
+2014 - Primary, March (Gubernatorial) Republican
+Registered Voters 	
+13,601,324
+Voting Age Population (VAP) 	
+18,915,297
+Percentage of VAP Registered 	
+71.91%
+Turnout 	
+1,358,074
+Percent of Turnout to Registered Voters 	
+9.98%
+Percent of Turnout to VAP 	
+7.18%
+2014 - Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+13,601,324
+Voting Age Population (VAP) 	
+18,915,297
+Percentage of VAP Registered 	
+71.91%
+Turnout 	
+560,033
+Percent of Turnout to Registered Voters 	
+4.12%
+Percent of Turnout to VAP 	
+2.96%
+2013 - November (Constitutional)
+Registered Voters 	
+13,445,285
+Voting Age Population (VAP) 	
+          18,710,830
+Percentage of VAP Registered 	
+71.86%
+Turnout 	
+     1,149,337
+Percent of Turnout to Registered Voters 	
+8.55%
+Percent of Turnout to VAP 	
+6.14%
+2012 - November (Presidential)
+Registered Voters 	
+13,646,226
+Voting Age Population (VAP) 	
+18,279,737
+Percentage of VAP Registered 	
+74.65
+Turnout 	
+7,993,851
+Percent of Turnout to Registered Voters 	
+58.58
+Percent of Turnout to VAP 	
+43.73
+2012 - Primary Runoff, July (Presidential) Republican
+Registered Voters 	
+13,065,425
+Voting Age Population (VAP) 	
+18,279,737
+Percentage of VAP Registered 	
+71.47
+Turnout 	
+1,111,938
+Percent of Turnout to Registered Voters 	
+8.51
+Percent of Turnout to VAP 	
+6.08
+2012 - Primary Runoff, July (Presidential) Democratic
+Registered Voters 	
+13,065,425
+Voting Age Population (VAP) 	
+18,279,737
+Percentage of VAP Registered 	
+71.47
+Turnout 	
+236,305
+Percent of Turnout to Registered Voters 	
+1.81
+Percent of Turnout to VAP 	
+1.29
+2012 - Primary, May (Presidential) Republican
+Registered Voters 	
+13,065,425
+Voting Age Population (VAP) 	
+18,279,737
+Percentage of VAP Registered 	
+71.47
+Turnout 	
+1,449,477
+Percent of Turnout to Registered Voters 	
+11.09
+Percent of Turnout to VAP 	
+7.93
+2012 - Primary, May (Presidential) Democratic
+Registered Voters 	
+13,065,425
+Voting Age Population (VAP) 	
+18,279,737
+Percentage of VAP Registered 	
+71.47
+Turnout 	
+590,164
+Percent of Turnout to Registered Voters 	
+4.52
+Percent of Turnout to VAP 	
+3.23
+2011 - November (Constitutional)
+Registered Voters 	
+12,841,808
+Voting Age Population (VAP) 	
+18,279,737
+Percentage of VAP Registered 	
+70.25
+Turnout 	
+690,052
+Percent of Turnout to Registered Voters 	
+5.37
+Percent of Turnout to VAP 	
+3.77
+2010 - November (Gubernatorial)
+Registered Voters 	
+13,269,233
+Voting Age Population (VAP) 	
+18,789,238
+Percentage of VAP Registered 	
+71
+Turnout 	
+4,979,870
+Percent of Turnout to Registered Voters 	
+38
+Percent of Turnout to VAP 	
+27
+2010 - Primary, March (Gubernatorial) Republican
+Registered Voters 	
+13,023,358
+Voting Age Population (VAP) 	
+18,789,238
+Percentage of VAP Registered 	
+69.31
+Turnout 	
+1,484,542
+Percent of Turnout to Registered Voters 	
+11.4
+Percent of Turnout to VAP 	
+8.0
+2010 - Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+13,023,358
+Voting Age Population (VAP) 	
+18,789,238
+Percentage of VAP Registered 	
+69.31
+Turnout 	
+680,548
+Percent of Turnout to Registered Voters 	
+5.2
+Percent of Turnout to VAP 	
+3.6
+*2009 - November (Constitutional)*
+Registered Voters
+	
+12,952,562
+Voting Age Population (VAP) 	
+18,362,951
+Percentage of VAP Registered 	
+70.53
+Turnout 	
+1,058,986
+Percent of Turnout to Registered 	
+8.18
+Percent of Turnout to VAP 	
+5.77
+*2008 - November (Presidential)*
+Registered Voters
+	
+13,575,062
+Voting Age Population (VAP) 	
+17,735,442
+Percentage of VAP Registered 	
+76.54
+Turnout 	
+8,077,795
+Percent of Turnout to Registered 	
+59.50
+Percent of Turnout to VAP 	
+45.55
+2008 - Primary, March (Presidential) Republican
+Registered Voters 	
+12,752,417
+Voting Age Population (VAP) 	
+17,735,442
+Percentage of VAP Registered 	
+71.90
+Turnout 	
+1,362,322
+Percent of Turnout to Registered Voters 	
+10.68
+Percent of Turnout to VAP 	
+7.68
+*2008 - Primary, March (Presidential) Democratic*
+Registered Voters 	
+12,752,417
+Voting Age Population (VAP) 	
+17,735,442
+Percentage of VAP Registered 	
+71.90
+Turnout 	
+2,874,986
+Percent of Turnout to Registered Voters 	
+22.54
+Percent of Turnout to VAP 	
+16.21
+*2007 - Special, November (Constitutional)*
+Registered Voters 	
+12,587,501
+Voting Age Population (VAP) 	
+17,352,424
+Percentage of VAP Registered 	
+72.54
+Turnout 	
+1,096,410
+Percent of Turnout to Registered Voters 	
+8.71
+Percent of Turnout to VAP 	
+6.31
+*2006 - November (Gubernatorial)*
+Registered Voters 	
+13,074,279
+Voting Age Population (VAP) 	
+16,636,742
+Percentage of VAP Registered 	
+78.58
+Turnout 	
+4,399,068
+Percent of Turnout to Registered Voters 	
+33.64
+Percent of Turnout to VAP 	
+26.44
+2006 - Primary, March (Gubernatorial) Republican
+Registered Voters 	
+12,722,671
+Voting Age Population (VAP) 	
+16,636,742
+Percentage of VAP Registered 	
+76.47
+Turnout 	
+655,919
+Percent of Turnout to Registered Voters 	
+5.15
+Percent of Turnout to VAP 	
+3.94
+2006 - Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+12,722,671
+Voting Age Population (VAP) 	
+16,636,742
+Percentage of VAP Registered 	
+76.47
+Turnout 	
+508,602
+Percent of Turnout to Registered Voters 	
+3.99
+Percent of Turnout to VAP 	
+3.05
+2005 - Special, November (Constitutional)
+Registered Voters 	
+12,577,545
+Voting Age Population (VAP) 	
+16,351,396
+Percentage of VAP Registered 	
+76.92
+Turnout 	
+2,260,695
+Percent of Turnout to Registered Voters 	
+17.97
+Percent of Turnout to VAP 	
+13.82
+2004 - General, November (Presidential)
+Registered Voters 	
+13,098,329
+Voting Age Population (VAP) 	
+16,071,153
+Percentage of VAP Registered 	
+81.50
+Turnout 	
+7,410,765
+Percent of Turnout to Registered Voters 	
+56.57
+Percent of Turnout to VAP 	
+46.11
+2004 - Primary, March (Presidential) Republican
+Registered Voters 	
+12,264,663
+Voting Age Population (VAP) 	
+16,071,153
+Percentage of VAP Registered 	
+76.31
+Turnout 	
+687,615
+Percent of Turnout to Registered Voters 	
+5.60
+Percent of Turnout to VAP 	
+4.27
+2004 - Primary, March (Presidential) Democratic
+Registered Voters 	
+12,264,663
+Voting Age Population (VAP) 	
+16,071,153
+Percentage of VAP Registered 	
+76.3
+Turnout 	
+839,231
+Percent of Turnout to Registered Voters 	
+6.84
+Percent of Turnout to VAP 	
+5.22
+2003 - Special, September (Constitutional)
+Registered Voters 	
+12,041,793
+Voting Age Population (VAP) 	
+15,790,838
+Percentage of VAP Registered 	
+76.25
+Turnout 	
+1,470,443
+Percent of Turnout to Registered Voters 	
+12.21
+Percent of Turnout to VAP 	
+9.31
+2002 - General, November (Gubernatorial)
+Registered Voters 	
+12,563,459
+Voting Age Population (VAP) 	
+15,514,289
+Percentage of VAP Registered 	
+80.97
+Turnout 	
+4,553,979
+Percent of Turnout to Registered Voters 	
+36.24
+Percent of Turnout to VAP 	
+29.35
+2002 - Primary, March (Gubernatorial) Republican
+Registered Voters 	
+12,218,164
+Voting Age Population (VAP) 	
+15,514,289
+Percentage of VAP Registered 	
+78.75
+Turnout 	
+622,423
+Percent of Turnout to Registered Voters 	
+5.09
+Percent of Turnout to VAP 	
+4.01
+2002 - Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+12,218,164
+Voting Age Population (VAP) 	
+15,514,289
+Percentage of VAP Registered 	
+78.75
+Turnout 	
+1,003,388
+Percent of Turnout to Registered Voters 	
+8.21
+Percent of Turnout to VAP 	
+6.46
+2001 - Special, November (Constitutional)
+Registered Voters 	
+12,066,242
+Voting Age Population (VAP) 	
+14,965,061
+Percentage of VAP Registered 	
+80.62
+Turnout 	
+834,846
+Percent of Turnout to Registered Voters 	
+6.91
+Percent of Turnout to VAP 	
+5.57
+2000 - General
+Registered Voters 	
+12,365,235
+Voting Age Population (VAP) 	
+14,479,609
+Percentage of VAP Registered 	
+85.39
+Turnout 	
+6,407,637
+Percent of Turnout to Registered Voters 	
+51.81
+Percent of Turnout to VAP 	
+44.25
+2000 - Primary Runoff Republican
+Registered Voters 	
+11,612,761
+Voting Age Population (VAP) 	
+14,479,609
+Percentage of VAP Registered 	
+80.20
+Turnout 	
+224,472
+Percent of Turnout to Registered Voters 	
+1.93
+Percent of Turnout to VAP 	
+1.55
+2000 - Primary Runoff Democratic
+Registered Voters 	
+11,612,761
+Voting Age Population (VAP) 	
+14,479,609
+Percentage of VAP Registered 	
+80.20
+Turnout 	
+245,350
+Percent of Turnout to Registered Voters 	
+2.11
+Percent of Turnout to VAP 	
+1.68
+2000 - Primary, March (Presidential) Republican
+Registered Voters 	
+11,612,761
+Voting Age Population (VAP) 	
+14,479,609
+Percentage of VAP Registered 	
+80.20
+Turnout 	
+1,126,757
+Percent of Turnout to Registered Voters 	
+9.70
+Percent of Turnout to VAP 	
+7.78
+2000 - Primary, March (Presidential) Democratic
+Registered Voters 	
+11,612,761
+Voting Age Population (VAP) 	
+14,479,609
+Percentage of VAP Registered 	
+80.20
+Turnout 	
+786,890
+Percent of Turnout to Registered Voters 	
+6.78
+Percent of Turnout to VAP 	
+5.43
+1999 - Special, November (Constitutional)
+Registered Voters 	
+11,405,562
+Voting Age Population (VAP) 	
+14,284,092
+Percentage of VAP Registered 	
+79.85
+Turnout 	
+956,303
+Percent of Turnout to Registered Voters 	
+8.38
+Percent of Turnout to VAP 	
+6.69
+1998 - Primary, March (Gubernatorial) Republican
+Registered Voters 	
+11,159,845
+Voting Age Population (VAP) 	
+14,088,872
+Percentage of VAP Registered 	
+79.21
+Turnout 	
+596,839
+Percent of Turnout to Registered Voters 	
+5.35
+Percent of Turnout to VAP 	
+4.24
+1998 - Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+11,159,845
+Voting Age Population (VAP) 	
+14,088,872
+Percentage of VAP Registered 	
+79.21
+Turnout 	
+664,532
+Percent of Turnout to Registered Voters 	
+5.95
+Percent of Turnout to VAP 	
+4.72
+1998 - November General
+Registered Voters 	
+11,538,235
+Voting Age Population (VAP) 	
+14,088,872
+Percentage of VAP Registered 	
+81.90
+Turnout 	
+3,738,078
+Percent of Turnout to Registered Voters 	
+32.40
+Percent of Turnout to VAP 	
+26.53
+1997 - Special, August (Constitutional)
+Registered Voters 	
+10,648,846
+Voting Age Population (VAP) 	
+13,893,465
+Percentage of VAP Registered 	
+76.65
+Turnout 	
+739,141
+Percent of Turnout to Registered Voters 	
+6.94
+Percent of Turnout to VAP 	
+5.32
+1997 - Special, November (Constitutional)
+Registered Voters 	
+11,066,181
+Voting Age Population (VAP) 	
+13,893,465
+Percentage of VAP Registered 	
+79.65
+Turnout 	
+1,173,313
+Percent of Turnout to Registered Voters 	
+10.60
+Percent of Turnout to VAP 	
+8.45
+1996 - Primary, March (Presidential) Republican
+Registered Voters 	
+9,698,506
+Voting Age Population (VAP) 	
+13,698,284
+Percentage of VAP Registered 	
+70.80
+Turnout 	
+1,019,803
+Percent of Turnout to Registered Voters 	
+10.52
+Percent of Turnout to VAP 	
+7.44
+1996 - Primary, March (Presidential) Democratic
+Registered Voters 	
+9,698,506
+Voting Age Population (VAP) 	
+13,698,284
+Percentage of VAP Registered 	
+70.80
+Turnout 	
+921,256
+Percent of Turnout to Registered Voters 	
+9.50
+Percent of Turnout to VAP 	
+6.73
+1996 - Primary Runoff Republican
+Registered Voters 	
+9,698,506
+Voting Age Population (VAP) 	
+13,698,284
+Percentage of VAP Registered 	
+70.80
+Turnout 	
+234,029
+Percent of Turnout to Registered Voters 	
+2.41
+Percent of Turnout to VAP 	
+1.71
+1996 - Primary Runoff Democratic
+Registered Voters 	
+9,698,506
+Voting Age Population (VAP) 	
+13,698,284
+Percentage of VAP Registered 	
+70.80
+Turnout 	
+481,856
+Percent of Turnout to Registered Voters 	
+4.97
+Percent of Turnout to VAP 	
+3.52
+1996 - November General
+Registered Voters 	
+10,540,678
+Voting Age Population (VAP) 	
+13,698,284
+Percentage of VAP Registered 	
+76.95
+Turnout 	
+5,611,644
+Percent of Turnout to Registered Voters 	
+53.24
+Percent of Turnout to VAP 	
+40.97
+1995 - November (Constitutional)
+Registered Voters 	
+9,401,119
+Voting Age Population (VAP) 	
+13,320,323
+Percentage of VAP Registered 	
+70.58
+Turnout 	
+739,335
+Percent of Turnout to Registered Voters 	
+7.86
+Percent of Turnout to VAP 	
+5.55
+1994 - Primary, March (Gubernatorial) Republican
+Registered Voters 	
+9,041,906
+Voting Age Population (VAP) 	
+13,075,135
+Percentage of VAP Registered 	
+69.15
+Turnout 	
+557,340
+Percent of Turnout to Registered Voters 	
+6.16
+Percent of Turnout to VAP 	
+4.26
+1994 - Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+9,041,906
+Voting Age Population (VAP) 	
+13,075,135
+Percentage of VAP Registered 	
+69.15
+Turnout 	
+1,036,944
+Percent of Turnout to Registered Voters 	
+11.47
+Percent of Turnout to VAP 	
+7.93
+1994 - Primary Runoff Republican
+Registered Voters 	
+9,041,906
+Voting Age Population (VAP) 	
+13,075,135
+Percentage of VAP Registered 	
+69.15
+Turnout 	
+201,439
+Percent of Turnout to Registered Voters 	
+2.23
+Percent of Turnout to VAP 	
+1.54
+1994 - Primary Runoff Democratic
+Registered Voters 	
+9,041,906
+Voting Age Population (VAP) 	
+13,075,135
+Percentage of VAP Registered 	
+69.15
+Turnout 	
+746,641
+Percent of Turnout to Registered Voters 	
+8.26
+Percent of Turnout to VAP 	
+5.71
+1994 - General Election November
+Registered Voters 	
+8,641,848
+Voting Age Population (VAP) 	
+13,075,135
+Percentage of VAP Registered 	
+66.09
+Turnout 	
+4,396,242
+Percent of Turnout to Registered Voters 	
+50.87
+Percent of Turnout to VAP 	
+33.62
+1993 - Special, May (Senatorial)
+Registered Voters 	
+8,555,749
+Voting Age Population (VAP) 	
+13,111,971
+Percentage of VAP Registered 	
+65.25
+Turnout 	
+2,061,796
+Percent of Turnout to Registered Voters 	
+24.10
+Percent of Turnout to VAP 	
+15.72
+1993 - Runoff Special, June (Senatorial)
+Registered Voters 	
+8,555,749
+Voting Age Population (VAP) 	
+13,111,971
+Percentage of VAP Registered 	
+65.25
+Turnout 	
+1,765,254
+Percent of Turnout to Registered Voters 	
+20.63
+Percent of Turnout to VAP 	
+13.46
+1993 - November (Constitutional Amendment)
+Registered Voters 	
+8,869,159
+Voting Age Population (VAP) 	
+13,111,971
+Percentage of VAP Registered 	
+67.64
+Turnout 	
+1,116,875
+Percent of Turnout to Registered Voters 	
+12.59
+Percent of Turnout to VAP 	
+8.52
+1992 - Primary, March (Presidential) Republican
+Registered Voters 	
+7,986,219
+Voting Age Population (VAP) 	
+12,916,937
+Percentage of VAP Registered 	
+61.83
+Turnout 	
+797,146
+Percent of Turnout to Registered Voters 	
+9.98
+Percent of Turnout to VAP 	
+6.17
+1992 - Primary, March (Presidential) Democratic
+Registered Voters 	
+7,986,219
+Voting Age Population (VAP) 	
+12,916,937
+Percentage of VAP Registered 	
+61.83
+Turnout 	
+1,482,075
+Percent of Turnout to Registered Voters 	
+18.56
+Percent of Turnout to VAP 	
+11.47
+1992 - General Election, November
+Registered Voters 	
+8,439,874
+Voting Age Population (VAP) 	
+12,916,937
+Percentage of VAP Registered 	
+65.34
+Turnout 	
+6,154,018
+Percent of Turnout to Registered Voters 	
+72.92
+Percent of Turnout to VAP 	
+47.64
+1991 - November (Constitutional Amendment)
+Registered Voters 	
+7,829,350
+Voting Age Population (VAP) 	
+12,721,331
+Percentage of VAP Registered 	
+61.55
+Turnout 	
+2,055,148
+Percent of Turnout to Registered Voters 	
+26.25
+Percent of Turnout to VAP 	
+16.16
+1990 - Primary, March (Gubernatorial) Republican
+Registered Voters 	
+8,285,307
+Voting Age Population (VAP) 	
+12,526,224
+Percentage of VAP Registered 	
+66.14
+Turnout 	
+855,231
+Percent of Turnout to Registered Voters 	
+10.32
+Percent of Turnout to VAP 	
+6.83
+1990 - Primary, March (Gubernatorial) Democratic
+Registered Voters 	
+8,285,307
+Voting Age Population (VAP) 	
+12,526,224
+Percentage of VAP Registered 	
+66.14
+Turnout 	
+1,487,260
+Percent of Turnout to Registered Voters 	
+17.95
+Percent of Turnout to VAP 	
+11.87
+1990 - General Election, November
+Registered Voters 	
+7,701,449
+Voting Age Population (VAP) 	
+12,526,224
+Percentage of VAP Registered 	
+61.48
+Turnout 	
+3,892,746
+Percent of Turnout to Registered Voters 	
+50.55
+Percent of Turnout to VAP 	
+31.08
+1989 - November (Constitutional Amendment)
+Registered Voters 	
+8,192,240
+Voting Age Population (VAP) 	
+12,395,782
+Percentage of VAP Registered 	
+66.09
+Turnout 	
+1,157,121
+Percent of Turnout to Registered Voters 	
+14.12
+Percent of Turnout to VAP 	
+9.33
+1988 - Primary, March (Presidential) Republican
+Registered Voters 	
+7,757,502
+Voting Age Population (VAP) 	
+12,239,280
+Percentage of VAP Registered 	
+63.38
+Turnout 	
+1,014,956
+Percent of Turnout to Registered Voters 	
+13.08
+Percent of Turnout to VAP 	
+8.29
+1988 - Primary, March (Presidential) Democratic
+Registered Voters 	
+7,757,502
+Voting Age Population (VAP) 	
+12,239,280
+Percentage of VAP Registered 	
+63.38
+Turnout 	
+1,767,045
+Percent of Turnout to Registered Voters 	
+22.78
+Percent of Turnout to VAP 	
+14.44
+1988 - General Election, November
+Registered Voters 	
+8,201,856
+Voting Age Population (VAP) 	
+12,239,280
+Percentage of VAP Registered 	
+67.01
+Turnout 	
+5,427,410
+Percent of Turnout to Registered Voters 	
+66.17
+Percent of Turnout to VAP 	
+44.34
+1987 - November (Constitutional Amendment Election)
+Registered Voters 	
+7,340,638
+Voting Age Population (VAP) 	
+12,056,634
+Percentage of VAP Registered 	
+60.88
+Turnout 	
+2,243,239
+Percent of Turnout to Registered Voters 	
+30.56
+Percent of Turnout to VAP 	
+18.61
+1986 - Primary, May (Gubernatorial) Republican
+Registered Voters 	
+7,951,368
+Voting Age Population (VAP) 	
+11,847,825
+Percentage of VAP Registered 	
+67.11
+Turnout 	
+544,719
+Percent of Turnout to Registered Voters 	
+6.85
+Percent of Turnout to VAP 	
+4.60
+1986 - Primary, May (Gubernatorial) Democratic
+Registered Voters 	
+7,951,368
+Voting Age Population (VAP) 	
+11,847,825
+Percentage of VAP Registered 	
+67.11
+Turnout 	
+1,096,552
+Percent of Turnout to Registered Voters 	
+13.79
+Percent of Turnout to VAP 	
+9.26
+1986 - General Election, November
+Registered Voters 	
+7,287,173
+Voting Age Population (VAP) 	
+11,847,825
+Percentage of VAP Registered 	
+61.51
+Turnout 	
+3,441,460
+Percent of Turnout to Registered Voters 	
+47.23
+Percent of Turnout to VAP 	
+29.05
+1985 - November (Constitutional Amendment Election)
+Registered Voters 	
+7,942,831
+Voting Age Population (VAP) 	
+11,613,066
+Percentage of VAP Registered 	
+68.40
+Turnout 	
+956,909
+Percent of Turnout to Registered Voters 	
+12.05
+Percent of Turnout to VAP 	
+8.24
+1984 - Primary, May (Presidential) Republican
+Registered Voters 	
+6,859,334
+Voting Age Population (VAP) 	
+11,352,126
+Percentage of VAP Registered 	
+60.42
+Turnout 	
+336,814
+Percent of Turnout to Registered Voters 	
+4.91
+Percent of Turnout to VAP 	
+2.97
+1984 - Primary, May (Presidential) Democratic
+Registered Voters 	
+6,859,334
+Voting Age Population (VAP) 	
+11,352,126
+Percentage of VAP Registered 	
+60.42
+Turnout 	
+1,463,449
+Percent of Turnout to Registered Voters 	
+21.34
+Percent of Turnout to VAP 	
+12.89
+1984 - General Election, NOVEMBER
+Registered Voters 	
+7,900,167
+Voting Age Population (VAP) 	
+11,352,126
+Percentage of VAP Registered 	
+69.59
+Turnout 	
+5,397,571
+Percent of Turnout to Registered Voters 	
+68.32
+Percent of Turnout to VAP 	
+47.55
+1983 - November (Constitutional Amendment Election)
+Registered Voters 	
+6,511,134
+Voting Age Population (VAP) 	
+11,065,220
+Percentage of VAP Registered 	
+58.84
+Turnout 	
+765,045
+Percent of Turnout to Registered Voters 	
+11.75
+Percent of Turnout to VAP 	
+6.91
+1982 - Primary, May (Gubernatorial) Republican
+Registered Voters 	
+6,093,632
+Voting Age Population (VAP) 	
+10,699,706
+Percentage of VAP Registered 	
+56.95
+Turnout 	
+265,794
+Percent of Turnout to Registered Voters 	
+4.36
+Percent of Turnout to VAP 	
+2.48
+1982 - Primary, May (Gubernatorial) Democratic
+Registered Voters 	
+6,093,632
+Voting Age Population (VAP) 	
+10,699,706
+Percentage of VAP Registered 	
+56.95
+Turnout 	
+1,318,663
+Percent of Turnout to Registered Voters 	
+21.64
+Percent of Turnout to VAP 	
+12.32
+1982 - General Election, November
+Registered Voters 	
+6,414,988
+Voting Age Population (VAP) 	
+10,699,706
+Percentage of VAP Registered 	
+59.95
+Turnout 	
+3,191,091
+Percent of Turnout to Registered Voters 	
+49.74
+Percent of Turnout to VAP 	
+29.82
+1981 - November (Constitutional Amendment Election)
+Registered Voters 	
+6,629,092
+Voting Age Population (VAP) 	
+10,308,552
+Percentage of VAP Registered 	
+64.31
+Turnout 	
+832,266
+Percent of Turnout to Registered Voters 	
+12.55
+Percent of Turnout to VAP 	
+8.07
+1980 - Primary, May (Presidential) Republican
+Registered Voters 	
+5,367,973
+Voting Age Population (VAP) 	
+9,971,392
+Percentage of VAP Registered 	
+53.83
+Turnout 	
+526,769
+Percent of Turnout to Registered Voters 	
+9.81
+Percent of Turnout to VAP 	
+5.28
+1980 - Primary, May (Presidential) Democratic
+Registered Voters 	
+5,367,973
+Voting Age Population (VAP) 	
+9,971,392
+Percentage of VAP Registered 	
+53.83
+Turnout 	
+1,377,767
+Percent of Turnout to Registered Voters 	
+25.67
+Percent of Turnout to VAP 	
+13.82
+1980 - General Election, November
+Registered Voters 	
+6,639,661
+Voting Age Population (VAP) 	
+9,971,392
+Percentage of VAP Registered 	
+66.59
+Turnout 	
+4,541,637
+Percent of Turnout to Registered Voters 	
+68.40
+Percent of Turnout to VAP 	
+45.55
+1979 - November (Constitutional Amendment Election)
+Registered Voters 	
+5,700,828
+Voting Age Population (VAP) 	
+9,643,927
+Percentage of VAP Registered 	
+59.11
+Turnout 	
+444,377
+Percent of Turnout to Registered Voters 	
+7.79
+Percent of Turnout to VAP 	
+4.61
+1978 - Primary, May (Gubernatorial) Republican
+Registered Voters 	
+5,069,267
+Voting Age Population (VAP) 	
+9,371,178
+Percentage of VAP Registered 	
+54.09
+Turnout 	
+158,403
+Percent of Turnout to Registered Voters 	
+3.12
+Percent of Turnout to VAP 	
+1.69
+1978 - Primary, May (Gubernatorial) Democratic
+Registered Voters 	
+5,069,267
+Voting Age Population (VAP) 	
+9,371,178
+Percentage of VAP Registered 	
+54.09
+Turnout 	
+1,812,896
+Percent of Turnout to Registered Voters 	
+35.76
+Percent of Turnout to VAP 	
+19.35
+1978 - General Election, November
+Registered Voters 	
+5,681,875
+Voting Age Population (VAP) 	
+9,371,178
+Percentage of VAP Registered 	
+60.63
+Turnout 	
+2,369,764
+Percent of Turnout to Registered Voters 	
+41.71
+Percent of Turnout to VAP 	
+25.29
+1977 - November (Constitutional Amendment Election)
+Registered Voters 	
+5,924,891
+Voting Age Population (VAP) 	
+9,097,491
+Percentage of VAP Registered 	
+65.13
+Turnout 	
+565,516
+Percent of Turnout to Registered Voters 	
+9.54
+Percent of Turnout to VAP 	
+6.22
+1976 - Primary, May (Presidential) Republican
+Registered Voters 	
+5,370,593
+Voting Age Population (VAP) 	
+8,824,677
+Percentage of VAP Registered 	
+60.86
+Turnout 	
+356,307
+Percent of Turnout to Registered Voters 	
+6.63
+Percent of Turnout to VAP 	
+4.04
+1976 - Primary, May (Presidential) Democratic
+Registered Voters 	
+5,370,593
+Voting Age Population (VAP) 	
+8,824,677
+Percentage of VAP Registered 	
+60.86
+Turnout 	
+1,529,168
+Percent of Turnout to Registered Voters 	
+28.47
+Percent of Turnout to VAP 	
+17.33
+1976 - General Election, November
+Registered Voters 	
+6,281,149
+Voting Age Population (VAP) 	
+8,824,677
+Percentage of VAP Registered 	
+71.18
+Turnout 	
+4,071,884
+Percent of Turnout to Registered Voters 	
+64.83
+Percent of Turnout to VAP 	
+46.14
+1974 - Primary, May (Gubernatorial) Republican
+Registered Voters 	
+5,348,393*
+Voting Age Population (VAP) 	
+8,278,089
+Percentage of VAP Registered 	
+64.61
+Turnout 	
+69,101
+Percent of Turnout to Registered Voters 	
+1.29
+Percent of Turnout to VAP 	
+0.83
+1974 - Primary, May (Gubernatorial) Democratic
+Registered Voters 	
+5,348,393*
+Voting Age Population (VAP) 	
+8,278,089
+Percentage of VAP Registered 	
+64.61
+Turnout 	
+1,521,306
+Percent of Turnout to Registered Voters 	
+28.44
+Percent of Turnout to VAP 	
+18.38
+1974 - General Election, November
+Registered Voters 	
+5,348,393*
+Voting Age Population (VAP) 	
+8,278,089
+Percentage of VAP Registered 	
+64.61
+Turnout 	
+1,654,984
+Percent of Turnout to Registered Voters 	
+30.94
+Percent of Turnout to VAP 	
+19.99
+1972 - Primary, May (Presidential/Gubernatorial) Rep
+Registered Voters 	
+3,872,462*
+Voting Age Population (VAP) 	
+7,731,571
+Percentage of VAP Registered 	
+50.09
+Turnout 	
+114,007
+Percent of Turnout to Registered Voters 	
+2.94
+Percent of Turnout to VAP 	
+1.47
+1972 - Primary, May (Presidential/Gubernatorial) Dem
+Registered Voters 	
+3,872,462*
+Voting Age Population (VAP) 	
+7,731,571
+Percentage of VAP Registered 	
+50.09
+Turnout 	
+2,192,903
+Percent of Turnout to Registered Voters 	
+56.63
+Percent of Turnout to VAP 	
+28.36
+1972 - General Election, November
+Registered Voters 	
+3,872,462*
+Voting Age Population (VAP) 	
+7,731,571
+Percentage of VAP Registered 	
+67.42
+Turnout 	
+3,471,281
+Percent of Turnout to Registered Voters 	
+66.59
+Percent of Turnout to VAP 	
+44.90
+1970 - Primary, May (Gubernatorial) Republican
+Registered Voters 	
+4,149,250*
+Voting Age Population (VAP) 	
+7,185,274
+Percentage of VAP Registered 	
+57.75
+Turnout 	
+109,021
+Percent of Turnout to Registered Voters 	
+2.63
+Percent of Turnout to VAP 	
+1.52
+1970 - Primary, May (Gubernatorial) Democratic
+Registered Voters 	
+4,149,250*
+Voting Age Population (VAP) 	
+7,185,274
+Percentage of VAP Registered 	
+57.75
+Turnout 	
+1,011,300
+Percent of Turnout to Registered Voters 	
+24.37
+Percent of Turnout to VAP 	
+14.07
+1970 - General Election, November
+Registered Voters 	
+4,149,250*
+Voting Age Population (VAP) 	
+7,185,274
+Percentage of VAP Registered 	
+57.75
+Turnout 	
+2,235,847
+Percent of Turnout to Registered Voters 	
+53.89
+Percent of Turnout to VAP 	
+31.12

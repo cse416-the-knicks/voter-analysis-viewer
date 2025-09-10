@@ -1,0 +1,91 @@
+*The data updates once a day*
+
+Registered Michigan voters 8,253,053
+There are approximately 7.3 million active registered voters in Michigan. The total number of active registered voters in Michigan and the definition of active registered voter can be found on the Michigan Voting Dashboard.
+
+Inactive voter registrations slated for cancellation in 2027 207,365
+Inactive voter registrations slated for cancellation in 2029 139,757
+
+Alcona                   10461
+Alger                     7487
+Allegan                 100526
+Alpena                   24406
+Antrim                   22990
+Arenac                   13304
+Baraga                    6806
+Barry                    52687
+Bay                      86620
+Benzie                   16973
+Berrien                 132506
+Branch                   34626
+Calhoun                 110878
+Cass                     45289
+Charlevoix               23765
+Cheboygan                23497
+Chippewa                 27918
+Clare                    26816
+Clinton                  64108
+Crawford                 12781
+Delta                    32435
+Dickinson                22649
+Eaton                    88989
+Emmet                    30748
+Genesee                 346109
+Gladwin                  22697
+Gogebic                  13290
+Grand Traverse           83004
+Gratiot                  29744
+Hillsdale                37442
+Houghton                 27029
+Huron                    26213
+Ingham                  211906
+Ionia                    49625
+Iosco                    23066
+Iron                     10812
+Isabella                 47317
+Jackson                 126363
+Kalamazoo               208905
+Kalkaska                 17347
+Kent                    518644
+Keweenaw                  2109
+Lake                     11032
+Lapeer                   74899
+Leelanau                 21723
+Lenawee                  79612
+Livingston              166380
+Luce                      4625
+Mackinac                 10493
+Macomb                  721488
+Manistee                 21719
+Marquette                54898
+Mason                    25401
+Mecosta                  32348
+Menominee                20926
+Midland                  69497
+Missaukee                12914
+Monroe                  132721
+Montcalm                 51927
+Montmorency               9215
+Muskegon                146077
+Newaygo                  42777
+Oakland                1035997
+Oceana                   22412
+Ogemaw                   18818
+Ontonagon                 5578
+Osceola                  19333
+Oscoda                    7799
+Otsego                   23285
+Ottawa                  234522
+Presque Isle             12143
+Roscommon                23217
+Saginaw                 155863
+Sanilac                  32459
+Schoolcraft               7529
+Shiawassee               57439
+St Clair                137134
+St Joseph                48421
+Tuscola                  43198
+Van Buren                62697
+Washtenaw               302014
+Wayne                  1442586
+Wexford                  29050
