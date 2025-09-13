@@ -4,8 +4,10 @@ import { GeoJSON, MapContainer, TileLayer, useMap, Marker, Popup} from 'react-le
 import { useState, useEffect } from 'react'
 import { statesData } from './TestChoroplethData';
 
-const CHOROPLETH_COLOR_MAP = {
-  1500:'#FF0000',
+interface GradientMap {
+  [key: number]: string
+};
+const CHOROPLETH_COLOR_MAP: GradientMap  = {
   1000:'#800026',
   500: '#BD0026',
   200: '#E31A1C',
@@ -25,14 +27,14 @@ const UNITED_STATES_BOUNDARIES = [
   [49.384358, -66.93457] // Northeast Corner
 ];
 
-function getColorFromGradient(x: number, gradientBreakpoints): string {
+function getColorFromGradient(x: number, gradientBreakpoints: GradientMap): string {
   let i = 0;
   const breakpoints = Object.keys(gradientBreakpoints);
   const colors = Object.values(gradientBreakpoints);
   let result = colors[i];
 
   for (i = 0; i < breakpoints.length; ++i) {
-    if (x > breakpoints[i]) {
+    if (x >= breakpoints[i]) {
       result = colors[i];
     }
   }
@@ -40,7 +42,7 @@ function getColorFromGradient(x: number, gradientBreakpoints): string {
   return result;
 }
 
-function geoJsonFeatureColorStyle(gradientMap) {
+function geoJsonFeatureColorStyle(gradientMap: GradientMap) {
   return function(feature) {
     return {
       fillColor: getColorFromGradient(feature.properties.density, gradientMap),
@@ -69,8 +71,10 @@ function MapLegend({ leafletMap, gradientMap }) {
           const labels = [];
 
           for (let i = 0; i < grades.length; i++) {
+            const color = getColorFromGradient(parseInt(grades[i]), gradientMap);
+            console.log(color)
             div.innerHTML +=
-              '<i style="background:' + getColorFromGradient(grades[i]-1, gradientMap) + '"></i> ' +
+              '<i style="background:' + color + '"></i> ' +
               grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
           }
 
