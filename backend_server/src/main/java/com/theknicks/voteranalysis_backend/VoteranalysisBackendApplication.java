@@ -2,8 +2,10 @@ package com.theknicks.voteranalysis_backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.*;
 
 import java.util.Optional;
 import java.util.HashMap;
@@ -39,6 +41,9 @@ class DummyController {
 
 @SpringBootApplication
 public class VoteranalysisBackendApplication {
+        @Autowired
+        JdbcTemplate jdbcTemplate;
+
 	public static void main(String[] args) {
 		SpringApplication.run(VoteranalysisBackendApplication.class, args);
 	}
