@@ -64,11 +64,11 @@ function MapLegend({ leafletMap, gradientMap }) {
       if (leafletMap) {
         const legend = L.control({position: 'bottomright'});
         legend.onAdd = function (map) {
-          var div = L.DomUtil.create('div', 'info legend');
+          const div = L.DomUtil.create('div', 'info legend');
           const grades = Object.keys(CHOROPLETH_COLOR_MAP);
           const labels = [];
 
-          for (var i = 0; i < grades.length; i++) {
+          for (let i = 0; i < grades.length; i++) {
             div.innerHTML +=
               '<i style="background:' + getColorFromGradient(grades[i]-1, gradientMap) + '"></i> ' +
               grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
