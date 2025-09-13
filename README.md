@@ -9,6 +9,8 @@ Fall 2025.
 - Sean Moore - sean.moore@stonybrook.edu
 
 ## How To Run Backend
+The backend requires Java 24.
+
 ```
 cd backend_server
 ./gradlew bootRun
