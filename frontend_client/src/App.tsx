@@ -1,11 +1,11 @@
 import './App.css'
 import 'leaflet/dist/leaflet.css'
-import { GeoJSON, MapContainer, TileLayer, useMap, Marker, Popup} from 'react-leaflet'
-import { useState, useEffect, use } from 'react'
-import axios from "axios"
-import './constants.tsx'
+import './voterAPI.tsx'
+import { getTestEndpoint } from './voterAPI.tsx'
 import { statesData } from './TestChoroplethData';
-import { BACK_END_URL, TEST_ENDPOINT } from './constants.tsx'
+import { GeoJSON, MapContainer, TileLayer, useMap, Marker, Popup} from 'react-leaflet'
+import React from 'react'
+import { useState, useEffect, use } from 'react'
 
 interface GradientMap {
   [key: number]: string
@@ -96,7 +96,7 @@ function App() {
   const [backendMessage, setBackendMessage] = useState("");
 
   useEffect(() => {
-    axios.get(`${BACK_END_URL}${TEST_ENDPOINT}`)
+    getTestEndpoint()
     .then(function (res) {
       setBackendMessage(res.data);
     })
@@ -106,7 +106,7 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <React.Fragment>
       <h2>Backend says: {backendMessage}</h2>
       <MapContainer
         zoom={4}
@@ -122,7 +122,7 @@ function App() {
         <GeoJSON style={geoJsonFeatureColorStyle(CHOROPLETH_COLOR_MAP)} data={statesData}/>
         <MapLegend leafletMap={mapState} gradientMap={CHOROPLETH_COLOR_MAP}/>
       </MapContainer>
-    </div>
+    </React.Fragment>
   )
 }
 
