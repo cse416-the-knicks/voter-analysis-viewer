@@ -1,8 +1,11 @@
 import './App.css'
 import 'leaflet/dist/leaflet.css'
-import { GeoJSON, MapContainer, TileLayer, useMap, Marker, Popup} from 'react-leaflet'
-import { useState, useEffect } from 'react'
+import './voterAPI.tsx'
+import { getTestEndpoint } from './voterAPI.tsx'
 import { statesData } from './TestChoroplethData';
+import { GeoJSON, MapContainer, TileLayer, useMap, Marker, Popup} from 'react-leaflet'
+import React from 'react'
+import { useState, useEffect, use } from 'react'
 
 interface GradientMap {
   [key: number]: string
@@ -90,22 +93,36 @@ function MapLegend({ leafletMap, gradientMap }) {
 
 function App() {
   const [mapState, setMapState] = useState(null);
+  const [backendMessage, setBackendMessage] = useState("");
+
+  useEffect(() => {
+    getTestEndpoint()
+    .then(function (res) {
+      setBackendMessage(res.data);
+    })
+    .catch(function (err) {
+      console.error("Error connecting to backend: ", err)
+    });
+  }, []);
 
   return (
-    <MapContainer
-      zoom={4}
-      bounds={UNITED_STATES_BOUNDARIES}
-      maxBounds={UNITED_STATES_BOUNDARIES}
-      maxBoundsViscosity={1.0}
-      ref={setMapState}
-      id="main-map">
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <GeoJSON style={geoJsonFeatureColorStyle(CHOROPLETH_COLOR_MAP)} data={statesData}/>
-      <MapLegend leafletMap={mapState} gradientMap={CHOROPLETH_COLOR_MAP}/>
-    </MapContainer>
+    <React.Fragment>
+      <h2>Backend says: {backendMessage}</h2>
+      <MapContainer
+        zoom={4}
+        bounds={UNITED_STATES_BOUNDARIES}
+        maxBounds={UNITED_STATES_BOUNDARIES}
+        maxBoundsViscosity={1.0}
+        ref={setMapState}
+        id="main-map">
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <GeoJSON style={geoJsonFeatureColorStyle(CHOROPLETH_COLOR_MAP)} data={statesData}/>
+        <MapLegend leafletMap={mapState} gradientMap={CHOROPLETH_COLOR_MAP}/>
+      </MapContainer>
+    </React.Fragment>
   )
 }
 
