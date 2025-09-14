@@ -1,15 +1,22 @@
-import './App.css'
-import 'leaflet/dist/leaflet.css'
-import './voterAPI.tsx'
-import { getTestEndpoint } from './voterAPI.tsx'
+import './App.css';
+import './voterAPI.tsx';
+import 'leaflet/dist/leaflet.css';
+import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
+import { getTestEndpoint } from './voterAPI.tsx';
 import { statesData } from './TestChoroplethData';
-import { GeoJSON, MapContainer, TileLayer, useMap, Marker, Popup} from 'react-leaflet'
-import React from 'react'
-import { useState, useEffect, use } from 'react'
+import L, { type PathOptions, type StyleFunction } from 'leaflet';
+import React, { useEffect, useState } from 'react';
+import type { MapRef } from 'react-leaflet/MapContainer';
 
 interface GradientMap {
   [key: number]: string
 };
+
+interface MapLegendParameters {
+  leafletMap: MapRef,
+  gradientMap: GradientMap,
+}
+
 const CHOROPLETH_COLOR_MAP: GradientMap  = {
   1000:'#800026',
   500: '#BD0026',
@@ -25,14 +32,14 @@ const CHOROPLETH_COLOR_MAP: GradientMap  = {
 // These boundaries were given by ChatGPT
 // although they can be googled from some Medium posts
 // as well.
-const UNITED_STATES_BOUNDARIES = [
+const UNITED_STATES_BOUNDARIES : L.LatLngTuple[] = [
   [24.396308, -125.0], // Southwest Corner
   [49.384358, -66.93457] // Northeast Corner
 ];
 
 function getColorFromGradient(x: number, gradientBreakpoints: GradientMap): string {
   let i = 0;
-  const breakpoints = Object.keys(gradientBreakpoints);
+  const breakpoints = Object.keys(gradientBreakpoints).map(Number);
   const colors = Object.values(gradientBreakpoints);
   let result = colors[i];
 
@@ -45,10 +52,10 @@ function getColorFromGradient(x: number, gradientBreakpoints: GradientMap): stri
   return result;
 }
 
-function geoJsonFeatureColorStyle(gradientMap: GradientMap) {
-  return function(feature) {
+function geoJsonFeatureColorStyle(gradientMap: GradientMap): StyleFunction {
+  return function(feature: GeoJSON.Feature | undefined): PathOptions {
     return {
-      fillColor: getColorFromGradient(feature.properties.density, gradientMap),
+      fillColor: getColorFromGradient(feature?.properties?.density ?? 0, gradientMap),
       weight: 1,
       opacity: 1,
       color: 'black',
@@ -58,7 +65,7 @@ function geoJsonFeatureColorStyle(gradientMap: GradientMap) {
   }
 }
 
-function MapLegend({ leafletMap, gradientMap }) {
+function MapChoroplethLegend({ leafletMap , gradientMap } : MapLegendParameters) {
   /*
      NOTE(jerry):
      Adapted slightly from the official leaflet example for
@@ -67,15 +74,13 @@ function MapLegend({ leafletMap, gradientMap }) {
   useEffect(
     function() {
       if (leafletMap) {
-        const legend = L.control({position: 'bottomright'});
-        legend.onAdd = function (map) {
+        const legend = new L.Control({position: 'bottomright'});
+        legend.onAdd = function () {
           const div = L.DomUtil.create('div', 'info legend');
-          const grades = Object.keys(CHOROPLETH_COLOR_MAP);
-          const labels = [];
+          const grades = Object.keys(CHOROPLETH_COLOR_MAP).map(Number);
 
           for (let i = 0; i < grades.length; i++) {
-            const color = getColorFromGradient(parseInt(grades[i]), gradientMap);
-            console.log(color)
+            const color = getColorFromGradient(grades[i], gradientMap);
             div.innerHTML +=
               '<i style="background:' + color + '"></i> ' +
               grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
@@ -92,7 +97,7 @@ function MapLegend({ leafletMap, gradientMap }) {
 }
 
 function App() {
-  const [mapState, setMapState] = useState(null);
+  const [mapState, setMapState] = useState<MapRef>(null);
   const [backendMessage, setBackendMessage] = useState("");
 
   useEffect(() => {
@@ -119,8 +124,8 @@ function App() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <GeoJSON style={geoJsonFeatureColorStyle(CHOROPLETH_COLOR_MAP)} data={statesData}/>
-        <MapLegend leafletMap={mapState} gradientMap={CHOROPLETH_COLOR_MAP}/>
+        <GeoJSON style={geoJsonFeatureColorStyle(CHOROPLETH_COLOR_MAP)} data={statesData as GeoJSON.GeoJSON}/>
+        <MapChoroplethLegend leafletMap={mapState} gradientMap={CHOROPLETH_COLOR_MAP}/>
       </MapContainer>
     </React.Fragment>
   )
