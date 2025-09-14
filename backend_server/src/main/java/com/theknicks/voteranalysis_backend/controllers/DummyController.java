@@ -9,6 +9,7 @@ import java.util.HashMap;
 @RestController
 public class DummyController {
     public DummyController() {
+        System.out.println("Dummy Controller Made!");
     }
   
     @GetMapping("/test1")

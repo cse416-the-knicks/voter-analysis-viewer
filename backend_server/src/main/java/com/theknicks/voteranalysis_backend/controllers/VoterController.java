@@ -14,35 +14,20 @@ import org.springframework.beans.factory.annotation.*;
 @RestController
 @RequestMapping("/voters")
 public class VoterController {
-    private final JdbcTemplate _jdbcTemplate;
+    private final VoterService _service;
 
-    public VoterController(JdbcTemplate jdbcTemplate) {
-        _jdbcTemplate = jdbcTemplate;
+    public VoterController(VoterService service) {
+        _service = service;
+        System.out.println("Please!");
     }
 
     @GetMapping
     public List<VoterModel> getAllUsers() {
-        List<VoterModel> result;
-        String sqlStatement = "SELECT * FROM voters";
-        result = _jdbcTemplate.query(
-            sqlStatement, 
-            VoterModel.getRowMapper());
-        return result;
+        return _service.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public VoterModel getUser(@PathVariable("id") int userId) {
-        List<VoterModel> result;
-        String sqlStatement = "SELECT * FROM voters WHERE voter_id=?";
-        result = _jdbcTemplate.query(
-            sqlStatement, 
-            VoterModel.getRowMapper(), 
-            userId);
-
-        if (result.isEmpty()) {
-            return null;
-        }
-
-        return result.getFirst();
+        return _service.getUser(userId);
     }
 }
