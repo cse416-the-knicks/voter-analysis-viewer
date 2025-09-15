@@ -1,8 +1,8 @@
 package com.theknicks.voteranalysis_backend.dao;
 
 import java.util.List;
+import java.util.Optional;
 import java.sql.ResultSet;
-
 import com.theknicks.voteranalysis_backend.models.VoterModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,7 @@ public class JdbcVoterDAO implements VoterDAO {
         {
             try {
                 return new VoterModel(
+                    resultSet.getInt("voter_id"),
                     resultSet.getString("first_name"),
                     resultSet.getString("last_name"),
                     resultSet.getDate("dob"),
@@ -51,9 +52,9 @@ public class JdbcVoterDAO implements VoterDAO {
     /**
      * Make a SQL query for a particular voter.
      * @param voterId - The id of the voter. Corresponds to the exact column in the DB.
-     * @return a VoterModel for the entry if exists. Null if otherwise.
+     * @return a VoterModel for the entry if exists.
      */
-    public VoterModel getVoter(int voterId) {
+    public Optional<VoterModel> getVoter(int voterId) {
         List<VoterModel> result;
         String sqlStatement = "SELECT * FROM voters WHERE voter_id=?";
         result = _jdbcTemplate.query(
@@ -63,10 +64,10 @@ public class JdbcVoterDAO implements VoterDAO {
 
         if (result.isEmpty()) {
             _logger.debug("This voter doesn't have an entry.");
-            return null;
+            return Optional.empty();
         }
 
-        return result.getFirst();
+        return Optional.of(result.getFirst());
     }
 
     /**

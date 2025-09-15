@@ -1,8 +1,7 @@
 package com.theknicks.voteranalysis_backend.services;
 
 import java.util.List;
-
-import com.theknicks.voteranalysis_backend.dao.JdbcVoterDAO;
+import java.util.Optional;
 import com.theknicks.voteranalysis_backend.dao.VoterDAO;
 import com.theknicks.voteranalysis_backend.models.VoterModel;
 import org.slf4j.Logger;
@@ -41,9 +40,9 @@ public class VoterService {
     /**
      * Calls the DAO for a particular user.
      * @param voterId - The voter id that is to be retrieved.
-     * @return The VoterModel for the voter if they exist. Null if otherwise.
+     * @return The VoterModel for the voter if they exist.
      */
-    public VoterModel getVoter(int voterId) {
+    public Optional<VoterModel> getVoter(int voterId) {
         return _dao.getVoter(voterId);
     }
 }

@@ -45,7 +45,7 @@ public class VoterController {
      * @return if the voter exists, the VoterModel for the user. Null if they do not.
      */
     @GetMapping("/{id}")
-    public VoterModel getVoter(@PathVariable("id") int userId) {
+    public Optional<VoterModel> getVoter(@PathVariable("id") int userId) {
         _logger.debug("Requesting particular voter " + userId);
         return _service.getVoter(userId);
     }

@@ -14,6 +14,7 @@ import java.util.Date;
 * although I think this keeps everything that's needed in one place.
 */
 public record VoterModel(
+    int voterId,
     String firstName,
     String lastName,
     Date dateOfBirth,
