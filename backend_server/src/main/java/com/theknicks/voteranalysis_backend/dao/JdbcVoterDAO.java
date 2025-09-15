@@ -1,28 +1,38 @@
-package com.theknicks.voteranalysis_backend;
+package com.theknicks.voteranalysis_backend.dao;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.sql.ResultSet;
+
+import com.theknicks.voteranalysis_backend.models.VoterModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+/**
+ * This implements the Data Access Object pattern for a Voter model within
+ * the demo database schema.
+ */
 @Component
 public class JdbcVoterDAO implements VoterDAO {
-    private class InternalRowMapper implements RowMapper<VoterModel> {
+    /**
+     * This internal class should be in all the Data Access Objects. It implements
+     * a mapping between the rows/columns of the relation database and puts them
+     * into a VoterModel.
+     */
+    private static class InternalRowMapper implements RowMapper<VoterModel> {
         public VoterModel mapRow(
             ResultSet resultSet, 
             int rowNumber)
         {
             try {
-                VoterModel result = new VoterModel(
+                return new VoterModel(
                     resultSet.getString("first_name"),
                     resultSet.getString("last_name"),
                     resultSet.getDate("dob"),
                     resultSet.getInt("precinct_id")
                 );
-                return result;
             } catch(Exception e) {
                 // NOTE(jerry): maybe not a good idea.
                 return null;
@@ -30,15 +40,20 @@ public class JdbcVoterDAO implements VoterDAO {
         }
     }
 
-    @Autowired
     private final JdbcTemplate _jdbcTemplate;
+    private final Logger _logger = LoggerFactory.getLogger(JdbcVoterDAO.class);
 
     public JdbcVoterDAO(JdbcTemplate jdbcTemplate) {
         _jdbcTemplate = jdbcTemplate;
-        System.out.println("Creating JdbcVoterDAO");
+        _logger.info("Creating JdbcVoterDAO");
     }
 
-    public VoterModel getUser(int voterId) {
+    /**
+     * Make a SQL query for a particular voter.
+     * @param voterId - The id of the voter. Corresponds to the exact column in the DB.
+     * @return a VoterModel for the entry if exists. Null if otherwise.
+     */
+    public VoterModel getVoter(int voterId) {
         List<VoterModel> result;
         String sqlStatement = "SELECT * FROM voters WHERE voter_id=?";
         result = _jdbcTemplate.query(
@@ -47,18 +62,24 @@ public class JdbcVoterDAO implements VoterDAO {
             voterId);
 
         if (result.isEmpty()) {
+            _logger.debug("This voter doesn't have an entry.");
             return null;
         }
 
         return result.getFirst();
     }
 
-    public List<VoterModel> getAllUsers() {
+    /**
+     * Make a SQL query for all the voters.
+     * @return a list of VoterModels, can be empty.
+     */
+    public List<VoterModel> getAllVoters() {
         List<VoterModel> result;
         String sqlStatement = "SELECT * FROM voters";
         result = _jdbcTemplate.query(
             sqlStatement, 
             new InternalRowMapper());
+        _logger.debug("Found " + result.size() + " voter entries.");
         return result;
     }
 }

@@ -1,4 +1,4 @@
-package com.theknicks.voteranalysis_backend;
+package com.theknicks.voteranalysis_backend.models;
 
 import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
@@ -20,29 +20,4 @@ public record VoterModel(
     int precinct_id
 ) 
 {
-    private class InternalRowMapper implements RowMapper<VoterModel> {
-        public VoterModel mapRow(
-            ResultSet resultSet, 
-            int rowNumber)
-        {
-            try {
-                VoterModel result = new VoterModel(
-                    resultSet.getString("first_name"),
-                    resultSet.getString("last_name"),
-                    resultSet.getDate("dob"),
-                    resultSet.getInt("precinct_id")
-                );
-                return result;
-            } catch(Exception e) {
-                // NOTE(jerry): maybe not a good idea
-                return null;
-            }
-        }
-    }
-
-    private static InternalRowMapper _MAPPER;
-
-    public static RowMapper<VoterModel> getRowMapper() {
-        return _MAPPER;
-    }
 }
