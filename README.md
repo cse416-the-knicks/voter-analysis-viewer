@@ -33,12 +33,12 @@ The port appears to be 5173
 
 ## Database Setup
 
-Project uses PostgreSQL 17 in Docker. setup is defined in docker-decompose.yml
+Project uses PostgreSQL 17 in Docker. setup is defined in docker-compose.yml
 
 From root repo run
 
 ```
-docker compose down
+docker compose up -d
 
 ```
 
