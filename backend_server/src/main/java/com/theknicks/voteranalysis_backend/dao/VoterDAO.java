@@ -8,6 +8,6 @@ import java.util.Optional;
  * Voter Data Access Object interface.
  */
 public interface VoterDAO {
-    public Optional<VoterModel> getVoter(int voterId);
-    public List<VoterModel> getAllVoters();
+    Optional<VoterModel> getVoter(int voterId);
+    List<VoterModel> getAllVoters();
 }
