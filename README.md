@@ -39,7 +39,6 @@ From root repo run
 
 ```
 docker compose up -d
-
 ```
 
 Connection Details
@@ -60,14 +59,13 @@ Useful commands:
 To stop the Database:
 ```
 docker compose down
-
-        ```
-    Restart the database:
-        ```
-        docker compose up -d
-        ```
-    Reset completely (wipe data & re-run init-sql):
-        ```
-        docker compose down -v
-        docker compose up -d
-        ```
+```
+Restart the database:
+```
+docker compose up -d
+```
+Reset completely (wipe data & re-run init-sql):
+```
+docker compose down -v
+docker compose up -d
+```
