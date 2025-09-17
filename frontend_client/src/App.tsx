@@ -4,8 +4,9 @@ import 'leaflet/dist/leaflet.css';
 import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { getTestEndpoint } from './voterAPI.tsx';
 import { statesData } from './TestChoroplethData';
-import L, { FeatureGroup, type LeafletMouseEvent, type PathOptions, type StyleFunction } from 'leaflet';
+import L, { Browser, FeatureGroup, type LeafletMouseEvent, type PathOptions, type StyleFunction } from 'leaflet';
 import React, { useEffect, useState, useRef } from 'react';
+import { BrowserRouter, Routes, Route, Link, useParams, Outlet } from 'react-router';
 import type { MapRef } from 'react-leaflet/MapContainer';
 
 interface GradientMap {
@@ -128,7 +129,7 @@ function MainScreenMap({ leafletMap, data } : MainScreenMapParameters) {
   );
 }
 
-function App() {
+function LandingPage() {
   const mapState = useRef<MapRef>(null);
   const [backendMessage, setBackendMessage] = useState("");
 
@@ -161,6 +162,26 @@ function App() {
           data={statesData as GeoJSON.GeoJSON}/>
       </MapContainer>
     </React.Fragment>
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <React.Fragment>
+      <h1>This page is invalid!</h1>
+      <p>Your data is in another castle!</p>
+    </React.Fragment>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage/>}/>
+        <Route path="*" element={<NotFoundPage/>}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
