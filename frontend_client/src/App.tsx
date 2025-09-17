@@ -4,18 +4,13 @@ import 'leaflet/dist/leaflet.css';
 import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { getTestEndpoint } from './voterAPI.tsx';
 import { statesData } from './TestChoroplethData';
-import L, { type PathOptions, type StyleFunction } from 'leaflet';
-import React, { useEffect, useState } from 'react';
+import L, { FeatureGroup, type LeafletMouseEvent, type PathOptions, type StyleFunction } from 'leaflet';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import type { MapRef } from 'react-leaflet/MapContainer';
 
 interface GradientMap {
   [key: number]: string
 };
-
-interface MapLegendParameters {
-  leafletMap: MapRef,
-  gradientMap: GradientMap,
-}
 
 const CHOROPLETH_COLOR_MAP: GradientMap  = {
   1000:'#800026',
@@ -65,6 +60,10 @@ function geoJsonFeatureColorStyle(gradientMap: GradientMap): StyleFunction {
   }
 }
 
+interface MapLegendParameters {
+  leafletMap: React.RefObject<MapRef>,
+  gradientMap: GradientMap,
+}
 function MapChoroplethLegend({ leafletMap , gradientMap } : MapLegendParameters) {
   /*
      NOTE(jerry):
@@ -73,7 +72,8 @@ function MapChoroplethLegend({ leafletMap , gradientMap } : MapLegendParameters)
   */
   useEffect(
     function() {
-      if (leafletMap) {
+      const mapState = leafletMap.current;
+      if (mapState) {
         const legend = new L.Control({position: 'bottomright'});
         legend.onAdd = function () {
           const div = L.DomUtil.create('div', 'info legend');
@@ -89,15 +89,47 @@ function MapChoroplethLegend({ leafletMap , gradientMap } : MapLegendParameters)
           return div;
         };
 
-        legend.addTo(leafletMap);
+        legend.addTo(mapState);
       }
     },
     [leafletMap, gradientMap])
   return null;
 }
+interface MainScreenMapParameters {
+  leafletMap : React.RefObject<MapRef>,
+  data : any, // The type is very complicated to annotate here.
+};
+
+/**
+ * This is the map used for the landing / splash page of the viewer.
+ * 
+ * Submaps will be defined as separate components.
+ */
+function MainScreenMap({ leafletMap, data } : MainScreenMapParameters) {
+  function onFeatureClickHandler (event: LeafletMouseEvent) {
+    const target = event.target as FeatureGroup;
+    const mapState = leafletMap.current;
+    mapState?.fitBounds(target.getBounds());
+  }
+  function onEachFeatureHandler(_feature: GeoJSON.Feature, layer: L.Layer) {
+    layer.on({
+      click: onFeatureClickHandler
+    });
+  }
+  
+  return (
+    <React.Fragment>
+        <GeoJSON 
+        style={geoJsonFeatureColorStyle(CHOROPLETH_COLOR_MAP)}
+        data={data as GeoJSON.GeoJSON}
+        onEachFeature={onEachFeatureHandler}/>
+        <MapChoroplethLegend leafletMap={leafletMap} gradientMap={CHOROPLETH_COLOR_MAP}/>
+    </React.Fragment>
+  );
+}
 
 function App() {
-  const [mapState, setMapState] = useState<MapRef>(null);
+  const mapState = useRef<MapRef>(null);
   const [backendMessage, setBackendMessage] = useState("");
 
   useEffect(() => {
@@ -118,14 +150,15 @@ function App() {
         bounds={UNITED_STATES_BOUNDARIES}
         maxBounds={UNITED_STATES_BOUNDARIES}
         maxBoundsViscosity={1.0}
-        ref={setMapState}
+        ref={mapState}
         id="main-map">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <GeoJSON style={geoJsonFeatureColorStyle(CHOROPLETH_COLOR_MAP)} data={statesData as GeoJSON.GeoJSON}/>
-        <MapChoroplethLegend leafletMap={mapState} gradientMap={CHOROPLETH_COLOR_MAP}/>
+        <MainScreenMap
+          leafletMap={mapState}
+          data={statesData as GeoJSON.GeoJSON}/>
       </MapContainer>
     </React.Fragment>
   )
