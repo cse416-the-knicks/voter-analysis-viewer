@@ -5,7 +5,7 @@ import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { getTestEndpoint } from './voterAPI.tsx';
 import { statesData } from './TestChoroplethData';
 import L, { FeatureGroup, type LeafletMouseEvent, type PathOptions, type StyleFunction } from 'leaflet';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import type { MapRef } from 'react-leaflet/MapContainer';
 
 interface GradientMap {
@@ -116,7 +116,7 @@ function MainScreenMap({ leafletMap, data } : MainScreenMapParameters) {
       click: onFeatureClickHandler
     });
   }
-  
+
   return (
     <React.Fragment>
         <GeoJSON 
