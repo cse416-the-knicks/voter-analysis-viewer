@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router';
 import FullBoundedUSMap from '../FullBoundedUSMap/';
 import type { FipsCode } from '../FullBoundedUSMap/';
 
+import styles from './FrontPage.module.css';
+
 /**
  * This is the map used for the landing / splash page of the viewer.
  * 
@@ -23,7 +25,7 @@ function FrontPage() {
     <React.Fragment>
       <FullBoundedUSMap
 	mapRef={mapState}
-	id="main-map"
+	id={styles.mainMap}
 	onStateClick={onStateClick}>
       </FullBoundedUSMap>
     </React.Fragment>
