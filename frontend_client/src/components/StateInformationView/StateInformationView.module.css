@@ -1,0 +1,28 @@
+.stateInformationPopup {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1500;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.stateInformationSideModalOptions {
+  background-color: white;
+  padding: 16px;
+  text-align: left;
+}
+
+.stateInformationSideModal {
+  margin: 2vw;
+  margin-top: 10%;
+}
+
+.stateInformationMainModal {
+  margin: 4em;
+  background-color: white;
+  width: 70%;
+  height: 85%;
+  overflow-y: scroll;
+}
