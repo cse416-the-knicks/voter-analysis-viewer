@@ -7,3 +7,5 @@ raw/
 processed/
 geospatial-raw/
 geospatial-processed/
+
+To reconstruct `US_County_Boundaries.geojson` run the following command when in `geospatial_raw`: `cat US_County_Boundaries_part_* > US_County_Boundaries.geojson`
