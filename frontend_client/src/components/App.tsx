@@ -1,23 +1,19 @@
-import './App.css';
-import './voterAPI.tsx';
-import 'leaflet/dist/leaflet.css';
-import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
-import { getTestEndpoint } from './voterAPI.tsx';
-import { statesData } from './TestChoroplethData';
 import L, { FeatureGroup, type LeafletMouseEvent, type PathOptions, type StyleFunction } from 'leaflet';
-import React, { useEffect, useState, useRef } from 'react';
-import { Routes, Route, useParams, useLocation, useNavigate, Link } from 'react-router';
+import 'leaflet/dist/leaflet.css';
+import React, { useEffect, useRef } from 'react';
+import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
+import { Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router';
+import './App.css';
+import { statesData } from '../helpers/TestChoroplethData';
+import NotFoundPage from "../components/NotFoundPage";
+import BackgroundBlurrer from "../components/BackgroundBlurrer";
 
-interface GradientMap {
-  [key: number]: string
-};
+import type { GradientMap } from "../helpers/GradientMap";
+import { gradientMapNearest } from "../helpers/GradientMap";
+import FullBoundedUSMap from '../components/FullBoundedUSMap';
 
 // For the background overlay system
-interface RouterLocationState {
-  backgroundLocation?: Location;
-}
-
 const CHOROPLETH_COLOR_MAP: GradientMap  = {
   1000:'#800026',
   500: '#BD0026',
@@ -29,34 +25,10 @@ const CHOROPLETH_COLOR_MAP: GradientMap  = {
   0:   '#FFEDA0',
 };
 
-// NOTE(jerry):
-// These boundaries were given by ChatGPT
-// although they can be googled from some Medium posts
-// as well.
-const UNITED_STATES_BOUNDARIES : L.LatLngTuple[] = [
-  [24.396308, -125.0], // Southwest Corner
-  [49.384358, -66.93457] // Northeast Corner
-];
-
-function getColorFromGradient(x: number, gradientBreakpoints: GradientMap): string {
-  let i = 0;
-  const breakpoints = Object.keys(gradientBreakpoints).map(Number);
-  const colors = Object.values(gradientBreakpoints);
-  let result = colors[i];
-
-  for (i = 0; i < breakpoints.length; ++i) {
-    if (x >= breakpoints[i]) {
-      result = colors[i];
-    }
-  }
-
-  return result;
-}
-
 function geoJsonFeatureColorStyle(gradientMap: GradientMap): StyleFunction {
   return function(feature: GeoJSON.Feature | undefined): PathOptions {
     return {
-      fillColor: getColorFromGradient(feature?.properties?.density ?? 0, gradientMap),
+      fillColor: gradientMapNearest(feature?.properties?.density ?? 0, gradientMap),
       weight: 1,
       opacity: 1,
       color: 'black',
@@ -86,7 +58,7 @@ function MapChoroplethLegend({ leafletMap , gradientMap } : MapLegendParameters)
           const grades = Object.keys(CHOROPLETH_COLOR_MAP).map(Number);
 
           for (let i = 0; i < grades.length; i++) {
-            const color = getColorFromGradient(grades[i], gradientMap);
+            const color = gradientMapNearest(grades[i], gradientMap);
             div.innerHTML +=
               '<i style="background:' + color + '"></i> ' +
               grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
@@ -101,8 +73,10 @@ function MapChoroplethLegend({ leafletMap , gradientMap } : MapLegendParameters)
     [leafletMap, gradientMap])
   return null;
 }
+
 interface MainScreenMapParameters {
   leafletMap : React.RefObject<MapRef>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data : any, // The type is very complicated to annotate here.
 };
 
@@ -154,30 +128,13 @@ function LandingPage() {
 
   return (
     <React.Fragment>
-      <MapContainer
-        zoom={4}
-        bounds={UNITED_STATES_BOUNDARIES}
-        maxBounds={UNITED_STATES_BOUNDARIES}
-        maxBoundsViscosity={1.0}
-        ref={mapState}
-        id="main-map">
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MainScreenMap
-          leafletMap={mapState}
-          data={statesData as GeoJSON.GeoJSON}/>
-      </MapContainer>
-    </React.Fragment>
-  );
-}
-
-function NotFoundPage() {
-  return (
-    <React.Fragment>
-      <h1>This page is invalid!</h1>
-      <p>Your data is in another castle!</p>
+      <FullBoundedUSMap
+	mapRef={mapState}
+	id="main-map">
+	<MainScreenMap
+	  leafletMap={mapState}
+	  data={statesData as GeoJSON.GeoJSON}/>
+      </FullBoundedUSMap>
     </React.Fragment>
   );
 }
@@ -245,12 +202,6 @@ Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapi
         </p>
       </div>
     </div>
-  );
-}
-
-function BackgroundBlurrer() {
-  return (
-    <div id="background-blurrer"/>
   );
 }
 
