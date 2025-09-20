@@ -10,6 +10,22 @@ Fall 2025.
 - Rajvir Ghumman - rajvir.ghumman@stonybrook.edu
 - Sean Moore - sean.moore@stonybrook.edu
 
+## OpenAPI Code Generation
+Since our project utilizes the OpenAPI standard to reduce the amount of boilerplate code
+we need to run.
+
+You will need to run this task on the backend_server folder:
+```
+./gradlew generateOpenApiDoc
+```
+
+You will also need to run this on the frontend:
+```
+npm run genapi
+```
+
+This should keep everything up to date.
+
 ## How To Run Backend
 
 The backend requires Java 24.
@@ -20,6 +36,8 @@ cd backend_server
 ```
 
 If you're on Windows, do the same thing but with `gradlew.bat`
+
+Also make sure you setup an .env file.
 
 ## How To Run Frontend
 

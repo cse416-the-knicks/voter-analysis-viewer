@@ -1,0 +1,124 @@
+#!/usr/bin/env node
+/*
+  $File: develop.js
+  $Date: <2025-09-20 Sat>
+  $Author: Jerry Zhu
+  $Description:
+
+  Main development environment running script. It's written in Javascript
+  because we need nodejs installed anyway, and I think it's better than using
+  python for writing this kind of script.
+*/
+import  { spawn } from "child_process";
+
+const args = process.argv;
+
+let runFrontend;
+let runBackend;
+let runDb;
+
+let scheduledTasks = [];
+
+function spawnSubprocess(cmd, args, customExitFn) {
+  const proc = spawn(cmd, args, { stdio: "pipe", shell: true });
+  return {
+    waitToExit: async () => {
+      const promise = new Promise((resolve, reject) => {
+	proc.on('exit', (code) => {
+	  if (customExitFn) {
+	    customExitFn(code)
+	  }
+	  resolve(code)
+	});
+	proc.on('error', (err) => reject(err));
+      });
+      await promise;
+    },
+    proc: proc
+  };
+}
+
+if (args.length == 2) {
+  console.log("EX:");
+  console.log("develop --frontend // Run frontend only.");
+  console.log("develop --backend // Run backend only.");
+  console.log("develop --db // Run SQL DB.");
+  console.log("develop --full // run everything at once.");
+  process.exit(0);
+}
+
+for (const arg of args) {
+  switch (arg) {
+    case '--frontend': case '-f':
+      {
+	runFrontend = true;
+      } break;
+    case '--backend': case '-b':
+      {
+	runBackend = true;
+      } break;
+    case '--db': case '-d':
+      {
+	runDb = true;
+      } break;
+    case '--full':
+      {
+	runFrontend = runBackend = runDb = true;
+      } break;
+  }
+}
+
+
+process.on('exit', (returnValue) => {
+  console.log("terminating.");
+  for (const task of scheduledTasks) {
+    console.log("killing a task.");
+    task.kill();
+  }
+});
+
+process.on('SIGINT', () => {
+  console.log("SIGINT received");
+  process.exit(0);
+});
+
+// Stupid async function trick...
+await (async function() {
+  process.chdir('frontend_client/'); // Some critical scripts are run from here.
+  if (runFrontend) {
+    console.log("Running codegen.");
+    // Generate OpenAPI spec from backend...
+    await spawnSubprocess("npm", ["run", "gradle", "--", "generateOpenApiDocs"]).waitToExit();
+    // Run API-gen command.
+    await spawnSubprocess("npm", ["run", "apigen"]).waitToExit();
+    console.log("Starting frontend.");
+    {
+      const frontendProcess = spawnSubprocess("npm",
+	["run", "dev"], returnValue => console.log('Terminated frontend.'));
+      frontendProcess.proc.stdout.on('data', function(data) {console.log("FRONTEND: " + data);})
+      frontendProcess.proc.stderr.on('data', function(data) {console.error("FRONTEND: " + data);})
+      scheduledTasks.push(frontendProcess.proc);
+    }
+  }
+
+  if (runBackend) {
+    // NOTE(jerry):
+    // I find calling gradle here, kind of as stupid as you think it is too, but it's
+    // already there, and that's a cross platform way to call gradle so :shrug:
+    console.log("Starting backend.");
+    const backendProcess = spawnSubprocess("npm",
+      ["run", "gradle", "--", "bootRun"], returnValue => console.log('Terminated backend.'));
+    backendProcess.proc.stdout.on('data', function(data) {console.log("BACKEND: " + data);})
+    backendProcess.proc.stderr.on('data', function(data) {console.error("BACKEND: " + data);})
+    scheduledTasks.push(backendProcess.proc);
+  }
+
+  if (runDb) {
+    console.log("Starting database.");
+    const dockerProcess = spawnSubprocess("docker", ["compose", "up"]);
+    dockerProcess.proc.stdout.on('data', function(data) {console.log("DOCKER: " + data);})
+    dockerProcess.proc.stderr.on('data', function(data) {console.error("DOCKER: " + data);})
+    scheduledTasks.push(dockerProcess.proc);
+  }
+})();
+
