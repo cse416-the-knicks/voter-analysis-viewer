@@ -5,19 +5,72 @@
 # Split massive GeoJSON file into multiple state json collections
 import json;
 import os;
+import sys;
 import itertools;
 from typing import Iterable;
 
 # Index by FIPS-Code. 
 counties_by_state: dict[str, list[object]] = {};
-fips_code_to_state_name: dict[str, str] = {};
 detailed_states: dict[str, bool] = {};
+
+# source: https://transition.fcc.gov/oet/info/maps/census/fips/fips.txt
+FIPS_TO_STATES_MAP = {
+    "01": "Alabama",
+    "02": "Alaska",
+    "04": "Arizona",
+    "05": "Arkansas",
+    "06": "California",
+    "08": "Colorado",
+    "09": "Connecticut",
+    "10": "Delaware",
+    "11": "District Of Columbia",
+    "12": "Florida",
+    "13": "Georgia",
+    "15": "Hawaii",
+    "16": "Idaho",
+    "17": "Illinois",
+    "18": "Indiana",
+    "19": "Iowa",
+    "20": "Kansas",
+    "21": "Kentucky",
+    "22": "Louisiana",
+    "23": "Maine",
+    "24": "Maryland",
+    "25": "Massachusetts",
+    "26": "Michigan",
+    "27": "Minnesota",
+    "28": "Mississippi",
+    "29": "Missouri",
+    "30": "Montana",
+    "31": "Nebraska",
+    "32": "Nevada",
+    "33": "New Hampshire",
+    "34": "New Jersey",
+    "35": "New Mexico",
+    "36": "New York",
+    "37": "North Carolina",
+    "38": "North Dakota",
+    "39": "Ohio",
+    "40": "Oklahoma",
+    "41": "Oregon",
+    "42": "Pennsylvania",
+    "44": "Rhode Island",
+    "45": "South Carolina",
+    "46": "South Dakota",
+    "47": "Tennessee",
+    "48": "Texas",
+    "49": "Utah",
+    "50": "Vermont",
+    "51": "Virginia",
+    "53": "Washington",
+    "54": "West Virginia",
+    "55": "Wisconsin",
+    "56": "Wyoming",
+};
 
 def add_county_to_state(fips_code: str, county_data: object):
     if fips_code not in counties_by_state:
-        state_name = county_data["properties"]["STATE_NAME"];
         counties_by_state[fips_code] = [];
-        fips_code_to_state_name[fips_code] = state_name;
     counties_by_state[fips_code].append(county_data);
 
 # NOTE(jerry):
@@ -26,9 +79,18 @@ def add_county_to_state(fips_code: str, county_data: object):
 #
 # I wish this would be fast, but the truth is this might be slow
 # without numpy.
+DBG=False;
 def calc_bbox(xs: Iterable[float], ys: Iterable[float]):
-    x_min, x_max = min(xs), max(xs);
-    y_min, y_max = min(ys), max(ys);
+    # This is just cause of how generators work :|
+    global DBG;
+    a,b,c = itertools.tee(xs, 3);
+    if DBG:
+        for x in c:
+            print(x);
+    x_min, x_max = min(a), max(b);
+    a,b,c = itertools.tee(ys, 3);
+    y_min, y_max = min(a), max(b);
+    DBG=False;
     return x_min, y_min, x_max, y_max;
 
 def collect_all_dimensions_of_feature(feature, idx):
@@ -45,8 +107,12 @@ def calc_bbox_for_feature_collection(features: list[object]):
     return calc_bbox(xs, ys);
 
 def create_feature_collection_for_county(fips_code: str):
-    state_name = fips_code_to_state_name[fips_code];
+    state_name = FIPS_TO_STATES_MAP[fips_code];
+    if fips_code not in counties_by_state:
+        print(f'WARN: Missing information for {state_name}');
+        return None;
     counties = counties_by_state[fips_code];
+    print(f'INFO: Generating collection for: {state_name}');
     (x_min, y_min, x_max, y_max) = calc_bbox_for_feature_collection(counties);
     collection = {
         "type": "FeatureCollection", # we know the id is the fips-code, so
@@ -65,26 +131,49 @@ try:
             feature_fips = feature["properties"]["STATEFP"];
             detailed_states[feature_fips] = True;
             add_county_to_state(feature_fips, feature);
+except FileNotFoundError:
+    print("Error, the detailed states geojson master file doesn't exist?");
+    sys.exit();
+except json.JSONDecodeError:
+    print("Error, the detailed states geojson master file isn't valid json.");
+    sys.exit();
 
     # Do every other state second... The detailed states will supersede
     # the undetailed general map here.
-
-    # Export state geometry with bounding box.
-    try:
-        os.mkdir('stateByFips');
-    except FileExistsError:
-        pass;
-    except FileNotFoundError:
-        print("Error, could not make subdirectory.");
-    for fips in fips_code_to_state_name.keys():
-        state_feature_collection = create_feature_collection_for_county(fips);
-        try:
-            with open(f'stateByFips/{fips}.json', 'w') as output:
-                json_result = json.dump(
-                    state_feature_collection, fp=output);
-        except:
-            print(f"failed to write {fips}.json");
+try:
+    with open('general_states.geojson', 'r') as state_boundaries:
+        feature_collection = json.load(state_boundaries);
+        for feature in feature_collection["features"]:
+            # this data set uses the fips as the id
+            feature_fips = feature["id"];
+            if feature_fips not in detailed_states:
+                add_county_to_state(feature_fips, feature);
 except FileNotFoundError:
-    print("Error, the geojson master file doesn't exist?");
+    print("Error, the general states geojson master file doesn't exist?");
+    sys.exit();
 except json.JSONDecodeError:
-    print("Error, the geojson master file isn't valid json.");
+    print("Error, the general states geojson master file isn't valid json.");
+    sys.exit();
+
+# Export state geometry with bounding box.
+try:
+    os.mkdir('stateByFips');
+except FileExistsError:
+    pass;
+except FileNotFoundError:
+    print("Error, could not make subdirectory.");
+    sys.exit();
+
+for fips in FIPS_TO_STATES_MAP.keys():
+    if fips == "13":
+        DBG=True;
+    state_feature_collection = create_feature_collection_for_county(fips);
+    if state_feature_collection == None:
+        continue;
+
+    try:
+        with open(f'stateByFips/{fips}.json', 'w') as output:
+            json_result = json.dump(
+                state_feature_collection, fp=output);
+    except:
+        print(f"failed to write {fips}.json");
