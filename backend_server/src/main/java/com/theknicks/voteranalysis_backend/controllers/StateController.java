@@ -3,6 +3,9 @@ package com.theknicks.voteranalysis_backend.controllers;
 import java.util.*;
 
 import com.theknicks.voteranalysis_backend.services.StateService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +30,14 @@ public class StateController {
     }
 
     @GetMapping("/{fipsCode}/geometry")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Get the geometry boundary of a state by FipsCode",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(ref="../openapi-ext/geojson.yaml#/components/schema/GeoJsonObject")
+            )
+    )
     public JsonObject getGeometry(@PathVariable("fipsCode") String fipsCode) {
         return _service.getBoundaryGeometry(fipsCode);
     }
