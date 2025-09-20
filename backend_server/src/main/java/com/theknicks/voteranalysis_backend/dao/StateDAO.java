@@ -24,10 +24,7 @@ public class StateDAO implements IStateDAO {
         var gson = new Gson();
         _logger.info("Reading state with fips code: " + fipsCode);
         try (Reader reader = new FileReader(preprocessedGeospatialPath + "stateByFips/" + fipsCode + ".json")) {
-            var geoJsonObject = gson.fromJson(reader, JsonObject.class);
-            var metaDataWrapper = new JsonObject();
-            metaDataWrapper.add("geoJson", geoJsonObject);
-            return metaDataWrapper;
+            return gson.fromJson(reader, JsonObject.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

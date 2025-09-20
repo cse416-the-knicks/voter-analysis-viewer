@@ -18,6 +18,470 @@ export interface VoterModel {
   precinct_id?: number;
 }
 
+export type GeoJsonObjectType = typeof GeoJsonObjectType[keyof typeof GeoJsonObjectType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GeoJsonObjectType = {
+  Feature: 'Feature',
+  FeatureCollection: 'FeatureCollection',
+  Point: 'Point',
+  MultiPoint: 'MultiPoint',
+  LineString: 'LineString',
+  MultiLineString: 'MultiLineString',
+  Polygon: 'Polygon',
+  MultiPolygon: 'MultiPolygon',
+  GeometryCollection: 'GeometryCollection',
+} as const;
+
+/**
+ * GeoJSon object
+The coordinate reference system for all GeoJSON coordinates is a geographic coordinate reference system, using the World Geodetic System 1984 (WGS 84) datum, with longitude and latitude units of decimal degrees. This is equivalent to the coordinate reference system identified by the Open Geospatial Consortium (OGC) URN An OPTIONAL third-position element SHALL be the height in meters above or below the WGS 84 reference ellipsoid. In the absence of elevation values, applications sensitive to height or depth SHOULD interpret positions as being at local ground or sea level.
+
+ */
+export interface GeoJsonObject {
+  type: GeoJsonObjectType;
+  /** A GeoJSON object MAY have a member named "bbox" to include information on the coordinate range for its Geometries, Features, or FeatureCollections. The value of the bbox member MUST be an array of length 2*n where n is the number of dimensions represented in the contained geometries, with all axes of the most southwesterly point followed by all axes of the more northeasterly point. The axes order of a bbox follows the axes order of geometries.
+ */
+  bbox?: number[];
+}
+
+export type GeometryAllOfType = typeof GeometryAllOfType[keyof typeof GeometryAllOfType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GeometryAllOfType = {
+  Point: 'Point',
+  MultiPoint: 'MultiPoint',
+  LineString: 'LineString',
+  MultiLineString: 'MultiLineString',
+  Polygon: 'Polygon',
+  MultiPolygon: 'MultiPolygon',
+  GeometryCollection: 'GeometryCollection',
+} as const;
+
+export type GeometryAllOf = {
+  type: GeometryAllOfType;
+};
+
+/**
+ * Abstract type for all GeoJSon object except Feature and FeatureCollection
+
+ */
+export type Geometry = GeoJsonObject & GeometryAllOf;
+
+export type GeometryElementAllOfType = typeof GeometryElementAllOfType[keyof typeof GeometryElementAllOfType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GeometryElementAllOfType = {
+  Point: 'Point',
+  MultiPoint: 'MultiPoint',
+  LineString: 'LineString',
+  MultiLineString: 'MultiLineString',
+  Polygon: 'Polygon',
+  MultiPolygon: 'MultiPolygon',
+} as const;
+
+export type GeometryElementAllOf = {
+  type: GeometryElementAllOfType;
+};
+
+/**
+ * Abstract type for all GeoJSon 'Geometry' object the type of which is not 'GeometryCollection'
+
+ */
+export type GeometryElement = Geometry & GeometryElementAllOf;
+
+/**
+ * @nullable
+ */
+export type FeatureAllOfGeometryAllOf = unknown | null;
+
+export type FeatureAllOfGeometry = FeatureAllOfGeometryAllOf & Geometry;
+
+/**
+ * @nullable
+ */
+export type FeatureAllOfProperties = { [key: string]: unknown } | null;
+
+export type FeatureAllOfId = number | string;
+
+export type FeatureAllOf = {
+  geometry: FeatureAllOfGeometry;
+  /** @nullable */
+  properties: FeatureAllOfProperties;
+  id?: FeatureAllOfId;
+};
+
+/**
+ * GeoJSon 'Feature' object
+ */
+export type Feature = GeoJsonObject & FeatureAllOf;
+
+export type FeatureCollectionAllOf = {
+  features: Feature[];
+};
+
+/**
+ * GeoJSon 'FeatureCollection' object
+ */
+export type FeatureCollection = GeoJsonObject & FeatureCollectionAllOf;
+
+/**
+ * GeoJSon fundamental geometry construct.
+A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.
+Implementations SHOULD NOT extend positions beyond three elements because the semantics of extra elements are unspecified and ambiguous. Historically, some implementations have used a fourth element to carry a linear referencing measure (sometimes denoted as "M") or a numerical timestamp, but in most situations a parser will not be able to properly interpret these values. The interpretation and meaning of additional elements is beyond the scope of this specification, and additional elements MAY be ignored by parsers.
+
+ * @minItems 2
+ * @maxItems 3
+ */
+export type Position = number[];
+
+/**
+ * GeoJSon fundamental geometry construct, array of two or more positions.
+
+ * @minItems 2
+ */
+export type LineStringCoordinates = Position[];
+
+/**
+ * A linear ring is a closed LineString with four or more positions.
+The first and last positions are equivalent, and they MUST contain identical values; their representation SHOULD also be identical.
+A linear ring is the boundary of a surface or the boundary of a hole in a surface.
+A linear ring MUST follow the right-hand rule with respect to the area it bounds, i.e., exterior rings are counterclockwise, and holes are clockwise.
+
+ * @minItems 4
+ */
+export type LinearRing = Position[];
+
+export type PointAllOfType = typeof PointAllOfType[keyof typeof PointAllOfType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PointAllOfType = {
+  Point: 'Point',
+} as const;
+
+export type PointAllOf = {
+  type: PointAllOfType;
+  coordinates: Position;
+};
+
+/**
+ * GeoJSon geometry
+ */
+export type Point = GeometryElement & PointAllOf;
+
+export type MultiPointAllOf = {
+  coordinates: Position[];
+};
+
+/**
+ * GeoJSon geometry
+ */
+export type MultiPoint = GeometryElement & MultiPointAllOf;
+
+export type LineStringAllOf = {
+  coordinates: LineStringCoordinates;
+};
+
+/**
+ * GeoJSon geometry
+ */
+export type LineString = GeometryElement & LineStringAllOf;
+
+export type MultiLineStringAllOf = {
+  coordinates: LineStringCoordinates[];
+};
+
+/**
+ * GeoJSon geometry
+ */
+export type MultiLineString = GeometryElement & MultiLineStringAllOf;
+
+export type PolygonAllOf = {
+  coordinates: LinearRing[];
+};
+
+/**
+ * GeoJSon geometry
+ */
+export type Polygon = GeometryElement & PolygonAllOf;
+
+export type MultiPolygonAllOf = {
+  coordinates: LinearRing[][];
+};
+
+/**
+ * GeoJSon geometry
+ */
+export type MultiPolygon = GeometryElement & MultiPolygonAllOf;
+
+export type GeometryCollectionAllOf = {
+  /** @minItems 0 */
+  geometries: GeometryElement[];
+};
+
+/**
+ * GeoJSon geometry collection
+GeometryCollections composed of a single part or a number of parts of a single type SHOULD be avoided when that single part or a single object of multipart type (MultiPoint, MultiLineString, or MultiPolygon) could be used instead.
+
+ */
+export type GeometryCollection = Geometry & GeometryCollectionAllOf;
+
+export type Error400BadRequestResponseStatusCode = typeof Error400BadRequestResponseStatusCode[keyof typeof Error400BadRequestResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error400BadRequestResponseStatusCode = {
+  NUMBER_400: 400,
+} as const;
+
+export type Error400BadRequestResponseMessage = typeof Error400BadRequestResponseMessage[keyof typeof Error400BadRequestResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error400BadRequestResponseMessage = {
+  The_JSON_is_not_valid: 'The JSON is not valid.',
+} as const;
+
+export type Error400BadRequestResponse = {
+  status_code?: Error400BadRequestResponseStatusCode;
+  message?: Error400BadRequestResponseMessage;
+};
+
+export type Error401UnauthorizedResponseStatusCode = typeof Error401UnauthorizedResponseStatusCode[keyof typeof Error401UnauthorizedResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error401UnauthorizedResponseStatusCode = {
+  NUMBER_401: 401,
+} as const;
+
+export type Error401UnauthorizedResponseMessage = typeof Error401UnauthorizedResponseMessage[keyof typeof Error401UnauthorizedResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error401UnauthorizedResponseMessage = {
+  The_request_requires_an_user_authentication: 'The request requires an user authentication.',
+} as const;
+
+export type Error401UnauthorizedResponse = {
+  status_code?: Error401UnauthorizedResponseStatusCode;
+  message?: Error401UnauthorizedResponseMessage;
+};
+
+export type Error403ForbiddenResponseStatusCode = typeof Error403ForbiddenResponseStatusCode[keyof typeof Error403ForbiddenResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error403ForbiddenResponseStatusCode = {
+  NUMBER_403: 403,
+} as const;
+
+export type Error403ForbiddenResponseMessage = typeof Error403ForbiddenResponseMessage[keyof typeof Error403ForbiddenResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error403ForbiddenResponseMessage = {
+  The_access_is_not_allowed: 'The access is not allowed.',
+} as const;
+
+export type Error403ForbiddenResponse = {
+  status_code?: Error403ForbiddenResponseStatusCode;
+  message?: Error403ForbiddenResponseMessage;
+};
+
+export type Error404NotFoundResponseStatusCode = typeof Error404NotFoundResponseStatusCode[keyof typeof Error404NotFoundResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error404NotFoundResponseStatusCode = {
+  NUMBER_404: 404,
+} as const;
+
+export type Error404NotFoundResponseMessage = typeof Error404NotFoundResponseMessage[keyof typeof Error404NotFoundResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error404NotFoundResponseMessage = {
+  The_resource_was_not_found: 'The resource was not found.',
+} as const;
+
+export type Error404NotFoundResponse = {
+  status_code?: Error404NotFoundResponseStatusCode;
+  message?: Error404NotFoundResponseMessage;
+};
+
+export type Error405MethodNotAllowedResponseStatusCode = typeof Error405MethodNotAllowedResponseStatusCode[keyof typeof Error405MethodNotAllowedResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error405MethodNotAllowedResponseStatusCode = {
+  NUMBER_405: 405,
+} as const;
+
+export type Error405MethodNotAllowedResponseMessage = typeof Error405MethodNotAllowedResponseMessage[keyof typeof Error405MethodNotAllowedResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error405MethodNotAllowedResponseMessage = {
+  Request_method_is_not_supported_for_the_requested_resource: 'Request method is not supported for the requested resource.',
+} as const;
+
+export type Error405MethodNotAllowedResponse = {
+  status_code?: Error405MethodNotAllowedResponseStatusCode;
+  message?: Error405MethodNotAllowedResponseMessage;
+};
+
+export type Error406NotAcceptableResponseStatusCode = typeof Error406NotAcceptableResponseStatusCode[keyof typeof Error406NotAcceptableResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error406NotAcceptableResponseStatusCode = {
+  NUMBER_406: 406,
+} as const;
+
+export type Error406NotAcceptableResponseMessage = typeof Error406NotAcceptableResponseMessage[keyof typeof Error406NotAcceptableResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error406NotAcceptableResponseMessage = {
+  Headers_sent_in_the_request_are_not_compatible_with_the_service: 'Headers sent in the request are not compatible with the service.',
+} as const;
+
+export type Error406NotAcceptableResponse = {
+  status_code?: Error406NotAcceptableResponseStatusCode;
+  message?: Error406NotAcceptableResponseMessage;
+};
+
+export type Error408RequestTimeoutResponseStatusCode = typeof Error408RequestTimeoutResponseStatusCode[keyof typeof Error408RequestTimeoutResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error408RequestTimeoutResponseStatusCode = {
+  NUMBER_408: 408,
+} as const;
+
+export type Error408RequestTimeoutResponseMessage = typeof Error408RequestTimeoutResponseMessage[keyof typeof Error408RequestTimeoutResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error408RequestTimeoutResponseMessage = {
+  The_client_did_not_produce_a_request_within_the_time_that_the_server_was_prepared_to_wait_The_client_may_repeat_the_request_without_modifications_at_any_later_time: 'The client did not produce a request within the time that the server was prepared to wait. The client may repeat the request without modifications at any later time.',
+} as const;
+
+export type Error408RequestTimeoutResponse = {
+  status_code?: Error408RequestTimeoutResponseStatusCode;
+  message?: Error408RequestTimeoutResponseMessage;
+};
+
+export type Error410GoneResponseStatusCode = typeof Error410GoneResponseStatusCode[keyof typeof Error410GoneResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error410GoneResponseStatusCode = {
+  NUMBER_410: 410,
+} as const;
+
+export type Error410GoneResponseMessage = typeof Error410GoneResponseMessage[keyof typeof Error410GoneResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error410GoneResponseMessage = {
+  The_requested_resource_is_no_longer_available_and_will_not_be_available_again_The_resource_should_be_purged_from_the_client_system: 'The requested resource is no longer available and will not be available again. The resource should be purged from the client system.',
+} as const;
+
+export type Error410GoneResponse = {
+  status_code?: Error410GoneResponseStatusCode;
+  message?: Error410GoneResponseMessage;
+};
+
+export type Error423LockedResponseStatusCode = typeof Error423LockedResponseStatusCode[keyof typeof Error423LockedResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error423LockedResponseStatusCode = {
+  NUMBER_423: 423,
+} as const;
+
+export type Error423LockedResponseMessage = typeof Error423LockedResponseMessage[keyof typeof Error423LockedResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error423LockedResponseMessage = {
+  The_resource_that_is_being_accessed_is_locked: 'The resource that is being accessed is locked.',
+} as const;
+
+export type Error423LockedResponse = {
+  status_code?: Error423LockedResponseStatusCode;
+  message?: Error423LockedResponseMessage;
+};
+
+export type Error429TooManyRequestsResponseStatusCode = typeof Error429TooManyRequestsResponseStatusCode[keyof typeof Error429TooManyRequestsResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error429TooManyRequestsResponseStatusCode = {
+  NUMBER_429: 429,
+} as const;
+
+export type Error429TooManyRequestsResponseMessage = typeof Error429TooManyRequestsResponseMessage[keyof typeof Error429TooManyRequestsResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error429TooManyRequestsResponseMessage = {
+  The_user_has_sent_too_many_requests_in_a_short_period: 'The user has sent too many requests in a short period.',
+} as const;
+
+export type Error429TooManyRequestsResponse = {
+  status_code?: Error429TooManyRequestsResponseStatusCode;
+  message?: Error429TooManyRequestsResponseMessage;
+};
+
+export type Error500InternalServerErrorResponseStatusCode = typeof Error500InternalServerErrorResponseStatusCode[keyof typeof Error500InternalServerErrorResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error500InternalServerErrorResponseStatusCode = {
+  NUMBER_500: 500,
+} as const;
+
+export type Error500InternalServerErrorResponseMessage = typeof Error500InternalServerErrorResponseMessage[keyof typeof Error500InternalServerErrorResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error500InternalServerErrorResponseMessage = {
+  An_unexpected_error_occured: 'An unexpected error occured.',
+} as const;
+
+export type Error500InternalServerErrorResponse = {
+  status_code?: Error500InternalServerErrorResponseStatusCode;
+  message?: Error500InternalServerErrorResponseMessage;
+};
+
+export type Error503ServiceUnavailableResponseStatusCode = typeof Error503ServiceUnavailableResponseStatusCode[keyof typeof Error503ServiceUnavailableResponseStatusCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error503ServiceUnavailableResponseStatusCode = {
+  NUMBER_503: 503,
+} as const;
+
+export type Error503ServiceUnavailableResponseMessage = typeof Error503ServiceUnavailableResponseMessage[keyof typeof Error503ServiceUnavailableResponseMessage];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Error503ServiceUnavailableResponseMessage = {
+  The_server_is_currently_unable_to_handle_the_request: 'The server is currently unable to handle the request.',
+} as const;
+
+export type Error503ServiceUnavailableResponse = {
+  status_code?: Error503ServiceUnavailableResponseStatusCode;
+  message?: Error503ServiceUnavailableResponseMessage;
+};
+
 export const getAllVoters = <TData = AxiosResponse<VoterModel[]>>(
      options?: AxiosRequestConfig
  ): Promise<TData> => {
@@ -34,5 +498,14 @@ export const getVoter = <TData = AxiosResponse<VoterModel>>(
     );
   }
 
+export const getGeometry = <TData = AxiosResponse<GeoJsonObject>>(
+    fipsCode: string, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/state/${fipsCode}/geometry`,options
+    );
+  }
+
 export type GetAllVotersResult = AxiosResponse<VoterModel[]>
 export type GetVoterResult = AxiosResponse<VoterModel>
+export type GetGeometryResult = AxiosResponse<GeoJsonObject>
