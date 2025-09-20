@@ -130,7 +130,7 @@ if GEN_DETAIL_STATES:
     # Do detailed states first...
     print("Parsing detailed states.");
     try:
-        with open('filtered_county_boundaries.geojson', 'r') as county_boundaries:
+        with open('../geospatial_processed/filtered_county_boundaries.geojson', 'r') as county_boundaries:
             feature_collection = json.load(county_boundaries);
             for feature in feature_collection["features"]:
                 feature_fips = feature["properties"]["STATEFP"];
@@ -147,7 +147,7 @@ if GEN_DETAIL_STATES:
 # the undetailed general map here.
 if GEN_GENERAL_STATES:
     try:
-        with open('general_states.geojson', 'r') as state_boundaries:
+        with open('../geospatial_processed/general_states.geojson', 'r') as state_boundaries:
             feature_collection = json.load(state_boundaries);
             for feature in feature_collection["features"]:
                 # this data set uses the fips as the id
