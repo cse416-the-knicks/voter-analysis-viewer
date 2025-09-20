@@ -13,9 +13,7 @@ const UNITED_STATES_BOUNDARIES : L.LatLngTuple[] = [
   [49.384358, -66.93457] // Northeast Corner
 ];
 
-// Any more than this, and we'll see Alaska.
 const MIN_ACCEPTABLE_ZOOM = 4;
-
 interface FullBoundedUSMapProperties {
   id: string;
   mapRef: React.RefObject<MapRef>;
