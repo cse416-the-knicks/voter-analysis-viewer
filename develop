@@ -88,6 +88,7 @@ await (async function() {
   if (runFrontend) {
     console.log("Running codegen.");
     // Generate OpenAPI spec from backend...
+    await spawnSubprocess("npm", ["i"]).waitToExit();
     await spawnSubprocess("npm", ["run", "gradle", "--", "generateOpenApiDocs"]).waitToExit();
     // Run API-gen command.
     await spawnSubprocess("npm", ["run", "apigen"]).waitToExit();
@@ -106,6 +107,8 @@ await (async function() {
     // I find calling gradle here, kind of as stupid as you think it is too, but it's
     // already there, and that's a cross platform way to call gradle so :shrug:
     console.log("Starting backend.");
+    await spawnSubprocess("npm",
+      ["run", "gradle", "--", "build"]).waitToExit();
     const backendProcess = spawnSubprocess("npm",
       ["run", "gradle", "--", "bootRun"], returnValue => console.log('Terminated backend.'));
     backendProcess.proc.stdout.on('data', function(data) {console.log("BACKEND: " + data);})
