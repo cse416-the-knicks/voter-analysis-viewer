@@ -1,7 +1,5 @@
 package com.theknicks.voteranalysis_backend.models;
 
-import org.springframework.jdbc.core.RowMapper;
-import java.sql.ResultSet;
 import java.util.Date;
 
 /** 

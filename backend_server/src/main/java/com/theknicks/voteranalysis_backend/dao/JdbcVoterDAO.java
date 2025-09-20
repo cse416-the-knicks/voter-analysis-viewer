@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import com.theknicks.voteranalysis_backend.models.VoterModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -23,8 +24,8 @@ public class JdbcVoterDAO implements VoterDAO {
      */
     private static class InternalRowMapper implements RowMapper<VoterModel> {
         public VoterModel mapRow(
-            ResultSet resultSet, 
-            int rowNumber)
+                @NonNull ResultSet resultSet,
+                int rowNumber)
         {
             try {
                 return new VoterModel(
