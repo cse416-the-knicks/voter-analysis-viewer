@@ -2,7 +2,7 @@ package com.theknicks.voteranalysis_backend.services;
 
 import java.util.List;
 import java.util.Optional;
-import com.theknicks.voteranalysis_backend.dao.VoterDAO;
+import com.theknicks.voteranalysis_backend.dao.IVoterDAO;
 import com.theknicks.voteranalysis_backend.models.VoterModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +21,10 @@ import org.springframework.stereotype.*;
  */
 @Service
 public class VoterService {
-    private final VoterDAO _dao;
+    private final IVoterDAO _dao;
     private final Logger _logger = LoggerFactory.getLogger(VoterService.class);
 
-    public VoterService(VoterDAO dao) {
+    public VoterService(IVoterDAO dao) {
         _dao = dao;
         _logger.info("Creating VoterService...");
     }
