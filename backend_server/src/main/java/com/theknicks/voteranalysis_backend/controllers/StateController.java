@@ -2,6 +2,7 @@ package com.theknicks.voteranalysis_backend.controllers;
 
 import java.util.*;
 
+import com.theknicks.voteranalysis_backend.services.StateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -18,16 +19,15 @@ import com.google.gson.*;
 @RequestMapping("/state")
 public class StateController {
     private final Logger _logger = LoggerFactory.getLogger(StateController.class);
+    private final StateService _service;
 
-    public StateController() {
+    public StateController(StateService service) {
         _logger.info("Created StateController.");
+        _service = service;
     }
 
     @GetMapping("/{fipsCode}/geometry")
     public JsonObject getGeometry(@PathVariable("fipsCode") String fipsCode) {
-        JsonObject result = new JsonObject();
-        JsonPrimitive primitive = new JsonPrimitive(3.1415);
-        result.add("abc", primitive);
-        return result;
+        return _service.getBoundaryGeometry(fipsCode);
     }
 }

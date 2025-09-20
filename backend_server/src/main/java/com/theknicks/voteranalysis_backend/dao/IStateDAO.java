@@ -1,6 +1,7 @@
 package com.theknicks.voteranalysis_backend.dao;
 
 import com.google.gson.*;
+
 /**
  * State Data Access Object Layer
  */

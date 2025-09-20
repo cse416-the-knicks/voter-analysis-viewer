@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.services;
 
+import com.theknicks.voteranalysis_backend.dao.IStateDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.*;
@@ -14,8 +15,14 @@ import com.google.gson.*;
 @Service
 public class StateService {
     private final Logger _logger = LoggerFactory.getLogger(StateService.class);
+    private final IStateDAO _dao;
 
-    public StateService() {
+    public StateService(IStateDAO dao) {
         _logger.info("Creating StateService...");
+        _dao = dao;
+    }
+
+    public JsonObject getBoundaryGeometry(String fipsCode) {
+        return _dao.getGeometryBoundary(fipsCode);
     }
 }
