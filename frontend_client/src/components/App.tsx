@@ -1,17 +1,18 @@
 import L, { FeatureGroup, type LeafletMouseEvent, type PathOptions, type StyleFunction } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React, { useEffect, useRef } from 'react';
-import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
+import { GeoJSON } from 'react-leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
 import { Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router';
 import './App.css';
-import { statesData } from '../helpers/TestChoroplethData';
+//import { statesData } from '../helpers/TestChoroplethData';
 import NotFoundPage from "../components/NotFoundPage";
 import BackgroundBlurrer from "../components/BackgroundBlurrer";
 
 import type { GradientMap } from "../helpers/GradientMap";
 import { gradientMapNearest } from "../helpers/GradientMap";
-import FullBoundedUSMap from '../components/FullBoundedUSMap';
+import FullBoundedUSMap from '../components/FullBoundedUSMap/';
+import type { FipsCode } from '../components/FullBoundedUSMap/';
 
 // For the background overlay system
 const CHOROPLETH_COLOR_MAP: GradientMap  = {
@@ -126,14 +127,16 @@ function MainScreenMap({ leafletMap, data } : MainScreenMapParameters) {
 function LandingPage() {
   const mapState = useRef<MapRef>(null);
 
+  const onStateClick = (fipsCode: FipsCode) => {
+    window.alert(fipsCode);
+  }
+
   return (
     <React.Fragment>
       <FullBoundedUSMap
 	mapRef={mapState}
-	id="main-map">
-	<MainScreenMap
-	  leafletMap={mapState}
-	  data={statesData as GeoJSON.GeoJSON}/>
+	id="main-map"
+	onStateClick={onStateClick}>
       </FullBoundedUSMap>
     </React.Fragment>
   );
