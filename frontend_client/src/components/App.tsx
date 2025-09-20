@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router';
 import './App.css';
 
 import NotFoundPage from "./NotFoundPage";
-import BackgroundBlurrer from "./BackgroundBlurrer";
+import BackgroundBlur from "./BackgroundBlur";
 
 import StateInformationView from './StateInformationView';
 import FrontPage from './FrontPage';
@@ -20,7 +20,7 @@ function App() {
       </Routes>
       {/* TODO(jerry): This is wrong, should be state flag. */}
       <Routes>
-        <Route path={stateUrlMatcher}element={<BackgroundBlurrer/>}/>
+        <Route path={stateUrlMatcher}element={<BackgroundBlur/>}/>
         <Route path="*" element={<React.Fragment/>}/>
       </Routes>
       {/* NOTE(jerry): Needed in order to do the overlay effect that I think looks cool. */}
