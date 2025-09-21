@@ -1,16 +1,31 @@
-/**
-  This will require a client connection to the backend.
-**/
 import {useEffect, useState} from 'react';
 import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
-import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';;
+import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
 
 import { getStateGeometry } from '../../api/client';
 
+interface MapFitsToBoundsInternalParameters {
+  boundsToFit: L.LatLngBoundsExpression;
+};
+
 interface StateMapParameters {
-  fipsCode?: string,
+  fipsCode?: string;
   mapRef?: React.RefObject<MapRef>;
+}
+
+function MapFitToBoundsInternal(
+  { boundsToFit }: MapFitsToBoundsInternalParameters) {
+  const map = useMap();
+  useEffect(
+    function () {
+      const minStateZoom = map.getBoundsZoom(boundsToFit);
+      map.fitBounds(boundsToFit);
+      map.setMinZoom(minStateZoom);
+    },
+    [map, boundsToFit]);
+
+  return null;
 }
 
 function StateMap(
@@ -62,13 +77,9 @@ function StateMap(
 	  }
 	}
       >
-	<TileLayer
-	  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-	  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-	/>
-	<GeoJSON
-	  data={stateGeoJson!}
-	/>
+	<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+	<GeoJSON data={stateGeoJson!} />
+	<MapFitToBoundsInternal boundsToFit={stateMapBounds!}/>
       </MapContainer>
     )
   } else {
