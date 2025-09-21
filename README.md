@@ -21,7 +21,7 @@ You will need to run this task on the backend_server folder:
 
 You will also need to run this on the frontend:
 ```
-npm run genapi
+npm run apigen
 ```
 
 This should keep everything up to date.
