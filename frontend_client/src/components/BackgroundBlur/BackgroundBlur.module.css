@@ -7,7 +7,7 @@
   }
 }
 
-#background-blurrer {
+#backgroundBlurrer {
   backdrop-filter: blur(2px) brightness(87%);
   position: fixed;
   left: 0;

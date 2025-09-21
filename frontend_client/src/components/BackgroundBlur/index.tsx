@@ -1,3 +1,4 @@
+import styles from "./BackgroundBlur.module.css";
 /**
  * Helpful for a very specific background blurring effect,
  * this is animated to blur-in, currently does not blur
@@ -5,7 +6,7 @@
  **/
 function BackgroundBlurrer() {
   return (
-    <div id="background-blurrer"/>
+    <div id={styles.backgroundBlurrer}/>
   );
 }
 
