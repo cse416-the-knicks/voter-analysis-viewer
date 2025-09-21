@@ -90,6 +90,19 @@ function StateInformationView() {
       </CardContent>
     </>
   );
+  const detailCard = (
+    <>
+      <CardContent>
+	<Typography variant="h6" component="div">
+	  Voter Registation State
+	</Typography>
+	<Typography sx={{ color: 'text.secondary', m:0, fontSize: 12 }}>
+	  This is a selected detail state for voter registration data, you can also view voter records for this state.
+	</Typography>
+      </CardContent>
+    </>
+  );
+
 
 
   return (
@@ -100,7 +113,7 @@ function StateInformationView() {
 	  sx={{
 	    '& .MuiDrawer-paper': { width: '14em', height: 'auto', margin: 2 },
 	  }}>
-	  <Card sx={{m: 2}} variant="outlined">{card}</Card>
+	  <Card sx={{m: 2}} variant="outlined">{detailCard}</Card>
 	  <List dense>
 	  <ListItem>
   <ListItemIcon><BallotIcon/></ListItemIcon>

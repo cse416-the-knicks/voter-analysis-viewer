@@ -69,6 +69,7 @@ function StateMap(
 	ref={mapRef}
 	bounds={stateMapBounds!}
 	maxBounds={stateMapBounds!}
+	maxBoundsViscosity={1.0}
 	style={
 	  {
 	    width: "600px",
