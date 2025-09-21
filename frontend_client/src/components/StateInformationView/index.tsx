@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router';
 import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
+import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
 
 function StateInformationView() {
   const { fipsCode } = useParams();
@@ -19,7 +20,7 @@ function StateInformationView() {
       </div>
       <div className={styles.stateInformationMainModal}>
         <h1>
-          {fipsCode}
+          {FIPS_TO_STATES_MAP[fipsCode!]}
         </h1>
 	<StateMap fipsCode={fipsCode}/>
         <p>

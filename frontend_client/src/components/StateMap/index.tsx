@@ -2,7 +2,6 @@ import {useEffect, useState} from 'react';
 import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
-
 import { getStateGeometry } from '../../api/client';
 
 interface MapFitsToBoundsInternalParameters {
