@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router';
 import styles from './StateInformationView.module.css';
+import StateMap from '../StateMap';
 
 function StateInformationView() {
   const { fipsCode } = useParams();
@@ -20,6 +21,7 @@ function StateInformationView() {
         <h1>
           {fipsCode}
         </h1>
+	<StateMap fipsCode={fipsCode}/>
         <p>
 	  Place holder layout. Fix me!
         </p>
