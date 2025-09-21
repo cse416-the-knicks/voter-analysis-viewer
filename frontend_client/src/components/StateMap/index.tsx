@@ -6,7 +6,7 @@ import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';;
 
-import { getGeometry } from '../../api/client';
+import { getStateGeometry } from '../../api/client';
 
 interface StateMapParameters {
   fipsCode?: string,
@@ -20,6 +20,7 @@ function StateMap(
   } : StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
+  const [stateMapBounds, setStateMapBounds] = useState<L.LatLngBoundsExpression | null>();
 
   useEffect(
     function() {
@@ -28,10 +29,15 @@ function StateMap(
 	  return;
 	}
 
-	const response = await getGeometry(fipsCode);
+	const response = await getStateGeometry(fipsCode);
 	if (response) {
-	  console.log(response);
-	  setStateGeoJson(response.data as GeoJSON.GeoJSON);
+	  setStateGeoJson(response as GeoJSON.GeoJSON);
+	  setStateMapBounds(
+	    [
+	      [response.bbox![1], response.bbox![0]],
+	      [response.bbox![3], response.bbox![2]],
+	    ]
+	  );
 	  setReadyToDisplay(true);
 	}
       })();
@@ -43,18 +49,12 @@ function StateMap(
     );
   }
 
-  const mapBounds: L.LatLngBoundsExpression = 
-    (readyToDisplay) ? [
-      [stateGeoJson!.bbox![1], stateGeoJson!.bbox![0]],
-      [stateGeoJson!.bbox![3], stateGeoJson!.bbox![2]],
-    ] : [[0,0],[0,0]];
-
   if (readyToDisplay) {
     return (
       <MapContainer
 	ref={mapRef}
-	bounds={mapBounds}
-	maxBounds={mapBounds}
+	bounds={stateMapBounds!}
+	maxBounds={stateMapBounds!}
 	style={
 	  {
 	    width: "500px",
