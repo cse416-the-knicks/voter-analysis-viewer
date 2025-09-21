@@ -38,7 +38,7 @@ public class StateController {
                     schema = @Schema(ref="../openapi-ext/geojson.yaml#/components/schema/GeoJsonObject")
             )
     )
-    public JsonObject getGeometry(@PathVariable("fipsCode") String fipsCode) {
+    public JsonObject getStateGeometry(@PathVariable("fipsCode") String fipsCode) {
         return _service.getBoundaryGeometry(fipsCode);
     }
 }
