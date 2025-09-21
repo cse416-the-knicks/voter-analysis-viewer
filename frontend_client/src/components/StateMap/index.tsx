@@ -71,8 +71,8 @@ function StateMap(
 	maxBounds={stateMapBounds!}
 	style={
 	  {
-	    width: "500px",
-	    height: "400px",
+	    width: "600px",
+	    height: "340px",
 	  }
 	}
       >
