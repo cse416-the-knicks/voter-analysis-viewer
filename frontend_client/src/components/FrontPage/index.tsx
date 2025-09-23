@@ -15,9 +15,51 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Box,
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+
+function WelcomeApplicationDialog() {
+  const [open, setOpen] = React.useState(true);
+  const handleClose = () => {setOpen(false);};
+  return (
+    <React.Fragment>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Welcome!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+	    Welcome to the Knicks Teams CSE416.01 Voter-Analysis Project
+	    <br/>
+	    <br/>
+	    Backend: Java with SpringBoot, GSON
+	    <br/>
+	    Frontend: Typescript with React, and MaterialUI
+	    <br/>
+	    Database: Postgres SQL Database instance.
+	    <br/>
+	  </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+  );
+}
 
 function FrontPageDrawer() {
   const navigate = useNavigate();
@@ -63,6 +105,7 @@ function FrontPage() {
 
   return (
     <React.Fragment>
+      <WelcomeApplicationDialog/>
       <Box>
 	<FrontPageDrawer/>
       <FullBoundedUSMap
