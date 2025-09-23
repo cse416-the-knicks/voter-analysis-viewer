@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import React from "react";
 import type { DisplayData } from "./DisplayData";
 
 interface BubbleChartAttributes {
@@ -8,7 +7,7 @@ interface BubbleChartAttributes {
     height: number;
 }
 
-const BubbleChart: React.FC<BubbleChartAttributes> = ({data, width, height}) => {
+function BubbleChart({data, width, height}: BubbleChartAttributes) {
     const pop = d3.max(data, x => x.population)!;
     const radius = d3.scaleSqrt().domain([0, pop]).range([0, 50]);
     const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -34,5 +33,5 @@ const BubbleChart: React.FC<BubbleChartAttributes> = ({data, width, height}) => 
         </svg>
     )   
 }
- 
+
 export default BubbleChart;
