@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-import com.google.gson.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * This controller will service all the requests relating
  * to state-specific information, including but not limited to:
@@ -35,10 +35,11 @@ public class StateController {
             description = "Get the geometry boundary of a state by FipsCode",
             content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(ref="../openapi-ext/geojson.yaml#/components/schema/GeoJsonObject")
+                    schema = @Schema(ref="../openapi-ext/geojson.yaml#/components/schema/GeoJsonObject", nullable=true)
             )
     )
-    public JsonObject getStateGeometry(@PathVariable("fipsCode") String fipsCode) {
+
+    public Optional<ObjectNode> getGeometry(@PathVariable("fipsCode") String fipsCode) {
         return _service.getBoundaryGeometry(fipsCode);
     }
 }
