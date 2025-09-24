@@ -24,7 +24,6 @@ import StateMap from '../StateMap';
 
 import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
 import { mockData } from '../DataDisplays/DisplayData';
-import DataTable from '../DataDisplays/DataTable';
 import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 
@@ -95,6 +94,7 @@ function StateInformationView() {
     }
   ];
 
+  // TODO: dynamically calculate height.
   return (
     <div className={styles.stateInformationPopup}>
       <Box>
@@ -110,37 +110,25 @@ function StateInformationView() {
 	  <Typography variant="h3" component="h2">
 	    {FIPS_TO_STATES_MAP[fipsCode!]}
 	  </Typography>
-	    <StateMap fipsCode={fipsCode}/>
+	  <StateMap width={600} height={350} fipsCode={fipsCode}/>
 	</Paper>
-	<Paper
-	  sx={{ mt: 2, ml: 'auto' }}
-	  elevation={5}>
-	  <Typography variant="h3" component="h2">
-	    Let's pretend this is a chart!
-	  </Typography>
-	    <StateMap fipsCode={fipsCode}/>
-	</Paper>
+	<BubbleChart data={mockData} width={600} height={350}/>
       </Stack>
-      <Paper elevation={5} sx={{ mt: 2, ml: 8, height: "50%", width: "100%" }}>
-	      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 7,
-            },
-          },
-        }}
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
-      />
-      </Paper>
-      <Paper elevation={5} sx={{ mt: 2, ml: 8, height: "50%", width: "100%" }}>
-	<h4>Data Dashboard</h4>
-	<BubbleChart data={mockData} width={800} height={350}/>
-	<DataTable data={mockData}/>
+      <Paper elevation={5} sx={{ mt: 2, ml: 8, height: "50%", width: "50%" }}>
+	<DataGrid
+	    rows={rows}
+	    columns={columns}
+	    initialState={{
+	    pagination: {
+		paginationModel: {
+		pageSize: 7,
+		},
+	    },
+	    }}
+	    pageSizeOptions={[5]}
+	    checkboxSelection
+	    disableRowSelectionOnClick
+	/>
       </Paper>
     </div>
   );
