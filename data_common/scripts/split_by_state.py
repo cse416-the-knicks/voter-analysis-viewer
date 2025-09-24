@@ -163,7 +163,7 @@ if GEN_GENERAL_STATES:
 
 # Export state geometry with bounding box.
 try:
-    os.mkdir('stateByFips');
+    os.mkdir('../geospatial_processed/stateByFips');
 except FileExistsError:
     pass;
 except FileNotFoundError:
@@ -176,7 +176,7 @@ for fips in FIPS_TO_STATES_MAP.keys():
         continue;
 
     try:
-        with open(f'stateByFips/{fips}.json', 'w') as output:
+        with open(f'../geospatial_processed/stateByFips/{fips}.json', 'w') as output:
             json_result = json.dump(
                 state_feature_collection, fp=output);
     except:
