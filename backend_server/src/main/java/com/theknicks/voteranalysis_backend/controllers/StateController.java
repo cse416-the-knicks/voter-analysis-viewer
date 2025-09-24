@@ -39,7 +39,7 @@ public class StateController {
             )
     )
 
-    public Optional<ObjectNode> getGeometry(@PathVariable("fipsCode") String fipsCode) {
+    public Optional<ObjectNode> getStateGeometry(@PathVariable("fipsCode") String fipsCode) {
         return _service.getBoundaryGeometry(fipsCode);
     }
 }
