@@ -4,7 +4,8 @@ import com.theknicks.voteranalysis_backend.dao.IStateDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.*;
-import com.google.gson.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.*;
 /**
  * State Service layer,
  *
@@ -22,7 +23,7 @@ public class StateService {
         _dao = dao;
     }
 
-    public JsonObject getBoundaryGeometry(String fipsCode) {
+    public Optional<ObjectNode> getBoundaryGeometry(String fipsCode) {
         return _dao.getGeometryBoundary(fipsCode);
     }
 }

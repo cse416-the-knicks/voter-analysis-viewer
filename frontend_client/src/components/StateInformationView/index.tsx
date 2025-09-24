@@ -23,6 +23,9 @@ import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
 
 import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
+import { mockData } from '../DataDisplays/DisplayData';
+import DataTable from '../DataDisplays/DataTable';
+import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -133,6 +136,11 @@ function StateInformationView() {
         checkboxSelection
         disableRowSelectionOnClick
       />
+      </Paper>
+      <Paper elevation={5} sx={{ mt: 2, ml: 8, height: "50%", width: "100%" }}>
+	<h4>Data Dashboard</h4>
+	<BubbleChart data={mockData} width={800} height={350}/>
+	<DataTable data={mockData}/>
       </Paper>
     </div>
   );
