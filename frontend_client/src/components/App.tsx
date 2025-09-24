@@ -7,10 +7,12 @@ import NotFoundPage from "./NotFoundPage";
 import BackgroundBlur from "./BackgroundBlur";
 
 import StateInformationView from './StateInformationView';
+import DisplayVotingMachineSummaryView from './DisplayVotingMachineSummaryView';
 import FrontPage from './FrontPage';
 
 function App() {
   const stateUrlMatcher = "/state/:fipsCode/*";
+  const displayVotingMachineSummaryMatcher = "/display/voting-machine-summary";
   const location = useLocation();
   const showBlocker = location.pathname !== "/";
 
@@ -19,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<FrontPage/>}/>
         <Route path={stateUrlMatcher}element={<FrontPage/>}/>
+        <Route path={displayVotingMachineSummaryMatcher}element={<FrontPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
       {/* TODO(jerry): This is wrong, should be state flag. */}
@@ -26,6 +29,7 @@ function App() {
       {/* NOTE(jerry): Needed in order to do the overlay effect that I think looks cool. */}
       <Routes>
         <Route path={stateUrlMatcher}element={<StateInformationView/>}/>
+        <Route path={displayVotingMachineSummaryMatcher}element={<DisplayVotingMachineSummaryView/>}/>
         <Route path="*" element={<React.Fragment/>}/>
       </Routes> 
    </React.Fragment>

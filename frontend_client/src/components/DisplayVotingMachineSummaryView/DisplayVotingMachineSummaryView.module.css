@@ -1,0 +1,7 @@
+.displayInformationPopup {
+  position: fixed;
+  left: 18em;
+  top: 0;
+  z-index: 3500;
+  display: flex;
+}
