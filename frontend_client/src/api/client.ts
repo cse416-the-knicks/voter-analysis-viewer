@@ -13,11 +13,12 @@ export interface VotingEquipmentModel {
   manufacturer?: string;
   equipmentType?: string;
   modelName?: string;
-  firstManufactured?: string;
-  lastManufactured?: string;
+  discontinued?: boolean;
+  firstManufactured?: number;
+  lastManufactured?: number;
   operatingSystem?: string;
   firmwareVersion?: string;
-  vvpat?: string;
+  vvpat?: boolean;
   certificationLevel?: string;
   securityRiskDescription?: string;
 }
