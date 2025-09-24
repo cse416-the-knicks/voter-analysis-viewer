@@ -1,96 +1,96 @@
-Manufacturer,Equipment Type,Model Name,First Manufactured,Last Manufactured,OS,Firmware Version,Battery Life,Scanning Rate,VVPAT?,Paper Capacity,Certification Level,Security Risks,Notes/Misc.
-AVS,Batch-Fed Optical Scanner,WINScan,October 2003,2007,,,,,,,FEC VSS 2002,,
-AVS,DRE Touchscreen,WINVote,November 2003,2007,Windows 2000 Professional / Windows XP Embedded,1.54,,,N,,,"malicious memory card, wireless interception, exposed ports, insecure admin user password",
-Avante,DRE Touchscreen,Vote-Trakker,March 2001,2020,Windows 2000 Professional,,,,Y,,FEC Certified,"Exposed ports, Exposed memory card slot, malicious memory card",Microsoft SQL-Server 2000
-Clear Ballot,BMD,ClearAccess,,,,,,,,,,,
-Clear Ballot,BMD,ClearMark,,,,,,,,,,,
-Clear Ballot,Batch-Fed Optical Scanner,ClearCount,,,,,,,,,,,
-Clear Ballot,Hand-Fed Optical Scanner,ClearCast,,,,,,,,,,,
-Clear Ballot,Hand-Fed Optical Scanner,ClearCast Go,,,,,,,,,,,
-DFM Associates,Hand-Fed Optical Scanner,Mark-A-Vote,,,,,,,,,,,
-DFM Associates,Electronic Poll Book,EIMS,,,,,,,,,,,
-DFM Associates,Electronic Poll Book,Vote Center App,,,,,,,,,,,
-Danaher,DRE Push Button,Shouptronic 1242,,,,,,,,,,,
-DemTech,Electronic Poll Book,Advocate Precinct,,,,,,,,,,,
-DemTech,Electronic Poll Book,ePollTAB,,,,,,,,,,,
-Democracy Live,BMD,OmniBallot Tablet,,,,,,,,,,,
-Democracy Live,Internet Voting,OmniBallot Online,,,,,,,,,,,
-Democracy Live,Remote Ballot Marking,Secure Select,,,,,,,,,,,
-Dominion,BMD,ImageCast Precinct BMD,,,,,,,,,,,
-Dominion,BMD,ImageCast X,,,,,,,,,,,
-Dominion,Batch-Fed Optical Scanner,ImageCast Central,,,,,,,,,,,
-Dominion,DRE Touchscreen,ImageCast X as DRE,,,,,,,,,,,
-Dominion,Hand-Fed Optical Scanner,ImageCast Precinct,,,,,,,,,,,
-Dominion,Hybrid Optical Scanner/BMD,ImageCast Evolution,,,,,,,,,,,
-Dominion,Hybrid Optical Scanner/DRE,ImageCast Precinct ATI,,,,,,,,,,,
-Dominion,Remote Ballot Marking,ImageCast Remote,,,,,,,,,,,
-ES&S,BMD,AutoMARK,,,,,,,,,,,
-ES&S,BMD,ExpressVote,,,,,,,,,,,
-ES&S,BMD/Tabulator,ExpressVote XL,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scanner,DS450,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scanner,DS650,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scanner,DS850,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scanner,DS950,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scanner,Model 150,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scanner,Model 550,,,,,,,,,,,
-ES&S,DRE Touchscreen,ExpressTouch,,,,,,,,,,,
-ES&S,DRE Touchscreen,iVotronic,,,,,,,,,,,
-ES&S,Electronic Poll Book,ExpressPoll,,,,,,,,,,,
-ES&S,Hand-Fed Optical Scanner,DS200,,,,,,,,,,,
-ES&S,Hand-Fed Optical Scanner,DS300,,,,,,,,,,,
-ES&S,Hand-Fed Optical Scanner,Model 100,,,,,,,,,,,
-ES&S/Unisyn,BMD,InkaVote Plus,,,,,,,,,,,
-ES&S/Unisyn,Hand-Fed Optical Scanner,InkaVote,,,,,,,,,,,
-Enhanced Voting,Remote Ballot Marking,Enhanced Ballot,,,,,,,,,,,
-Enhanced Voting,Remote Ballot Marking,MyBallot,,,,,,,,,,,
-Five Cedars Group,BMD,Alternate Format Ballot,,,,,,,,,,,
-Hand Count,Hand Count,Hand Counted Paper Ballots,,,,,,,,,,,
-Hart InterCivic,BMD,Verity Duo,,,,,,,,,,,
-Hart InterCivic,BMD,Verity Touch Writer,,,,,,,,,,,
-Hart InterCivic,Batch-Fed Optical Scanner,Ballot Now,,,,,,,,,,,
-Hart InterCivic,Batch-Fed Optical Scanner,Verity Central,,,,,,,,,,,
-Hart InterCivic,DRE Dial,eSlate,,,,,,,,,,,
-Hart InterCivic,DRE Touchscreen,Verity Touch,,,,,,,,,,,
-Hart InterCivic,Hand-Fed Optical Scanner,Verity Scan,,,,,,,,,,,
-Hart InterCivic,Hand-Fed Optical Scanner,eScan,,,,,,,,,,,
-Hart InterCivic,Hybrid Optical Scanner/DRE,eScan A/T,,,,,,,,,,,
-IVS,BMD,Inspire Ballot Marking Device,,,,,,,,,,,
-In-House,Electronic Poll Book,In-House Electronic Poll Books,,,,,,,,,,,
-In-House,Internet Voting,In-House Internet Voting Systems,,,,,,,,,,,
-In-House,Remote Ballot Marking,In-House Remote Ballot Marking Systems,,,,,,,,,,,
-KNOWiNK,Electronic Poll Book,Poll Pad,,,,,,,,,,,
-MicroVote,DRE Push Button,Infinity,,,,,,,,,,,
-MicroVote,DRE Push Button,MV-464,,,,,,,,,,,
-MicroVote/Chatsworth,Hand-Fed Optical Scanner,ACP 2200,,,,,,,,,,,
-Populex,BMD,Slate,,,,,,,,,,,
-Premier Election Solutions (Diebold),Batch-Fed Optical Scanner,AccuVote OS Central,,,,,,,,,,,
-Premier Election Solutions (Diebold),DRE Touchscreen,AccuVote TSX,,,,,,,,,,,
-Premier Election Solutions (Diebold),Hand-Fed Optical Scanner,AccuVote OS,,,,,,,,,,,
-Premier Election Solutions (Diebold),Hand-Fed Optical Scanner,AccuVote OSX,,,,,,,,,,,
-Robis,Electronic Poll Book,AskED ePollbook,,,,,,,,,,,
-Sequoia Voting Systems,Batch-Fed Optical Scanner,Optech 400C,,,,,,,,,,,
-Sequoia Voting Systems,DRE Push Button,AVC Advantage,,,,,,,,,,,
-Sequoia Voting Systems,DRE Touchscreen,AVC Edge,,,,,,,,,,,
-Sequoia Voting Systems,Hand-Fed Optical Scanner,Optech Insight,,,,,,,,,,,
-Sequoia and ES&S,Hand-Fed Optical Scanner,Optech IIIP-Eagle,,,,,,,,,,,
-Smartmatic/Los Angeles County,BMD,VSAP BMD,,,,,,,,,,,
-Smartmatic/Los Angeles County,Batch-Fed Optical Scanner,VSAP Tally,,,,,,,,,,,
-Smartmatic/Los Angeles County,Remote Ballot Marking,VSAP Interactive Sample Ballot,,,,,,,,,,,
-Tenex,Electronic Poll Book,Precinct Central,,,,,,,,,,,
-Triad Governmental Systems,Remote Ballot Marking,Accessible Ballot Marking Tool (ABMT),,,,,,,,,,,
-UniLect,DRE Touchscreen,Patriot,,,,,,,,,,,
-UniLect,Hand-Fed Optical Scanner,Marksense Scanner,,,,,,,,,,,
-Unisyn,BMD,Freedom Vote Tablet (FVT),,,,,,,,,,,
-Unisyn,BMD,OpenElect OVI,,,,,,,,,,,
-Unisyn,BMD,OpenElect OVI-VC,,,,,,,,,,,
-Unisyn,Batch-Fed Optical Scanner,OpenElect OVCS,,,,,,,,,,,
-Unisyn,Hand-Fed Optical Scanner,Freedom Vote Scan (FVS),,,,,,,,,,,
-Unisyn,Hand-Fed Optical Scanner,OpenElect OVO,,,,,,,,,,,
-VR Systems,Electronic Poll Book,EViD,,,,,,,,,,,
-Voatz,Internet Voting,Mobile App,,,,,,,,,,,
-Vote-PAD,BMD,Ballot Marking System,,,,,,,,,,,
-Votec,Electronic Poll Book,VoteSafe,,,,,,,,,,,
-Votem,Internet Voting,CastIron Voting Platform,,,,,,,,,,,
-VotingWorks,BMD,VxMark,,,,,,,,,,,
-VotingWorks,Batch-Fed Optical Scanner,VxCentralScan,,,,,,,,,,,
-VotingWorks,Hand-Fed Optical Scanner,VxScan,,,,,,,,,,,
+Manufacturer,Equipment Type,Model Name,First Manufactured,Last Manufactured,OS,Firmware Version,Battery Life,Scanning Rate,VVPAT?,Paper Capacity,Certification Level,Security Risks,Notes/Misc.,Discontinued
+AVS,Batch-Fed Optical Scanner,WINScan,10/1/2003,2007,,,,,FALSE,,FEC VSS 2002,,,TRUE
+AVS,DRE Touchscreen,WINVote,11/1/2003,2007,Windows 2000 Professional / Windows XP Embedded,1.54,,,FALSE,,,"malicious memory card, wireless interception, exposed ports, insecure admin user password",,TRUE
+Avante,DRE Touchscreen,Vote-Trakker,3/1/2001,2020,Windows 2000 Professional,,,,TRUE,,FEC Certified,"Exposed ports, Exposed memory card slot, malicious memory card",Microsoft SQL-Server 2000,TRUE
+Clear Ballot,BMD,ClearAccess,,,,,,,FALSE,,,,,FALSE
+Clear Ballot,BMD,ClearMark,,,,,,,FALSE,,,,,FALSE
+Clear Ballot,Batch-Fed Optical Scanner,ClearCount,,,,,,,FALSE,,,,,FALSE
+Clear Ballot,Hand-Fed Optical Scanner,ClearCast,,,,,,,FALSE,,,,,FALSE
+Clear Ballot,Hand-Fed Optical Scanner,ClearCast Go,,,,,,,FALSE,,,,,FALSE
+DFM Associates,Hand-Fed Optical Scanner,Mark-A-Vote,,,,,,,FALSE,,,,,FALSE
+DFM Associates,Electronic Poll Book,EIMS,,,,,,,FALSE,,,,,FALSE
+DFM Associates,Electronic Poll Book,Vote Center App,,,,,,,FALSE,,,,,FALSE
+Danaher,DRE Push Button,Shouptronic 1242,,,,,,,FALSE,,,,,FALSE
+DemTech,Electronic Poll Book,Advocate Precinct,,,,,,,FALSE,,,,,FALSE
+DemTech,Electronic Poll Book,ePollTAB,,,,,,,FALSE,,,,,FALSE
+Democracy Live,BMD,OmniBallot Tablet,,,,,,,FALSE,,,,,FALSE
+Democracy Live,Internet Voting,OmniBallot Online,,,,,,,FALSE,,,,,FALSE
+Democracy Live,Remote Ballot Marking,Secure Select,,,,,,,FALSE,,,,,FALSE
+Dominion,BMD,ImageCast Precinct BMD,,,,,,,FALSE,,,,,FALSE
+Dominion,BMD,ImageCast X,,,,,,,FALSE,,,,,FALSE
+Dominion,Batch-Fed Optical Scanner,ImageCast Central,,,,,,,FALSE,,,,,FALSE
+Dominion,DRE Touchscreen,ImageCast X as DRE,,,,,,,FALSE,,,,,FALSE
+Dominion,Hand-Fed Optical Scanner,ImageCast Precinct,,,,,,,FALSE,,,,,FALSE
+Dominion,Hybrid Optical Scanner/BMD,ImageCast Evolution,,,,,,,FALSE,,,,,FALSE
+Dominion,Hybrid Optical Scanner/DRE,ImageCast Precinct ATI,,,,,,,FALSE,,,,,FALSE
+Dominion,Remote Ballot Marking,ImageCast Remote,,,,,,,FALSE,,,,,FALSE
+ES&S,BMD,AutoMARK,,,,,,,FALSE,,,,,FALSE
+ES&S,BMD,ExpressVote,,,,,,,FALSE,,,,,FALSE
+ES&S,BMD/Tabulator,ExpressVote XL,,,,,,,FALSE,,,,,FALSE
+ES&S,Batch-Fed Optical Scanner,DS450,,,,,,,FALSE,,,,,FALSE
+ES&S,Batch-Fed Optical Scanner,DS650,,,,,,,FALSE,,,,,FALSE
+ES&S,Batch-Fed Optical Scanner,DS850,,,,,,,FALSE,,,,,FALSE
+ES&S,Batch-Fed Optical Scanner,DS950,,,,,,,FALSE,,,,,FALSE
+ES&S,Batch-Fed Optical Scanner,Model 150,,,,,,,FALSE,,,,,FALSE
+ES&S,Batch-Fed Optical Scanner,Model 550,,,,,,,FALSE,,,,,FALSE
+ES&S,DRE Touchscreen,ExpressTouch,,,,,,,FALSE,,,,,FALSE
+ES&S,DRE Touchscreen,iVotronic,,,,,,,FALSE,,,,,FALSE
+ES&S,Electronic Poll Book,ExpressPoll,,,,,,,FALSE,,,,,FALSE
+ES&S,Hand-Fed Optical Scanner,DS200,,,,,,,FALSE,,,,,FALSE
+ES&S,Hand-Fed Optical Scanner,DS300,,,,,,,FALSE,,,,,FALSE
+ES&S,Hand-Fed Optical Scanner,Model 100,,,,,,,FALSE,,,,,FALSE
+ES&S/Unisyn,BMD,InkaVote Plus,,,,,,,FALSE,,,,,FALSE
+ES&S/Unisyn,Hand-Fed Optical Scanner,InkaVote,,,,,,,FALSE,,,,,FALSE
+Enhanced Voting,Remote Ballot Marking,Enhanced Ballot,,,,,,,FALSE,,,,,FALSE
+Enhanced Voting,Remote Ballot Marking,MyBallot,,,,,,,FALSE,,,,,FALSE
+Five Cedars Group,BMD,Alternate Format Ballot,,,,,,,FALSE,,,,,FALSE
+Hand Count,Hand Count,Hand Counted Paper Ballots,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,BMD,Verity Duo,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,BMD,Verity Touch Writer,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,Batch-Fed Optical Scanner,Ballot Now,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,Batch-Fed Optical Scanner,Verity Central,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,DRE Dial,eSlate,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,DRE Touchscreen,Verity Touch,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,Hand-Fed Optical Scanner,Verity Scan,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,Hand-Fed Optical Scanner,eScan,,,,,,,FALSE,,,,,FALSE
+Hart InterCivic,Hybrid Optical Scanner/DRE,eScan A/T,,,,,,,FALSE,,,,,FALSE
+IVS,BMD,Inspire Ballot Marking Device,,,,,,,FALSE,,,,,FALSE
+In-House,Electronic Poll Book,In-House Electronic Poll Books,,,,,,,FALSE,,,,,FALSE
+In-House,Internet Voting,In-House Internet Voting Systems,,,,,,,FALSE,,,,,FALSE
+In-House,Remote Ballot Marking,In-House Remote Ballot Marking Systems,,,,,,,FALSE,,,,,FALSE
+KNOWiNK,Electronic Poll Book,Poll Pad,,,,,,,FALSE,,,,,FALSE
+MicroVote,DRE Push Button,Infinity,,,,,,,FALSE,,,,,FALSE
+MicroVote,DRE Push Button,MV-464,,,,,,,FALSE,,,,,FALSE
+MicroVote/Chatsworth,Hand-Fed Optical Scanner,ACP 2200,,,,,,,FALSE,,,,,FALSE
+Populex,BMD,Slate,,,,,,,FALSE,,,,,FALSE
+Premier Election Solutions (Diebold),Batch-Fed Optical Scanner,AccuVote OS Central,,,,,,,FALSE,,,,,FALSE
+Premier Election Solutions (Diebold),DRE Touchscreen,AccuVote TSX,,,,,,,FALSE,,,,,FALSE
+Premier Election Solutions (Diebold),Hand-Fed Optical Scanner,AccuVote OS,,,,,,,FALSE,,,,,FALSE
+Premier Election Solutions (Diebold),Hand-Fed Optical Scanner,AccuVote OSX,,,,,,,FALSE,,,,,FALSE
+Robis,Electronic Poll Book,AskED ePollbook,,,,,,,FALSE,,,,,FALSE
+Sequoia Voting Systems,Batch-Fed Optical Scanner,Optech 400C,,,,,,,FALSE,,,,,FALSE
+Sequoia Voting Systems,DRE Push Button,AVC Advantage,,,,,,,FALSE,,,,,FALSE
+Sequoia Voting Systems,DRE Touchscreen,AVC Edge,,,,,,,FALSE,,,,,FALSE
+Sequoia Voting Systems,Hand-Fed Optical Scanner,Optech Insight,,,,,,,FALSE,,,,,FALSE
+Sequoia and ES&S,Hand-Fed Optical Scanner,Optech IIIP-Eagle,,,,,,,FALSE,,,,,FALSE
+Smartmatic/Los Angeles County,BMD,VSAP BMD,,,,,,,FALSE,,,,,FALSE
+Smartmatic/Los Angeles County,Batch-Fed Optical Scanner,VSAP Tally,,,,,,,FALSE,,,,,FALSE
+Smartmatic/Los Angeles County,Remote Ballot Marking,VSAP Interactive Sample Ballot,,,,,,,FALSE,,,,,FALSE
+Tenex,Electronic Poll Book,Precinct Central,,,,,,,FALSE,,,,,FALSE
+Triad Governmental Systems,Remote Ballot Marking,Accessible Ballot Marking Tool (ABMT),,,,,,,FALSE,,,,,FALSE
+UniLect,DRE Touchscreen,Patriot,,,,,,,FALSE,,,,,FALSE
+UniLect,Hand-Fed Optical Scanner,Marksense Scanner,,,,,,,FALSE,,,,,FALSE
+Unisyn,BMD,Freedom Vote Tablet (FVT),,,,,,,FALSE,,,,,FALSE
+Unisyn,BMD,OpenElect OVI,,,,,,,FALSE,,,,,FALSE
+Unisyn,BMD,OpenElect OVI-VC,,,,,,,FALSE,,,,,FALSE
+Unisyn,Batch-Fed Optical Scanner,OpenElect OVCS,,,,,,,FALSE,,,,,FALSE
+Unisyn,Hand-Fed Optical Scanner,Freedom Vote Scan (FVS),,,,,,,FALSE,,,,,FALSE
+Unisyn,Hand-Fed Optical Scanner,OpenElect OVO,,,,,,,FALSE,,,,,FALSE
+VR Systems,Electronic Poll Book,EViD,,,,,,,FALSE,,,,,FALSE
+Voatz,Internet Voting,Mobile App,,,,,,,FALSE,,,,,FALSE
+Vote-PAD,BMD,Ballot Marking System,,,,,,,FALSE,,,,,FALSE
+Votec,Electronic Poll Book,VoteSafe,,,,,,,FALSE,,,,,FALSE
+Votem,Internet Voting,CastIron Voting Platform,,,,,,,FALSE,,,,,FALSE
+VotingWorks,BMD,VxMark,,,,,,,FALSE,,,,,FALSE
+VotingWorks,Batch-Fed Optical Scanner,VxCentralScan,,,,,,,FALSE,,,,,FALSE
+VotingWorks,Hand-Fed Optical Scanner,VxScan,,,,,,,FALSE,,,,,FALSE
