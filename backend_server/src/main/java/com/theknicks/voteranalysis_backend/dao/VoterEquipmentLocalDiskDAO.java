@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,7 +46,7 @@ public class VoterEquipmentLocalDiskDAO implements IVoterEquipmentDAO {
     private final List<VotingEquipmentModel> _equipmentList = new ArrayList<>();
 
     public VoterEquipmentLocalDiskDAO()
-            throws URISyntaxException, IOException
+            throws IOException
     {
         _logger.info("Creating VoterEquipmentDAO - LocalDisk Persistence");
         populateInternalList();
