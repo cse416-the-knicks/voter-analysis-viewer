@@ -1,7 +1,10 @@
 package com.theknicks.voteranalysis_backend.dao;
 
 import java.io.*;
-import com.google.gson.*;
+import java.util.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
@@ -20,15 +23,16 @@ public class StateDAO implements IStateDAO {
     }
 
     @Override
-    public JsonObject getGeometryBoundary(String fipsCode) {
-        var gson = new Gson();
+    public Optional<ObjectNode> getGeometryBoundary(String fipsCode) {
+        var mapper = new ObjectMapper();
         _logger.info("Reading state with fips code: " + fipsCode);
         try (Reader reader = new FileReader(preprocessedGeospatialPath + "stateByFips/" + fipsCode + ".json")) {
-            return gson.fromJson(reader, JsonObject.class);
+	    var node = mapper.readValue(reader, ObjectNode.class);
+            return Optional.of(node);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return Optional.empty();
     }
 }
