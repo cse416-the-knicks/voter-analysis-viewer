@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.models;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -22,13 +23,14 @@ public record VotingEquipmentModel(
         // No strong opinions, but this could be an enum.
         String equipmentType,
         String modelName,
+        Optional<Boolean> discontinued,
         // Could/Should be dates, can change later.
-        Optional<String> firstManufactured,
-        Optional<String> lastManufactured,
+        Optional<Integer> firstManufactured,
+        Optional<Integer> lastManufactured,
         Optional<String> operatingSystem,
         Optional<String> firmwareVersion,
         // Voter Verified Paper Audit Trail
-        Optional<String> vvpat,
+        Optional<Boolean> vvpat,
         // Mostly VVSG
         Optional<String> certificationLevel,
         Optional<String> securityRiskDescription
