@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import { Route, Routes } from 'react-router';
+import { Route, Routes, useLocation } from 'react-router';
 import './App.css';
 
 import NotFoundPage from "./NotFoundPage";
@@ -11,6 +11,9 @@ import FrontPage from './FrontPage';
 
 function App() {
   const stateUrlMatcher = "/state/:fipsCode/*";
+  const location = useLocation();
+  const showBlocker = location.pathname !== "/";
+
   return (
     <React.Fragment>
       <Routes>
@@ -19,10 +22,7 @@ function App() {
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
       {/* TODO(jerry): This is wrong, should be state flag. */}
-      <Routes>
-        <Route path={stateUrlMatcher}element={<BackgroundBlur/>}/>
-        <Route path="*" element={<React.Fragment/>}/>
-      </Routes>
+      <BackgroundBlur showBlocker={showBlocker}/>
       {/* NOTE(jerry): Needed in order to do the overlay effect that I think looks cool. */}
       <Routes>
         <Route path={stateUrlMatcher}element={<StateInformationView/>}/>

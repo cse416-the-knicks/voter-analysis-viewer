@@ -4,6 +4,7 @@ import type { MapRef } from 'react-leaflet/MapContainer';
 import { useNavigate } from 'react-router';
 import FullBoundedUSMap from '../FullBoundedUSMap/';
 import type { FipsCode } from '../FullBoundedUSMap/';
+import { useLocation } from 'react-router';
 
 import styles from './FrontPage.module.css';
 
@@ -25,7 +26,8 @@ import {
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 function WelcomeApplicationDialog() {
-  const [open, setOpen] = React.useState(true);
+  const location = useLocation();
+  const [open, setOpen] = React.useState(location.pathname === '/');
   const handleClose = () => {setOpen(false);};
   return (
     <React.Fragment>
