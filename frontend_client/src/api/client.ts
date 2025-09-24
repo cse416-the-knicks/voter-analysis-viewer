@@ -4,12 +4,9 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
+import getAllVotersMutator from '../helpers/backendConnectorAxiosInstance';
+import getVoterMutator from '../helpers/backendConnectorAxiosInstance';
+import getStateGeometryMutator from '../helpers/backendConnectorAxiosInstance';
 export interface VoterModel {
   voterId?: number;
   firstName?: string;
@@ -482,30 +479,36 @@ export type Error503ServiceUnavailableResponse = {
   message?: Error503ServiceUnavailableResponseMessage;
 };
 
-export const getAllVoters = <TData = AxiosResponse<VoterModel[]>>(
-     options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/voters`,options
-    );
-  }
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
-export const getVoter = <TData = AxiosResponse<VoterModel>>(
-    id: number, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/voters/${id}`,options
-    );
-  }
 
-export const getGeometry = <TData = AxiosResponse<GeoJsonObject>>(
-    fipsCode: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/state/${fipsCode}/geometry`,options
-    );
-  }
-
-export type GetAllVotersResult = AxiosResponse<VoterModel[]>
-export type GetVoterResult = AxiosResponse<VoterModel>
-export type GetGeometryResult = AxiosResponse<GeoJsonObject>
+  export const getAllVoters = (
+    
+ options?: SecondParameter<typeof getAllVotersMutator>,) => {
+      return getAllVotersMutator<VoterModel[]>(
+      {url: `/voters`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getVoter = (
+    id: number,
+ options?: SecondParameter<typeof getVoterMutator>,) => {
+      return getVoterMutator<VoterModel>(
+      {url: `/voters/${id}`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getStateGeometry = (
+    fipsCode: string,
+ options?: SecondParameter<typeof getStateGeometryMutator>,) => {
+      return getStateGeometryMutator<GeoJsonObject>(
+      {url: `/state/${fipsCode}/geometry`, method: 'GET'
+    },
+      options);
+    }
+  
+export type GetAllVotersResult = NonNullable<Awaited<ReturnType<typeof getAllVoters>>>
+export type GetVoterResult = NonNullable<Awaited<ReturnType<typeof getVoter>>>
+export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>
