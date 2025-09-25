@@ -1,21 +1,45 @@
+:root {
+    --darkening-max: 65%;
+    --anim-length-in: 0.75s;
+    --anim-length-out: 0.25s;
+}
+
 @keyframes blur-in {
   from {
-    backdrop-filter: blur(0) brightness(100%);
+    backdrop-filter: brightness(100%);
   }
   to {
-    backdrop-filter: blur(2px) brightness(87%);
+    backdrop-filter: brightness(var(--darkening-max));
+  }
+}
+@keyframes blur-out {
+  from {
+    backdrop-filter: brightness(var(--darkening-max));
+  }
+  to {
+    backdrop-filter: brightness(100%);
   }
 }
 
-#backgroundBlurrer {
-  backdrop-filter: blur(2px) brightness(87%);
+.fadeOff {
+  animation-name: blur-out;
+  animation-duration: var(--anim-length-out);
+  backdrop-filter: brightness(100%);
+  pointer-events: none;
   position: fixed;
+}
+
+.fadeOn {
+  animation-name: blur-in;
+  animation-duration: var(--anim-length-in);
+  backdrop-filter: brightness(var(--darkening-max));
+  position: fixed;
+}
+
+#backgroundBlurrer {
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   z-index: 3000;
-
-  animation-name: blur-in;
-  animation-duration: 0.75s;
 }
