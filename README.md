@@ -10,6 +10,16 @@ Fall 2025.
 - Rajvir Ghumman - rajvir.ghumman@stonybrook.edu
 - Sean Moore - sean.moore@stonybrook.edu
 
+## Voting Machine Google Sheets
+We source our voting machine data from the class-wide Voting Machine Spreadsheet,
+and we fetch it through a script in `/data_common/scripts/`, it's called `download_latest_voting_machine_sheet.py`,
+
+It depends on [Playwright](https://playwright.dev/), so please `pip install -r requirements.txt`, before
+running the script.
+
+The script will request for you to do a singular login through your SBU-email so you can get access to the
+spreadsheet, and then subsequent runs will automatically download the spreadsheet.
+
 ## OpenAPI Code Generation
 Since our project utilizes the OpenAPI standard to reduce the amount of boilerplate code
 we need to run.
