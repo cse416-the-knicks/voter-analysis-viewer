@@ -1,4 +1,12 @@
 import type { ReactNode } from 'react';
+import type { DetailStateType } from '../FullBoundedUSMap/detailedStatesInfo';
+import {
+  DETAIL_STATE_TYPE_OPTIN,
+  DETAIL_STATE_TYPE_OPTOUT,
+  DETAIL_STATE_TYPE_DEMOCRAT,
+  DETAIL_STATE_TYPE_REPUBLICAN,
+  DETAIL_STATE_TYPE_VOTER_REGISTRATION,
+} from '../FullBoundedUSMap/detailedStatesInfo';
 
 import {
   Button,
@@ -31,6 +39,7 @@ interface StateInformationViewDrawerSection {
 interface StateInformationViewDrawerProperties {
   stateHook: [number, (arg0: number) => void];
   sections: StateInformationViewDrawerSection[];
+  stateType: DetailStateType;
 };
 
 interface StateInformationViewDrawerListItemProperties {
@@ -73,6 +82,32 @@ const RepublicanStateCard = () => BasicStateTypeInfoCard(
 const DemocratStateCard = () => BasicStateTypeInfoCard(
   "Democrat Dominated State",
   "This is a selected detail state that is Democrat dominated, you can compare this against our Republican state.");
+
+interface StateInfoCardProperties {
+  type: DetailStateType;
+};
+
+function StateInfoCard({ type }: StateInfoCardProperties) {
+  switch (type) {
+    case DETAIL_STATE_TYPE_OPTIN: {
+      return OptInStateCard();
+    } break;
+    case DETAIL_STATE_TYPE_OPTOUT: {
+      return OptOutStateCard();
+    } break;
+    case DETAIL_STATE_TYPE_DEMOCRAT: {
+      return DemocratStateCard();
+    } break;
+    case DETAIL_STATE_TYPE_REPUBLICAN: {
+      return RepublicanStateCard();
+    } break;
+    case DETAIL_STATE_TYPE_VOTER_REGISTRATION: {
+      return VoterRegistrationStateCard();
+    } break;
+  }
+  return EAVsStateCard();
+}
+
 function StateInformationViewDrawerListItem(
   {
     item,
@@ -97,6 +132,7 @@ function StateInformationViewDrawer(
   {
     sections,
     stateHook,
+    stateType, 
   }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
   const sectionComponents = sections.map(
@@ -134,7 +170,7 @@ function StateInformationViewDrawer(
 	},
       }}
     >
-    <EAVsStateCard/>
+    <StateInfoCard type={stateType}/>
     <List dense>
       {finalComponentsWithDividers}
     </List>

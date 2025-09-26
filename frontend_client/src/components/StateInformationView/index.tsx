@@ -17,6 +17,10 @@ import {
   Typography
 } from '@mui/material';
 
+import {
+  getDetailStateType
+} from '../FullBoundedUSMap/detailedStatesInfo';
+
 import { useState } from 'react';
 
 import styles from './StateInformationView.module.css';
@@ -100,7 +104,8 @@ function StateInformationView() {
       <Box>
 	<StateInformationViewDrawer
 	  stateHook={activeDataStateHook}
-	  sections={dropDownSections}/>
+	  sections={dropDownSections}
+	  stateType={getDetailStateType(fipsCode!)}/>
       </Box>
 
       <Stack direction="column">
@@ -110,7 +115,7 @@ function StateInformationView() {
 	  <Typography variant="h3" component="h2">
 	    {FIPS_TO_STATES_MAP[fipsCode!]}
 	  </Typography>
-	  <StateMap width={600} height={350} fipsCode={fipsCode}/>
+	  <StateMap width={"600px"} height={"350px"} fipsCode={fipsCode}/>
 	</Paper>
 	<BubbleChart data={mockData} width={600} height={350}/>
       </Stack>

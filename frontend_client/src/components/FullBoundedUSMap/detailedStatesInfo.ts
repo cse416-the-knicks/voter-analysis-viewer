@@ -1,44 +1,55 @@
-enum DetailStateType {
-  NONE,
-  OPTIN,
-  OPTOUT,
-  DEMOCRAT,
-  REPUBLICAN,
-  VOTER_REGISTRATION,
-  COUNT,
-};
+const DETAIL_STATE_TYPE_NONE = "DETAIL_STATE_TYPE_NONE";
+const DETAIL_STATE_TYPE_OPTIN = "DETAIL_STATE_TYPE_OPTIN";
+const DETAIL_STATE_TYPE_OPTOUT = "DETAIL_STATE_TYPE_OPTOUT";
+const DETAIL_STATE_TYPE_DEMOCRAT = "DETAIL_STATE_TYPE_DEMOCRAT";
+const DETAIL_STATE_TYPE_REPUBLICAN = "DETAIL_STATE_TYPE_REPUBLICAN";
+const DETAIL_STATE_TYPE_VOTER_REGISTRATION = "DETAIL_STATE_TYPE_VOTER_REGISTRATION";
+
+type DetailStateType =
+typeof DETAIL_STATE_TYPE_NONE |
+typeof DETAIL_STATE_TYPE_OPTIN |
+typeof DETAIL_STATE_TYPE_OPTOUT |
+typeof DETAIL_STATE_TYPE_DEMOCRAT |
+typeof DETAIL_STATE_TYPE_REPUBLICAN |
+typeof DETAIL_STATE_TYPE_VOTER_REGISTRATION;
 
 function getDetailStateType(
   fipsCode: string,
 ): DetailStateType {
   switch (fipsCode) {
     case "13": {
-      return DetailStateType.OPTIN;
+      return DETAIL_STATE_TYPE_OPTIN;
     } break;
     case "48": {
-      return DetailStateType.OPTOUT;
+      return DETAIL_STATE_TYPE_OPTOUT;
     } break;
     case "36": {
-      return DetailStateType.DEMOCRAT;
+      return DETAIL_STATE_TYPE_DEMOCRAT;
     } break;
     case "40": {
-      return DetailStateType.REPUBLICAN;
+      return DETAIL_STATE_TYPE_REPUBLICAN;
     } break;
     case "18": {
-      return DetailStateType.VOTER_REGISTRATION;
+      return DETAIL_STATE_TYPE_VOTER_REGISTRATION;
     } break;
   }
-  return DetailStateType.NONE;
+  return DETAIL_STATE_TYPE_NONE;
 }
 
 function isDetailState(
   fipsCode: string,
 ): boolean  {
-  return (getDetailStateType(fipsCode) !== DetailStateType.NONE);
+  return (getDetailStateType(fipsCode) !== DETAIL_STATE_TYPE_NONE);
 }
 
 export type { DetailStateType };
 export {
     getDetailStateType,
     isDetailState,
+    DETAIL_STATE_TYPE_NONE,
+    DETAIL_STATE_TYPE_OPTIN,
+    DETAIL_STATE_TYPE_OPTOUT,
+    DETAIL_STATE_TYPE_DEMOCRAT,
+    DETAIL_STATE_TYPE_REPUBLICAN,
+    DETAIL_STATE_TYPE_VOTER_REGISTRATION,
 };
