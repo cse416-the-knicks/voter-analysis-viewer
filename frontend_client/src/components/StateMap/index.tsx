@@ -14,7 +14,7 @@ interface StateMapParameters {
   mapRef?: React.RefObject<MapRef>;
   width: CssUnitValue;
   height: CssUnitValue;
-}
+};
 
 function MapFitToBoundsInternal(
   { boundsToFit }: MapFitsToBoundsInternalParameters) {
