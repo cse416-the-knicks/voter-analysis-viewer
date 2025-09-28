@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,44 +45,34 @@ public class VoterEquipmentLocalDiskDAO implements IVoterEquipmentDAO {
     private final Path _localCsvDataPath = Paths.get("../data_common/raw/voting_machine_data.csv");
     private final Logger _logger = LoggerFactory.getLogger(VoterEquipmentLocalDiskDAO.class);
     private final List<VotingEquipmentModel> _equipmentList = new ArrayList<>();
+    private final VoterEquipmentInMemoryDAO _inMemoryDAO;
 
     public VoterEquipmentLocalDiskDAO()
             throws IOException
     {
         _logger.info("Creating VoterEquipmentDAO - LocalDisk Persistence");
         populateInternalList();
+        _inMemoryDAO = new VoterEquipmentInMemoryDAO(_equipmentList);
     }
 
     @Override
     public List<VotingEquipmentModel> getAllVotingEquipment() {
-        return _equipmentList;
+        return _inMemoryDAO.getAllVotingEquipment();
     }
 
     @Override
     public List<VotingEquipmentModel> getVotingEquipmentByType(String type) {
-        return _equipmentList.stream().filter(
-                (item) -> item.equipmentType().equals(type)
-        ).toList();
+        return _inMemoryDAO.getVotingEquipmentByType(type);
     }
 
     @Override
     public List<VotingEquipmentModel> getVotingEquipmentByManufacturer(String manufacturer) {
-        return _equipmentList.stream().filter(
-                (item) -> item.manufacturer().equals(manufacturer)
-        ).toList();
+        return _inMemoryDAO.getVotingEquipmentByManufacturer(manufacturer);
     }
 
     @Override
     public Optional<VotingEquipmentModel> getVotingEquipmentModel(String manufacturer, String model) {
-        for (var machine : getAllVotingEquipment()) {
-            if (machine.manufacturer().equals(manufacturer)) {
-                if (machine.modelName().equals(model)) {
-                    return Optional.of(machine);
-                }
-            }
-        }
-
-        return Optional.empty();
+        return _inMemoryDAO.getVotingEquipmentModel(manufacturer, model);
     }
 
     private Optional<String> entryOrNoneIfBlank(String s) {
