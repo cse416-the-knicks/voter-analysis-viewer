@@ -3,6 +3,7 @@ package com.theknicks.voteranalysis_backend;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.theknicks.voteranalysis_backend.controllers.StateController;
 import com.theknicks.voteranalysis_backend.services.StateService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.ArgumentMatchers;
@@ -11,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.Assert;
 
 import java.util.Optional;
 
@@ -46,7 +46,7 @@ public class StateControllerUnitTests {
         var result = controller.getStateGeometry("validFipsCode");
 
         // Assert
-        Assert.isTrue(result.isPresent(), "Expecting valid fips code to be non-empty");
+        Assertions.assertTrue(result.isPresent(), "Expecting valid fips code to be non-empty");
         Mockito.verify(service).getBoundaryGeometry(ArgumentMatchers.anyString());
     }
 
@@ -63,7 +63,7 @@ public class StateControllerUnitTests {
         var result = controller.getStateGeometry("invalidFipsCode");
 
         // Assert
-        Assert.isTrue(result.isEmpty(), "Expecting invalid fips code to be empty");
+        Assertions.assertFalse(result.isPresent(), "Expecting invalid fips code to be empty");
         Mockito.verify(service).getBoundaryGeometry(ArgumentMatchers.anyString());
     }
 
