@@ -6,9 +6,9 @@ export interface DisplayData {
 }
 
 export const mockData: DisplayData[] = [
-  {state: "NY", population: 239, mailin: 123}, 
-  {state: "TX", population: 121, mailin: 346}, 
-  {state: "MN", population: 283, mailin: 679}, 
-  {state: "WV", population: 191, mailin: 235}, 
-  {state: "OR", population: 132, mailin: 234}
+  {state: "NY", population: 239, mailin: 223}, 
+  {state: "TX", population: 121, mailin: 546}, 
+  {state: "MN", population: 283, mailin: 879}, 
+  {state: "WV", population: 191, mailin: 735}, 
+  {state: "OR", population: 132, mailin: 934}
 ];
