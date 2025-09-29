@@ -1,6 +1,7 @@
 package com.theknicks.voteranalysis_backend.dao;
 
-import com.google.gson.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.*;
 
 /**
  * State Data Access Object Layer
@@ -25,5 +26,5 @@ public interface IStateDAO {
      * @param fipsCode - A string for the fipsCode of the state.
      * @return GeoJSON object representing the boundaries of the state
      */
-    JsonObject getGeometryBoundary(String fipsCode);
+    Optional<ObjectNode> getGeometryBoundary(String fipsCode);
 }

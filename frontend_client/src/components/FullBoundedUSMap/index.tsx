@@ -3,6 +3,7 @@ import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
+import { isDetailState } from './detailedStatesInfo';
 
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
@@ -61,6 +62,24 @@ function FullBoundedUSMap(
       layer.bindTooltip(stateName);
       layer.on(defaultHandlers);
     };
+  const styleFunction =
+    (feature: GeoJSON.Feature) => {
+      const fipsCode = feature.id as string;
+      const result = {
+	fillColor: "#00000000",
+	fillOpacity: 0,
+	color: "darkblue",
+	weight: 1,
+      };
+
+      if (fipsCode && isDetailState(fipsCode)) {
+	result.weight = 4;
+	result.fillOpacity = 0.4;
+	result.fillColor = 'lightblue';
+      }
+
+      return result;
+    };
 
   return (
     <MapContainer
@@ -77,6 +96,7 @@ function FullBoundedUSMap(
 	url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <GeoJSON
+	style={styleFunction}
 	data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON}
 	onEachFeature={onEachFeatureHandler}
       />

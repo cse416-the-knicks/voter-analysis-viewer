@@ -1,3 +1,4 @@
+import type { CssUnitValue } from '../../helpers/CssUnits';
 import {useEffect, useState} from 'react';
 import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
@@ -11,7 +12,9 @@ interface MapFitsToBoundsInternalParameters {
 interface StateMapParameters {
   fipsCode?: string;
   mapRef?: React.RefObject<MapRef>;
-}
+  width: CssUnitValue;
+  height: CssUnitValue;
+};
 
 function MapFitToBoundsInternal(
   { boundsToFit }: MapFitsToBoundsInternalParameters) {
@@ -31,6 +34,8 @@ function StateMap(
   {
     fipsCode,
     mapRef,
+    width,
+    height
   } : StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
@@ -69,10 +74,11 @@ function StateMap(
 	ref={mapRef}
 	bounds={stateMapBounds!}
 	maxBounds={stateMapBounds!}
+	maxBoundsViscosity={1.0}
 	style={
 	  {
-	    width: "500px",
-	    height: "400px",
+	    width: width,
+	    height: height,
 	  }
 	}
       >
