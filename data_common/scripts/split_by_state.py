@@ -82,31 +82,46 @@ def add_county_to_state(fips_code: str, county_data: object):
 #
 # I wish this would be fast, but the truth is this might be slow
 # without numpy.
+def min_max_iter(it: Iterable[float]):
+    a, b = itertools.tee(it, 2);
+    return min(a), max(b);
+
 def calc_bbox(xs: Iterable[float], ys: Iterable[float]):
     # This is just cause of how generators work :|
-    a,b,c = itertools.tee(xs, 3);
-    x_min, x_max = min(a), max(b);
-    a,b,c = itertools.tee(ys, 3);
-    y_min, y_max = min(a), max(b);
+    x_min, x_max = min_max_iter(xs);
+    y_min, y_max = min_max_iter(ys);
     return x_min, y_min, x_max, y_max;
 
-def collect_all_dimensions_of_feature(feature, idx):
-    # NOTE(jerry):
-    # Why is it a list of one list with stuff?
-    coordinates = feature["geometry"]["coordinates"][0];
+def collect_all_coordinates_of_polygon(coordinates):
+    coordinate_array_collection = (
+        (coordinate for coordinate in coordinate_array)
+        for coordinate_array in coordinates )
+    return itertools.chain.from_iterable(
+        coordinate_array_collection
+    );
 
-    # NOTE(jerry):
-    # for whatever reason, there's some weird data irregularity that I can't determine?
-    #
-    # Regardless, given for detail states there are so many points, it should be totally
-    # acceptable to do this, and it won't significantly break the bounding-boxes.
-    return (coordinate[idx] if not isinstance(coordinate[idx],list) else coordinate[0][idx] for coordinate in coordinates);
+def collect_all_coordinates_of_multipolygon(coordinates_set):
+    return itertools.chain.from_iterable(
+        (collect_all_coordinates_of_polygon(polygon) for polygon in coordinates_set)
+    )
+    
+def collect_all_coordinates_of_feature(feature):
+    coordinates = feature["geometry"]["coordinates"];
+    type = feature["geometry"]["type"];
+    if type == "MultiPolygon":
+        return collect_all_coordinates_of_multipolygon(coordinates);
+    else:
+        return collect_all_coordinates_of_polygon(coordinates);
     
 def calc_bbox_for_feature_collection(features: list[object]):
-    xs = itertools.chain.from_iterable(
-        (collect_all_dimensions_of_feature(feature, 0) for feature in features));
-    ys = itertools.chain.from_iterable(
-        (collect_all_dimensions_of_feature(feature, 1) for feature in features));
+    print(f"{len(features)} features to account for.");
+    coordinates = itertools.chain.from_iterable(
+        (collect_all_coordinates_of_feature(feature) for feature in features));
+
+    a, b = itertools.tee(coordinates, 2);
+    xs = (coordinate[0] for coordinate in a); 
+    ys = (coordinate[1] for coordinate in b);
+    print(f"feature set done!");
     return calc_bbox(xs, ys);
 
 def create_feature_collection_for_county(fips_code: str):
@@ -115,7 +130,7 @@ def create_feature_collection_for_county(fips_code: str):
         print(f'WARN: Missing information for {state_name}');
         return None;
     counties = counties_by_state[fips_code];
-    print(f'INFO: Generating collection for: {state_name}');
+    print(f'INFO: Generating collection for: {state_name} ({fips_code})');
     (x_min, y_min, x_max, y_max) = calc_bbox_for_feature_collection(counties);
     collection = {
         "type": "FeatureCollection", # we know the id is the fips-code, so
@@ -124,6 +139,7 @@ def create_feature_collection_for_county(fips_code: str):
         "bbox": [ x_min, y_min, x_max, y_max ],
         "features": counties,
     };
+    print(f"INFO: Finished generating for: {state_name}");
     return collection;
 
 if GEN_DETAIL_STATES:
@@ -163,7 +179,7 @@ if GEN_GENERAL_STATES:
 
 # Export state geometry with bounding box.
 try:
-    os.mkdir('stateByFips');
+    os.mkdir('../geospatial_processed/stateByFips');
 except FileExistsError:
     pass;
 except FileNotFoundError:
@@ -176,7 +192,7 @@ for fips in FIPS_TO_STATES_MAP.keys():
         continue;
 
     try:
-        with open(f'stateByFips/{fips}.json', 'w') as output:
+        with open(f'../geospatial_processed/stateByFips/{fips}.json', 'w+') as output:
             json_result = json.dump(
                 state_feature_collection, fp=output);
     except:

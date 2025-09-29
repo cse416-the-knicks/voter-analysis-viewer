@@ -4,15 +4,23 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import getAllVotersMutator from '../helpers/backendConnectorAxiosInstance';
-import getVoterMutator from '../helpers/backendConnectorAxiosInstance';
+import getVotingEquipmentMutator from '../helpers/backendConnectorAxiosInstance';
+import getAllVotingEquipmentByTypeMutator from '../helpers/backendConnectorAxiosInstance';
+import getAllVotingEquipmentByManufacturerMutator from '../helpers/backendConnectorAxiosInstance';
+import getAllVotingEquipmentMutator from '../helpers/backendConnectorAxiosInstance';
 import getStateGeometryMutator from '../helpers/backendConnectorAxiosInstance';
-export interface VoterModel {
-  voterId?: number;
-  firstName?: string;
-  lastName?: string;
-  dateOfBirth?: string;
-  precinct_id?: number;
+export interface VotingEquipmentModel {
+  manufacturer?: string;
+  equipmentType?: string;
+  modelName?: string;
+  discontinued?: boolean;
+  firstManufactured?: number;
+  lastManufactured?: number;
+  operatingSystem?: string;
+  firmwareVersion?: string;
+  vvpat?: boolean;
+  certificationLevel?: string;
+  securityRiskDescription?: string;
 }
 
 export type GeoJsonObjectType = typeof GeoJsonObjectType[keyof typeof GeoJsonObjectType];
@@ -482,20 +490,39 @@ export type Error503ServiceUnavailableResponse = {
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAllVoters = (
-    
- options?: SecondParameter<typeof getAllVotersMutator>,) => {
-      return getAllVotersMutator<VoterModel[]>(
-      {url: `/voters`, method: 'GET'
+  export const getVotingEquipment = (
+    manufacturer: string,
+    model: string,
+ options?: SecondParameter<typeof getVotingEquipmentMutator>,) => {
+      return getVotingEquipmentMutator<VotingEquipmentModel>(
+      {url: `/votingequipment/${manufacturer}/${model}`, method: 'GET'
     },
       options);
     }
   
-export const getVoter = (
-    id: number,
- options?: SecondParameter<typeof getVoterMutator>,) => {
-      return getVoterMutator<VoterModel>(
-      {url: `/voters/${id}`, method: 'GET'
+export const getAllVotingEquipmentByType = (
+    type: string,
+ options?: SecondParameter<typeof getAllVotingEquipmentByTypeMutator>,) => {
+      return getAllVotingEquipmentByTypeMutator<VotingEquipmentModel[]>(
+      {url: `/votingequipment/by-type/${type}`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getAllVotingEquipmentByManufacturer = (
+    manufacturer: string,
+ options?: SecondParameter<typeof getAllVotingEquipmentByManufacturerMutator>,) => {
+      return getAllVotingEquipmentByManufacturerMutator<VotingEquipmentModel[]>(
+      {url: `/votingequipment/by-manufacturer/${manufacturer}`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getAllVotingEquipment = (
+    
+ options?: SecondParameter<typeof getAllVotingEquipmentMutator>,) => {
+      return getAllVotingEquipmentMutator<VotingEquipmentModel[]>(
+      {url: `/votingequipment/`, method: 'GET'
     },
       options);
     }
@@ -509,6 +536,8 @@ export const getStateGeometry = (
       options);
     }
   
-export type GetAllVotersResult = NonNullable<Awaited<ReturnType<typeof getAllVoters>>>
-export type GetVoterResult = NonNullable<Awaited<ReturnType<typeof getVoter>>>
+export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipment>>>
+export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>
+export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>
+export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>
 export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>
