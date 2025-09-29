@@ -46,6 +46,8 @@ sql/
                 112_v_region_year_cvap.sql
                 118_v_regions_centroids.sql
                 119_v_regions_bounds.sql
+    docs/ <-- documentation such as pdf files and diagrams if needed
+        knicks_416_full_schema_V1
 
 ```
 
