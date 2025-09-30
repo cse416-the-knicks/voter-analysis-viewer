@@ -11,7 +11,9 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ScannerIcon from '@mui/icons-material/Scanner';
 import Stack from '@mui/material/Stack';
 
-import { gradientMapNearest } from "../../helpers/GradientMap";
+import { useMap } from "react-leaflet";
+
+import { gradientMapNearest, gradientMapPoints } from "../../helpers/GradientMap";
 
 import {
   Box,
@@ -23,7 +25,7 @@ import {
   getDetailStateType
 } from '../FullBoundedUSMap/detailedStatesInfo';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
@@ -34,20 +36,6 @@ import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart from '../DataDisplays/BarChart';
 
-const columns: GridColDef<(typeof rows)[number]>[] = [
-  { field: 'county', headerName: 'County', width: 120 },
-  { field: 'E2a', headerName: 'Voter Not on List', type: 'number', width: 100 },
-  { field: 'E2b', headerName: 'Voter Lacked ID', type: 'number', width: 100 },
-  { field: 'E2c', headerName: 'Challenged Eligibility', type: 'number', width: 100 },
-  { field: 'E2d', headerName: 'Challenged Eligibility', type: 'number', width: 100 },
-  { field: 'E2e', headerName: 'Not Resident', type: 'number', width: 100 },
-  { field: 'E2f', headerName: 'Registration Not Updated', type: 'number', width: 100 },
-  { field: 'E2g', headerName: 'Did Not Surrender Mail Ballot', type: 'number', width: 100 },
-  { field: 'E2h', headerName: 'Judge Extended Voting Hours', type: 'number', width: 100 },
-  { field: 'E2i', headerName: 'Voter Used SDR', type: 'number', width: 100 },
-  { field: 'Other', headerName: 'Other', type: 'number', width: 100 },
-  { field: 'Total', headerName: 'Total', type: 'number', width: 100 },
-];
 
 function getData(category) {
   if (category == 0) {
@@ -63,6 +51,20 @@ function getData(category) {
   return activeVoterData;
 }
 
+const columns: GridColDef<(typeof rows)[number]>[] = [
+  { field: 'county', headerName: 'County', width: 120 },
+  { field: 'E2a', headerName: 'Voter Not on List', type: 'number', width: 100 },
+  { field: 'E2b', headerName: 'Voter Lacked ID', type: 'number', width: 100 },
+  { field: 'E2c', headerName: 'Challenged Eligibility', type: 'number', width: 100 },
+  { field: 'E2d', headerName: 'Challenged Eligibility', type: 'number', width: 100 },
+  { field: 'E2e', headerName: 'Not Resident', type: 'number', width: 100 },
+  { field: 'E2f', headerName: 'Registration Not Updated', type: 'number', width: 100 },
+  { field: 'E2g', headerName: 'Did Not Surrender Mail Ballot', type: 'number', width: 100 },
+  { field: 'E2h', headerName: 'Judge Extended Voting Hours', type: 'number', width: 100 },
+  { field: 'E2i', headerName: 'Voter Used SDR', type: 'number', width: 100 },
+  { field: 'Other', headerName: 'Other', type: 'number', width: 100 },
+  { field: 'Total', headerName: 'Total', type: 'number', width: 100 },
+];
 const rows = [
   {
     id: "TX-Harris",
@@ -141,6 +143,169 @@ const rows = [
   }
 ];
 
+const activeVoterColumns: GridColDef<(typeof activeVoterRows)[number]>[] = [
+  { field: 'county', headerName: 'County', width: 120 },
+  { field: 'ActiveVoters', headerName: 'Active Voters', type: 'number', width: 120 },
+  { field: 'InactiveVoters', headerName: 'Inactive Voters', type: 'number', width: 120 },
+  { field: 'TotalVoters', headerName: 'Total Voters', type: 'number', width: 120 },
+];
+
+const activeVoterRows = [
+  {
+    id: "TX-Harris",
+    county: "Harris County",
+    ActiveVoters: 2200000,
+    InactiveVoters: 180000,
+    TotalVoters: 2380000
+  },
+  {
+    id: "TX-Dallas",
+    county: "Dallas County",
+    ActiveVoters: 1750000,
+    InactiveVoters: 150000,
+    TotalVoters: 1900000
+  },
+  {
+    id: "TX-Tarrant",
+    county: "Tarrant County",
+    ActiveVoters: 1600000,
+    InactiveVoters: 120000,
+    TotalVoters: 1720000
+  },
+  {
+    id: "TX-Travis",
+    county: "Travis County",
+    ActiveVoters: 1200000,
+    InactiveVoters: 90000,
+    TotalVoters: 1290000
+  },
+  {
+    id: "TX-Bexar",
+    county: "Bexar County",
+    ActiveVoters: 1350000,
+    InactiveVoters: 110000,
+    TotalVoters: 1460000
+  }
+];
+
+const pollbookDeletionColumns: GridColDef<(typeof pollbookDeletionRows)[number]>[] = [
+  { field: 'county', headerName: 'County', width: 120 },
+  { field: 'PollbookDeletions', headerName: 'Pollbook Deletions', type: 'number', width: 140 },
+  { field: 'RemainingVoters', headerName: 'Remaining Voters', type: 'number', width: 140 },
+  { field: 'TotalVoters', headerName: 'Total Voters', type: 'number', width: 120 },
+];
+
+const pollbookDeletionRows = [
+  {
+    id: "TX-Harris",
+    county: "Harris County",
+    PollbookDeletions: 45000,
+    RemainingVoters: 2335000,
+    TotalVoters: 2380000
+  },
+  {
+    id: "TX-Dallas",
+    county: "Dallas County",
+    PollbookDeletions: 38000,
+    RemainingVoters: 1862000,
+    TotalVoters: 1900000
+  },
+  {
+    id: "TX-Tarrant",
+    county: "Tarrant County",
+    PollbookDeletions: 29000,
+    RemainingVoters: 1691000,
+    TotalVoters: 1720000
+  },
+  {
+    id: "TX-Travis",
+    county: "Travis County",
+    PollbookDeletions: 21000,
+    RemainingVoters: 1269000,
+    TotalVoters: 1290000
+  },
+  {
+    id: "TX-Bexar",
+    county: "Bexar County",
+    PollbookDeletions: 22000,
+    RemainingVoters: 1438000,
+    TotalVoters: 1460000
+  }
+];
+
+const mailBallotRejectionColumns: GridColDef<(typeof mailBallotRejectionRows)[number]>[] = [
+  { field: 'county', headerName: 'County', width: 120 },
+  { field: 'RejectedMailBallots', headerName: 'Rejected Mail Ballots', type: 'number', width: 160 },
+  { field: 'AcceptedMailBallots', headerName: 'Accepted Mail Ballots', type: 'number', width: 160 },
+  { field: 'TotalMailBallots', headerName: 'Total Mail Ballots', type: 'number', width: 140 },
+];
+
+const mailBallotRejectionRows = [
+  {
+    id: "TX-Harris",
+    county: "Harris County",
+    RejectedMailBallots: 15000,
+    AcceptedMailBallots: 2235000,
+    TotalMailBallots: 2250000
+  },
+  {
+    id: "TX-Dallas",
+    county: "Dallas County",
+    RejectedMailBallots: 12000,
+    AcceptedMailBallots: 1888000,
+    TotalMailBallots: 1900000
+  },
+  {
+    id: "TX-Tarrant",
+    county: "Tarrant County",
+    RejectedMailBallots: 9000,
+    AcceptedMailBallots: 1711000,
+    TotalMailBallots: 1720000
+  },
+  {
+    id: "TX-Travis",
+    county: "Travis County",
+    RejectedMailBallots: 7000,
+    AcceptedMailBallots: 1282000,
+    TotalMailBallots: 1290000
+  },
+  {
+    id: "TX-Bexar",
+    county: "Bexar County",
+    RejectedMailBallots: 8000,
+    AcceptedMailBallots: 1458000,
+    TotalMailBallots: 1460000
+  }
+];
+
+function getColumnData(n) {
+  if (n == 0) {
+    return columns;
+  }
+  else if (n == 1) {
+    return activeVoterColumns;
+  }
+  else if (n == 2) {
+    return pollbookDeletionColumns;
+  }
+
+  return mailBallotRejectionColumns;
+}
+
+function getRowData(n) {
+  if (n == 0) {
+    return rows;
+  }
+  else if (n == 1) {
+    return activeVoterRows;
+  }
+  else if (n == 2) {
+    return pollbookDeletionRows;
+  }
+
+  return mailBallotRejectionRows;
+}
+
 // TODO(jerry): temp!!!
 function getRandomInteger(seed: string, min: number, max: number): number {
   // Hash the seed string to a numeric value
@@ -178,6 +343,56 @@ const GradientMap0 = {
   10000: "hsl(210, 100%, 60%)", // light but fully saturated blue
 };
 
+function MapLegend() {
+  const leafletMap = useMap();
+
+  useEffect(() => {
+    if (!leafletMap) return;
+
+    const legend = L.control({ position: "bottomright" });
+
+    legend.onAdd = function () {
+      const div = L.DomUtil.create("div", "info legend");
+
+      // White background + padding + rounded corners
+      div.style.background = "white";
+      div.style.padding = "8px";
+      div.style.borderRadius = "6px";
+      div.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
+
+      // Get the grades for the legend
+      const grades = gradientMapPoints(GradientMap0);
+
+      for (let i = 0; i < grades.length; i++) {
+        const from = grades[i];
+        const to = grades[i + 1];
+        const color = gradientMapNearest(from, GradientMap0);
+
+        div.innerHTML += `
+          <i style="
+            background:${color};
+            width:18px;
+            height:18px;
+            display:inline-block;
+            margin-right:8px;
+            opacity:0.7;
+          "></i>
+          ${from}${to ? `&ndash;${to}` : "+"}<br/>
+        `;
+      }
+
+      return div;
+    };
+
+    legend.addTo(leafletMap);
+
+    // Cleanup on unmount
+    return () => legend.remove();
+  }, [leafletMap]);
+
+  return null;
+}
+
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
@@ -202,6 +417,7 @@ function StateInformationView() {
     }
   ];
 
+  const stateType = getDetailStateType(fipsCode!);
   function styleFunction(feature: GeoJSON.Feature) {
     const geoUnitFipsCode = (activeDataStateHook[0] + activeDataStateHook[0] + feature.properties.STATEFP+feature.properties.COUNTYFP + activeDataStateHook[0]) as string;
     const result = {
@@ -211,10 +427,12 @@ function StateInformationView() {
 	weight: 1,
     };
 
-    const randomNumber = getRandomInteger(geoUnitFipsCode, 0, 10000);
-    const gradientMapNearestColor = gradientMapNearest(randomNumber, GradientMap0);
-    result.fillColor = gradientMapNearestColor;
-    result.fillOpacity = 1.0;
+    if (stateType !== "DETAIL_STATE_TYPE_NONE") {
+      const randomNumber = getRandomInteger(geoUnitFipsCode, 0, 10000);
+      const gradientMapNearestColor = gradientMapNearest(randomNumber, GradientMap0);
+      result.fillColor = gradientMapNearestColor;
+      result.fillOpacity = 1.0;
+    }
     return result;
   }
 
@@ -239,13 +457,15 @@ function StateInformationView() {
 	  <StateMap
   key={activeDataStateHook[0]}
   styleFunction={styleFunction}
-  width={"600px"} height={"830px"} fipsCode={fipsCode}/>
+  width={"600px"} height={"830px"} fipsCode={fipsCode}>
+  {stateType !== "DETAIL_STATE_TYPE_NONE" && <MapLegend/>}
+	</StateMap>
 	</Paper>
       </Stack>
       <Stack spacing={3} sx={{ mt: 2, ml: 4, height: "50%", width: "50%" }}>
 	<DataGrid
-	    rows={rows}
-	    columns={columns}
+	  rows={getRowData(activeDataStateHook[0])}
+	  columns={getColumnData(activeDataStateHook[0])}
 	    initialState={{
 	    pagination: {
 		paginationModel: {
@@ -258,7 +478,7 @@ function StateInformationView() {
 	    disableRowSelectionOnClick
 	/>
       <Paper  elevation={5}>
-        <BarChart stateInfo={getData(activeDataStateHook[0])[getDetailStateType(fipsCode!)]}/>
+        <BarChart stateInfo={getData(activeDataStateHook[0])[stateType]}/>
       </Paper>
       </Stack>
     </div>

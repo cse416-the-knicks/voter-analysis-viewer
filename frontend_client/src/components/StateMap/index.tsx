@@ -1,5 +1,6 @@
 import type { CssUnitValue } from '../../helpers/CssUnits';
 import {useEffect, useState} from 'react';
+import React from 'react';
 import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
@@ -16,6 +17,7 @@ interface StateMapParameters {
   height: CssUnitValue;
   // TODO(jerry): TEMPORARY!!!! I NEED TO THINK OF A BETTER PLACE TO PUT THIS!
   styleFunction: L.StyleFunction;
+  children: React.Node;
 };
 
 function MapFitToBoundsInternal(
@@ -38,7 +40,8 @@ function StateMap(
     mapRef,
     width,
     height,
-    styleFunction
+    styleFunction,
+    children
   } : StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
@@ -88,8 +91,17 @@ function StateMap(
 	<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 	<GeoJSON
 	  style={styleFunction}
-	  data={stateGeoJson!} />
+	  data={stateGeoJson!}
+	  onEachFeature={(feature, layer) => {
+	    const { properties } = feature;
+	    if (properties.NAMELSAD) {
+	      layer.bindTooltip(properties.NAMELSAD);
+	    } else {
+	      // no tool, tip we just have the whole state
+	    }
+	  }}/>
 	<MapFitToBoundsInternal boundsToFit={stateMapBounds!}/>
+	{children}
       </MapContainer>
     )
   } else {
