@@ -17,10 +17,10 @@ function getDetailStateType(
   fipsCode: string,
 ): DetailStateType {
   switch (fipsCode) {
-    case "13": {
+    case "48": {
       return DETAIL_STATE_TYPE_OPTIN;
     } break;
-    case "48": {
+    case "13": {
       return DETAIL_STATE_TYPE_OPTOUT;
     } break;
     case "36": {
