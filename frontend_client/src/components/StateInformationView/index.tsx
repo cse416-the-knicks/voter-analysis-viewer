@@ -33,46 +33,96 @@ import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart from '../DataDisplays/BarChart';
 
 const columns: GridColDef<(typeof rows)[number]>[] = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  {
-    field: 'firstName',
-    headerName: 'First name',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'lastName',
-    headerName: 'Last name',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 110,
-    editable: true,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
+  { field: 'county', headerName: 'County', width: 120 },
+  { field: 'E2a', headerName: 'Voter Not on List', type: 'number', width: 100 },
+  { field: 'E2b', headerName: 'Voter Lacked ID', type: 'number', width: 100 },
+  { field: 'E2c', headerName: 'Challenged Eligibility', type: 'number', width: 100 },
+  { field: 'E2d', headerName: 'Challenged Eligibility', type: 'number', width: 100 },
+  { field: 'E2e', headerName: 'Not Resident', type: 'number', width: 100 },
+  { field: 'E2f', headerName: 'Registration Not Updated', type: 'number', width: 100 },
+  { field: 'E2g', headerName: 'Did Not Surrender Mail Ballot', type: 'number', width: 100 },
+  { field: 'E2h', headerName: 'Judge Extended Voting Hours', type: 'number', width: 100 },
+  { field: 'E2i', headerName: 'Voter Used SDR', type: 'number', width: 100 },
+  { field: 'Other', headerName: 'Other', type: 'number', width: 100 },
+  { field: 'Total', headerName: 'Total', type: 'number', width: 100 },
 ];
 
 const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+  {
+    id: "TX-Harris",
+    county: "Harris County",
+    E2a: 300,
+    E2b: 220,
+    E2c: 100,
+    E2d: 65,
+    E2e: 150,
+    E2f: 180,
+    E2g: 120,
+    E2h: 40,
+    E2i: 55,
+    Other: 90,
+    Total: 1320
+  },
+  {
+    id: "TX-Dallas",
+    county: "Dallas County",
+    E2a: 270,
+    E2b: 200,
+    E2c: 95,
+    E2d: 60,
+    E2e: 140,
+    E2f: 160,
+    E2g: 110,
+    E2h: 35,
+    E2i: 45,
+    Other: 80,
+    Total: 1195
+  },
+  {
+    id: "TX-Tarrant",
+    county: "Tarrant County",
+    E2a: 250,
+    E2b: 180,
+    E2c: 85,
+    E2d: 55,
+    E2e: 130,
+    E2f: 150,
+    E2g: 100,
+    E2h: 30,
+    E2i: 40,
+    Other: 70,
+    Total: 1090
+  },
+  {
+    id: "TX-Travis",
+    county: "Travis County",
+    E2a: 180,
+    E2b: 130,
+    E2c: 65,
+    E2d: 40,
+    E2e: 100,
+    E2f: 120,
+    E2g: 80,
+    E2h: 25,
+    E2i: 35,
+    Other: 60,
+    Total: 835
+  },
+  {
+    id: "TX-Bexar",
+    county: "Bexar County",
+    E2a: 220,
+    E2b: 160,
+    E2c: 75,
+    E2d: 50,
+    E2e: 110,
+    E2f: 140,
+    E2g: 90,
+    E2h: 28,
+    E2i: 38,
+    Other: 65,
+    Total: 976
+  }
 ];
 
 function StateInformationView() {
@@ -109,18 +159,17 @@ function StateInformationView() {
 	  stateType={getDetailStateType(fipsCode!)}/>
       </Box>
 
-      <Stack spacing={3} direction="column" sx={{ mt: 4, ml: 'auto' }}>
+      <Stack spacing={3} direction="column" sx={{ mt: 4 }}>
 	<Paper
-	  sx={{ mt: 2, ml: 'auto' }}
+	  sx={{ mt: 2, ml: 'auto', width: "600px", height: "860px" }}
 	  elevation={5}>
 	  <Typography variant="h3" component="h2">
 	    {FIPS_TO_STATES_MAP[fipsCode!]}
 	  </Typography>
-	  <StateMap width={"600px"} height={"900px"} fipsCode={fipsCode}/>
+	  <StateMap width={"600px"} height={"830px"} fipsCode={fipsCode}/>
 	</Paper>
-	{/* <BubbleChart data={mockData} width={750} height={400}/> */}
       </Stack>
-      <Stack spacing={3} sx={{ mt: 2, ml: 8, height: "50%", width: "50%" }}>
+      <Stack spacing={3} sx={{ mt: 2, ml: 4, height: "50%", width: "50%" }}>
 	<DataGrid
 	    rows={rows}
 	    columns={columns}
@@ -135,7 +184,7 @@ function StateInformationView() {
 	    checkboxSelection
 	    disableRowSelectionOnClick
 	/>
-      <Paper>
+    <Paper  elevation={5}>
             <BarChart stateInfo={provisionalBallotData[getDetailStateType(fipsCode!)]}/>
       </Paper>
       </Stack>
