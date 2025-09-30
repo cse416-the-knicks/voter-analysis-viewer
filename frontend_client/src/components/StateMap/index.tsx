@@ -14,6 +14,8 @@ interface StateMapParameters {
   mapRef?: React.RefObject<MapRef>;
   width: CssUnitValue;
   height: CssUnitValue;
+  // TODO(jerry): TEMPORARY!!!! I NEED TO THINK OF A BETTER PLACE TO PUT THIS!
+  styleFunction: L.StyleFunction;
 };
 
 function MapFitToBoundsInternal(
@@ -35,7 +37,8 @@ function StateMap(
     fipsCode,
     mapRef,
     width,
-    height
+    height,
+    styleFunction
   } : StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
@@ -83,7 +86,9 @@ function StateMap(
 	}
       >
 	<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-	<GeoJSON data={stateGeoJson!} />
+	<GeoJSON
+	  style={styleFunction}
+	  data={stateGeoJson!} />
 	<MapFitToBoundsInternal boundsToFit={stateMapBounds!}/>
       </MapContainer>
     )

@@ -11,6 +11,8 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ScannerIcon from '@mui/icons-material/Scanner';
 import Stack from '@mui/material/Stack';
 
+import { gradientMapNearest } from "../../helpers/GradientMap";
+
 import {
   Box,
   Paper,
@@ -27,7 +29,7 @@ import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
 
 import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
-import { mockData, provisionalBallotData } from '../DataDisplays/DisplayData';
+import { mockData, activeVoterData, provisionalBallotData, pollbookDeletionData, mailBallotRejectionData } from '../DataDisplays/DisplayData';
 import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart from '../DataDisplays/BarChart';
@@ -46,6 +48,20 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
   { field: 'Other', headerName: 'Other', type: 'number', width: 100 },
   { field: 'Total', headerName: 'Total', type: 'number', width: 100 },
 ];
+
+function getData(category) {
+  if (category == 0) {
+    return provisionalBallotData;
+  } else if (category == 1) {
+    return activeVoterData;
+  } else if (category == 2) {
+    return pollbookDeletionData;
+  } else if (category == 3) {
+    return mailBallotRejectionData;
+  }
+
+  return activeVoterData;
+}
 
 const rows = [
   {
@@ -125,6 +141,43 @@ const rows = [
   }
 ];
 
+// TODO(jerry): temp!!!
+function getRandomInteger(seed: string, min: number, max: number): number {
+  // Hash the seed string to a numeric value
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = (h * 31 + seed.charCodeAt(i)) >>> 0; // unsigned 32-bit integer
+  }
+
+  // Linear Congruential Generator constants
+  const a = 1664525;
+  const c = 1013904223;
+  const m = 2 ** 32;
+
+  // Generate pseudo-random number
+  h = (a * h + c) % m;
+
+  // Normalize to 0..1
+  const rand = h / m;
+
+  // Scale to desired range
+  return Math.floor(rand * (max - min + 1)) + min;
+}
+
+const GradientMap0 = {
+  0:     "hsl(210, 10%, 80%)",  // very pale blue
+  1000:  "hsl(210, 20%, 78%)",
+  2000:  "hsl(210, 30%, 76%)",
+  3000:  "hsl(210, 40%, 74%)",
+  4000:  "hsl(210, 50%, 72%)",
+  5000:  "hsl(210, 60%, 70%)",
+  6000:  "hsl(210, 70%, 68%)",
+  7000:  "hsl(210, 80%, 66%)",
+  8000:  "hsl(210, 90%, 64%)",
+  9000:  "hsl(210, 95%, 62%)",
+  10000: "hsl(210, 100%, 60%)", // light but fully saturated blue
+};
+
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
@@ -149,6 +202,22 @@ function StateInformationView() {
     }
   ];
 
+  function styleFunction(feature: GeoJSON.Feature) {
+    const geoUnitFipsCode = (activeDataStateHook[0] + activeDataStateHook[0] + feature.properties.STATEFP+feature.properties.COUNTYFP + activeDataStateHook[0]) as string;
+    const result = {
+	fillColor: "#00000000",
+	fillOpacity: 0,
+	color: "darkblue",
+	weight: 1,
+    };
+
+    const randomNumber = getRandomInteger(geoUnitFipsCode, 0, 10000);
+    const gradientMapNearestColor = gradientMapNearest(randomNumber, GradientMap0);
+    result.fillColor = gradientMapNearestColor;
+    result.fillOpacity = 1.0;
+    return result;
+  }
+
   // TODO: dynamically calculate height.
   return (
     <div className={styles.stateInformationPopup}>
@@ -166,7 +235,11 @@ function StateInformationView() {
 	  <Typography variant="h3" component="h2">
 	    {FIPS_TO_STATES_MAP[fipsCode!]}
 	  </Typography>
-	  <StateMap width={"600px"} height={"830px"} fipsCode={fipsCode}/>
+	   {/* TODO(jerry): THIS IS WRONG! */}
+	  <StateMap
+  key={activeDataStateHook[0]}
+  styleFunction={styleFunction}
+  width={"600px"} height={"830px"} fipsCode={fipsCode}/>
 	</Paper>
       </Stack>
       <Stack spacing={3} sx={{ mt: 2, ml: 4, height: "50%", width: "50%" }}>
@@ -184,8 +257,8 @@ function StateInformationView() {
 	    checkboxSelection
 	    disableRowSelectionOnClick
 	/>
-    <Paper  elevation={5}>
-            <BarChart stateInfo={provisionalBallotData[getDetailStateType(fipsCode!)]}/>
+      <Paper  elevation={5}>
+        <BarChart stateInfo={getData(activeDataStateHook[0])[getDetailStateType(fipsCode!)]}/>
       </Paper>
       </Stack>
     </div>
