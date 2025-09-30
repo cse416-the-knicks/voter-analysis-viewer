@@ -1,14 +1,14 @@
 import * as d3 from "d3";
 import { provisionalCategories } from "./DisplayData";
 
-interface BarChartProps {
+interface BarChartProperties {
     stateInfo: {
         stateName: string;
         data: {category: string; value: number}[];
     }
 }
 
-function BarChart({stateInfo}: BarChartProps) {
+function BarChart({stateInfo}: BarChartProperties) {
     const barMargin = { top: 25, right: 45, bottom: 25, left: 200 }
     const barWidth = 700 - barMargin.left - barMargin.right
     const barHeight = 500 - barMargin.top - barMargin.bottom

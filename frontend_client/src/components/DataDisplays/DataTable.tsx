@@ -2,11 +2,11 @@ import type { DisplayData } from "./DisplayData";
 import './DataDisplays.module.css'
 import { TableContainer, Table, TableBody, TableCell, TableHead, TableRow, Paper} from "@mui/material";
 
-interface DataTableProps {
+interface DataTableProperties {
     data: DisplayData[];
 }
 
-function DataTable({data}: DataTableProps) {
+function DataTable({data}: DataTableProperties) {
     return (
         <TableContainer component={Paper} sx={{ maxWidth: 1250, margin: "auto", mt: 3}}>
             <Table>
