@@ -3,7 +3,7 @@ import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
-import { isDetailState } from './detailedStatesInfo';
+import { getDetailStateType, isDetailState } from './detailedStatesInfo';
 
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
@@ -36,6 +36,24 @@ interface FullBoundedUSMapProperties {
     Will show state names and such, and allow registering
     callbacks on click.
 **/
+function humanReadableStateType(type: string): string {
+  switch (type) {
+    case "DETAIL_STATE_TYPE_NONE":
+      return "Other / Unknown";
+    case "DETAIL_STATE_TYPE_OPTIN":
+      return "Opt-In State";
+    case "DETAIL_STATE_TYPE_OPTOUT":
+      return "Opt-Out State";
+    case "DETAIL_STATE_TYPE_DEMOCRAT":
+      return "Democrat-Leaning State";
+    case "DETAIL_STATE_TYPE_REPUBLICAN":
+      return "Republican-Leaning State";
+    case "DETAIL_STATE_TYPE_VOTER_REGISTRATION":
+      return "Voter Registration State";
+    default:
+      return type; // fallback to the original string
+  }
+}
 function FullBoundedUSMap(
   {
     id,
@@ -59,7 +77,11 @@ function FullBoundedUSMap(
       const defaultHandlers = {
 	click: onFeatureClickHandler
       };
-      layer.bindTooltip(stateName);
+      let ttname = stateName;
+      if (getDetailStateType(id) !== "DETAIL_STATE_TYPE_NONE") {
+	ttname += " - " + humanReadableStateType(getDetailStateType(id));
+      }
+      layer.bindTooltip(ttname);
       layer.on(defaultHandlers);
     };
   const styleFunction =

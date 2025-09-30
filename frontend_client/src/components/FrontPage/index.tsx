@@ -63,7 +63,40 @@ function WelcomeApplicationDialog() {
   );
 }
 
-function FrontPageDrawer() {
+function NotImplementedYet({hook}) {
+  const handleClose = () => {hook[1](false);};
+  return (
+    <React.Fragment>
+      <Dialog
+        open={hook[0]}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Your UI is in another castle!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+	    <img width={128} height={128} src="https://cdn-icons-png.flaticon.com/512/71/71872.png"></img>
+	    <br/>
+	    <br/>
+  We are not ready to show this yet! It is either not designed yet or
+	    we haven't though of it yet!
+	    <br/>
+	  </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+  );
+}
+
+function FrontPageDrawer({hook}) {
   const navigate = useNavigate();
 
   return (
@@ -78,12 +111,12 @@ function FrontPageDrawer() {
     >
       <List dense>
 	<ListItem> <ListItemText primary={"COMPARE VOTING"}/> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/compare/parties")}> <ListItemText primary={"BIPARTISAN EARLY VOTING"}/> </ListItemButton> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/compare/optvote")}> <ListItemText primary={"OPT-IN, OPT-OUT VOTING"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"BIPARTISAN EARLY VOTING"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"OPT-IN, OPT-OUT VOTING"}/> </ListItemButton> </ListItem>
 	<Divider/>
 	<ListItem> <ListItemText primary={"DISPLAY"}/> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-age")}> <ListItemText primary={"VOTING EQUIPMENT AGE"}/> </ListItemButton> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-summary")}> <ListItemText primary={"VOTING EQUIPMENT 2024 SUMMARY"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"VOTING EQUIPMENT AGE"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"VOTING EQUIPMENT 2024 SUMMARY"}/> </ListItemButton> </ListItem>
       </List>
       <Button variant='contained' color='secondary'>
 	<HighlightOffIcon/> Reset to Default
@@ -99,6 +132,7 @@ function FrontPageDrawer() {
  */
 function FrontPage() {
   const mapState = useRef<MapRef>(null);
+  const unimplementedHook = React.useState(false);
   const navigate = useNavigate();
 
   const onStateClick = (fipsCode: FipsCode) => {
@@ -108,8 +142,9 @@ function FrontPage() {
   return (
     <React.Fragment>
       <WelcomeApplicationDialog/>
+      <NotImplementedYet hook={unimplementedHook}/>
       <Box>
-	<FrontPageDrawer/>
+	<FrontPageDrawer hook={unimplementedHook}/>
       <FullBoundedUSMap
 	mapRef={mapState}
 	id={styles.mainMap}
