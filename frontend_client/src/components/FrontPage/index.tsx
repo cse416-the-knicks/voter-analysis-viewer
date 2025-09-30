@@ -116,7 +116,7 @@ function FrontPageDrawer({hook}) {
 	<Divider/>
 	<ListItem> <ListItemText primary={"DISPLAY"}/> </ListItem>
 	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"VOTING EQUIPMENT AGE"}/> </ListItemButton> </ListItem>
-	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"VOTING EQUIPMENT 2024 SUMMARY"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-summary")}> <ListItemText primary={"VOTING EQUIPMENT 2024 SUMMARY"}/> </ListItemButton> </ListItem>
       </List>
       <Button variant='contained' color='secondary'>
 	<HighlightOffIcon/> Reset to Default
