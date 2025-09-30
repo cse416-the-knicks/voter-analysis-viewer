@@ -1,13 +1,13 @@
 import * as d3 from "d3";
 import type { DisplayData } from "./DisplayData";
 
-interface BubbleChartAttributes {
+interface BubbleChartProps {
     data: DisplayData[];
     width: number;
     height: number;
 }
 
-function BubbleChart({data, width, height}: BubbleChartAttributes) {
+function BubbleChart({data, width, height}: BubbleChartProps) {
     const pop = d3.max(data, x => x.population)!;
     const radius = d3.scaleSqrt().domain([0, pop]).range([0, 50]);
     const color = d3.scaleOrdinal(d3.schemeCategory10);

@@ -27,7 +27,7 @@ import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
 
 import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
-import { mockData } from '../DataDisplays/DisplayData';
+import { mockData, provisionalBallotData } from '../DataDisplays/DisplayData';
 import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart from '../DataDisplays/BarChart';
@@ -116,9 +116,9 @@ function StateInformationView() {
 	  <Typography variant="h3" component="h2">
 	    {FIPS_TO_STATES_MAP[fipsCode!]}
 	  </Typography>
-	  <StateMap width={"600px"} height={"350px"} fipsCode={fipsCode}/>
+	  <StateMap width={"600px"} height={"900px"} fipsCode={fipsCode}/>
 	</Paper>
-	<BubbleChart data={mockData} width={750} height={400}/>
+	{/* <BubbleChart data={mockData} width={750} height={400}/> */}
       </Stack>
       <Stack spacing={3} sx={{ mt: 2, ml: 8, height: "50%", width: "50%" }}>
 	<DataGrid
@@ -136,7 +136,7 @@ function StateInformationView() {
 	    disableRowSelectionOnClick
 	/>
       <Paper>
-            <BarChart data={mockData} width={750} height={375}/>
+            <BarChart stateInfo={provisionalBallotData[getDetailStateType(fipsCode!)]}/>
       </Paper>
       </Stack>
     </div>
