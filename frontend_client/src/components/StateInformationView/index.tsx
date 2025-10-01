@@ -1,5 +1,6 @@
 import type { GridColDef } from '@mui/x-data-grid';
 
+import { useNavigate } from 'react-router';
 import { useParams } from 'react-router';
 import { DataGrid } from '@mui/x-data-grid';
 import InboxIcon from '@mui/icons-material/Inbox';
@@ -12,6 +13,7 @@ import ScannerIcon from '@mui/icons-material/Scanner';
 import Stack from '@mui/material/Stack';
 
 import { useMap } from "react-leaflet";
+import useKeyDown from '../../hooks/useKeyDown';
 
 import { gradientMapNearest, gradientMapPoints } from "../../helpers/GradientMap";
 
@@ -397,6 +399,9 @@ function MapLegend() {
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
+  const navigate = useNavigate();
+  
+  useKeyDown('Escape', () => navigate('/'));
 
   const dropDownSections = [
     {
@@ -439,6 +444,7 @@ function StateInformationView() {
     }
     return result;
   }
+
 
   // TODO: dynamically calculate height.
   return (

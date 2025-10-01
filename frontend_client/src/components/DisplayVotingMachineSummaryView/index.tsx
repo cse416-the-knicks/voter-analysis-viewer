@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useNavigate } from 'react-router';
+import useKeyDown from '../../hooks/useKeyDown';
 
 import {
   Box,
@@ -59,17 +60,11 @@ const columns: GridColDef<(VotingEquipmentModel)[number]>[] = [
   },
 ];
 
-
-// 	  <Typography variant="h3" component="h2">
-// 		Display Voting Machine Summary
-// 	  </Typography>
-// 	  <Typography component="p">
-// This is some text, but this should be a table some day!
-// 	  </Typography>
-
 function DisplayVotingMachineSummaryView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
+
+  useKeyDown('Escape', () => navigate('/'));
 
   useEffect(
     function () {
