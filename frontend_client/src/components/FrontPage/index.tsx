@@ -22,6 +22,7 @@ import {
   DialogContentText,
   DialogTitle,
   Box,
+  Typography,
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
@@ -42,12 +43,12 @@ function WelcomeApplicationDialog() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-	    Welcome to the Knicks Teams CSE416.01 Voter-Analysis Project
+	    Welcome to <b>the Knicks</b> Teams CSE416.01 Voter-Analysis Project
 	    <br/>
 	    <br/>
-	    Backend: Java with SpringBoot, GSON
+	    Backend: Java with SpringBoot, Jackson
 	    <br/>
-	    Frontend: Typescript with React, and MaterialUI
+	    Frontend: Typescript with React, Leaflet, D3, and MaterialUI
 	    <br/>
 	    Database: Postgres SQL Database instance.
 	    <br/>
@@ -150,6 +151,11 @@ function FrontPage() {
 	id={styles.mainMap}
 	onStateClick={onStateClick}>
       </FullBoundedUSMap>
+	<br/>
+	<br/>
+	  <Typography variant="p" component="p">
+  This Voter-Analysis Application was developed by 'The Knicks' with love ♡
+	  </Typography>
       </Box>
     </React.Fragment>
   );

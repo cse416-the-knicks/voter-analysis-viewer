@@ -27,7 +27,7 @@ function getDetailStateType(
       return DETAIL_STATE_TYPE_DEMOCRAT;
     } break;
     case "40": {
- return DETAIL_STATE_TYPE_REPUBLICAN;
+      return DETAIL_STATE_TYPE_REPUBLICAN;
     } break;
     case "18": {
       return DETAIL_STATE_TYPE_VOTER_REGISTRATION;

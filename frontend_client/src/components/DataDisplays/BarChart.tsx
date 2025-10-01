@@ -22,7 +22,7 @@ function BarChart({stateInfo}: BarChartProperties) {
         <svg width={700} height={500} style={{ background: "#ffffff" }}>
             <g transform={`translate(${barMargin.left}, ${barMargin.top})`}>
                 {stateInfo.data.map((x) => (
-                    <rect key={x.category} y={verticalAxis(x.category)!} width={horizontalAxis(x.value)} height={verticalAxis.bandwidth()} fill="#1590d6"/>
+                    <rect key={x.category} y={verticalAxis(x.category)!} width={horizontalAxis(x.value)} height={verticalAxis.bandwidth()} fill="hsl(288, 90%, 64%)"/>
                 ))}
                 
                 {stateInfo.data.map((x) => (

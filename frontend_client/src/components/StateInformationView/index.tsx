@@ -330,18 +330,19 @@ function getRandomInteger(seed: string, min: number, max: number): number {
 }
 
 const GradientMap0 = {
-  0:     "hsl(210, 10%, 80%)",  // very pale blue
-  1000:  "hsl(210, 20%, 78%)",
-  2000:  "hsl(210, 30%, 76%)",
-  3000:  "hsl(210, 40%, 74%)",
-  4000:  "hsl(210, 50%, 72%)",
-  5000:  "hsl(210, 60%, 70%)",
-  6000:  "hsl(210, 70%, 68%)",
-  7000:  "hsl(210, 80%, 66%)",
-  8000:  "hsl(210, 90%, 64%)",
-  9000:  "hsl(210, 95%, 62%)",
-  10000: "hsl(210, 100%, 60%)", // light but fully saturated blue
+  0:     "hsl(288, 10%, 80%)",   // very pale purple
+  1000:  "hsl(288, 20%, 78%)",
+  2000:  "hsl(288, 30%, 76%)",
+  3000:  "hsl(288, 40%, 74%)",
+  4000:  "hsl(288, 50%, 72%)",
+  5000:  "hsl(288, 60%, 70%)",
+  6000:  "hsl(288, 70%, 68%)",
+  7000:  "hsl(288, 80%, 66%)",
+  8000:  "hsl(288, 90%, 64%)",
+  9000:  "hsl(288, 95%, 62%)",
+  10000: "hsl(288, 100%, 60%)",  // full, vibrant purple
 };
+;
 
 function MapLegend() {
   const leafletMap = useMap();
@@ -432,6 +433,9 @@ function StateInformationView() {
       const gradientMapNearestColor = gradientMapNearest(randomNumber, GradientMap0);
       result.fillColor = gradientMapNearestColor;
       result.fillOpacity = 1.0;
+    } else {
+      result.fillColor = "hsl(288, 90%, 64%)";
+      result.fillOpacity = 0.5;
     }
     return result;
   }
