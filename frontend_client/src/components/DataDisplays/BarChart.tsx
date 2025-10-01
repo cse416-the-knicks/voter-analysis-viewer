@@ -1,62 +1,92 @@
 import * as d3 from "d3";
 import { provisionalCategories } from "./DisplayData";
+import { useState, useEffect, useRef } from 'react';
 
 interface BarChartProperties {
-    stateInfo: {
-        stateName: string;
-      XTitle: string;
-      Title: strnig;
-        data: {category: string; value: number}[];
-    }
+  stateInfo: {
+    stateName: string;
+    XTitle: string;
+    Title: string;
+    data: {category: string; value: number}[];
+  }
 }
 
 function BarChart({stateInfo}: BarChartProperties) {
-    const barMargin = { top: 25, right: 45, bottom: 25, left: 200 }
-    const barWidth = 700 - barMargin.left - barMargin.right
-    const barHeight = 500 - barMargin.top - barMargin.bottom
+  const barMargin = { top: 25, right: 45, bottom: 25, left: 200 }
+  const barWidth = 700 - barMargin.left - barMargin.right
+  const barHeight = 500 - barMargin.top - barMargin.bottom
 
-    const horizontalAxis = d3.scaleLinear().domain([0, d3.max(stateInfo.data, (x) => x.value)!]).range([0, barWidth]);
-    const verticalAxis = d3.scaleBand().domain(stateInfo.data.map((x) => x.category)).range([0, barHeight]).padding(0.3);
-    
-    return (
-        <svg width={700} height={500} style={{ background: "#ffffff" }}>
-            <g transform={`translate(${barMargin.left}, ${barMargin.top})`}>
-                {stateInfo.data.map((x) => (
-                    <rect key={x.category} y={verticalAxis(x.category)!} width={horizontalAxis(x.value)} height={verticalAxis.bandwidth()} fill="hsl(288, 90%, 64%)"/>
-                ))}
+  const horizontalAxis = d3.scaleLinear().domain([0, d3.max(stateInfo.data, (x) => x.value)!]).range([0, barWidth]);
+  const verticalAxis = d3.scaleBand().domain(stateInfo.data.map((x) => x.category)).range([0, barHeight]).padding(0.3);
+
+  const [boundingRectangle, setBoundingRectangle] = useState(null);
+  const [tooltipText, setTooltipText] = useState("TEXT!");
+
+  const svgRef = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    const svg = d3.select(svgRef.current);
+    const rectangleSelector = svg.selectAll("rect");
+    rectangleSelector
+      .on("mouseover",
+	function (event, d) {
+	  d3.select(this).attr("fill", "hsl(288, 90%, 90%)");
+	  const r = this.getBoundingClientRect();
+	  setBoundingRectangle(this.getBoundingClientRect());
+	  console.log(this);
+	  setTooltipText(this.getAttribute("data-value") + "?");
+	})
+      .on("mouseout",
+	function (event, d) {
+	  d3.select(this).attr("fill", "hsl(288, 90%, 44%)");
+	  setBoundingRectangle(null);
+	});
+    return () => rectangleSelector.on("mouseover", null).on("mouseout", null);
+    // console.log();
+  }, [stateInfo]);
+
+  return (
+    <>
+    <svg ref={svgRef} width={700} height={500} style={{ background: "#ffffff" }}>
+      <g transform={`translate(${barMargin.left}, ${barMargin.top})`}>
+        {stateInfo.data.map((x) => (
+	  //@ts-expect-error: This is not a real error, custom attributes are supported in React 16+
+          <rect key={x.category} y={verticalAxis(x.category)!} data-value={x.value} width={horizontalAxis(x.value)} height={verticalAxis.bandwidth()} fill="hsl(288, 90%, 44%)"/>
+        ))}
                 
-                {stateInfo.data.map((x) => (
-		  <text
-			key={x.category}
-			x={-7}
-			y={(verticalAxis(x.category)! ?? 0) + verticalAxis.bandwidth()/2}
-			textAnchor="end"
-			alignmentBaseline="middle"
-			fontSize={13}
-			>
-			{provisionalCategories[x.category] ?? x.category}
-			</text>
-                ))}
+        {stateInfo.data.map((x) => (
+	  <text
+	    key={x.category}
+	    x={-7}
+	    y={(verticalAxis(x.category)! ?? 0) + verticalAxis.bandwidth()/2}
+	    textAnchor="end"
+	    alignmentBaseline="middle"
+	    fontSize={13}
+	  >
+	    {provisionalCategories[x.category] ?? x.category}
+	  </text>
+        ))}
                 
 
-                {/* Title */}
-              <text x={barWidth-250} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">{stateInfo.Title} - {stateInfo.stateName}</text>
+        {/* Title */}
+        <text x={barWidth-250} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">{stateInfo.Title} - {stateInfo.stateName}</text>
 
-                {horizontalAxis.ticks().map((tick => (
-                    <g key={tick} transform={`translate(${horizontalAxis(tick)},${barHeight})`}>
-                        <line x1="0" y1={barHeight-10} y2={barHeight} stroke="black"></line>
-                        <text x={0} y={barHeight+15} textAnchor="middle" fontSize={12}>{tick.toString()}</text>
-                    </g>
-                )))}
+        {horizontalAxis.ticks().map((tick => (
+          <g key={tick} transform={`translate(${horizontalAxis(tick)},${barHeight})`}>
+            <line x1="0" y1={barHeight-10} y2={barHeight} stroke="black"></line>
+            <text x={0} y={barHeight+15} textAnchor="middle" fontSize={12}>{tick.toString()}</text>
+          </g>
+        )))}
 
-                <line x1={0} y1={barHeight} x2={barWidth} y2={barHeight} stroke="black"/>
+        <line x1={0} y1={barHeight} x2={barWidth} y2={barHeight} stroke="black"/>
 
-              <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>{stateInfo.XTitle}</text>
+        <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>{stateInfo.XTitle}</text>
 
-                <text x={barWidth-295} y={barHeight+20} fontSize={15}>Ballots Cast</text>
-            </g>
-        </svg>
-    )   
+        <text x={barWidth-295} y={barHeight+20} fontSize={15}>Ballots Cast</text>
+      </g>
+    </svg>
+      {boundingRectangle && <p style={{position: "absolute", left: boundingRectangle.x + "px", top: boundingRectangle.y + "px", background: "white"}}>{tooltipText}</p>}
+    </>
+  )   
 }
 
 export default BarChart;
