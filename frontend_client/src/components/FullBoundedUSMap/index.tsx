@@ -62,6 +62,7 @@ function FullBoundedUSMap(
     children,
     onStateClick,
   } : FullBoundedUSMapProperties) {
+  const [highlightedState, setHighlightedState] = React.useState<string | null>(null);
   const onFeatureClickHandler =
     (event: L.LeafletMouseEvent) => {
       const target = event.target as L.FeatureGroup;
@@ -70,16 +71,29 @@ function FullBoundedUSMap(
 	onStateClick(featureData.id! as FipsCode);
       }
     };
+  const onFeatureMouseOver =
+    (event: L.LeafletMouseEvent) => {
+      const target = event.target as L.FeatureGroup;
+      const featureData = target.feature as GeoJSON.Feature;
+      setHighlightedState(featureData.id! as string);
+    };
+  const onFeatureMouseLeave =
+    () => {
+      setHighlightedState(null);
+    };
   const onEachFeatureHandler = 
     (feature: GeoJSON.Feature, layer: L.Layer) => {
       const { id } = feature; // Should not be null.
       const stateName = FIPS_TO_STATES_MAP[id!];
       const defaultHandlers = {
-	click: onFeatureClickHandler
+	click: onFeatureClickHandler,
+	mouseover: onFeatureMouseOver,
+	mouseout: onFeatureMouseLeave,
       };
       let ttname = stateName;
-      if (getDetailStateType(id) !== "DETAIL_STATE_TYPE_NONE") {
-	ttname += " - " + humanReadableStateType(getDetailStateType(id));
+      const detailStateType = getDetailStateType(id! as string);
+      if (detailStateType !== "DETAIL_STATE_TYPE_NONE") {
+	ttname += " - " + humanReadableStateType(detailStateType);
       }
       layer.bindTooltip(ttname);
       layer.on(defaultHandlers);
@@ -90,14 +104,19 @@ function FullBoundedUSMap(
       const result = {
 	fillColor: "#00000000",
 	fillOpacity: 0,
-	color: "darkblue",
+	color: "purple",
 	weight: 1,
       };
 
       if (fipsCode && isDetailState(fipsCode)) {
 	result.weight = 4;
-	result.fillOpacity = 0.4;
-	result.fillColor = 'lightblue';
+	result.fillOpacity = 0.6;
+	result.fillColor = '#CBC3E3';
+      }
+
+      if (highlightedState === fipsCode) {
+	result.fillOpacity = 0.6;
+	result.fillColor = 'purple';
       }
 
       return result;
