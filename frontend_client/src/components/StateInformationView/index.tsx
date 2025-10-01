@@ -27,9 +27,10 @@ import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
 
 import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
-import { mockData } from '../DataDisplays/DisplayData';
+import { mockData, provisionalBallotData } from '../DataDisplays/DisplayData';
 import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
+import BarChart from '../DataDisplays/BarChart';
 
 const columns: GridColDef<(typeof rows)[number]>[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -108,18 +109,18 @@ function StateInformationView() {
 	  stateType={getDetailStateType(fipsCode!)}/>
       </Box>
 
-      <Stack direction="column">
+      <Stack spacing={3} direction="column" sx={{ mt: 4, ml: 'auto' }}>
 	<Paper
 	  sx={{ mt: 2, ml: 'auto' }}
 	  elevation={5}>
 	  <Typography variant="h3" component="h2">
 	    {FIPS_TO_STATES_MAP[fipsCode!]}
 	  </Typography>
-	  <StateMap width={"600px"} height={"350px"} fipsCode={fipsCode}/>
+	  <StateMap width={"600px"} height={"900px"} fipsCode={fipsCode}/>
 	</Paper>
-	<BubbleChart data={mockData} width={600} height={350}/>
+	{/* <BubbleChart data={mockData} width={750} height={400}/> */}
       </Stack>
-      <Paper elevation={5} sx={{ mt: 2, ml: 8, height: "50%", width: "50%" }}>
+      <Stack spacing={3} sx={{ mt: 2, ml: 8, height: "50%", width: "50%" }}>
 	<DataGrid
 	    rows={rows}
 	    columns={columns}
@@ -134,7 +135,10 @@ function StateInformationView() {
 	    checkboxSelection
 	    disableRowSelectionOnClick
 	/>
+      <Paper>
+            <BarChart stateInfo={provisionalBallotData[getDetailStateType(fipsCode!)]}/>
       </Paper>
+      </Stack>
     </div>
   );
 }
