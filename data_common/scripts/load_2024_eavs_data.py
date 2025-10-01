@@ -146,8 +146,8 @@ df.to_sql(
     "eavs_data",
     engine,
     schema="app",
-    if_exists="append",
+    if_exists="replace",
     index=False
 )
 
-print("Finished inserting provisional ballot data into the database")
+print("Finished inserting preliminary eavs data into the database")

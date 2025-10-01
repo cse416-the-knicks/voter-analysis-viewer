@@ -303,6 +303,8 @@ df.to_sql(
     "states",
     engine,
     schema="app",
-    if_exists="append",
+    if_exists="replace",
     index=False
 )
+
+print("Finished inserting preliminary states data into the database")
