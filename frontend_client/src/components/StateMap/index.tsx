@@ -17,7 +17,7 @@ interface StateMapParameters {
   height: CssUnitValue;
   // TODO(jerry): TEMPORARY!!!! I NEED TO THINK OF A BETTER PLACE TO PUT THIS!
   styleFunction: L.StyleFunction;
-  children: React.Node;
+  children: React.ReactNode;
 };
 
 function MapFitToBoundsInternal(
@@ -75,6 +75,15 @@ function StateMap(
   }
 
   if (readyToDisplay) {
+    const onEachFeatureHandler =
+      (feature: GeoJSON.Feature, layer: L.Layer) => {
+	const { properties } = feature;
+	if (properties!.NAMELSAD) {
+	  layer.bindTooltip(properties!.NAMELSAD);
+	} else {
+	  // no tool, tip we just have the whole state
+	}
+      }
     return (
       <MapContainer
 	ref={mapRef}
@@ -92,14 +101,7 @@ function StateMap(
 	<GeoJSON
 	  style={styleFunction}
 	  data={stateGeoJson!}
-	  onEachFeature={(feature, layer) => {
-	    const { properties } = feature;
-	    if (properties.NAMELSAD) {
-	      layer.bindTooltip(properties.NAMELSAD);
-	    } else {
-	      // no tool, tip we just have the whole state
-	    }
-	  }}/>
+	  onEachFeature={onEachFeatureHandler}/>
 	<MapFitToBoundsInternal boundsToFit={stateMapBounds!}/>
 	{children}
       </MapContainer>

@@ -4,8 +4,7 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
+.logo {height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
@@ -38,4 +37,12 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Leaflet Override */
+.leaflet-tooltip {
+    font-size: 1.5em;
+    /* background-color: purple; */
+    /* color: white; */
+    font-weight: bolder;
 }
