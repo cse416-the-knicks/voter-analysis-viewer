@@ -5,7 +5,7 @@ import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
 import { isDetailState } from './detailedStatesInfo';
 import teamLogo from '../../assets/knickslogo.png'
-import { Stack, Typography } from '@mui/material';
+import { Typography, AppBar, Toolbar, Box } from '@mui/material';
 
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
@@ -85,12 +85,19 @@ function FullBoundedUSMap(
 
   return (
     <React.Fragment>
-      <Stack direction="row" alignItems="center" spacing={2}>
-        <Typography fontSize={50} paddingBottom="15px" paddingLeft="200px">
-          Team Knickerbockers
-          <img src={teamLogo} style={{ width:"15%", marginLeft:"100px", }}></img>
-        </Typography>
-      </Stack>
+      <AppBar sx={{ backgroundColor: "solidblue"}}>
+        <Toolbar>
+          <Typography fontFamily="inherit" fontSize={50} paddingBottom="15px" paddingLeft="685px">
+            Team Knickerbockers
+          </Typography>
+          <Box
+            component="img"
+            sx={{height: "112px", width: "auto", paddingLeft: "25px"}}
+            src={teamLogo}
+            alt="Knicks Logo"
+          />
+        </Toolbar>
+      </AppBar>
       <MapContainer
         zoom={Math.max(zoom ?? 0, MIN_ACCEPTABLE_ZOOM)}
         minZoom={MIN_ACCEPTABLE_ZOOM}
