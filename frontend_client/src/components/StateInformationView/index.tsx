@@ -2,7 +2,7 @@ import type { GridColDef } from '@mui/x-data-grid';
 
 import { useNavigate } from 'react-router';
 import { useParams } from 'react-router';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GRID_CHECKBOX_SELECTION_COL_DEF } from '@mui/x-data-grid';
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BallotIcon from '@mui/icons-material/Ballot';
@@ -46,6 +46,10 @@ import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart from '../DataDisplays/BarChart';
 
 const provisionColumns: GridColDef<(typeof rows)[number]>[] = [
+    {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // This hides the "Select All" checkbox
+  },
   { field: 'countyName', headerName: 'County', width: 120 },
   { field: 'totalBallotsCast', headerName: 'Total Ballots Cast', type: 'number', width: 100 },
   { field: 'ballotReasonNotOnList', headerName: 'Not On List', type: 'number', width: 100 },
@@ -60,12 +64,20 @@ const provisionColumns: GridColDef<(typeof rows)[number]>[] = [
   { field: 'ballotReasonOther', headerName: 'Other', type: 'number', width: 100 },
 ];
 const activeVoterColumns: GridColDef<(typeof rows)[number]>[] = [
+    {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // This hides the "Select All" checkbox
+  },
   { field: 'countyName', headerName: 'County', width: 120 },
   { field: 'total', headerName: 'Total Voters Registered', type: 'number', width: 100 },
   { field: 'active', headerName: 'Active Voters', type: 'number', width: 100 },
   { field: 'inactive', headerName: 'Inactive Voters', type: 'number', width: 100 },
 ];
 const pollbookColumns: GridColDef<(typeof rows)[number]>[] = [
+    {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // This hides the "Select All" checkbox
+  },
   { field: 'countyName', headerName: 'County', width: 120 },
   { field: 'totalRemoved', headerName: 'Total Removals', type: 'number', width: 100 },
   { field: 'removedReasonMoved', headerName: 'Moved', type: 'number', width: 100 },
@@ -78,6 +90,10 @@ const pollbookColumns: GridColDef<(typeof rows)[number]>[] = [
   { field: 'removedOther', headerName: 'Other', type: 'number', width: 100 },
 ];
 const mailBallotRejectionColumns: GridColDef<(typeof rows)[number]>[] = [
+    {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // This hides the "Select All" checkbox
+  },
   { field: 'countyName', headerName: 'County', width: 50 },
   { field: 'rejectTotal', headerName: 'Total Rejections', type: 'number', width: 50 },
   { field: 'rejectLate', headerName: 'Late', type: 'number', width: 100 },
@@ -201,6 +217,12 @@ function StateInformationView() {
       ],
     }
     ); // do not care
+  const [rowSelectionModel, setRowSelectionModel] =
+  useState<GridRowSelectionModel>({
+    type: 'include', // or 'exclude'
+    ids: new Set()
+  });
+
   const [ GradientMap0, setGM] = useState<any>(
     {
       0:     "hsl(288, 10%, 80%)",   // very pale purple
@@ -247,7 +269,6 @@ function StateInformationView() {
 	    newgm[(bucketDiv * i).toString()] = ColorBuckets[i];
 	  }
 	  setGM(newgm);
-	  console.log(aggregateData[0]);
 	  barDataSet({
 	    stateName: FIPS_TO_STATES_MAP[fipsCode!],
 	    XTitle: "Ballots Cast",
@@ -303,7 +324,6 @@ function StateInformationView() {
 	    newgm[(bucketDiv * i).toString()] = ColorBuckets[i];
 	  }
 	  setGM(newgm);
-	  console.log(aggregateData[0]);
 	  barDataSet({
 	    stateName: FIPS_TO_STATES_MAP[fipsCode!],
 	    XTitle: "Removal Reasons",
@@ -334,7 +354,6 @@ function StateInformationView() {
 	  }
 	  setGM(newgm);
 
-	  console.log(aggregateData[0]);
 
 	  barDataSet({
 	    stateName: FIPS_TO_STATES_MAP[fipsCode!],
@@ -402,12 +421,12 @@ function StateInformationView() {
     const result = {
 	fillColor: "#00000000",
 	fillOpacity: 0,
-	color: "darkblue",
+	color: "purple",
 	weight: 1,
     };
 
+    const t = feature.properties.STATEFP as string+feature.properties.COUNTYFP as string + "00000";
     if (stateType !== "DETAIL_STATE_TYPE_NONE") {
-      const t = feature.properties.STATEFP as string+feature.properties.COUNTYFP as string + "00000";
       let number = 0;
       const n = activeDataStateHook[0];
       if (n == 0) 
@@ -419,13 +438,19 @@ function StateInformationView() {
       if (n == 3)
 	number = rowData.find((x) => x.fullRegionId === t)?.rejectTotal;
       const gradientMapNearestColor = gradientMapNearest(number || 0, GradientMap0);
-      console.log(GradientMap0, number);
       result.fillColor = gradientMapNearestColor;
       result.fillOpacity = 1.0;
+      for (const tt of rowSelectionModel.ids) {
+	if (t === tt) {
+	  result.weight = 4;
+	  break;
+	}
+      }
     } else {
       result.fillColor = "hsl(288, 90%, 64%)";
       result.fillOpacity = 0.5;
     }
+
     return result;
   }
 
@@ -458,7 +483,15 @@ function StateInformationView() {
       </Stack>
       <Stack spacing={3} sx={{ mt: 2, ml: 4, height: "50%", width: "50%" }}>
 	<DataGrid
+	  disableColumnMenu
+	  disableColumnSelector
+	  
 	  rows={rowData}
+	  onRowSelectionModelChange={
+	    (x) => {
+	      setRowSelectionModel(x);
+	    }
+	  }
 	  columns={getColumnData(activeDataStateHook[0])}
 	    initialState={{
 	    pagination: {

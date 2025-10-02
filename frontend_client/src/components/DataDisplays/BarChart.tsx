@@ -23,7 +23,6 @@ function BarChart({stateInfo}: BarChartProperties) {
   const [tooltipText, setTooltipText] = useState("TEXT!");
 
   const svgRef = useRef<SVGSVGElement>(null);
-  console.log(stateInfo);
   useEffect(() => {
     const svg = d3.select(svgRef.current);
     const rectangleSelector = svg.selectAll("rect");
@@ -33,7 +32,6 @@ function BarChart({stateInfo}: BarChartProperties) {
 	  d3.select(this).attr("fill", "hsl(288, 90%, 90%)");
 	  const r = this.getBoundingClientRect();
 	  setBoundingRectangle(this.getBoundingClientRect());
-	  console.log(this);
 	  setTooltipText(this.getAttribute("data-value") + "?");
 	})
       .on("mouseout",
@@ -42,7 +40,6 @@ function BarChart({stateInfo}: BarChartProperties) {
 	  setBoundingRectangle(null);
 	});
     return () => rectangleSelector.on("mouseover", null).on("mouseout", null);
-    // console.log();
   }, [stateInfo]);
 
   return (
