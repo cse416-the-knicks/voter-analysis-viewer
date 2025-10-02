@@ -13,7 +13,7 @@ interface BarChartProperties {
 
 function BarChart({stateInfo}: BarChartProperties) {
   const barMargin = { top: 25, right: 45, bottom: 25, left: 200 }
-  const barWidth = 800 - barMargin.left - barMargin.right
+  const barWidth = 700 - barMargin.left - barMargin.right
   const barHeight = 500 - barMargin.top - barMargin.bottom
 
   const horizontalAxis = d3.scaleLinear().domain([0, d3.max(stateInfo.data, (x) => x.value)!]).range([0, barWidth]);
@@ -47,7 +47,7 @@ function BarChart({stateInfo}: BarChartProperties) {
 
   return (
     <>
-    <svg ref={svgRef} width={800} height={500} style={{ background: "#ffffff" }}>
+    <svg ref={svgRef} width={700} height={500} style={{ background: "#ffffff" }}>
       <g transform={`translate(${barMargin.left}, ${barMargin.top})`}>
         {stateInfo.data.map((x) => (
 	  //@ts-expect-error: This is not a real error, custom attributes are supported in React 16+
@@ -82,7 +82,7 @@ function BarChart({stateInfo}: BarChartProperties) {
 
         <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>{stateInfo.XTitle}</text>
 
-        <text x={barWidth-295} y={barHeight+20} fontSize={15}>Ballots Cast</text>
+        <text x={barWidth-295} y={barHeight+20} fontSize={15}>{stateInfo.XTitle}</text>
       </g>
     </svg>
       {boundingRectangle && <p style={{position: "absolute", left: boundingRectangle.x + "px", top: boundingRectangle.y + "px", background: "white"}}>{tooltipText}</p>}

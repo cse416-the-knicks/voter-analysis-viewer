@@ -59,9 +59,55 @@ const provisionColumns: GridColDef<(typeof rows)[number]>[] = [
   { field: 'balloReasonSameDayRegistration', headerName: 'Used SDR', type: 'number', width: 100 },
   { field: 'ballotReasonOther', headerName: 'Other', type: 'number', width: 100 },
 ];
+const activeVoterColumns: GridColDef<(typeof rows)[number]>[] = [
+  { field: 'countyName', headerName: 'County', width: 120 },
+  { field: 'total', headerName: 'Total Voters Registered', type: 'number', width: 100 },
+  { field: 'active', headerName: 'Active Voters', type: 'number', width: 100 },
+  { field: 'inactive', headerName: 'Inactive Voters', type: 'number', width: 100 },
+];
+const pollbookColumns: GridColDef<(typeof rows)[number]>[] = [
+  { field: 'countyName', headerName: 'County', width: 120 },
+  { field: 'totalRemoved', headerName: 'Total Removals', type: 'number', width: 100 },
+  { field: 'removedReasonMoved', headerName: 'Moved', type: 'number', width: 100 },
+  { field: 'removedReasonDeceased', headerName: 'Deceased', type: 'number', width: 100 },
+  { field: 'removedReasonFelony', headerName: 'Felony', type: 'number', width: 100 },
+  { field: 'removedReasonFailedToConfirm', headerName: 'Failed To Confirm', type: 'number', width: 100 },
+  { field: 'removedReasonIncompetent', headerName: 'Incompetent', type: 'number', width: 100 },
+  { field: 'removedReasonRequested', headerName: 'Requested', type: 'number', width: 100 },
+  { field: 'removedReasonDuplicate', headerName: 'Duplicate', type: 'number', width: 100 },
+  { field: 'removedOther', headerName: 'Other', type: 'number', width: 100 },
+];
+const mailBallotRejectionColumns: GridColDef<(typeof rows)[number]>[] = [
+  { field: 'countyName', headerName: 'County', width: 50 },
+  { field: 'rejectTotal', headerName: 'Total Rejections', type: 'number', width: 50 },
+  { field: 'rejectLate', headerName: 'Late', type: 'number', width: 100 },
+  { field: 'rejectNoSignature', headerName: 'No Signature', type: 'number', width: 100 },
+  { field: 'rejectNoWitnessSignature', headerName: 'No Witness Signature', type: 'number', width: 50 },
+  { field: 'rejectSignatureMismatch', headerName: 'Signature Mismatch', type: 'number', width: 50 },
+  { field: 'rejectUnofficialEnv', headerName: 'Unofficial Envelope', type: 'number', width: 50 },
+  { field: 'rejectBallotMissing', headerName: 'Ballot Missing', type: 'number', width: 50 },
+  { field: 'rejectNoSecrecyEnvironment', headerName: 'No Secrecy Envelope', type: 'number', width: 50 },
+  { field: 'rejectMultipleInEnvironment', headerName: 'Multiple in Envelope', type: 'number', width: 50 },
+  { field: 'rejectUnsealedEnvironment', headerName: 'Unsealed Envelope', type: 'number', width: 50 },
+  { field: 'rejectNoPostMark', headerName: 'No Postmark', type: 'number', width: 50 },
+  { field: 'rejectNoAddress', headerName: 'No Address', type: 'number', width: 50 },
+  { field: 'rejectVoterDeceased', headerName: 'Voter Deceased', type: 'number', width: 50 },
+  { field: 'rejectDuplicateVote', headerName: 'Duplicate Vote', type: 'number', width: 50 },
+  { field: 'rejectMissingDocumentation', headerName: 'Missing Documentation', type: 'number', width: 50 },
+  { field: 'rejectNotEligible', headerName: 'Not Eligible', type: 'number', width: 100 },
+  { field: 'rejectNoApplication', headerName: 'No Application', type: 'number', width: 100 },
+  { field: 'rejectOther', headerName: 'Other', type: 'number', width: 100 },
+];
+
 
 function getColumnData(n) {
+  if (n == 0)
   return provisionColumns;
+  if (n == 1)
+    return activeVoterColumns;
+  if (n == 2)
+    return pollbookColumns;
+  return mailBallotRejectionColumns;
 }
 
 ;
@@ -174,51 +220,155 @@ function StateInformationView() {
   useEffect(
     function() {
       (async function () {
-	const data = await getProvisionalBallots(fipsCode!, {aggregate: false});
-	const aggregateData = await getProvisionalBallots(fipsCode!, {aggregate: true});
+	const n = activeDataStateHook[0];
 	
-	const ColorBuckets = [
-	  "hsl(288, 10%, 80%)",
-	  "hsl(288, 20%, 78%)",
-	  "hsl(288, 30%, 76%)",
-	  "hsl(288, 40%, 74%)",
-	  "hsl(288, 50%, 72%)",
-	  "hsl(288, 60%, 70%)",
-	  "hsl(288, 70%, 68%)",
-	  "hsl(288, 80%, 66%)",
-	  "hsl(288, 90%, 64%)",
-	  "hsl(288, 95%, 62%)",
-	  "hsl(288, 100%, 60%)",  // full, vibrant purple
-	]
+	  const ColorBuckets = [
+	    "hsl(288, 10%, 80%)",
+	    "hsl(288, 20%, 78%)",
+	    "hsl(288, 30%, 76%)",
+	    "hsl(288, 40%, 74%)",
+	    "hsl(288, 50%, 72%)",
+	    "hsl(288, 60%, 70%)",
+	    "hsl(288, 70%, 68%)",
+	    "hsl(288, 80%, 66%)",
+	    "hsl(288, 90%, 64%)",
+	    "hsl(288, 95%, 62%)",
+	    "hsl(288, 100%, 60%)",  // full, vibrant purple
+	  ]
+	if (n == 0) {
+	  const data = await getProvisionalBallots(fipsCode!, {aggregate: false});
+	  const aggregateData = await getProvisionalBallots(fipsCode!, {aggregate: true});
 
-	const high = Math.max(... data.map((x) => x.totalBallotsCast));
-	const bucketDiv = high / ColorBuckets.length;
-	const newgm = {};
-	for (let i = 0; i < ColorBuckets.length; ++i) {
-	  // close enough
-	  newgm[(bucketDiv * i).toString()] = ColorBuckets[i];
+	  const high = Math.max(... data.map((x) => x.totalBallotsCast))*0.85;
+	  const bucketDiv = Math.ceil(high / ColorBuckets.length);
+	  const newgm = {};
+	  for (let i = 0; i < ColorBuckets.length; ++i) {
+	    // close enough
+	    newgm[(bucketDiv * i).toString()] = ColorBuckets[i];
+	  }
+	  setGM(newgm);
+	  console.log(aggregateData[0]);
+	  barDataSet({
+	    stateName: FIPS_TO_STATES_MAP[fipsCode!],
+	    XTitle: "Ballots Cast",
+	    Title: "Provisional Ballots",
+	    data: [
+	      {category: "Total Ballots", value: aggregateData[0].totalBallotsCast},
+	      {category: "Not On List", value: aggregateData[0].ballotReasonNotOnList},
+	      {category: "No ID", value: aggregateData[0].ballotReasonNoIdAvailable},
+	      {category: "Challenged Official", value: aggregateData[0].ballotReasonChallengedByOfficial},
+	      {category: "Challenged Other", value: aggregateData[0].ballotReasonChallengedByOther},
+	      {category: "Wrong Precinct", value: aggregateData[0].ballotReasonWrongPrecinct},
+	      {category: "Not Updated Address", value: aggregateData[0].ballotReasonNotUpdatedAddress},
+	      {category: "Did Not Surrender", value: aggregateData[0].ballotReasonDidNotSurrender},
+	      {category: "Extended Voter Hours", value: aggregateData[0].ballotReasonExtendedVotingHours},
+	      {category: "Used SDR", value: aggregateData[0].ballotReasonSameDayRegistration},
+	      {category: "Other", value: aggregateData[0].ballotReasonOther},
+	    ],
+	  });
+	  rowDataSet(data.map((x) => {return {id: x.fullRegionId,...x}}));
+	} else if (n == 1) {
+	  const data = await getVoterRegistrationCounts(fipsCode!, {aggregate: false});
+	  const aggregateData = await getVoterRegistrationCounts(fipsCode!, {aggregate: true});
+
+	  const high = Math.max(... data.map((x) => x.total))*0.85;
+	  // const high = 10000;
+	  const bucketDiv = Math.ceil(high / ColorBuckets.length);
+	  const newgm = {};
+	  for (let i = 0; i < ColorBuckets.length; ++i) {
+	    // close enough
+	    newgm[(bucketDiv * i).toString()] = ColorBuckets[i];
+	  }
+	  setGM(newgm);
+	  barDataSet({
+	    stateName: FIPS_TO_STATES_MAP[fipsCode!],
+	    XTitle: "Voter Categories",
+	    Title: "Voter Registration Count",
+	    data: [
+	      {category: "Total Voters", value: aggregateData[0].total},
+	      {category: "Active Voters", value: aggregateData[0].active},
+	      {category: "Inactive Voters", value: aggregateData[0].inactive},
+	    ],
+	  });
+	  rowDataSet(data.map((x) => {return {id: x.fullRegionId,...x}}));
+	} else if (n == 2) {
+	  const data = await getPollbookDeletions(fipsCode!, {aggregate: false});
+	  const aggregateData = await getPollbookDeletions(fipsCode!, {aggregate: true});
+
+	  const high = Math.max(... data.map((x) => x.totalRemoved!))*0.85;
+	  const bucketDiv = Math.ceil(high / ColorBuckets.length);
+	  const newgm = {};
+	  for (let i = 0; i < ColorBuckets.length; ++i) {
+	    // close enough
+	    newgm[(bucketDiv * i).toString()] = ColorBuckets[i];
+	  }
+	  setGM(newgm);
+	  console.log(aggregateData[0]);
+	  barDataSet({
+	    stateName: FIPS_TO_STATES_MAP[fipsCode!],
+	    XTitle: "Removal Reasons",
+	    Title: "Pollbook Deletion",
+	    data: [
+	      {category: "Total", value: aggregateData[0].totalRemoved},
+	      {category: "Moved", value: aggregateData[0].removedReasonMoved},
+	      {category: "Deceased", value: aggregateData[0].removedReasonDeceased},
+	      {category: "Felony", value: aggregateData[0].removedReasonFelony},
+	      {category: "Failed to Confirm", value: aggregateData[0].removedReasonFailedToConfirm},
+	      {category: "Incompetent", value: aggregateData[0].removedReasonIncompetent},
+	      {category: "Requested", value: aggregateData[0].removedReasonRequested},
+	      {category: "Duplicate", value: aggregateData[0].removedReasonDuplicate},
+	      {category: "Other", value: aggregateData[0].removedOther},
+	    ],
+	  });
+	  rowDataSet(data.map((x) => {return {id: x.fullRegionId,...x}}));
+	} else if (n == 3) {
+	  const data = await getMailBallotRejections(fipsCode!, { aggregate: false });
+	  const aggregateData = await getMailBallotRejections(fipsCode!, { aggregate: true });
+
+	  // bucket coloring, same as before
+	  const high = Math.max(...data.map((x) => x.rejectTotal!))*0.85;
+	  const bucketDiv = Math.ceil(high / ColorBuckets.length);
+	  const newgm: Record<string, string> = {};
+	  for (let i = 0; i < ColorBuckets.length; ++i) {
+	    newgm[(bucketDiv * i).toString()] = ColorBuckets[i];
+	  }
+	  setGM(newgm);
+
+	  console.log(aggregateData[0]);
+
+	  barDataSet({
+	    stateName: FIPS_TO_STATES_MAP[fipsCode!],
+	    XTitle: "Rejection Reasons",
+	    Title: "Mail Ballot Rejections",
+	    data: [
+	      { category: "Total", value: aggregateData[0].rejectTotal },
+	      { category: "Late", value: aggregateData[0].rejectLate },
+	      { category: "No Signature", value: aggregateData[0].rejectNoSignature },
+	      { category: "No Witness Signature", value: aggregateData[0].rejectNoWitnessSignature },
+	      { category: "Signature Mismatch", value: aggregateData[0].rejectSignatureMismatch },
+	      { category: "Unofficial Envelope", value: aggregateData[0].rejectUnofficialEnv },
+	      { category: "Ballot Missing", value: aggregateData[0].rejectBallotMissing },
+	      { category: "No Secrecy Envelope", value: aggregateData[0].rejectNoSecrecyEnvironment },
+	      { category: "Multiple in Envelope", value: aggregateData[0].rejectMultipleInEnvironment },
+	      { category: "Unsealed Envelope", value: aggregateData[0].rejectUnsealedEnvironment },
+	      { category: "No Postmark", value: aggregateData[0].rejectNoPostMark },
+	      { category: "No Address", value: aggregateData[0].rejectNoAddress },
+	      { category: "Voter Deceased", value: aggregateData[0].rejectVoterDeceased },
+	      { category: "Duplicate Vote", value: aggregateData[0].rejectDuplicateVote },
+	      { category: "Missing Documentation", value: aggregateData[0].rejectMissingDocumentation },
+	      { category: "Not Eligible", value: aggregateData[0].rejectNotEligible },
+	      { category: "No Application", value: aggregateData[0].rejectNoApplication },
+	      { category: "Other", value: aggregateData[0].rejectOther },
+	    ],
+	  });
+
+	  rowDataSet(
+	    data.map((x) => {
+	      return { id: x.fullRegionId, ...x };
+	    })
+	  );
+
 	}
-	setGM(newgm);
-	console.log(aggregateData[0]);
-	barDataSet({
-	  stateName: FIPS_TO_STATES_MAP[fipsCode!],
-	  XTitle: "Ballots Cast",
-	  Title: "Provisional Ballots",
-	  data: [
-	    {category: "Total Ballots", value: aggregateData[0].totalBallotsCast},
-	    {category: "Not On List", value: aggregateData[0].ballotReasonNotOnList},
-	    {category: "No ID", value: aggregateData[0].ballotReasonNoIdAvailable},
-	    {category: "Challenged Official", value: aggregateData[0].ballotReasonChallengedByOfficial},
-	    {category: "Challenged Other", value: aggregateData[0].ballotReasonChallengedByOther},
-	    {category: "Wrong Precinct", value: aggregateData[0].ballotReasonWrongPrecinct},
-	    {category: "Not Updated Address", value: aggregateData[0].ballotReasonNotUpdatedAddress},
-	    {category: "Did Not Surrender", value: aggregateData[0].ballotReasonDidNotSurrender},
-	    {category: "Extended Voter Hours", value: aggregateData[0].ballotReasonExtendedVotingHours},
-	    {category: "Used SDR", value: aggregateData[0].ballotReasonSameDayRegistration},
-	    {category: "Other", value: aggregateData[0].ballotReasonOther},
-	  ],
-	});
-	rowDataSet(data.map((x) => {return {id: x.fullRegionId,...x}}));
       })();
     },
     [activeDataStateHook]
@@ -257,8 +407,19 @@ function StateInformationView() {
     };
 
     if (stateType !== "DETAIL_STATE_TYPE_NONE") {
-      const number = rowData.find((x) => x.fullRegionId === (feature.properties.STATEFP as string+feature.properties.COUNTYFP as string + "00000"))?.totalBallotsCast;
+      const t = feature.properties.STATEFP as string+feature.properties.COUNTYFP as string + "00000";
+      let number = 0;
+      const n = activeDataStateHook[0];
+      if (n == 0) 
+	number = rowData.find((x) => x.fullRegionId === t)?.totalBallotsCast;
+      if (n == 1)
+	number = rowData.find((x) => x.fullRegionId === t)?.total;
+      if (n == 2)
+	number = rowData.find((x) => x.fullRegionId === t)?.totalRemoved;
+      if (n == 3)
+	number = rowData.find((x) => x.fullRegionId === t)?.rejectTotal;
       const gradientMapNearestColor = gradientMapNearest(number || 0, GradientMap0);
+      console.log(GradientMap0, number);
       result.fillColor = gradientMapNearestColor;
       result.fillOpacity = 1.0;
     } else {
