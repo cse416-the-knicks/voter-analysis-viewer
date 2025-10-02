@@ -32,7 +32,6 @@ enum CsvRecordColumnId {
     COUNT
 };
 
-
 /**
  * NOTE(jerry):
  * This is the first practical use of the DAO pattern being necessary, because
