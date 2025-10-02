@@ -147,57 +147,6 @@ public class StateDAO implements IStateDAO {
     private final Dictionary<String, String> _fipsCodeToCountyNameMap;
     private final JdbcTemplate _jdbcTemplate;
 
-    /*
-        NOTE(jerry):
-            If anyone has a better way of doing this without
-            this much duplication please let me know...
-     */
-    private final String _baseQueryForProvisionalBallotData = """
-    select
-        region_id,
-        prov_cast,
-        prov_reason_not_in_roll,
-        prov_reason_no_id,
-        prov_reason_not_eligibe_official,
-        prov_reason_challenged,
-        prov_reason_wrong_precinct,
-        prov_reason_name_address,
-        prov_reason_mail_ballot_unsurrendered,
-        prov_reason_hours_extended,
-        prov_reason_same_day_reg,
-        prov_other
-    from app.eavs_data
-    """;
-    private final String _baseQueryForStateAggregatedBallotData = """
-    select
-        sum(prov_cast),
-        sum(prov_reason_not_in_roll),
-        sum(prov_reason_no_id),
-        sum(prov_reason_not_eligibe_official),
-        sum(prov_reason_challenged),
-        sum(prov_reason_wrong_precinct),
-        sum(prov_reason_name_address),
-        sum(prov_reason_mail_ballot_unsurrendered),
-        sum(prov_reason_hours_extended),
-        sum(prov_reason_same_day_reg),
-        sum(prov_other)
-    from app.eavs_data
-    """;
-    private final String _baseQueryForVoterRegistrationCountsData = """
-    select
-        region_id,
-        total_registered,
-        active_registered,
-        inactive_registered
-    from app.eavs_data
-    """;
-    private final String _baseQueryForVoterRegistrationAggregatedCountData = """
-    select
-        sum(total_registered),
-        sum(active_registered),
-        sum(inactive_registered)
-    from app.eavs_data
-    """;
     public StateDAO(JdbcTemplate jdbcTemplate)
         throws IOException
     {
@@ -224,34 +173,21 @@ public class StateDAO implements IStateDAO {
     public List<ProvisionalBallotStatisticsModel> getProvisionBallotRows(
             String fipsCode,
             boolean aggregated) {
-        List<ProvisionalBallotStatisticsModel> result;
-        String baseQuery;
-        if (aggregated) {
-            baseQuery = _baseQueryForStateAggregatedBallotData;
-        } else {
-            baseQuery = _baseQueryForProvisionalBallotData;
-        }
-
-        String sqlStatement = String.format("%s where substring(region_id, 1, 2) = ?",
-                baseQuery);
-        result = _jdbcTemplate.query(
-                sqlStatement,
+        var queryable = new ProvisionalBallotStatisticsModel.Queryable();
+        return _jdbcTemplate.query(
+                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
                 new ProvisionalBallotStatisticsModelInternalRowMapper(
                         _fipsCodeToCountyNameMap, aggregated),
                 fipsCode
         );
-        return result;
     }
 
     public Optional<ProvisionalBallotStatisticsModel> getProvisionBallotRowByCounty(
             String fipsCode, String countyCode) {
-        List<ProvisionalBallotStatisticsModel> queryResult;
-        String sqlStatement = String.format("%s where region_id = ?",
-                _baseQueryForProvisionalBallotData);
-        _logger.info(sqlStatement);
+        var queryable = new ProvisionalBallotStatisticsModel.Queryable();
         var fullPaddedFipsCode = fipsCode + countyCode + "00000";
-        queryResult = _jdbcTemplate.query(
-                sqlStatement,
+        var queryResult = _jdbcTemplate.query(
+                queryable.Query(false) + " where region_id = ?",
                 new ProvisionalBallotStatisticsModelInternalRowMapper(
                         _fipsCodeToCountyNameMap, false),
                 fullPaddedFipsCode
@@ -266,36 +202,21 @@ public class StateDAO implements IStateDAO {
 
     @Override
     public List<VoterRegistrationStatisticsModel> getVoterRegistrationRows(String fipsCode, boolean aggregated) {
-        List<VoterRegistrationStatisticsModel> result;
-        String baseQuery;
-        if (aggregated) {
-            baseQuery = _baseQueryForVoterRegistrationAggregatedCountData;
-        } else {
-            baseQuery = _baseQueryForVoterRegistrationCountsData;
-        }
-
-        String sqlStatement = String.format("%s where substring(region_id, 1, 2) = ?",
-                baseQuery);
-        result = _jdbcTemplate.query(
-                sqlStatement,
-                new VoterRegistrationStatisticsModelInternalRowMapper(
-                        _fipsCodeToCountyNameMap, aggregated),
+        var queryable = new VoterRegistrationStatisticsModel.Queryable();
+        return _jdbcTemplate.query(
+                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
+                new VoterRegistrationStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, aggregated),
                 fipsCode
         );
-        return result;
     }
 
     @Override
     public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationRowByCounty(String fipsCode, String countyCode) {
-        List<VoterRegistrationStatisticsModel> queryResult;
-        String sqlStatement = String.format("%s where region_id = ?",
-                _baseQueryForVoterRegistrationCountsData);
-        _logger.info(sqlStatement);
         var fullPaddedFipsCode = fipsCode + countyCode + "00000";
-        queryResult = _jdbcTemplate.query(
-                sqlStatement,
-                new VoterRegistrationStatisticsModelInternalRowMapper(
-                        _fipsCodeToCountyNameMap, false),
+        var queryable = new VoterRegistrationStatisticsModel.Queryable();
+        var queryResult = _jdbcTemplate.query(
+                queryable.Query(false) + " where region_id = ?",
+                new VoterRegistrationStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, false),
                 fullPaddedFipsCode
         );
 
