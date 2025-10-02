@@ -4,6 +4,8 @@ import { provisionalCategories } from "./DisplayData";
 interface BarChartProperties {
     stateInfo: {
         stateName: string;
+        axisTitleX: string;
+        Title: string; 
         data: {category: string; value: number}[];
     }
 }
@@ -24,12 +26,11 @@ function BarChart({stateInfo}: BarChartProperties) {
                 ))}
                 
                 {stateInfo.data.map((x) => (
-                    <text key={x.category} x={-7} y={(verticalAxis(x.category)! ?? 0) + verticalAxis.bandwidth()/2} textAnchor="end" alignmentBaseline="middle" fontSize={13}>{provisionalCategories[x.category]}</text>
+                    <text key={x.category} x={-7} y={(verticalAxis(x.category)! ?? 0) + verticalAxis.bandwidth()/2} textAnchor="end" alignmentBaseline="middle" fontSize={13}>{provisionalCategories[x.category] ?? x.category}</text>
                 ))}
                 
-
                 {/* Title */}
-                <text x={barWidth-250} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">Provisional Ballots Cast - {stateInfo.stateName}</text>
+                <text x={barWidth-250} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">{stateInfo.Title} - {stateInfo.stateName}</text>
 
                 {horizontalAxis.ticks().map((tick => (
                     <g key={tick} transform={`translate(${horizontalAxis(tick)},${barHeight})`}>
@@ -40,7 +41,7 @@ function BarChart({stateInfo}: BarChartProperties) {
 
                 <line x1={0} y1={barHeight} x2={barWidth} y2={barHeight} stroke="black"/>
 
-                <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>Ballots Cast</text>
+                <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>{stateInfo.axisTitleX}</text>
 
                 <text x={barWidth-295} y={barHeight+20} fontSize={15}>Ballots Cast</text>
             </g>

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from 'react'
 import type { DetailStateType } from '../FullBoundedUSMap/detailedStatesInfo';
 import {
   DETAIL_STATE_TYPE_OPTIN,

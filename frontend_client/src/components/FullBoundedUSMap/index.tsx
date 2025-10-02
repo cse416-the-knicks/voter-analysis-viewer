@@ -4,6 +4,8 @@ import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
 import { isDetailState } from './detailedStatesInfo';
+import teamLogo from '../../assets/knickslogo.png'
+import { Stack, Typography } from '@mui/material';
 
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
@@ -82,26 +84,34 @@ function FullBoundedUSMap(
     };
 
   return (
-    <MapContainer
-      zoom={Math.max(zoom ?? 0, MIN_ACCEPTABLE_ZOOM)}
-      minZoom={MIN_ACCEPTABLE_ZOOM}
-      bounds={UNITED_STATES_BOUNDARIES}
-      maxBounds={UNITED_STATES_BOUNDARIES}
-      maxBoundsViscosity={1.0}
-      ref={mapRef}
-      className={"full-bounded-us-map"}
-      id={id}>
-      <TileLayer
-	attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-	url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <GeoJSON
-	style={styleFunction}
-	data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON}
-	onEachFeature={onEachFeatureHandler}
-      />
-      {children}
-    </MapContainer>
+    <React.Fragment>
+      <Stack direction="row" alignItems="center" spacing={2}>
+        <Typography fontSize={50} paddingBottom="15px" paddingLeft="200px">
+          Team Knickerbockers
+          <img src={teamLogo} style={{ width:"15%", marginLeft:"100px", }}></img>
+        </Typography>
+      </Stack>
+      <MapContainer
+        zoom={Math.max(zoom ?? 0, MIN_ACCEPTABLE_ZOOM)}
+        minZoom={MIN_ACCEPTABLE_ZOOM}
+        bounds={UNITED_STATES_BOUNDARIES}
+        maxBounds={UNITED_STATES_BOUNDARIES}
+        maxBoundsViscosity={1.0}
+        ref={mapRef}
+        className={"full-bounded-us-map"}
+        id={id}>
+        <TileLayer
+    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <GeoJSON
+    style={styleFunction}
+    data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON}
+    onEachFeature={onEachFeatureHandler}
+        />
+        {children}
+      </MapContainer>
+    </React.Fragment>
   )
 }
 
