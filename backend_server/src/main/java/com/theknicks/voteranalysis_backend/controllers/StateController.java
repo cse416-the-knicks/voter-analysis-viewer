@@ -2,6 +2,7 @@ package com.theknicks.voteranalysis_backend.controllers;
 
 import java.util.*;
 
+import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
 import com.theknicks.voteranalysis_backend.services.StateService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,8 +39,24 @@ public class StateController {
                     schema = @Schema(ref="../openapi-ext/geojson.yaml#/components/schema/GeoJsonObject", nullable=true)
             )
     )
-
     public Optional<ObjectNode> getStateGeometry(@PathVariable("fipsCode") String fipsCode) {
         return _service.getBoundaryGeometry(fipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/provisional-ballots")
+    public List<ProvisionalBallotStatisticsModel> getProvisionalBallots(
+            @PathVariable("fipsCode") String fipsCode,
+            @RequestParam(name="aggregate", defaultValue="false") boolean inAggregate
+    ) {
+        return _service.getProvisionalBallotData(fipsCode, inAggregate);
+    }
+
+    @GetMapping("/{fipsCode}/{countyFipsCode}/provisional-ballots")
+    public Optional<ProvisionalBallotStatisticsModel> getProvisionalBallotsByCounty(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("countyFipsCode") String countyFipsCode
+    ) {
+        return _service.getProvisionalBallotDataForCounty(
+                fipsCode, countyFipsCode);
     }
 }

@@ -27,31 +27,61 @@ enum StateCsvRecordColumnId {
 public class StateDAO implements IStateDAO {
     private static class InternalRowMapper implements RowMapper<ProvisionalBallotStatisticsModel> {
         private final Dictionary<String, String> _fipsToCountyNameMap;
-        public InternalRowMapper(Dictionary<String, String> fipsToCountyNameMap) {
+        private final boolean _isInAggregate;
+
+        public InternalRowMapper(
+                Dictionary<String, String> fipsToCountyNameMap,
+                boolean isInAggregate) {
             _fipsToCountyNameMap = fipsToCountyNameMap;
+            _isInAggregate = isInAggregate;
         }
 
         public ProvisionalBallotStatisticsModel mapRow(
                 ResultSet resultSet,
                 int rowNumber) {
             try {
-                return new ProvisionalBallotStatisticsModel(
-                        resultSet.getString("region_id"),
-                        _fipsToCountyNameMap.get(resultSet.getString("region_id")),
-                        resultSet.getInt("prov_cast"),
-                        resultSet.getInt("prov_reason_not_in_roll"),
-                        resultSet.getInt("prov_reason_no_id"),
-                        resultSet.getInt("prov_reason_not_eligibe_official"),
-                        resultSet.getInt("prov_reason_challenged"),
-                        resultSet.getInt("prov_reason_wrong_precinct"),
-                        resultSet.getInt("prov_reason_name_address"),
-                        resultSet.getInt("prov_reason_mail_ballot_unsurrendered"),
-                        resultSet.getInt("prov_reason_hours_extended"),
-                        resultSet.getInt("prov_reason_same_day_reg"),
-                        resultSet.getInt("prov_other")
-                );
+                String regionName;
+                String regionCode;
+
+                if (_isInAggregate) {
+                    regionName = "Aggregate";
+                    regionCode = "000000000";
+                    return new ProvisionalBallotStatisticsModel(
+                            regionCode,
+                            regionName,
+                            resultSet.getInt(1),
+                            resultSet.getInt(2),
+                            resultSet.getInt(3),
+                            resultSet.getInt(4),
+                            resultSet.getInt(5),
+                            resultSet.getInt(6),
+                            resultSet.getInt(7),
+                            resultSet.getInt(8),
+                            resultSet.getInt(9),
+                            resultSet.getInt(10),
+                            resultSet.getInt(11)
+                    );
+                } else {
+                    regionCode = resultSet.getString("region_id");
+                    regionName = _fipsToCountyNameMap.get(regionCode);
+                    return new ProvisionalBallotStatisticsModel(
+                            regionCode,
+                            regionName,
+                            resultSet.getInt("prov_cast"),
+                            resultSet.getInt("prov_reason_not_in_roll"),
+                            resultSet.getInt("prov_reason_no_id"),
+                            resultSet.getInt("prov_reason_not_eligibe_official"),
+                            resultSet.getInt("prov_reason_challenged"),
+                            resultSet.getInt("prov_reason_wrong_precinct"),
+                            resultSet.getInt("prov_reason_name_address"),
+                            resultSet.getInt("prov_reason_mail_ballot_unsurrendered"),
+                            resultSet.getInt("prov_reason_hours_extended"),
+                            resultSet.getInt("prov_reason_same_day_reg"),
+                            resultSet.getInt("prov_other")
+                    );
+                }
             } catch (Exception e) {
-                // NOTE(jerry): maybe not a good idea.
+                e.printStackTrace();
                 return null;
             }
         }
@@ -62,6 +92,43 @@ public class StateDAO implements IStateDAO {
     private final String rawCsvPath = "../data_common/raw/";
     private final Dictionary<String, String> _fipsCodeToCountyNameMap;
     private final JdbcTemplate _jdbcTemplate;
+
+    /*
+        NOTE(jerry):
+            If anyone has a better way of doing this without
+            this much duplication please let me know...
+     */
+    private final String _baseQueryForProvisionalBallotData = """
+    select
+        region_id,
+        prov_cast,
+        prov_reason_not_in_roll,
+        prov_reason_no_id,
+        prov_reason_not_eligibe_official,
+        prov_reason_challenged,
+        prov_reason_wrong_precinct,
+        prov_reason_name_address,
+        prov_reason_mail_ballot_unsurrendered,
+        prov_reason_hours_extended,
+        prov_reason_same_day_reg,
+        prov_other
+    from app.eavs_data
+    """;
+    private final String _baseQueryForStateAggregatedBallotData = """
+    select
+        sum(prov_cast),
+        sum(prov_reason_not_in_roll),
+        sum(prov_reason_no_id),
+        sum(prov_reason_not_eligibe_official),
+        sum(prov_reason_challenged),
+        sum(prov_reason_wrong_precinct),
+        sum(prov_reason_name_address),
+        sum(prov_reason_mail_ballot_unsurrendered),
+        sum(prov_reason_hours_extended),
+        sum(prov_reason_same_day_reg),
+        sum(prov_other)
+    from app.eavs_data
+    """;
 
     public StateDAO(JdbcTemplate jdbcTemplate)
         throws IOException
@@ -86,43 +153,38 @@ public class StateDAO implements IStateDAO {
         return Optional.empty();
     }
 
-    private String _baseQueryForProvisionalBallotData = """
-    select
-        region_id,
-                prov_cast,
-                prov_reason_not_in_roll,
-                prov_reason_no_id,
-                prov_reason_not_eligibe_official,
-                prov_reason_challenged,
-                prov_reason_wrong_precinct,
-                prov_reason_name_address,
-                prov_reason_mail_ballot_unsurrendered,
-                prov_reason_hours_extended,
-                prov_reason_same_day_reg,
-                prov_other
-    from eavs_data
-    """;
-
-    public List<ProvisionalBallotStatisticsModel> getProvisionBallotRow(String fipsCode) {
+    public List<ProvisionalBallotStatisticsModel> getProvisionBallotRows(
+            String fipsCode,
+            boolean aggregated) {
         List<ProvisionalBallotStatisticsModel> result;
-        String sqlStatement = String.format("%s where substring(region_id, 1, 3) = ?",
-                _baseQueryForProvisionalBallotData);
+        String baseQuery;
+        if (aggregated) {
+            baseQuery = _baseQueryForStateAggregatedBallotData;
+        } else {
+            baseQuery = _baseQueryForProvisionalBallotData;
+        }
+
+        String sqlStatement = String.format("%s where substring(region_id, 1, 2) = ?",
+                baseQuery);
+        _logger.info(sqlStatement);
         result = _jdbcTemplate.query(
                 sqlStatement,
-                new InternalRowMapper(_fipsCodeToCountyNameMap),
+                new InternalRowMapper(_fipsCodeToCountyNameMap, aggregated),
                 fipsCode
         );
         return result;
     }
 
-    public Optional<ProvisionalBallotStatisticsModel> getProvisionBallotRowByCounty(String fipsCode, String countyCode) {
+    public Optional<ProvisionalBallotStatisticsModel> getProvisionBallotRowByCounty(
+            String fipsCode, String countyCode) {
         List<ProvisionalBallotStatisticsModel> queryResult;
         String sqlStatement = String.format("%s where region_id = ?",
                 _baseQueryForProvisionalBallotData);
+        _logger.info(sqlStatement);
         var fullPaddedFipsCode = fipsCode + countyCode + "00000";
         queryResult = _jdbcTemplate.query(
                 sqlStatement,
-                new InternalRowMapper(_fipsCodeToCountyNameMap),
+                new InternalRowMapper(_fipsCodeToCountyNameMap, false),
                 fullPaddedFipsCode
         );
 
@@ -148,7 +210,6 @@ public class StateDAO implements IStateDAO {
                 var stateFips = splitLine[StateCsvRecordColumnId.STATE_FIPS.ordinal()];
                 var countyFips = splitLine[StateCsvRecordColumnId.COUNTY_FIPS.ordinal()];
                 var paddedFullFipsRegionCode = stateFips + countyFips + "00000";
-                _logger.info(paddedFullFipsRegionCode);
                 _fipsCodeToCountyNameMap.put(paddedFullFipsRegionCode, countyName);
             }
         } catch (IOException ex) {
