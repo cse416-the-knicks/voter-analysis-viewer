@@ -13,7 +13,7 @@ CREATE TABLE app.states (
     map_zoom_level INT NOT NULL,                 -- Zoom level for maps
 
     -- Registration policies
-    registration_method VARCHAR(6) NOT NULL CHECK (
+    registration_method VARCHAR(7) NOT NULL CHECK (
         registration_method IN ('opt-in','opt-out')
     ),
     same_day_registration BOOLEAN NOT NULL,
