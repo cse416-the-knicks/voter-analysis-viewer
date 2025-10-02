@@ -1,6 +1,7 @@
 package com.theknicks.voteranalysis_backend.dao;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
 
@@ -54,4 +55,22 @@ public interface IStateDAO {
      * @return a VoterRegistrationStatisticsModel if it exists, none otherwise.
      */
     Optional<VoterRegistrationStatisticsModel> getVoterRegistrationRowByCounty(String fipsCode, String countyCode);
+
+    /**
+     * This access point is meant to return the pollbook deletion information fo a state by county,
+     * allowing for the choice of aggregating to get a whole state count.
+     * @param fipsCode - A string for the fipsCode of the state.
+     * @param aggregated - A boolean asking whether to aggregate the result, will return a list of one in that case.
+     * @return a list of PollbookDeletionStatisticsModels, or a single model containing the aggregate for the state.
+     */
+    List<PollbookDeletionStatisticsModel> getPollbookDeletionRows(String fipsCode, boolean aggregated);
+
+    /**
+     * This access point is meant to return the pollbook deletion information of a specific county within
+     * a state.
+     * @param fipsCode - A string for the fipsCode of the state.
+     * @param countyCode - A string for the fipsCode of the county.
+     * @return a PollbookDeletionStatisticsModel if it exists, none otherwise.
+     */
+    Optional<PollbookDeletionStatisticsModel> getPollbookDeletionRowByCounty(String fipsCode, String countyCode);
 }
