@@ -69,19 +69,22 @@ From root repo run
 docker compose up -d
 ```
 
+This will setup the Postgres container image, and also setup an image to
+setup the Postgres database and seed it with our data.
+
+If there are changes to the base data, you'll need to wipe and reinitialize,
+but this should be fine since the docker scripts make it easily reproducible,
+it just might take a bit of time.
+
+```
 Connection Details
-
 Host: Sean's TailscaleIP (private)
-
 Port: 5433
-
 Database: leffison_db
-
 User: "Leffison Members"
-
 Password: raj
-
 Default schema: app
+```
 
 Useful commands:
 To stop the Database:
