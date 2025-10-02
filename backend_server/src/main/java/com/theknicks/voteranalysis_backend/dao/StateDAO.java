@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.theknicks.voteranalysis_backend.models.MailBallotRejectionStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
@@ -28,6 +29,7 @@ enum StateCsvRecordColumnId {
 
 @Component
 public class StateDAO implements IStateDAO {
+    // Begin internal mappers
     /**
      * This internal class implements some common headers, since
      * the EAVs data has very similar usage code.
@@ -179,6 +181,53 @@ public class StateDAO implements IStateDAO {
         }
     }
 
+    private static class MailBallotRejectionStatisticsModelInternalRowMapper
+            extends CommonStateDAOInternalRowMapper
+            implements RowMapper<MailBallotRejectionStatisticsModel> {
+        public MailBallotRejectionStatisticsModelInternalRowMapper(
+                Dictionary<String, String> fipsToCountyNameMap,
+                boolean isInAggregate
+        ) {
+            super(fipsToCountyNameMap, isInAggregate);
+        }
+
+        public MailBallotRejectionStatisticsModel mapRow(
+                ResultSet resultSet,
+                int rowNumber) {
+            try {
+                String regionName = getGeoUnitName(resultSet);
+                String regionCode = getRegionId(resultSet);
+                int column = getColumnStartOffset();
+                return new MailBallotRejectionStatisticsModel(
+                        regionCode,
+                        regionName,
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++)
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+    // End of internal mappers
+
     private final Logger _logger = LoggerFactory.getLogger(StateDAO.class);
     private final String preprocessedGeospatialPath = "../data_common/geospatial_processed/";
     private final String rawCsvPath = "../data_common/raw/";
@@ -282,6 +331,33 @@ public class StateDAO implements IStateDAO {
         var queryResult = _jdbcTemplate.query(
                 queryable.Query(false) + " where region_id = ?",
                 new PollbookDeletionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, false),
+                fullPaddedFipsCode
+        );
+
+        if (queryResult.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(queryResult.getFirst());
+        }
+    }
+
+    @Override
+    public List<MailBallotRejectionStatisticsModel> getMailBallotRejectionRows(String fipsCode, boolean aggregated) {
+        var queryable = new MailBallotRejectionStatisticsModel.Queryable();
+        return _jdbcTemplate.query(
+                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
+                new MailBallotRejectionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, aggregated),
+                fipsCode
+        );
+    }
+
+    @Override
+    public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionRowByCounty(String fipsCode, String countyCode) {
+        var fullPaddedFipsCode = fipsCode + countyCode + "00000";
+        var queryable = new MailBallotRejectionStatisticsModel.Queryable();
+        var queryResult = _jdbcTemplate.query(
+                queryable.Query(false) + " where region_id = ?",
+                new MailBallotRejectionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, false),
                 fullPaddedFipsCode
         );
 
