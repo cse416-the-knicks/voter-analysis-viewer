@@ -2,6 +2,7 @@ package com.theknicks.voteranalysis_backend.controllers;
 
 import java.util.*;
 
+import com.theknicks.voteranalysis_backend.models.MailBallotRejectionStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
@@ -92,5 +93,21 @@ public class StateController {
             @PathVariable("countyFipsCode") String countyFipsCode
     ) {
         return _service.getPollbookDeletionDataForCounty(fipsCode, countyFipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/mail-ballot-rejections")
+    public List<MailBallotRejectionStatisticsModel> getMailBallotRejections(
+            @PathVariable("fipsCode") String fipsCode,
+            @RequestParam(name="aggregate", defaultValue="false") boolean inAggregate
+    ) {
+        return _service.getMailBallotRejectionData(fipsCode, inAggregate);
+    }
+
+    @GetMapping("/{fipsCode}/{countyFipsCode}/mail-ballot-rejections")
+    public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionsByCounty(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("countyFipsCode") String countyFipsCode
+    ) {
+        return _service.getMailBallotRejectionDataForCounty(fipsCode, countyFipsCode);
     }
 }
