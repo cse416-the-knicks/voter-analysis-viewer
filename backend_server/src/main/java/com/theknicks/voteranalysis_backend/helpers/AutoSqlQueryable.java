@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Optional;
 
-/**
+/*
  * NOTE(jerry):
  * I like metaprogramming, since I think it's interesting to write code that generates
  * code (or otherwise automates stuff.)
@@ -26,11 +26,11 @@ import java.util.Optional;
  */
 public class AutoSqlQueryable<T> {
     private static class SqlQueryableInvocationHandler implements InvocationHandler {
-        private final Class _mappableClass;
+        private final Class<?> _mappableClass;
         private boolean _isAggregateSumQuery = false;
         private Object[] _contextArgs;
 
-        public SqlQueryableInvocationHandler(Class mappableClass) {
+        public SqlQueryableInvocationHandler(Class<?> mappableClass) {
             _mappableClass = mappableClass;
         }
 
@@ -42,16 +42,16 @@ public class AutoSqlQueryable<T> {
             _contextArgs = contextArgs;
         }
 
-        public Object invoke(Object proxy, Method method, Object args[])
+        public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable
 
         {
-            /**
+            /*
              * two args:
              * ResultSet,
              * int rowNumber
              */
-            if (method.getName() == "mapRow") {
+            if (method.getName().equals("mapRow")) {
                 var allConstructors = _mappableClass.getDeclaredConstructors();
 
                 if (args.length != 2) {
@@ -96,7 +96,7 @@ public class AutoSqlQueryable<T> {
                     columnNumber++;
                 }
 
-                /**
+                /*
                  * NOTE(jerry):
                  * Check the collection we're in, and see if
                  * there's any collection dependent processing
@@ -117,10 +117,11 @@ public class AutoSqlQueryable<T> {
                         for the eavs_data collection, I can't get the county name without
                         extra context info.
                      */
+                        @SuppressWarnings("unchecked")
                         var fipsToCountyNameMap = (Dictionary<String, String>) _contextArgs[0];
                         var regionId = resultSet.getString("region_id");
                         var countyName = fipsToCountyNameMap.get(regionId);
-                        if (countyName == null || countyName.isBlank() || countyName.isEmpty()) {
+                        if (countyName == null || countyName.isBlank()) {
                             countyName = "N/A";
                         }
                     /*
@@ -173,18 +174,15 @@ public class AutoSqlQueryable<T> {
     }
 
     private static Field[] filterForAllQueryableFields(Field[] fieldsList, boolean asSumAggregate) {
-        var result = Arrays.stream(fieldsList).filter(
+        // TIL(jerry): Java syntax? Method Reference Syntax
+        return Arrays.stream(fieldsList).filter(
                 (field) -> {
                     if (getSqlName(field).isPresent()) {
-                        if (asSumAggregate && isOmittedFromSumAggregate(field)) {
-                            return false;
-                        }
-                        return true;
+                        return !asSumAggregate || !isOmittedFromSumAggregate(field);
                     }
                     return false;
                 }
-        ).toArray(Field[]::new); // TIL(jerry): Java syntax? Method Reference Syntax
-        return result;
+        ).toArray(Field[]::new);
     }
 
     // Happens to be fine for numeric data, might need to evolve as I think
@@ -245,9 +243,9 @@ public class AutoSqlQueryable<T> {
         }
         invocationHandler.setIsAggregateSumQuery(isSumAggregate);
         invocationHandler.setContextArgs(contextArgs);
-        return _mapperInstance;
+        //noinspection unchecked
+        return (RowMapper<T>) _mapperInstance;
     }
-
 
     public static <T> AutoSqlQueryable<T> findQueryableNested(Class<T> T) {
         try {
@@ -255,8 +253,9 @@ public class AutoSqlQueryable<T> {
             Class<?>[] innerClasses = T.getDeclaredClasses();
             for (Class<?> inner : innerClasses) {
                 if (inner.getSimpleName().equals("Queryable")) {
-                    var ctor =  (Constructor<AutoSqlQueryable<T>>) inner.getDeclaredConstructor();
-                    queryable = (AutoSqlQueryable<T>) ctor.newInstance();
+                    @SuppressWarnings("unchecked")
+                    var constructor =  (Constructor<AutoSqlQueryable<T>>) inner.getDeclaredConstructor();
+                    queryable = (AutoSqlQueryable<T>) constructor.newInstance();
                     break;
                 }
             }
