@@ -390,7 +390,7 @@ function StateInformationView() {
 	}
       })();
     },
-    [activeDataStateHook]
+    [activeDataStateHook[0]]
   );
   
   useKeyDown('Escape', () => navigate('/'));
