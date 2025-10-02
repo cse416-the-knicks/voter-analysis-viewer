@@ -146,7 +146,7 @@ df.to_sql(
     "eavs_data",
     engine,
     schema="app",
-    if_exists="replace",
+    if_exists="append",
     index=False
 )
 
