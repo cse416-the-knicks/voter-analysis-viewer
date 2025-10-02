@@ -24,7 +24,7 @@ public interface IStateDAO {
      * @param fipsCode - A string for the fipsCode of the state.
      * @return a list of ProvisionalBallotStatisticsModels
      */
-    List<ProvisionalBallotStatisticsModel> getProvisionBallotRow(String fipsCode);
+    List<ProvisionalBallotStatisticsModel> getProvisionBallotRows(String fipsCode, boolean aggregated);
 
     /**
      * This access point is meant to return the provisional ballots data for a specific county

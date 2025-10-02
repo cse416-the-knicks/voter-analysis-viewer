@@ -1,6 +1,7 @@
 package com.theknicks.voteranalysis_backend.services;
 
 import com.theknicks.voteranalysis_backend.dao.IStateDAO;
+import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.*;
@@ -25,5 +26,15 @@ public class StateService {
 
     public Optional<ObjectNode> getBoundaryGeometry(String fipsCode) {
         return _dao.getGeometryBoundary(fipsCode);
+    }
+
+    public Optional<ProvisionalBallotStatisticsModel> getProvisionalBallotDataForCounty(
+            String fipsCode, String countyCode) {
+        return _dao.getProvisionBallotRowByCounty(
+                fipsCode, countyCode);
+    }
+
+    public List<ProvisionalBallotStatisticsModel> getProvisionalBallotData(String fipsCode, boolean inAggregate) {
+        return _dao.getProvisionBallotRows(fipsCode, inAggregate);
     }
 }
