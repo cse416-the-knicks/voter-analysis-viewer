@@ -4,20 +4,15 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.theknicks.voteranalysis_backend.models.MailBallotRejectionStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
+import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
+import com.theknicks.voteranalysis_backend.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.*;
 
 enum StateCsvRecordColumnId {
@@ -30,205 +25,6 @@ enum StateCsvRecordColumnId {
 
 @Component
 public class StateDAO implements IStateDAO {
-    // Begin internal mappers
-    /**
-     * This internal class implements some common headers, since
-     * the EAVs data has very similar usage code.
-     */
-    private static class CommonStateDAOInternalRowMapper {
-        private final Dictionary<String, String> _fipsToCountyNameMap;
-        private final boolean _isInAggregate;
-        public CommonStateDAOInternalRowMapper(
-                Dictionary<String, String> fipsToCountyNameMap,
-                boolean isInAggregate
-        ) {
-            _fipsToCountyNameMap = fipsToCountyNameMap;
-            _isInAggregate = isInAggregate;
-        }
-
-        /**
-         * This is here to reduce the amount of code I need to duplicate,
-         * since aggregation is the same query minus the region id.
-         */
-        protected int getColumnStartOffset() {
-            if (_isInAggregate) {
-                return 1;
-            } else {
-                return 2;
-            }
-        }
-
-        protected String getRegionId(ResultSet resultSet) throws SQLException {
-            if (_isInAggregate) {
-                return "0000000000";
-            } else {
-                return resultSet.getString("region_id");
-            }
-        }
-
-        protected String getGeoUnitName(ResultSet resultSet) throws SQLException {
-            if (_isInAggregate) {
-                return "Aggregate";
-            } else {
-                var regionId = getRegionId(resultSet);
-                return _fipsToCountyNameMap.get(regionId);
-            }
-        }
-    }
-    private static class ProvisionalBallotStatisticsModelInternalRowMapper
-            extends CommonStateDAOInternalRowMapper
-            implements RowMapper<ProvisionalBallotStatisticsModel> {
-        public ProvisionalBallotStatisticsModelInternalRowMapper(
-                Dictionary<String, String> fipsToCountyNameMap,
-                boolean isInAggregate) {
-            super(fipsToCountyNameMap, isInAggregate);
-        }
-
-        public ProvisionalBallotStatisticsModel mapRow(
-                ResultSet resultSet,
-                int rowNumber) {
-            try {
-                String regionName = getGeoUnitName(resultSet);
-                String regionCode = getRegionId(resultSet);
-
-                int column = getColumnStartOffset();
-                return new ProvisionalBallotStatisticsModel(
-                        regionCode,
-                        regionName,
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
-
-    private static class VoterRegistrationStatisticsModelInternalRowMapper
-            extends CommonStateDAOInternalRowMapper
-            implements RowMapper<VoterRegistrationStatisticsModel> {
-        public VoterRegistrationStatisticsModelInternalRowMapper(
-                Dictionary<String, String> fipsToCountyNameMap,
-                boolean isInAggregate
-        ) {
-            super(fipsToCountyNameMap, isInAggregate);
-        }
-
-        public VoterRegistrationStatisticsModel mapRow(
-                ResultSet resultSet,
-                int rowNumber) {
-            try {
-                String regionName = getGeoUnitName(resultSet);
-                String regionCode = getRegionId(resultSet);
-                int column = getColumnStartOffset();
-                return new VoterRegistrationStatisticsModel(
-                        regionCode,
-                        regionName,
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
-
-    private static class PollbookDeletionStatisticsModelInternalRowMapper
-            extends CommonStateDAOInternalRowMapper
-            implements RowMapper<PollbookDeletionStatisticsModel> {
-        public PollbookDeletionStatisticsModelInternalRowMapper(
-                Dictionary<String, String> fipsToCountyNameMap,
-                boolean isInAggregate
-        ) {
-            super(fipsToCountyNameMap, isInAggregate);
-        }
-
-        public PollbookDeletionStatisticsModel mapRow(
-                ResultSet resultSet,
-                int rowNumber) {
-            try {
-                String regionName = getGeoUnitName(resultSet);
-                String regionCode = getRegionId(resultSet);
-                int column = getColumnStartOffset();
-                return new PollbookDeletionStatisticsModel(
-                        regionCode,
-                        regionName,
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
-
-    private static class MailBallotRejectionStatisticsModelInternalRowMapper
-            extends CommonStateDAOInternalRowMapper
-            implements RowMapper<MailBallotRejectionStatisticsModel> {
-        public MailBallotRejectionStatisticsModelInternalRowMapper(
-                Dictionary<String, String> fipsToCountyNameMap,
-                boolean isInAggregate
-        ) {
-            super(fipsToCountyNameMap, isInAggregate);
-        }
-
-        public MailBallotRejectionStatisticsModel mapRow(
-                ResultSet resultSet,
-                int rowNumber) {
-            try {
-                String regionName = getGeoUnitName(resultSet);
-                String regionCode = getRegionId(resultSet);
-                int column = getColumnStartOffset();
-                return new MailBallotRejectionStatisticsModel(
-                        regionCode,
-                        regionName,
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++),
-                        resultSet.getInt(column++)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
-    // End of internal mappers
-
     private final Logger _logger = LoggerFactory.getLogger(StateDAO.class);
     private final String preprocessedGeospatialPath = "../data_common/geospatial_processed/";
     private final Path _localCsvDataPath = Paths.get("../data_common/raw/US_FIPS_Codes.csv");
@@ -259,115 +55,64 @@ public class StateDAO implements IStateDAO {
         return Optional.empty();
     }
 
-    public List<ProvisionalBallotStatisticsModel> getProvisionBallotRows(
-            String fipsCode,
-            boolean aggregated) {
-        var queryable = new ProvisionalBallotStatisticsModel.Queryable();
+    private <T> List<T> getStateDataRows(Class<T> type, String fipsCode, boolean aggregated) {
+        var queryable = AutoSqlQueryable.findQueryableNested(type);
+        assert queryable != null;
         return _jdbcTemplate.query(
                 queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
-                new ProvisionalBallotStatisticsModelInternalRowMapper(
-                        _fipsCodeToCountyNameMap, aggregated),
+                queryable.Mapper(new Object[] {_fipsCodeToCountyNameMap}, aggregated),
                 fipsCode
         );
+    }
+
+    public <T> Optional<T> getStateDataRowByCounty(Class<T> type, String fipsCode, String countyCode) {
+        var queryable = AutoSqlQueryable.findQueryableNested(type);
+        var fullPaddedFipsCode = fipsCode + countyCode + "00000";
+        assert queryable != null;
+        var queryResult = (List<T>)_jdbcTemplate.query(
+                queryable.Query(false) + " where region_id = ?",
+                queryable.Mapper(new Object[] { _fipsCodeToCountyNameMap }, false),
+                fullPaddedFipsCode
+        );
+
+        if (queryResult.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(queryResult.getFirst());
+        }
+    }
+
+    public List<ProvisionalBallotStatisticsModel> getProvisionBallotRows(String fipsCode, boolean aggregated) {
+        return getStateDataRows(ProvisionalBallotStatisticsModel.class, fipsCode, aggregated);
     }
 
     public Optional<ProvisionalBallotStatisticsModel> getProvisionBallotRowByCounty(
             String fipsCode, String countyCode) {
-        var queryable = new ProvisionalBallotStatisticsModel.Queryable();
-        var fullPaddedFipsCode = fipsCode + countyCode + "00000";
-        var queryResult = _jdbcTemplate.query(
-                queryable.Query(false) + " where region_id = ?",
-                new ProvisionalBallotStatisticsModelInternalRowMapper(
-                        _fipsCodeToCountyNameMap, false),
-                fullPaddedFipsCode
-        );
-
-        if (queryResult.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(queryResult.getFirst());
-        }
+        return getStateDataRowByCounty(ProvisionalBallotStatisticsModel.class, fipsCode, countyCode);
     }
 
-    @Override
     public List<VoterRegistrationStatisticsModel> getVoterRegistrationRows(String fipsCode, boolean aggregated) {
-        var queryable = new VoterRegistrationStatisticsModel.Queryable();
-        return _jdbcTemplate.query(
-                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
-                new VoterRegistrationStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, aggregated),
-                fipsCode
-        );
+        return getStateDataRows(VoterRegistrationStatisticsModel.class, fipsCode, aggregated);
     }
 
-    @Override
     public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationRowByCounty(String fipsCode, String countyCode) {
-        var fullPaddedFipsCode = fipsCode + countyCode + "00000";
-        var queryable = new VoterRegistrationStatisticsModel.Queryable();
-        var queryResult = _jdbcTemplate.query(
-                queryable.Query(false) + " where region_id = ?",
-                new VoterRegistrationStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, false),
-                fullPaddedFipsCode
-        );
-
-        if (queryResult.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(queryResult.getFirst());
-        }
+        return getStateDataRowByCounty(VoterRegistrationStatisticsModel.class, fipsCode, countyCode);
     }
 
-    @Override
     public List<PollbookDeletionStatisticsModel> getPollbookDeletionRows(String fipsCode, boolean aggregated) {
-        var queryable = new PollbookDeletionStatisticsModel.Queryable();
-        return _jdbcTemplate.query(
-                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
-                new PollbookDeletionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, aggregated),
-                fipsCode
-        );
+        return getStateDataRows(PollbookDeletionStatisticsModel.class, fipsCode, aggregated);
     }
 
-    @Override
     public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionRowByCounty(String fipsCode, String countyCode) {
-        var fullPaddedFipsCode = fipsCode + countyCode + "00000";
-        var queryable = new PollbookDeletionStatisticsModel.Queryable();
-        var queryResult = _jdbcTemplate.query(
-                queryable.Query(false) + " where region_id = ?",
-                new PollbookDeletionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, false),
-                fullPaddedFipsCode
-        );
-
-        if (queryResult.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(queryResult.getFirst());
-        }
+        return getStateDataRowByCounty(PollbookDeletionStatisticsModel.class, fipsCode, countyCode);
     }
 
-    @Override
     public List<MailBallotRejectionStatisticsModel> getMailBallotRejectionRows(String fipsCode, boolean aggregated) {
-        var queryable = new MailBallotRejectionStatisticsModel.Queryable();
-        return _jdbcTemplate.query(
-                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
-                new MailBallotRejectionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, aggregated),
-                fipsCode
-        );
+        return getStateDataRows(MailBallotRejectionStatisticsModel.class, fipsCode, aggregated);
     }
 
-    @Override
     public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionRowByCounty(String fipsCode, String countyCode) {
-        var fullPaddedFipsCode = fipsCode + countyCode + "00000";
-        var queryable = new MailBallotRejectionStatisticsModel.Queryable();
-        var queryResult = _jdbcTemplate.query(
-                queryable.Query(false) + " where region_id = ?",
-                new MailBallotRejectionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, false),
-                fullPaddedFipsCode
-        );
-
-        if (queryResult.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(queryResult.getFirst());
-        }
+        return getStateDataRowByCounty(MailBallotRejectionStatisticsModel.class, fipsCode, countyCode);
     }
 
     private void populateFipsCodeToCountyNameMapTable() throws IOException {

@@ -4,13 +4,11 @@ import com.theknicks.voteranalysis_backend.annotations.AutoSql;
 import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.Optional;
 
 /**
@@ -28,8 +26,9 @@ import java.util.Optional;
  */
 public class AutoSqlQueryable<T> {
     private static class SqlQueryableInvocationHandler implements InvocationHandler {
-        private Class  _mappableClass;
+        private final Class _mappableClass;
         private boolean _isAggregateSumQuery = false;
+        private Object[] _contextArgs;
 
         public SqlQueryableInvocationHandler(Class mappableClass) {
             _mappableClass = mappableClass;
@@ -37,6 +36,10 @@ public class AutoSqlQueryable<T> {
 
         public void setIsAggregateSumQuery(boolean v) {
             _isAggregateSumQuery = v;
+        }
+
+        public void setContextArgs(Object[] contextArgs) {
+            _contextArgs = contextArgs;
         }
 
         public Object invoke(Object proxy, Method method, Object args[])
@@ -66,35 +69,74 @@ public class AutoSqlQueryable<T> {
                 var qualifyingFields = AutoSqlQueryable.filterForAllQueryableFields(
                         _mappableClass.getDeclaredFields(), _isAggregateSumQuery);
 
+                // I'm praying these are in order!
+                int columnNumber = 1;
                 for (var field : qualifyingFields) {
-                    // NOTE(jerry): I assert that this is true, if it was queryable
-                    // then it has a SqlName / queryName.
-                    var queryName = AutoSqlQueryable.getSqlName(field).get();
                     var type = field.getType();
                     if ((type == int.class || type == Integer.class)) {
-                        var newValue = resultSet.getInt(queryName);
+                        var newValue = resultSet.getInt(columnNumber);
                         callingArguments.add(newValue);
                     } else if ((type == float.class || type == Float.class)) {
-                        var newValue = resultSet.getFloat(queryName);
+                        var newValue = resultSet.getFloat(columnNumber);
                         callingArguments.add(newValue);
                     } else if ((type == long.class || type == Long.class)) {
-                        var newValue = resultSet.getLong(queryName);
+                        var newValue = resultSet.getLong(columnNumber);
                         callingArguments.add(newValue);
                     } else if ((type == double.class || type == Double.class)) {
-                        var newValue = resultSet.getDouble(queryName);
+                        var newValue = resultSet.getDouble(columnNumber);
                         callingArguments.add(newValue);
                     } else if ((type == String.class)) {
-                        var newValue = resultSet.getString(queryName);
+                        var newValue = resultSet.getString(columnNumber);
                         callingArguments.add(newValue);
                     }else {
                         throw new RuntimeException(
                                 String.format("The class type \"%s\" does not have a mapped function!",
                                         type.getName()));
                     }
+                    columnNumber++;
                 }
 
-                defaultConstructor.newInstance(
-                        (Object[]) callingArguments.toArray());
+                /**
+                 * NOTE(jerry):
+                 * Check the collection we're in, and see if
+                 * there's any collection dependent processing
+                 *
+                 * FIXME(jerry):
+                 * This is specifically because we have a field that can't
+                 * be queried from the db so this is a little dirty here!!!
+                 *
+                 * SHOULD BE REMOVED WHEN COUNTY NAMES ARE QUERYABLE.
+                 */
+                var autoSqlAnnotation = (AutoSql) _mappableClass.getAnnotation(AutoSql.class);
+                if (autoSqlAnnotation.collection().contains("eavs_data")) {
+                    if (_isAggregateSumQuery) {
+                        callingArguments.add(0, "0000000000");
+                        callingArguments.add(1, "Aggregated");
+                    } else {
+                    /*
+                        for the eavs_data collection, I can't get the county name without
+                        extra context info.
+                     */
+                        var fipsToCountyNameMap = (Dictionary<String, String>) _contextArgs[0];
+                        var regionId = resultSet.getString("region_id");
+                        var countyName = fipsToCountyNameMap.get(regionId);
+                        if (countyName == null || countyName.isBlank() || countyName.isEmpty()) {
+                            countyName = "N/A";
+                        }
+                    /*
+                        The eavs_data records have the form
+
+                        0 String fullRegionId,
+                        1 String countyName,
+                        ...
+                        ..
+                        N ...
+                     */
+                        callingArguments.add(1, countyName);
+                    }
+                }
+
+                return defaultConstructor.newInstance(callingArguments.toArray());
             }
 
             return null;
@@ -131,7 +173,7 @@ public class AutoSqlQueryable<T> {
     }
 
     private static Field[] filterForAllQueryableFields(Field[] fieldsList, boolean asSumAggregate) {
-        return (Field[]) Arrays.stream(fieldsList).filter(
+        var result = Arrays.stream(fieldsList).filter(
                 (field) -> {
                     if (getSqlName(field).isPresent()) {
                         if (asSumAggregate && isOmittedFromSumAggregate(field)) {
@@ -141,7 +183,8 @@ public class AutoSqlQueryable<T> {
                     }
                     return false;
                 }
-        ).toArray();
+        ).toArray(Field[]::new); // TIL(jerry): Java syntax? Method Reference Syntax
+        return result;
     }
 
     // Happens to be fine for numeric data, might need to evolve as I think
@@ -184,23 +227,43 @@ public class AutoSqlQueryable<T> {
      * This does some really slick stuff to automate
      * the generation of the row mappers.
      */
-    public RowMapper<T> Mapper(boolean isSumAggregate) {
+    public RowMapper<T> Mapper(Object[] contextArgs, boolean isSumAggregate) {
+        SqlQueryableInvocationHandler invocationHandler;
         if (_mapperInstance == null) {
-            var handler = new SqlQueryableInvocationHandler(_class);
-            handler.setIsAggregateSumQuery(isSumAggregate);
+            invocationHandler = new SqlQueryableInvocationHandler(_class);
             @SuppressWarnings("unchecked")
             var proxy = (RowMapper<T>) Proxy.newProxyInstance(
                 RowMapper.class.getClassLoader(),
                 new Class[] { RowMapper.class },
-                handler
+                invocationHandler
             );
             _mapperInstance = proxy;
         } else {
             // Using the memoized query handler.
-            var invocationHandler = (SqlQueryableInvocationHandler)
+            invocationHandler = (SqlQueryableInvocationHandler)
                     Proxy.getInvocationHandler(_mapperInstance);
-            invocationHandler.setIsAggregateSumQuery(isSumAggregate);
         }
+        invocationHandler.setIsAggregateSumQuery(isSumAggregate);
+        invocationHandler.setContextArgs(contextArgs);
         return _mapperInstance;
+    }
+
+
+    public static <T> AutoSqlQueryable<T> findQueryableNested(Class<T> T) {
+        try {
+            AutoSqlQueryable<T> queryable = null;
+            Class<?>[] innerClasses = T.getDeclaredClasses();
+            for (Class<?> inner : innerClasses) {
+                if (inner.getSimpleName().equals("Queryable")) {
+                    var ctor =  (Constructor<AutoSqlQueryable<T>>) inner.getDeclaredConstructor();
+                    queryable = (AutoSqlQueryable<T>) ctor.newInstance();
+                    break;
+                }
+            }
+            return queryable;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
