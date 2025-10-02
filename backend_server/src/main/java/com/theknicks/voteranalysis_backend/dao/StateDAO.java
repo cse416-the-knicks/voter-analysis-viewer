@@ -2,6 +2,7 @@ package com.theknicks.voteranalysis_backend.dao;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -230,7 +231,8 @@ public class StateDAO implements IStateDAO {
 
     private final Logger _logger = LoggerFactory.getLogger(StateDAO.class);
     private final String preprocessedGeospatialPath = "../data_common/geospatial_processed/";
-    private final String rawCsvPath = "../data_common/raw/";
+    private final Path _localCsvDataPath = Paths.get("../data_common/raw/US_FIPS_Codes.csv");
+
     private final Dictionary<String, String> _fipsCodeToCountyNameMap;
     private final JdbcTemplate _jdbcTemplate;
 
@@ -369,7 +371,7 @@ public class StateDAO implements IStateDAO {
     }
 
     private void populateFipsCodeToCountyNameMapTable() throws IOException {
-        try (var fileLinesStream = Files.lines(Paths.get(rawCsvPath, "US_FIPS_Codes.csv"))) {
+        try (var fileLinesStream = Files.lines(_localCsvDataPath)) {
             var fileLines = fileLinesStream.toList();
 
             // First line is just headings...
