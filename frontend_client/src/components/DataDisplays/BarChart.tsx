@@ -13,7 +13,7 @@ interface BarChartProperties {
 
 function BarChart({stateInfo}: BarChartProperties) {
   const barMargin = { top: 25, right: 45, bottom: 25, left: 200 }
-  const barWidth = 700 - barMargin.left - barMargin.right
+  const barWidth = 800 - barMargin.left - barMargin.right
   const barHeight = 500 - barMargin.top - barMargin.bottom
 
   const horizontalAxis = d3.scaleLinear().domain([0, d3.max(stateInfo.data, (x) => x.value)!]).range([0, barWidth]);
@@ -23,6 +23,7 @@ function BarChart({stateInfo}: BarChartProperties) {
   const [tooltipText, setTooltipText] = useState("TEXT!");
 
   const svgRef = useRef<SVGSVGElement>(null);
+  console.log(stateInfo);
   useEffect(() => {
     const svg = d3.select(svgRef.current);
     const rectangleSelector = svg.selectAll("rect");
@@ -46,7 +47,7 @@ function BarChart({stateInfo}: BarChartProperties) {
 
   return (
     <>
-    <svg ref={svgRef} width={700} height={500} style={{ background: "#ffffff" }}>
+    <svg ref={svgRef} width={800} height={500} style={{ background: "#ffffff" }}>
       <g transform={`translate(${barMargin.left}, ${barMargin.top})`}>
         {stateInfo.data.map((x) => (
 	  //@ts-expect-error: This is not a real error, custom attributes are supported in React 16+
