@@ -6,10 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.lang.reflect.*;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.Optional;
+import java.util.*;
 
 /*
  * NOTE(jerry):
@@ -145,10 +142,11 @@ public class AutoSqlQueryable<T> {
     }
 
     private final Class<T> _class;
-    private static RowMapper _mapperInstance; // cache the mapper as a singleton
+    private static Dictionary<String, RowMapper> _mapperInstances; // cache the mapper as a singleton
 
     public AutoSqlQueryable(Class<T> classData) {
         _class = classData;
+        _mapperInstances = new Hashtable<>();
     }
 
     private static boolean isOmittedFromSumAggregate(Field field) {
@@ -244,7 +242,9 @@ public class AutoSqlQueryable<T> {
      */
     public RowMapper<T> Mapper(Object[] contextArgs, boolean isSumAggregate) {
         SqlQueryableInvocationHandler invocationHandler;
-        if (_mapperInstance == null) {
+        RowMapper<T> mapper = _mapperInstances.get(_class.getName());
+
+        if (mapper == null) {
             invocationHandler = new SqlQueryableInvocationHandler(_class);
             @SuppressWarnings("unchecked")
             var proxy = (RowMapper<T>) Proxy.newProxyInstance(
@@ -252,16 +252,16 @@ public class AutoSqlQueryable<T> {
                 new Class[] { RowMapper.class },
                 invocationHandler
             );
-            _mapperInstance = proxy;
+            _mapperInstances.put(_class.getName(), proxy);
+            mapper = proxy;
         } else {
             // Using the memoized query handler.
             invocationHandler = (SqlQueryableInvocationHandler)
-                    Proxy.getInvocationHandler(_mapperInstance);
+                    Proxy.getInvocationHandler(mapper);
         }
         invocationHandler.setIsAggregateSumQuery(isSumAggregate);
         invocationHandler.setContextArgs(contextArgs);
-        //noinspection unchecked
-        return (RowMapper<T>) _mapperInstance;
+        return mapper;
     }
 
     public RowMapper<T> Mapper(Object[] contextArgs) {
