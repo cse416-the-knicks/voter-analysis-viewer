@@ -59,49 +59,6 @@ public class StateDAO implements IStateDAO {
         return Optional.empty();
     }
 
-    private Optional<String> entryOrNoneIfBlank(String s) {
-        if (s.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(s);
-    }
-
-    private Optional<Boolean> tryParseBoolean(Optional<String> s) {
-        if (s.isEmpty()) {
-            return Optional.empty();
-        }
-
-        var val = s.get();
-        _logger.info(val);
-        if (val.equals("TRUE")) {
-            return Optional.of(true);
-        } else if (val.equals("FALSE")) {
-            return Optional.of(false);
-        }
-
-        // Yes there's a difference between TRUE, FALSE, N/A
-        return Optional.empty();
-    }
-
-    private Optional<Integer> tryParseYearFromString(Optional<String> s) {
-        if (s.isEmpty()) {
-            return Optional.empty();
-        }
-
-        try {
-            var splitString = s.get().split("/", -1);
-            // For most date formats, and certainly any American date format
-            // the year is the last component of the date.
-            //
-            // This is nearly temporary code anyway.
-            return Optional.of(Integer.parseInt(splitString[splitString.length-1]));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return Optional.empty();
-    }
-
     private void populateFipsCodeToCountyNameMapTable() throws IOException {
         try (var fileLinesStream = Files.lines(Paths.get(rawCsvPath, "US_FIPS_Codes.csv"))) {
             var fileLines = fileLinesStream.toList();
