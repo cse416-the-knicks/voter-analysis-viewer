@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
 import org.slf4j.Logger;
@@ -141,6 +142,43 @@ public class StateDAO implements IStateDAO {
         }
     }
 
+    private static class PollbookDeletionStatisticsModelInternalRowMapper
+            extends CommonStateDAOInternalRowMapper
+            implements RowMapper<PollbookDeletionStatisticsModel> {
+        public PollbookDeletionStatisticsModelInternalRowMapper(
+                Dictionary<String, String> fipsToCountyNameMap,
+                boolean isInAggregate
+        ) {
+            super(fipsToCountyNameMap, isInAggregate);
+        }
+
+        public PollbookDeletionStatisticsModel mapRow(
+                ResultSet resultSet,
+                int rowNumber) {
+            try {
+                String regionName = getGeoUnitName(resultSet);
+                String regionCode = getRegionId(resultSet);
+                int column = getColumnStartOffset();
+                return new PollbookDeletionStatisticsModel(
+                        regionCode,
+                        regionName,
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++)
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
     private final Logger _logger = LoggerFactory.getLogger(StateDAO.class);
     private final String preprocessedGeospatialPath = "../data_common/geospatial_processed/";
     private final String rawCsvPath = "../data_common/raw/";
@@ -217,6 +255,33 @@ public class StateDAO implements IStateDAO {
         var queryResult = _jdbcTemplate.query(
                 queryable.Query(false) + " where region_id = ?",
                 new VoterRegistrationStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, false),
+                fullPaddedFipsCode
+        );
+
+        if (queryResult.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(queryResult.getFirst());
+        }
+    }
+
+    @Override
+    public List<PollbookDeletionStatisticsModel> getPollbookDeletionRows(String fipsCode, boolean aggregated) {
+        var queryable = new PollbookDeletionStatisticsModel.Queryable();
+        return _jdbcTemplate.query(
+                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
+                new PollbookDeletionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, aggregated),
+                fipsCode
+        );
+    }
+
+    @Override
+    public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionRowByCounty(String fipsCode, String countyCode) {
+        var fullPaddedFipsCode = fipsCode + countyCode + "00000";
+        var queryable = new PollbookDeletionStatisticsModel.Queryable();
+        var queryResult = _jdbcTemplate.query(
+                queryable.Query(false) + " where region_id = ?",
+                new PollbookDeletionStatisticsModelInternalRowMapper(_fipsCodeToCountyNameMap, false),
                 fullPaddedFipsCode
         );
 

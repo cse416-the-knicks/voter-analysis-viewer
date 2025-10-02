@@ -1,6 +1,7 @@
 package com.theknicks.voteranalysis_backend.services;
 
 import com.theknicks.voteranalysis_backend.dao.IStateDAO;
+import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
 import org.slf4j.Logger;
@@ -49,6 +50,18 @@ public class StateService {
     public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationDataForCounty(
             String fipsCode, String countyCode) {
         return _dao.getVoterRegistrationRowByCounty(
+                fipsCode, countyCode);
+    }
+
+    public List<PollbookDeletionStatisticsModel> getPollbookDeletionData(
+            String fipsCode, boolean inAggregate) {
+        return _dao.getPollbookDeletionRows(
+                fipsCode, inAggregate);
+    }
+
+    public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionDataForCounty(
+            String fipsCode, String countyCode) {
+        return _dao.getPollbookDeletionRowByCounty(
                 fipsCode, countyCode);
     }
 }
