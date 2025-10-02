@@ -8,6 +8,14 @@ import getVotingEquipmentMutator from '../helpers/backendConnectorAxiosInstance'
 import getAllVotingEquipmentByTypeMutator from '../helpers/backendConnectorAxiosInstance';
 import getAllVotingEquipmentByManufacturerMutator from '../helpers/backendConnectorAxiosInstance';
 import getAllVotingEquipmentMutator from '../helpers/backendConnectorAxiosInstance';
+import getVoterRegistrationCountsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
+import getProvisionalBallotsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
+import getPollbookDeletionsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
+import getMailBallotRejectionsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
+import getVoterRegistrationCountsMutator from '../helpers/backendConnectorAxiosInstance';
+import getProvisionalBallotsMutator from '../helpers/backendConnectorAxiosInstance';
+import getPollbookDeletionsMutator from '../helpers/backendConnectorAxiosInstance';
+import getMailBallotRejectionsMutator from '../helpers/backendConnectorAxiosInstance';
 import getStateGeometryMutator from '../helpers/backendConnectorAxiosInstance';
 export interface VotingEquipmentModel {
   manufacturer?: string;
@@ -22,6 +30,83 @@ export interface VotingEquipmentModel {
   certificationLevel?: string;
   securityRiskDescription?: string;
 }
+
+export interface VoterRegistrationStatisticsModel {
+  fullRegionId?: string;
+  countyName?: string;
+  total?: number;
+  active?: number;
+  inactive?: number;
+}
+
+export interface ProvisionalBallotStatisticsModel {
+  fullRegionId?: string;
+  countyName?: string;
+  totalBallotsCast?: number;
+  ballotReasonNotOnList?: number;
+  ballotReasonNoIdAvailable?: number;
+  ballotReasonChallengedByOfficial?: number;
+  ballotReasonChallengedByOther?: number;
+  ballotReasonWrongPrecinct?: number;
+  ballotReasonNotUpdatedAddress?: number;
+  ballotReasonDidNotSurrender?: number;
+  ballotReasonExtendedVotingHours?: number;
+  ballotReasonSameDayRegistration?: number;
+  ballotReasonOther?: number;
+}
+
+export interface PollbookDeletionStatisticsModel {
+  fullRegionId?: string;
+  countyName?: string;
+  totalRemoved?: number;
+  removedReasonMoved?: number;
+  removedReasonDeceased?: number;
+  removedReasonFelony?: number;
+  removedReasonFailedToConfirm?: number;
+  removedReasonIncompetent?: number;
+  removedReasonRequested?: number;
+  removedReasonDuplicate?: number;
+  removedOther?: number;
+}
+
+export interface MailBallotRejectionStatisticsModel {
+  fullRegionId?: string;
+  countyName?: string;
+  rejectTotal?: number;
+  rejectLate?: number;
+  rejectNoSignature?: number;
+  rejectNoWitnessSignature?: number;
+  rejectSignatureMismatch?: number;
+  rejectUnofficialEnv?: number;
+  rejectBallotMissing?: number;
+  rejectNoSecrecyEnvironment?: number;
+  rejectMultipleInEnvironment?: number;
+  rejectUnsealedEnvironment?: number;
+  rejectNoPostMark?: number;
+  rejectNoAddress?: number;
+  rejectVoterDeceased?: number;
+  rejectDuplicateVote?: number;
+  rejectMissingDocumentation?: number;
+  rejectNotEligible?: number;
+  rejectNoApplication?: number;
+  rejectOther?: number;
+}
+
+export type GetVoterRegistrationCountsParams = {
+aggregate?: boolean;
+};
+
+export type GetProvisionalBallotsParams = {
+aggregate?: boolean;
+};
+
+export type GetPollbookDeletionsParams = {
+aggregate?: boolean;
+};
+
+export type GetMailBallotRejectionsParams = {
+aggregate?: boolean;
+};
 
 export type GeoJsonObjectType = typeof GeoJsonObjectType[keyof typeof GeoJsonObjectType];
 
@@ -527,6 +612,90 @@ export const getAllVotingEquipment = (
       options);
     }
   
+export const getVoterRegistrationCountsByCounty = (
+    fipsCode: string,
+    countyFipsCode: string,
+ options?: SecondParameter<typeof getVoterRegistrationCountsByCountyMutator>,) => {
+      return getVoterRegistrationCountsByCountyMutator<VoterRegistrationStatisticsModel>(
+      {url: `/state/${fipsCode}/${countyFipsCode}/voter-registration-count`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getProvisionalBallotsByCounty = (
+    fipsCode: string,
+    countyFipsCode: string,
+ options?: SecondParameter<typeof getProvisionalBallotsByCountyMutator>,) => {
+      return getProvisionalBallotsByCountyMutator<ProvisionalBallotStatisticsModel>(
+      {url: `/state/${fipsCode}/${countyFipsCode}/provisional-ballots`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getPollbookDeletionsByCounty = (
+    fipsCode: string,
+    countyFipsCode: string,
+ options?: SecondParameter<typeof getPollbookDeletionsByCountyMutator>,) => {
+      return getPollbookDeletionsByCountyMutator<PollbookDeletionStatisticsModel>(
+      {url: `/state/${fipsCode}/${countyFipsCode}/pollbook-deletions`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getMailBallotRejectionsByCounty = (
+    fipsCode: string,
+    countyFipsCode: string,
+ options?: SecondParameter<typeof getMailBallotRejectionsByCountyMutator>,) => {
+      return getMailBallotRejectionsByCountyMutator<MailBallotRejectionStatisticsModel>(
+      {url: `/state/${fipsCode}/${countyFipsCode}/mail-ballot-rejections`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getVoterRegistrationCounts = (
+    fipsCode: string,
+    params?: GetVoterRegistrationCountsParams,
+ options?: SecondParameter<typeof getVoterRegistrationCountsMutator>,) => {
+      return getVoterRegistrationCountsMutator<VoterRegistrationStatisticsModel[]>(
+      {url: `/state/${fipsCode}/voter-registration-count`, method: 'GET',
+        params
+    },
+      options);
+    }
+  
+export const getProvisionalBallots = (
+    fipsCode: string,
+    params?: GetProvisionalBallotsParams,
+ options?: SecondParameter<typeof getProvisionalBallotsMutator>,) => {
+      return getProvisionalBallotsMutator<ProvisionalBallotStatisticsModel[]>(
+      {url: `/state/${fipsCode}/provisional-ballots`, method: 'GET',
+        params
+    },
+      options);
+    }
+  
+export const getPollbookDeletions = (
+    fipsCode: string,
+    params?: GetPollbookDeletionsParams,
+ options?: SecondParameter<typeof getPollbookDeletionsMutator>,) => {
+      return getPollbookDeletionsMutator<PollbookDeletionStatisticsModel[]>(
+      {url: `/state/${fipsCode}/pollbook-deletions`, method: 'GET',
+        params
+    },
+      options);
+    }
+  
+export const getMailBallotRejections = (
+    fipsCode: string,
+    params?: GetMailBallotRejectionsParams,
+ options?: SecondParameter<typeof getMailBallotRejectionsMutator>,) => {
+      return getMailBallotRejectionsMutator<MailBallotRejectionStatisticsModel[]>(
+      {url: `/state/${fipsCode}/mail-ballot-rejections`, method: 'GET',
+        params
+    },
+      options);
+    }
+  
 export const getStateGeometry = (
     fipsCode: string,
  options?: SecondParameter<typeof getStateGeometryMutator>,) => {
@@ -540,4 +709,12 @@ export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof get
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>
 export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>
 export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>
+export type GetVoterRegistrationCountsByCountyResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCountsByCounty>>>
+export type GetProvisionalBallotsByCountyResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallotsByCounty>>>
+export type GetPollbookDeletionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletionsByCounty>>>
+export type GetMailBallotRejectionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejectionsByCounty>>>
+export type GetVoterRegistrationCountsResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCounts>>>
+export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallots>>>
+export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletions>>>
+export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>
 export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>
