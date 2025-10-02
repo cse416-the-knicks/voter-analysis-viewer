@@ -303,7 +303,7 @@ df.to_sql(
     "states",
     engine,
     schema="app",
-    if_exists="replace",
+    if_exists="append",
     index=False
 )
 

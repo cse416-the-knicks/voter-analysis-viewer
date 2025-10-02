@@ -12,6 +12,23 @@ services:
     volumes:
       - leffison_pg_data:/var/lib/postgresql/data
       - ./db-init:/docker-entrypoint-initdb.d
+  db-setup:
+    build: .
+    container_name: db-setup
+    restart: "no"
+    depends_on:
+        [db]
+    environment:
+      PGUSER: Leffison Members
+      PGDATABASE: leffison_db
+      PGPASSWORD: raj
+      PGPORT: 5432 # The internal port that's exposed.
+      PGHOST: db
+    entrypoint: ["/project-root/construct-db.sh"]
+    volumes:
+      - leffison_pg_data:/var/lib/postgresql/data
+      - ./sql:/sql-scripts
+      - .:/project-root
 
 volumes:
   leffison_pg_data:
