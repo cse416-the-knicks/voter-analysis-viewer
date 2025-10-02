@@ -4,10 +4,12 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
@@ -25,61 +27,113 @@ enum StateCsvRecordColumnId {
 
 @Component
 public class StateDAO implements IStateDAO {
-    private static class InternalRowMapper implements RowMapper<ProvisionalBallotStatisticsModel> {
+    /**
+     * This internal class implements some common headers, since
+     * the EAVs data has very similar usage code.
+     */
+    private static class CommonStateDAOInternalRowMapper {
         private final Dictionary<String, String> _fipsToCountyNameMap;
         private final boolean _isInAggregate;
-
-        public InternalRowMapper(
+        public CommonStateDAOInternalRowMapper(
                 Dictionary<String, String> fipsToCountyNameMap,
-                boolean isInAggregate) {
+                boolean isInAggregate
+        ) {
             _fipsToCountyNameMap = fipsToCountyNameMap;
             _isInAggregate = isInAggregate;
+        }
+
+        /**
+         * This is here to reduce the amount of code I need to duplicate,
+         * since aggregation is the same query minus the region id.
+         */
+        protected int getColumnStartOffset() {
+            if (_isInAggregate) {
+                return 1;
+            } else {
+                return 2;
+            }
+        }
+
+        protected String getRegionId(ResultSet resultSet) throws SQLException {
+            if (_isInAggregate) {
+                return "0000000000";
+            } else {
+                return resultSet.getString("region_id");
+            }
+        }
+
+        protected String getGeoUnitName(ResultSet resultSet) throws SQLException {
+            if (_isInAggregate) {
+                return "Aggregate";
+            } else {
+                var regionId = getRegionId(resultSet);
+                return _fipsToCountyNameMap.get(regionId);
+            }
+        }
+    }
+    private static class ProvisionalBallotStatisticsModelInternalRowMapper
+            extends CommonStateDAOInternalRowMapper
+            implements RowMapper<ProvisionalBallotStatisticsModel> {
+        public ProvisionalBallotStatisticsModelInternalRowMapper(
+                Dictionary<String, String> fipsToCountyNameMap,
+                boolean isInAggregate) {
+            super(fipsToCountyNameMap, isInAggregate);
         }
 
         public ProvisionalBallotStatisticsModel mapRow(
                 ResultSet resultSet,
                 int rowNumber) {
             try {
-                String regionName;
-                String regionCode;
+                String regionName = getGeoUnitName(resultSet);
+                String regionCode = getRegionId(resultSet);
 
-                if (_isInAggregate) {
-                    regionName = "Aggregate";
-                    regionCode = "000000000";
-                    return new ProvisionalBallotStatisticsModel(
-                            regionCode,
-                            regionName,
-                            resultSet.getInt(1),
-                            resultSet.getInt(2),
-                            resultSet.getInt(3),
-                            resultSet.getInt(4),
-                            resultSet.getInt(5),
-                            resultSet.getInt(6),
-                            resultSet.getInt(7),
-                            resultSet.getInt(8),
-                            resultSet.getInt(9),
-                            resultSet.getInt(10),
-                            resultSet.getInt(11)
-                    );
-                } else {
-                    regionCode = resultSet.getString("region_id");
-                    regionName = _fipsToCountyNameMap.get(regionCode);
-                    return new ProvisionalBallotStatisticsModel(
-                            regionCode,
-                            regionName,
-                            resultSet.getInt("prov_cast"),
-                            resultSet.getInt("prov_reason_not_in_roll"),
-                            resultSet.getInt("prov_reason_no_id"),
-                            resultSet.getInt("prov_reason_not_eligibe_official"),
-                            resultSet.getInt("prov_reason_challenged"),
-                            resultSet.getInt("prov_reason_wrong_precinct"),
-                            resultSet.getInt("prov_reason_name_address"),
-                            resultSet.getInt("prov_reason_mail_ballot_unsurrendered"),
-                            resultSet.getInt("prov_reason_hours_extended"),
-                            resultSet.getInt("prov_reason_same_day_reg"),
-                            resultSet.getInt("prov_other")
-                    );
-                }
+                int column = getColumnStartOffset();
+                return new ProvisionalBallotStatisticsModel(
+                        regionCode,
+                        regionName,
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++)
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    private static class VoterRegistrationStatisticsModelInternalRowMapper
+            extends CommonStateDAOInternalRowMapper
+            implements RowMapper<VoterRegistrationStatisticsModel> {
+        public VoterRegistrationStatisticsModelInternalRowMapper(
+                Dictionary<String, String> fipsToCountyNameMap,
+                boolean isInAggregate
+        ) {
+            super(fipsToCountyNameMap, isInAggregate);
+        }
+
+        public VoterRegistrationStatisticsModel mapRow(
+                ResultSet resultSet,
+                int rowNumber) {
+            try {
+                String regionName = getGeoUnitName(resultSet);
+                String regionCode = getRegionId(resultSet);
+                int column = getColumnStartOffset();
+                return new VoterRegistrationStatisticsModel(
+                        regionCode,
+                        regionName,
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++),
+                        resultSet.getInt(column++)
+                );
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -129,7 +183,21 @@ public class StateDAO implements IStateDAO {
         sum(prov_other)
     from app.eavs_data
     """;
-
+    private final String _baseQueryForVoterRegistrationCountsData = """
+    select
+        region_id,
+        total_registered,
+        active_registered,
+        inactive_registered
+    from app.eavs_data
+    """;
+    private final String _baseQueryForVoterRegistrationAggregatedCountData = """
+    select
+        sum(total_registered),
+        sum(active_registered),
+        sum(inactive_registered)
+    from app.eavs_data
+    """;
     public StateDAO(JdbcTemplate jdbcTemplate)
         throws IOException
     {
@@ -166,10 +234,10 @@ public class StateDAO implements IStateDAO {
 
         String sqlStatement = String.format("%s where substring(region_id, 1, 2) = ?",
                 baseQuery);
-        _logger.info(sqlStatement);
         result = _jdbcTemplate.query(
                 sqlStatement,
-                new InternalRowMapper(_fipsCodeToCountyNameMap, aggregated),
+                new ProvisionalBallotStatisticsModelInternalRowMapper(
+                        _fipsCodeToCountyNameMap, aggregated),
                 fipsCode
         );
         return result;
@@ -184,7 +252,50 @@ public class StateDAO implements IStateDAO {
         var fullPaddedFipsCode = fipsCode + countyCode + "00000";
         queryResult = _jdbcTemplate.query(
                 sqlStatement,
-                new InternalRowMapper(_fipsCodeToCountyNameMap, false),
+                new ProvisionalBallotStatisticsModelInternalRowMapper(
+                        _fipsCodeToCountyNameMap, false),
+                fullPaddedFipsCode
+        );
+
+        if (queryResult.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(queryResult.getFirst());
+        }
+    }
+
+    @Override
+    public List<VoterRegistrationStatisticsModel> getVoterRegistrationRows(String fipsCode, boolean aggregated) {
+        List<VoterRegistrationStatisticsModel> result;
+        String baseQuery;
+        if (aggregated) {
+            baseQuery = _baseQueryForVoterRegistrationAggregatedCountData;
+        } else {
+            baseQuery = _baseQueryForVoterRegistrationCountsData;
+        }
+
+        String sqlStatement = String.format("%s where substring(region_id, 1, 2) = ?",
+                baseQuery);
+        result = _jdbcTemplate.query(
+                sqlStatement,
+                new VoterRegistrationStatisticsModelInternalRowMapper(
+                        _fipsCodeToCountyNameMap, aggregated),
+                fipsCode
+        );
+        return result;
+    }
+
+    @Override
+    public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationRowByCounty(String fipsCode, String countyCode) {
+        List<VoterRegistrationStatisticsModel> queryResult;
+        String sqlStatement = String.format("%s where region_id = ?",
+                _baseQueryForVoterRegistrationCountsData);
+        _logger.info(sqlStatement);
+        var fullPaddedFipsCode = fipsCode + countyCode + "00000";
+        queryResult = _jdbcTemplate.query(
+                sqlStatement,
+                new VoterRegistrationStatisticsModelInternalRowMapper(
+                        _fipsCodeToCountyNameMap, false),
                 fullPaddedFipsCode
         );
 
