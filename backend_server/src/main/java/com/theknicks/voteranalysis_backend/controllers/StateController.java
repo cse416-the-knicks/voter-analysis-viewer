@@ -3,6 +3,7 @@ package com.theknicks.voteranalysis_backend.controllers;
 import java.util.*;
 
 import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
 import com.theknicks.voteranalysis_backend.services.StateService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -58,5 +59,21 @@ public class StateController {
     ) {
         return _service.getProvisionalBallotDataForCounty(
                 fipsCode, countyFipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/voter-registration-count")
+    public List<VoterRegistrationStatisticsModel> getVoterRegistrationCounts(
+            @PathVariable("fipsCode") String fipsCode,
+            @RequestParam(name="aggregate", defaultValue="false") boolean inAggregate
+    ) {
+        return _service.getVoterRegistrationData(fipsCode, inAggregate);
+    }
+
+    @GetMapping("/{fipsCode}/{countyFipsCode}/voter-registration-count")
+    public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationCountsByCounty(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("countyFipsCode") String countyFipsCode
+    ) {
+        return _service.getVoterRegistrationDataForCounty(fipsCode, countyFipsCode);
     }
 }

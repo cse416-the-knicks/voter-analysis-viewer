@@ -2,6 +2,7 @@ package com.theknicks.voteranalysis_backend.services;
 
 import com.theknicks.voteranalysis_backend.dao.IStateDAO;
 import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.*;
@@ -34,7 +35,20 @@ public class StateService {
                 fipsCode, countyCode);
     }
 
-    public List<ProvisionalBallotStatisticsModel> getProvisionalBallotData(String fipsCode, boolean inAggregate) {
+    public List<ProvisionalBallotStatisticsModel> getProvisionalBallotData(
+            String fipsCode, boolean inAggregate) {
         return _dao.getProvisionBallotRows(fipsCode, inAggregate);
+    }
+
+    public List<VoterRegistrationStatisticsModel> getVoterRegistrationData(
+            String fipsCode, boolean inAggregate) {
+        return _dao.getVoterRegistrationRows(
+                fipsCode, inAggregate);
+    }
+
+    public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationDataForCounty(
+            String fipsCode, String countyCode) {
+        return _dao.getVoterRegistrationRowByCounty(
+                fipsCode, countyCode);
     }
 }
