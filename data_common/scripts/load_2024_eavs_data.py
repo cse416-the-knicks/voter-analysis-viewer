@@ -27,7 +27,7 @@ cols = ["FIPSCode", "State_Abbr",
         "A12a","A12b","A12c","A12d","A12e","A12f","A12g","A12h","A12i","A12j","A12k",
         "C8a","C3a",
         "E1a","E2a","E2b","E2c","E2d","E2e","E2f","E2g","E2h","E2i","E2j","E2k","E2l",
-        "C9b","C9c","C9d","C9e","C9f","C9g","C9h","C9i","C9j","C9k","C9l","C9m","C9n","C9o","C9p","C9q",
+        "C9a","C9b","C9c","C9d","C9e","C9f","C9g","C9h","C9i","C9j","C9k","C9l","C9m","C9n","C9o","C9p","C9q",
         "C9r","C9s","C9t"]
 df = df[cols]
 
