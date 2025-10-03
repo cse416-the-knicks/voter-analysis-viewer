@@ -14,21 +14,22 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
  */
 @AutoSql(view = "app.v_state_year_summary")
 public record ViewStateYearSummaryModel(
-    @SqlColumnName String stateCode,
-    @SqlColumnName String stateName,
-    @SqlColumnName int forYear,
-    @SqlColumnName int activeRegistered,
-    @SqlColumnName int inactiveRegistered,
-    @SqlColumnName int totalRegistered,
-    @SqlColumnName int totalBallotsCast,
-    @SqlColumnName int earlyVotingTotal,
-    @SqlColumnName int ballotsByMail,
-    @SqlColumnName int totalProvisionalBallotsCast,
-    @SqlColumnName double activeVoterRate,
-    @SqlColumnName double inactiveVoterRate,
-    @SqlColumnName double turnOutRate,
-    @SqlColumnName double earlyVotingShareRate,
-    @SqlColumnName double mailinBallotVotingShareRate
+        @SqlColumnName int stateFipsCode, // NOTE(jerry): unpadded. For some reason.
+        @SqlColumnName String stateCode,
+        @SqlColumnName String stateName,
+        @SqlColumnName int forYear,
+        @SqlColumnName int activeRegistered,
+        @SqlColumnName int inactiveRegistered,
+        @SqlColumnName int totalRegistered,
+        @SqlColumnName int totalBallotsCast,
+        @SqlColumnName int earlyVotingTotal,
+        @SqlColumnName int ballotsByMail,
+        @SqlColumnName int totalProvisionalBallotsCast,
+        @SqlColumnName double activeVoterRate,
+        @SqlColumnName double inactiveVoterRate,
+        @SqlColumnName double turnOutRate,
+        @SqlColumnName double earlyVotingShareRate,
+        @SqlColumnName double mailinBallotVotingShareRate
 ) {
     public static class Queryable extends AutoSqlQueryable<ViewStateYearSummaryModel> {
         public Queryable() {

@@ -1,14 +1,12 @@
 package com.theknicks.voteranalysis_backend.services;
 
 import com.theknicks.voteranalysis_backend.dao.IStateDAO;
-import com.theknicks.voteranalysis_backend.models.MailBallotRejectionStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.util.*;
 /**
  * State Service layer,
@@ -76,5 +74,18 @@ public class StateService {
             String fipsCode, String countyCode) {
         return _dao.getMailBallotRejectionRowByCounty(
                 fipsCode, countyCode);
+    }
+
+    public List<ViewStateYearSummaryModel> getViewStateYearSummaryDataForState(
+            String fipsCode
+    ) {
+        return _dao.getStateYearSummaryRows(fipsCode);
+    }
+
+    public Optional<ViewStateYearSummaryModel> getViewStateYearSummaryDataForStateByYear(
+            String fipsCode,
+            int year
+    ) {
+        return _dao.getStateYearSummaryRowByYear(fipsCode, year);
     }
 }
