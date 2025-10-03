@@ -264,6 +264,14 @@ public class AutoSqlQueryable<T> {
         return (RowMapper<T>) _mapperInstance;
     }
 
+    public RowMapper<T> Mapper(Object[] contextArgs) {
+        return Mapper(contextArgs, false);
+    }
+
+    public RowMapper<T> Mapper() {
+        return Mapper(new Object[] {}, false);
+    }
+
     public static <T> AutoSqlQueryable<T> findQueryableNested(Class<T> T) {
         try {
             AutoSqlQueryable<T> queryable = null;
