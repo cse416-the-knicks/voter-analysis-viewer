@@ -17,10 +17,11 @@ function getDetailStateType(
   fipsCode: string,
 ): DetailStateType {
   switch (fipsCode) {
-    case "13": {
+    case "48": {
       return DETAIL_STATE_TYPE_OPTIN;
     } break;
-    case "48": {
+    case "26":
+    case "13": {
       return DETAIL_STATE_TYPE_OPTOUT;
     } break;
     case "36": {
@@ -36,6 +37,25 @@ function getDetailStateType(
   return DETAIL_STATE_TYPE_NONE;
 }
 
+function getHumanReadableStateType(type: string): string {
+  switch (type) {
+    case "DETAIL_STATE_TYPE_NONE":
+      return "Other / Unknown";
+    case "DETAIL_STATE_TYPE_OPTIN":
+      return "Opt-In State";
+    case "DETAIL_STATE_TYPE_OPTOUT":
+      return "Opt-Out State";
+    case "DETAIL_STATE_TYPE_DEMOCRAT":
+      return "Democrat-Leaning State";
+    case "DETAIL_STATE_TYPE_REPUBLICAN":
+      return "Republican-Leaning State";
+    case "DETAIL_STATE_TYPE_VOTER_REGISTRATION":
+      return "Voter Registration State";
+    default:
+      return type;
+  }
+}
+
 function isDetailState(
   fipsCode: string,
 ): boolean  {
@@ -46,6 +66,7 @@ export type { DetailStateType };
 export {
     getDetailStateType,
     isDetailState,
+    getHumanReadableStateType,
     DETAIL_STATE_TYPE_NONE,
     DETAIL_STATE_TYPE_OPTIN,
     DETAIL_STATE_TYPE_OPTOUT,

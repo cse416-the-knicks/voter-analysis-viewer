@@ -75,7 +75,7 @@ function FrontPageTopBanner() {
             Voter Analysis - Team Knicks
           </Typography>
         </Toolbar>
-      </AppBar>
+    </AppBar>
   );
 }
 
