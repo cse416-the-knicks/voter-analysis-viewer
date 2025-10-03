@@ -80,6 +80,8 @@ function FrontPageDrawer() {
 	<ListItem> <ListItemText primary={"COMPARE VOTING"}/> </ListItem>
 	<ListItem> <ListItemButton onClick={() => navigate("/compare/parties")}> <ListItemText primary={"BIPARTISAN EARLY VOTING"}/> </ListItemButton> </ListItem>
 	<ListItem> <ListItemButton onClick={() => navigate("/compare/optvote")}> <ListItemText primary={"OPT-IN, OPT-OUT VOTING"}/> </ListItemButton> </ListItem>
+  {/* Attempting to address GUI-15 "Compare Republican and Democratic States" */}
+  <ListItem> <ListItemButton onClick={() => navigate("/compare/partystates")}> <ListItemText primary={"Republican and Democratic States"}/> </ListItemButton> </ListItem>
 	<Divider/>
 	<ListItem> <ListItemText primary={"DISPLAY"}/> </ListItem>
 	<ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-age")}> <ListItemText primary={"VOTING EQUIPMENT AGE"}/> </ListItemButton> </ListItem>
