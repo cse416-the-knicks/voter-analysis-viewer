@@ -2,10 +2,7 @@ package com.theknicks.voteranalysis_backend.controllers;
 
 import java.util.*;
 
-import com.theknicks.voteranalysis_backend.models.MailBallotRejectionStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.*;
 import com.theknicks.voteranalysis_backend.services.StateService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -109,5 +106,20 @@ public class StateController {
             @PathVariable("countyFipsCode") String countyFipsCode
     ) {
         return _service.getMailBallotRejectionDataForCounty(fipsCode, countyFipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/year-summary")
+    public List<ViewStateYearSummaryModel> getViewStateYearSummaryByState(
+            @PathVariable("fipsCode") String fipsCode
+    ) {
+        return _service.getViewStateYearSummaryDataForState(fipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/year-summary/{year}")
+    public Optional<ViewStateYearSummaryModel> getViewStateYearSummaryByStateForYear(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("year") int year
+    ) {
+        return _service.getViewStateYearSummaryDataForStateByYear(fipsCode, year);
     }
 }

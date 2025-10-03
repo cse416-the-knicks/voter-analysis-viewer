@@ -12,6 +12,8 @@ import getVoterRegistrationCountsByCountyMutator from '../helpers/backendConnect
 import getProvisionalBallotsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
 import getPollbookDeletionsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
 import getMailBallotRejectionsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
+import getViewStateYearSummaryByStateMutator from '../helpers/backendConnectorAxiosInstance';
+import getViewStateYearSummaryByStateForYearMutator from '../helpers/backendConnectorAxiosInstance';
 import getVoterRegistrationCountsMutator from '../helpers/backendConnectorAxiosInstance';
 import getProvisionalBallotsMutator from '../helpers/backendConnectorAxiosInstance';
 import getPollbookDeletionsMutator from '../helpers/backendConnectorAxiosInstance';
@@ -90,6 +92,25 @@ export interface MailBallotRejectionStatisticsModel {
   rejectNotEligible?: number;
   rejectNoApplication?: number;
   rejectOther?: number;
+}
+
+export interface ViewStateYearSummaryModel {
+  stateFipsCode?: number;
+  stateCode?: string;
+  stateName?: string;
+  forYear?: number;
+  activeRegistered?: number;
+  inactiveRegistered?: number;
+  totalRegistered?: number;
+  totalBallotsCast?: number;
+  earlyVotingTotal?: number;
+  ballotsByMail?: number;
+  totalProvisionalBallotsCast?: number;
+  activeVoterRate?: number;
+  inactiveVoterRate?: number;
+  turnOutRate?: number;
+  earlyVotingShareRate?: number;
+  mailinBallotVotingShareRate?: number;
 }
 
 export type GetVoterRegistrationCountsParams = {
@@ -652,6 +673,25 @@ export const getMailBallotRejectionsByCounty = (
       options);
     }
   
+export const getViewStateYearSummaryByState = (
+    fipsCode: string,
+ options?: SecondParameter<typeof getViewStateYearSummaryByStateMutator>,) => {
+      return getViewStateYearSummaryByStateMutator<ViewStateYearSummaryModel[]>(
+      {url: `/state/${fipsCode}/year-summary`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getViewStateYearSummaryByStateForYear = (
+    fipsCode: string,
+    year: number,
+ options?: SecondParameter<typeof getViewStateYearSummaryByStateForYearMutator>,) => {
+      return getViewStateYearSummaryByStateForYearMutator<ViewStateYearSummaryModel>(
+      {url: `/state/${fipsCode}/year-summary/${year}`, method: 'GET'
+    },
+      options);
+    }
+  
 export const getVoterRegistrationCounts = (
     fipsCode: string,
     params?: GetVoterRegistrationCountsParams,
@@ -713,6 +753,8 @@ export type GetVoterRegistrationCountsByCountyResult = NonNullable<Awaited<Retur
 export type GetProvisionalBallotsByCountyResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallotsByCounty>>>
 export type GetPollbookDeletionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletionsByCounty>>>
 export type GetMailBallotRejectionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejectionsByCounty>>>
+export type GetViewStateYearSummaryByStateResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByState>>>
+export type GetViewStateYearSummaryByStateForYearResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByStateForYear>>>
 export type GetVoterRegistrationCountsResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCounts>>>
 export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallots>>>
 export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletions>>>

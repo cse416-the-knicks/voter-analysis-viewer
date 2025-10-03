@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface AutoSql {
-    public String collection();
+    public String collection() default "";
+    public String view() default "";
 }

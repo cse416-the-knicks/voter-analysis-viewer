@@ -191,6 +191,11 @@ public class AutoSqlQueryable<T> {
         var result = new StringBuilder();
         var selfClass = _class;
         var autoSqlAnnotation = selfClass.getAnnotation(AutoSql.class);
+
+        if (!autoSqlAnnotation.view().isEmpty()) {
+            return QueryView();
+        }
+
         result.append("select\n");
         // For records, which is the use-case this is everything.
         var fieldsToWrite = filterForAllQueryableFields(
@@ -221,6 +226,18 @@ public class AutoSqlQueryable<T> {
         return result.toString();
     }
 
+    public String Query() {
+        return Query(false);
+    }
+
+    // This is used for AutoSql that has views.
+    public String QueryView() {
+        var result = new StringBuilder();
+        var selfClass = _class;
+        var autoSqlAnnotation = selfClass.getAnnotation(AutoSql.class);
+        return String.format("select * from %s ", autoSqlAnnotation.view());
+    }
+
     /**
      * This does some really slick stuff to automate
      * the generation of the row mappers.
@@ -245,6 +262,14 @@ public class AutoSqlQueryable<T> {
         invocationHandler.setContextArgs(contextArgs);
         //noinspection unchecked
         return (RowMapper<T>) _mapperInstance;
+    }
+
+    public RowMapper<T> Mapper(Object[] contextArgs) {
+        return Mapper(contextArgs, false);
+    }
+
+    public RowMapper<T> Mapper() {
+        return Mapper(new Object[] {}, false);
     }
 
     public static <T> AutoSqlQueryable<T> findQueryableNested(Class<T> T) {
