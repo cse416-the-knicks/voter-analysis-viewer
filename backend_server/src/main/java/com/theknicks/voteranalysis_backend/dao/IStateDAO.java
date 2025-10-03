@@ -1,10 +1,7 @@
 package com.theknicks.voteranalysis_backend.dao;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.theknicks.voteranalysis_backend.models.MailBallotRejectionStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
-import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.*;
 
 import java.util.*;
 
@@ -92,4 +89,21 @@ public interface IStateDAO {
      * @return a MailBallotRejectionStatisticsModel if it exists, none otherwise.
      */
     Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionRowByCounty(String fipsCode, String countyCode);
+
+    /**
+     * This access point is meant to return a summary of the general voting information for a state for every year we have
+     * data about (voter turnout, total ballots, etc...)
+     * @param fipsCode - A string for the fipsCode of the state.
+     * @return a list of ViewStateYearSummaryModel detailing the general voting information per year
+     */
+    List<ViewStateYearSummaryModel> getStateYearSummaryRows(String fipsCode);
+
+    /**
+     * This access point is meant to return a summary of the general voting information for a state within a given
+     * year (voter turnout, total ballots, etc...)
+     * @param fipsCode - A string for the fipsCode of the state.
+     * @param year - An integer for the year we want to query.
+     * @return a ViewStateYearSummaryModel if it exists, none otherwise.
+     */
+    Optional<ViewStateYearSummaryModel> getStateYearSummaryRowByYear(String fipsCode, int year);
 }

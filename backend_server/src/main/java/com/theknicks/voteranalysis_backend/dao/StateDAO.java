@@ -8,6 +8,7 @@ import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
+import com.theknicks.voteranalysis_backend.helpers.ListHelpers;
 import com.theknicks.voteranalysis_backend.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +76,7 @@ public class StateDAO implements IStateDAO {
                 fullPaddedFipsCode
         );
 
-        if (queryResult.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(queryResult.getFirst());
-        }
+        return ListHelpers.getFirst(queryResult);
     }
 
     public List<ProvisionalBallotStatisticsModel> getProvisionBallotRows(String fipsCode, boolean aggregated) {
@@ -113,6 +110,27 @@ public class StateDAO implements IStateDAO {
 
     public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionRowByCounty(String fipsCode, String countyCode) {
         return getStateDataRowByCounty(MailBallotRejectionStatisticsModel.class, fipsCode, countyCode);
+    }
+
+    public List<ViewStateYearSummaryModel> getStateYearSummaryRows(String fipsCode) {
+        var queryable = AutoSqlQueryable.findQueryableNested(ViewStateYearSummaryModel.class);
+        assert queryable != null;
+        return _jdbcTemplate.query(
+                queryable.Query() + " where state_id = ?",
+                queryable.Mapper(),
+                Integer.parseInt(fipsCode, 10)
+        );
+    }
+
+    public Optional<ViewStateYearSummaryModel> getStateYearSummaryRowByYear(String fipsCode, int year) {
+        var queryable = AutoSqlQueryable.findQueryableNested(ViewStateYearSummaryModel.class);
+        assert queryable != null;
+        return ListHelpers.getFirst(_jdbcTemplate.query(
+                queryable.Query() + " where state_id = ? and year = ?",
+                queryable.Mapper(),
+                Integer.parseInt(fipsCode, 10),
+                year
+        ));
     }
 
     private void populateFipsCodeToCountyNameMapTable() throws IOException {
