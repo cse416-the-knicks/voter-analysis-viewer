@@ -22,7 +22,9 @@ public class VoteranalysisBackendApplication {
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         // This is a bad idea, but this is not production quality!
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:5173/"));
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173/",
+                "http://100.102.249.33:5173/"));
         config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
         source.registerCorsConfiguration("/**", config);

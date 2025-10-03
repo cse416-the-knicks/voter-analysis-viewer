@@ -1,12 +1,12 @@
 import 'leaflet/dist/leaflet.css';
-import React, { useEffect, useRef } from 'react';
+import styles from './FrontPage.module.css';
+
 import type { MapRef } from 'react-leaflet/MapContainer';
+import type { FipsCode } from '../FullBoundedUSMap/';
+
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import FullBoundedUSMap from '../FullBoundedUSMap/';
-import type { FipsCode } from '../FullBoundedUSMap/';
-import { useLocation } from 'react-router';
-
-import styles from './FrontPage.module.css';
 
 import {
   Button,
@@ -16,79 +16,66 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Box,
+  AppBar,
+  Toolbar,
+  Typography,
+  useTheme,
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
-function WelcomeApplicationDialog() {
-  const location = useLocation();
-  const [open, setOpen] = React.useState(location.pathname === '/');
-  const handleClose = () => {setOpen(false);};
-  return (
-    <React.Fragment>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Welcome!"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-	    Welcome to the Knicks Teams CSE416.01 Voter-Analysis Project
-	    <br/>
-	    <br/>
-	    Backend: Java with SpringBoot, GSON
-	    <br/>
-	    Frontend: Typescript with React, and MaterialUI
-	    <br/>
-	    Database: Postgres SQL Database instance.
-	    <br/>
-	  </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} autoFocus>
-            Ok
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
-  );
-}
+import WelcomeApplicationDialog from '../WelcomeApplicationDialog';
+import NotImplementedYet from '../NotImplementedYetDialog';
 
-function FrontPageDrawer() {
+interface FrontPageDrawerProperties {
+  setNotImplementedYet: (v: boolean) => void;
+};
+
+function FrontPageDrawer( 
+  { setNotImplementedYet } : FrontPageDrawerProperties
+) {
   const navigate = useNavigate();
 
   return (
     <Drawer
       variant="permanent"
       sx={{
-	'& .MuiDrawer-paper': {
-	  width: '14em',
-	  margin: 0,
-	},
+        '& .MuiDrawer-paper': {
+          width: '14em',
+          top: "4em",
+          margin: 0,
+        },
       }}
     >
       <List dense>
-	<ListItem> <ListItemText primary={"COMPARE VOTING"}/> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/compare/parties")}> <ListItemText primary={"BIPARTISAN EARLY VOTING"}/> </ListItemButton> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/compare/optvote")}> <ListItemText primary={"OPT-IN, OPT-OUT VOTING"}/> </ListItemButton> </ListItem>
-	<Divider/>
-	<ListItem> <ListItemText primary={"DISPLAY"}/> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-age")}> <ListItemText primary={"VOTING EQUIPMENT AGE"}/> </ListItemButton> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-summary")}> <ListItemText primary={"VOTING EQUIPMENT 2024 SUMMARY"}/> </ListItemButton> </ListItem>
+        <ListItem> <ListItemText primary={"Compare Voting"} /> </ListItem>
+        <ListItem> <ListItemButton onClick={() => setNotImplementedYet(true) }> <ListItemText primary={"Bipartisan Early Voting"} /> </ListItemButton> </ListItem>
+        <ListItem> <ListItemButton onClick={() => navigate("/compare/optvote")}> <ListItemText primary={"Opt-In, Opt-Out Voting"} /> </ListItemButton> </ListItem>
+        <Divider />
+        <ListItem> <ListItemText primary={"Display"} /> </ListItem>
+        <ListItem> <ListItemButton onClick={() => setNotImplementedYet(true) }> <ListItemText primary={"Voting Equipment"} /> </ListItemButton> </ListItem>
+        <ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-summary")}> <ListItemText primary={"Voting Equipment 2024 Summary"} /> </ListItemButton> </ListItem>
       </List>
       <Button variant='contained' color='secondary'>
-	<HighlightOffIcon/> Reset to Default
+        <HighlightOffIcon /> Reset to Default
       </Button>
     </Drawer>
+  );
+}
+
+function FrontPageTopBanner() {
+  const theme = useTheme();
+
+  return (
+    <AppBar sx={{
+        backgroundColor: theme.palette.secondary.main
+      }}>
+        <Toolbar>
+          <Typography fontFamily="inherit" variant="h4" align="center">
+            Voter Analysis - Team Knicks
+          </Typography>
+        </Toolbar>
+      </AppBar>
   );
 }
 
@@ -98,6 +85,7 @@ function FrontPageDrawer() {
  * Submaps will be defined as separate components.
  */
 function FrontPage() {
+  const showNotImplementedYetHook = useState<boolean>(false);
   const mapState = useRef<MapRef>(null);
   const navigate = useNavigate();
 
@@ -107,14 +95,16 @@ function FrontPage() {
 
   return (
     <React.Fragment>
-      <WelcomeApplicationDialog/>
+      <FrontPageTopBanner/>
+      <WelcomeApplicationDialog />
+      <NotImplementedYet hook={showNotImplementedYetHook}/>
       <Box>
-	<FrontPageDrawer/>
-      <FullBoundedUSMap
-	mapRef={mapState}
-	id={styles.mainMap}
-	onStateClick={onStateClick}>
-      </FullBoundedUSMap>
+        <FrontPageDrawer 
+          setNotImplementedYet={showNotImplementedYetHook[1]} />
+        <FullBoundedUSMap
+          mapRef={mapState}
+          id={styles.mainMap}
+          onStateClick={onStateClick} />
       </Box>
     </React.Fragment>
   );
