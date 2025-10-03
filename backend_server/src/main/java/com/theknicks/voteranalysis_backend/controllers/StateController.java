@@ -2,6 +2,10 @@ package com.theknicks.voteranalysis_backend.controllers;
 
 import java.util.*;
 
+import com.theknicks.voteranalysis_backend.models.MailBallotRejectionStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.PollbookDeletionStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.ProvisionalBallotStatisticsModel;
+import com.theknicks.voteranalysis_backend.models.VoterRegistrationStatisticsModel;
 import com.theknicks.voteranalysis_backend.services.StateService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,8 +42,72 @@ public class StateController {
                     schema = @Schema(ref="../openapi-ext/geojson.yaml#/components/schema/GeoJsonObject", nullable=true)
             )
     )
-
     public Optional<ObjectNode> getStateGeometry(@PathVariable("fipsCode") String fipsCode) {
         return _service.getBoundaryGeometry(fipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/provisional-ballots")
+    public List<ProvisionalBallotStatisticsModel> getProvisionalBallots(
+            @PathVariable("fipsCode") String fipsCode,
+            @RequestParam(name="aggregate", defaultValue="false") boolean inAggregate
+    ) {
+        return _service.getProvisionalBallotData(fipsCode, inAggregate);
+    }
+
+    @GetMapping("/{fipsCode}/{countyFipsCode}/provisional-ballots")
+    public Optional<ProvisionalBallotStatisticsModel> getProvisionalBallotsByCounty(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("countyFipsCode") String countyFipsCode
+    ) {
+        return _service.getProvisionalBallotDataForCounty(
+                fipsCode, countyFipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/voter-registration-count")
+    public List<VoterRegistrationStatisticsModel> getVoterRegistrationCounts(
+            @PathVariable("fipsCode") String fipsCode,
+            @RequestParam(name="aggregate", defaultValue="false") boolean inAggregate
+    ) {
+        return _service.getVoterRegistrationData(fipsCode, inAggregate);
+    }
+
+    @GetMapping("/{fipsCode}/{countyFipsCode}/voter-registration-count")
+    public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationCountsByCounty(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("countyFipsCode") String countyFipsCode
+    ) {
+        return _service.getVoterRegistrationDataForCounty(fipsCode, countyFipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/pollbook-deletions")
+    public List<PollbookDeletionStatisticsModel> getPollbookDeletions(
+            @PathVariable("fipsCode") String fipsCode,
+            @RequestParam(name="aggregate", defaultValue="false") boolean inAggregate
+    ) {
+        return _service.getPollbookDeletionData(fipsCode, inAggregate);
+    }
+
+    @GetMapping("/{fipsCode}/{countyFipsCode}/pollbook-deletions")
+    public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionsByCounty(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("countyFipsCode") String countyFipsCode
+    ) {
+        return _service.getPollbookDeletionDataForCounty(fipsCode, countyFipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/mail-ballot-rejections")
+    public List<MailBallotRejectionStatisticsModel> getMailBallotRejections(
+            @PathVariable("fipsCode") String fipsCode,
+            @RequestParam(name="aggregate", defaultValue="false") boolean inAggregate
+    ) {
+        return _service.getMailBallotRejectionData(fipsCode, inAggregate);
+    }
+
+    @GetMapping("/{fipsCode}/{countyFipsCode}/mail-ballot-rejections")
+    public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionsByCounty(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("countyFipsCode") String countyFipsCode
+    ) {
+        return _service.getMailBallotRejectionDataForCounty(fipsCode, countyFipsCode);
     }
 }
