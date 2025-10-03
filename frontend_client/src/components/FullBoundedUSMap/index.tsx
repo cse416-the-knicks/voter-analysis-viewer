@@ -4,7 +4,7 @@ import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
 import { getDetailStateType, isDetailState } from './detailedStatesInfo';
-
+import { Typography, AppBar, Toolbar, Box } from '@mui/material';
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
 // although they can be googled from some Medium posts
@@ -123,6 +123,12 @@ function FullBoundedUSMap(
     };
 
   return (
+    <>
+      <AppBar sx={{ backgroundColor: "purple"}}>
+        <Typography fontFamily="inherit" variant="h4" align="left" paddingLeft="10em" paddingBottom="8px">
+            416 Voter Analysis - Team Knickerbockers
+          </Typography>
+      </AppBar>
     <MapContainer
       zoom={Math.max(zoom ?? 0, MIN_ACCEPTABLE_ZOOM)}
       minZoom={MIN_ACCEPTABLE_ZOOM}
@@ -143,6 +149,7 @@ function FullBoundedUSMap(
       />
       {children}
     </MapContainer>
+    </>
   )
 }
 

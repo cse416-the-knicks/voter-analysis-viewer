@@ -239,6 +239,7 @@ function StateInformationView() {
     }
   );
 
+  const SCALE=0.085;
   useEffect(
     function() {
       (async function () {
@@ -261,7 +262,7 @@ function StateInformationView() {
 	  const data = await getProvisionalBallots(fipsCode!, {aggregate: false});
 	  const aggregateData = await getProvisionalBallots(fipsCode!, {aggregate: true});
 
-	  const high = Math.max(... data.map((x) => x.totalBallotsCast))*0.85;
+	  const high = Math.max(... data.map((x) => x.totalBallotsCast))*SCALE;
 	  const bucketDiv = Math.ceil(high / ColorBuckets.length);
 	  const newgm = {};
 	  for (let i = 0; i < ColorBuckets.length; ++i) {
@@ -292,7 +293,7 @@ function StateInformationView() {
 	  const data = await getVoterRegistrationCounts(fipsCode!, {aggregate: false});
 	  const aggregateData = await getVoterRegistrationCounts(fipsCode!, {aggregate: true});
 
-	  const high = Math.max(... data.map((x) => x.total))*0.85;
+	  const high = Math.max(... data.map((x) => x.total))*SCALE;
 	  // const high = 10000;
 	  const bucketDiv = Math.ceil(high / ColorBuckets.length);
 	  const newgm = {};
@@ -316,7 +317,7 @@ function StateInformationView() {
 	  const data = await getPollbookDeletions(fipsCode!, {aggregate: false});
 	  const aggregateData = await getPollbookDeletions(fipsCode!, {aggregate: true});
 
-	  const high = Math.max(... data.map((x) => x.totalRemoved!))*0.85;
+	  const high = Math.max(... data.map((x) => x.totalRemoved!))*SCALE;
 	  const bucketDiv = Math.ceil(high / ColorBuckets.length);
 	  const newgm = {};
 	  for (let i = 0; i < ColorBuckets.length; ++i) {
@@ -346,7 +347,7 @@ function StateInformationView() {
 	  const aggregateData = await getMailBallotRejections(fipsCode!, { aggregate: true });
 
 	  // bucket coloring, same as before
-	  const high = Math.max(...data.map((x) => x.rejectTotal!))*0.85;
+	  const high = Math.max(...data.map((x) => x.rejectTotal!))*SCALE;
 	  const bucketDiv = Math.ceil(high / ColorBuckets.length);
 	  const newgm: Record<string, string> = {};
 	  for (let i = 0; i < ColorBuckets.length; ++i) {
@@ -416,6 +417,16 @@ function StateInformationView() {
   ];
 
   const stateType = getDetailStateType(fipsCode!);
+
+  if (stateType == "DETAIL_STATE_TYPE_VOTER_REGISTRATION") {
+    dropDownSections[0].items.push(
+	{ id: 1, iconComponent: <PersonIcon/>, textContent: "Voters By Affiliation" },
+    );
+    dropDownSections[0].items.push(
+	{ id: 1, iconComponent: <PersonIcon/>, textContent: "Voter Registration Info" },
+    );
+  }
+
   function styleFunction(feature: GeoJSON.Feature) {
     const geoUnitFipsCode = (activeDataStateHook[0] + activeDataStateHook[0] + feature.properties.STATEFP+feature.properties.COUNTYFP + activeDataStateHook[0]) as string;
     const result = {

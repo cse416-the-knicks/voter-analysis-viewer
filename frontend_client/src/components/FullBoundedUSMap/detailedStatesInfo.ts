@@ -20,6 +20,7 @@ function getDetailStateType(
     case "48": {
       return DETAIL_STATE_TYPE_OPTIN;
     } break;
+    case "26":
     case "13": {
       return DETAIL_STATE_TYPE_OPTOUT;
     } break;

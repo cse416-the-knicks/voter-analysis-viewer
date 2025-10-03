@@ -31,8 +31,8 @@ function BarChart({stateInfo}: BarChartProperties) {
 	function (event, d) {
 	  d3.select(this).attr("fill", "hsl(288, 90%, 90%)");
 	  const r = this.getBoundingClientRect();
-	  setBoundingRectangle(this.getBoundingClientRect());
-	  setTooltipText(this.getAttribute("data-value") + "?");
+	  setBoundingRectangle(r);
+	  setTooltipText(this.getAttribute("data-title") + ": "+ this.getAttribute("data-value"));
 	})
       .on("mouseout",
 	function (event, d) {
@@ -48,7 +48,7 @@ function BarChart({stateInfo}: BarChartProperties) {
       <g transform={`translate(${barMargin.left}, ${barMargin.top})`}>
         {stateInfo.data.map((x) => (
 	  //@ts-expect-error: This is not a real error, custom attributes are supported in React 16+
-          <rect key={x.category} y={verticalAxis(x.category)!} data-value={x.value} width={horizontalAxis(x.value)} height={verticalAxis.bandwidth()} fill="hsl(288, 90%, 44%)"/>
+          <rect key={x.category} data-title={x.category} y={verticalAxis(x.category)!} data-value={x.value} width={horizontalAxis(x.value)} height={verticalAxis.bandwidth()} fill="hsl(288, 90%, 44%)"/>
         ))}
                 
         {stateInfo.data.map((x) => (
@@ -82,7 +82,17 @@ function BarChart({stateInfo}: BarChartProperties) {
         <text x={barWidth-295} y={barHeight+20} fontSize={15}>{stateInfo.XTitle}</text>
       </g>
     </svg>
-      {boundingRectangle && <p style={{position: "absolute", left: boundingRectangle.x + "px", top: boundingRectangle.y + "px", background: "white"}}>{tooltipText}</p>}
+      {boundingRectangle &&
+	<p style={{
+	  position: "absolute", left: (boundingRectangle.x - barWidth/2) + "px", top: boundingRectangle.y + "px", background: "white",
+	  borderRadius: "8px",
+	  padding: "8px",
+	  paddingLeft: "16px",
+	  paddingRight: "16px",
+	  pointerEvents: "none",
+	  fontSize: "16px",
+	  boxShadow: "5px 5px 15px gray",
+	}}><b>{tooltipText}</b></p>}
     </>
   )   
 }
