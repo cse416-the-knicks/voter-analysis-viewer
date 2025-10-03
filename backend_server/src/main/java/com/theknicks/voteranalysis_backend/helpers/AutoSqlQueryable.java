@@ -191,6 +191,11 @@ public class AutoSqlQueryable<T> {
         var result = new StringBuilder();
         var selfClass = _class;
         var autoSqlAnnotation = selfClass.getAnnotation(AutoSql.class);
+
+        if (!autoSqlAnnotation.view().isEmpty()) {
+            return QueryView();
+        }
+
         result.append("select\n");
         // For records, which is the use-case this is everything.
         var fieldsToWrite = filterForAllQueryableFields(
@@ -219,6 +224,18 @@ public class AutoSqlQueryable<T> {
         result.append(autoSqlAnnotation.collection());
         result.append("\n");
         return result.toString();
+    }
+
+    public String Query() {
+        return Query(false);
+    }
+
+    // This is used for AutoSql that has views.
+    public String QueryView() {
+        var result = new StringBuilder();
+        var selfClass = _class;
+        var autoSqlAnnotation = selfClass.getAnnotation(AutoSql.class);
+        return String.format("select * from %s ", autoSqlAnnotation.view());
     }
 
     /**
