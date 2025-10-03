@@ -124,11 +124,6 @@ function FullBoundedUSMap(
 
   return (
     <>
-      <AppBar sx={{ backgroundColor: "purple"}}>
-        <Typography fontFamily="inherit" variant="h4" align="left" paddingLeft="10em" paddingBottom="8px">
-            416 Voter Analysis - Team Knickerbockers
-          </Typography>
-      </AppBar>
     <MapContainer
       zoom={Math.max(zoom ?? 0, MIN_ACCEPTABLE_ZOOM)}
       minZoom={MIN_ACCEPTABLE_ZOOM}

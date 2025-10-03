@@ -5,3 +5,8 @@
   z-index: 1200;
   display: flex;
 }
+
+
+.oddRow {
+  background: hsl(225, 35%, 95%);
+}

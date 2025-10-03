@@ -46,74 +46,76 @@ import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart from '../DataDisplays/BarChart';
 
 const provisionColumns: GridColDef<(typeof rows)[number]>[] = [
-    {
+  {
     ...GRID_CHECKBOX_SELECTION_COL_DEF,
-    renderHeader: () => <></>, // This hides the "Select All" checkbox
+    renderHeader: () => <></>, // hides the "Select All" checkbox
   },
   { field: 'countyName', headerName: 'County', width: 120 },
-  { field: 'totalBallotsCast', headerName: 'Total Ballots Cast', type: 'number', width: 100 },
-  { field: 'ballotReasonNotOnList', headerName: 'Not On List', type: 'number', width: 100 },
-  { field: 'ballotReasonNoIdAvailable', headerName: 'No ID', type: 'number', width: 100 },
-  { field: 'ballotReasonChallengedByOfficial', headerName: 'Challenged Official', type: 'number', width: 100 },
-  { field: 'ballotReasonChallengedByOther', headerName: 'Challenged Other', type: 'number', width: 100 },
-  { field: 'ballotReasonWrongPrecinct', headerName: 'Wrong Precinct', type: 'number', width: 100 },
-  { field: 'ballotReasonNotUpdatedAddress', headerName: 'Not Updated Address', type: 'number', width: 100 },
-  { field: 'ballotReasonDidNotSurrender', headerName: 'Did Not Surrender', type: 'number', width: 100 },
-  { field: 'ballotReasonExtendedVotingHours', headerName: 'Extended Voter Hours', type: 'number', width: 100 },
-  { field: 'balloReasonSameDayRegistration', headerName: 'Used SDR', type: 'number', width: 100 },
-  { field: 'ballotReasonOther', headerName: 'Other', type: 'number', width: 100 },
+  { field: 'totalBallotsCast', headerName: 'Total Ballots Cast', type: 'number', width: 170 },
+  { field: 'ballotReasonNotOnList', headerName: 'Not On List', type: 'number', width: 150 },
+  { field: 'ballotReasonNoIdAvailable', headerName: 'No ID', type: 'number', width: 120 },
+  { field: 'ballotReasonChallengedByOfficial', headerName: 'Challenged Official', type: 'number', width: 190 },
+  { field: 'ballotReasonChallengedByOther', headerName: 'Challenged Other', type: 'number', width: 180 },
+  { field: 'ballotReasonWrongPrecinct', headerName: 'Wrong Precinct', type: 'number', width: 170 },
+  { field: 'ballotReasonNotUpdatedAddress', headerName: 'Not Updated Address', type: 'number', width: 200 },
+  { field: 'ballotReasonDidNotSurrender', headerName: 'Did Not Surrender', type: 'number', width: 190 },
+  { field: 'ballotReasonExtendedVotingHours', headerName: 'Extended Voter Hours', type: 'number', width: 200 },
+  { field: 'balloReasonSameDayRegistration', headerName: 'Used SDR', type: 'number', width: 140 },
+  { field: 'ballotReasonOther', headerName: 'Other', type: 'number', width: 120 },
 ];
+
 const activeVoterColumns: GridColDef<(typeof rows)[number]>[] = [
     {
     ...GRID_CHECKBOX_SELECTION_COL_DEF,
     renderHeader: () => <></>, // This hides the "Select All" checkbox
   },
   { field: 'countyName', headerName: 'County', width: 120 },
-  { field: 'total', headerName: 'Total Voters Registered', type: 'number', width: 100 },
-  { field: 'active', headerName: 'Active Voters', type: 'number', width: 100 },
-  { field: 'inactive', headerName: 'Inactive Voters', type: 'number', width: 100 },
+  { field: 'total', headerName: 'Total Voters Registered', type: 'number', width: 200 },
+  { field: 'active', headerName: 'Active Voters', type: 'number', width: 150 },
+  { field: 'inactive', headerName: 'Inactive Voters', type: 'number', width: 150 },
 ];
 const pollbookColumns: GridColDef<(typeof rows)[number]>[] = [
-    {
+  {
     ...GRID_CHECKBOX_SELECTION_COL_DEF,
-    renderHeader: () => <></>, // This hides the "Select All" checkbox
+    renderHeader: () => <></>, // hides the "Select All" checkbox
   },
   { field: 'countyName', headerName: 'County', width: 120 },
-  { field: 'totalRemoved', headerName: 'Total Removals', type: 'number', width: 100 },
-  { field: 'removedReasonMoved', headerName: 'Moved', type: 'number', width: 100 },
-  { field: 'removedReasonDeceased', headerName: 'Deceased', type: 'number', width: 100 },
-  { field: 'removedReasonFelony', headerName: 'Felony', type: 'number', width: 100 },
-  { field: 'removedReasonFailedToConfirm', headerName: 'Failed To Confirm', type: 'number', width: 100 },
-  { field: 'removedReasonIncompetent', headerName: 'Incompetent', type: 'number', width: 100 },
-  { field: 'removedReasonRequested', headerName: 'Requested', type: 'number', width: 100 },
-  { field: 'removedReasonDuplicate', headerName: 'Duplicate', type: 'number', width: 100 },
-  { field: 'removedOther', headerName: 'Other', type: 'number', width: 100 },
+  { field: 'totalRemoved', headerName: 'Total Removals', type: 'number', width: 150 },
+  { field: 'removedReasonMoved', headerName: 'Moved', type: 'number', width: 120 },
+  { field: 'removedReasonDeceased', headerName: 'Deceased', type: 'number', width: 130 },
+  { field: 'removedReasonFelony', headerName: 'Felony', type: 'number', width: 120 },
+  { field: 'removedReasonFailedToConfirm', headerName: 'Failed To Confirm', type: 'number', width: 180 },
+  { field: 'removedReasonIncompetent', headerName: 'Incompetent', type: 'number', width: 150 },
+  { field: 'removedReasonRequested', headerName: 'Requested', type: 'number', width: 150 },
+  { field: 'removedReasonDuplicate', headerName: 'Duplicate', type: 'number', width: 150 },
+  { field: 'removedOther', headerName: 'Other', type: 'number', width: 120 },
 ];
 const mailBallotRejectionColumns: GridColDef<(typeof rows)[number]>[] = [
-    {
+  {
     ...GRID_CHECKBOX_SELECTION_COL_DEF,
-    renderHeader: () => <></>, // This hides the "Select All" checkbox
+    renderHeader: () => <></>, // hides the "Select All" checkbox
   },
-  { field: 'countyName', headerName: 'County', width: 50 },
-  { field: 'rejectTotal', headerName: 'Total Rejections', type: 'number', width: 50 },
+  { field: 'countyName', headerName: 'County', width: 120 },
+  { field: 'rejectTotal', headerName: 'Total Rejections', type: 'number', width: 150 },
   { field: 'rejectLate', headerName: 'Late', type: 'number', width: 100 },
-  { field: 'rejectNoSignature', headerName: 'No Signature', type: 'number', width: 100 },
-  { field: 'rejectNoWitnessSignature', headerName: 'No Witness Signature', type: 'number', width: 50 },
-  { field: 'rejectSignatureMismatch', headerName: 'Signature Mismatch', type: 'number', width: 50 },
-  { field: 'rejectUnofficialEnv', headerName: 'Unofficial Envelope', type: 'number', width: 50 },
-  { field: 'rejectBallotMissing', headerName: 'Ballot Missing', type: 'number', width: 50 },
-  { field: 'rejectNoSecrecyEnvironment', headerName: 'No Secrecy Envelope', type: 'number', width: 50 },
-  { field: 'rejectMultipleInEnvironment', headerName: 'Multiple in Envelope', type: 'number', width: 50 },
-  { field: 'rejectUnsealedEnvironment', headerName: 'Unsealed Envelope', type: 'number', width: 50 },
-  { field: 'rejectNoPostMark', headerName: 'No Postmark', type: 'number', width: 50 },
-  { field: 'rejectNoAddress', headerName: 'No Address', type: 'number', width: 50 },
-  { field: 'rejectVoterDeceased', headerName: 'Voter Deceased', type: 'number', width: 50 },
-  { field: 'rejectDuplicateVote', headerName: 'Duplicate Vote', type: 'number', width: 50 },
-  { field: 'rejectMissingDocumentation', headerName: 'Missing Documentation', type: 'number', width: 50 },
-  { field: 'rejectNotEligible', headerName: 'Not Eligible', type: 'number', width: 100 },
-  { field: 'rejectNoApplication', headerName: 'No Application', type: 'number', width: 100 },
-  { field: 'rejectOther', headerName: 'Other', type: 'number', width: 100 },
+  { field: 'rejectNoSignature', headerName: 'No Signature', type: 'number', width: 150 },
+  { field: 'rejectNoWitnessSignature', headerName: 'No Witness Signature', type: 'number', width: 180 },
+  { field: 'rejectSignatureMismatch', headerName: 'Signature Mismatch', type: 'number', width: 170 },
+  { field: 'rejectUnofficialEnv', headerName: 'Unofficial Envelope', type: 'number', width: 170 },
+  { field: 'rejectBallotMissing', headerName: 'Ballot Missing', type: 'number', width: 150 },
+  { field: 'rejectNoSecrecyEnvironment', headerName: 'No Secrecy Envelope', type: 'number', width: 180 },
+  { field: 'rejectMultipleInEnvironment', headerName: 'Multiple in Envelope', type: 'number', width: 180 },
+  { field: 'rejectUnsealedEnvironment', headerName: 'Unsealed Envelope', type: 'number', width: 170 },
+  { field: 'rejectNoPostMark', headerName: 'No Postmark', type: 'number', width: 140 },
+  { field: 'rejectNoAddress', headerName: 'No Address', type: 'number', width: 140 },
+  { field: 'rejectVoterDeceased', headerName: 'Voter Deceased', type: 'number', width: 160 },
+  { field: 'rejectDuplicateVote', headerName: 'Duplicate Vote', type: 'number', width: 160 },
+  { field: 'rejectMissingDocumentation', headerName: 'Missing Documentation', type: 'number', width: 200 },
+  { field: 'rejectNotEligible', headerName: 'Not Eligible', type: 'number', width: 150 },
+  { field: 'rejectNoApplication', headerName: 'No Application', type: 'number', width: 160 },
+  { field: 'rejectOther', headerName: 'Other', type: 'number', width: 120 },
 ];
+
 
 
 function getColumnData(n) {
@@ -217,11 +219,6 @@ function StateInformationView() {
       ],
     }
     ); // do not care
-  const [rowSelectionModel, setRowSelectionModel] =
-  useState<GridRowSelectionModel>({
-    type: 'include', // or 'exclude'
-    ids: new Set()
-  });
 
   const [ GradientMap0, setGM] = useState<any>(
     {
@@ -451,12 +448,6 @@ function StateInformationView() {
       const gradientMapNearestColor = gradientMapNearest(number || 0, GradientMap0);
       result.fillColor = gradientMapNearestColor;
       result.fillOpacity = 1.0;
-      for (const tt of rowSelectionModel.ids) {
-	if (t === tt) {
-	  result.weight = 4;
-	  break;
-	}
-      }
     } else {
       result.fillColor = "hsl(288, 90%, 64%)";
       result.fillOpacity = 0.5;
@@ -476,33 +467,40 @@ function StateInformationView() {
 	  stateType={getDetailStateType(fipsCode!)}/>
       </Box>
 
-      <Stack spacing={3} direction="column" sx={{ mt: 4 }}>
-	<Paper
-	  sx={{ mt: 2, ml: 'auto', width: "600px", height: "860px" }}
-	  elevation={5}>
-	  <Typography variant="h3" component="h2">
-	    {FIPS_TO_STATES_MAP[fipsCode!]}
-	  </Typography>
-	   {/* TODO(jerry): THIS IS WRONG! */}
-	  <StateMap
-  key={activeDataStateHook[0]}
-  styleFunction={styleFunction}
-  width={"600px"} height={"830px"} fipsCode={fipsCode}>
-  {stateType !== "DETAIL_STATE_TYPE_NONE" && <MapLegend GradientMap0={GradientMap0}/>}
-	</StateMap>
-	</Paper>
+      <Stack spacing={0} direction="column">
+      <Paper
+        sx={{ mt: 2, ml: 'auto', width: "700px", height: "875px"}}
+        elevation={5}>
+        <Typography variant="h3" component="h2">
+          {FIPS_TO_STATES_MAP[fipsCode!]}
+        </Typography>
+        {/* TODO(jerry): THIS IS WRONG! */}
+        <StateMap
+      key={activeDataStateHook[0]}
+      styleFunction={styleFunction}
+      width={"700px"} height={"840px"} fipsCode={fipsCode}>
+      {stateType !== "DETAIL_STATE_TYPE_NONE" && <MapLegend GradientMap0={GradientMap0}/>}
+      </StateMap>
+      </Paper>
       </Stack>
-      <Stack spacing={3} sx={{ mt: 2, ml: 4, height: "50%", width: "50%" }}>
+      <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "53%" }}>
+        <Box maxWidth="950px">
 	<DataGrid
 	  disableColumnMenu
 	  disableColumnSelector
-	  
+    disableRowSelectionOnClick
+	  sx={{
+        "& .MuiDataGrid-columnHeaderTitle": {
+          fontWeight: "bolder",
+        },
+        "& .MuiDataGrid-cell--textLeft": {
+          fontWeight: "bolder",
+        }
+      }}
+    getRowClassName={(r) => r.indexRelativeToCurrentPage % 2 == 0 ? styles.oddRow :""}
+
 	  rows={rowData}
-	  onRowSelectionModelChange={
-	    (x) => {
-	      setRowSelectionModel(x);
-	    }
-	  }
+
 	  columns={getColumnData(activeDataStateHook[0])}
 	    initialState={{
 	    pagination: {
@@ -512,15 +510,18 @@ function StateInformationView() {
 	    },
 	    }}
 	    pageSizeOptions={[5]}
-	    checkboxSelection
-	    disableRowSelectionOnClick
-	/>
+	    // checkboxSelection
+  	/>
+        </Box>
+
+        <Box maxWidth="950px">
       <Paper  elevation={5}>
         {/*
 
 <BarChart stateInfo={getData(activeDataStateHook[0])[stateType]}/>*/}
         <BarChart stateInfo={barData}/>
       </Paper>
+      </Box>
       </Stack>
     </div>
   );

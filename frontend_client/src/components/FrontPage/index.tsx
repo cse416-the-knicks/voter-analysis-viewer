@@ -23,6 +23,8 @@ import {
   DialogTitle,
   Box,
   Typography,
+  Stack,
+  AppBar
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
@@ -106,18 +108,20 @@ function FrontPageDrawer({hook}) {
       sx={{
 	'& .MuiDrawer-paper': {
 	  width: '14em',
+	  top: "3.20em",
 	  margin: 0,
+	  borderRightColor: "purple",
 	},
       }}
     >
       <List dense>
-	<ListItem> <ListItemText primary={"COMPARE VOTING"}/> </ListItem>
-	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"BIPARTISAN EARLY VOTING"}/> </ListItemButton> </ListItem>
-	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"OPT-IN, OPT-OUT VOTING"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemText primary={"Compare Voting"}/> </ListItem>
+	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"Bipartisan Early Voting"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemButton onClick={() => navigate("/display/opt-in-opt-out-state-comparison")}> <ListItemText primary={"Opt-In, Opt-Out Voting"}/> </ListItemButton> </ListItem>
 	<Divider/>
-	<ListItem> <ListItemText primary={"DISPLAY"}/> </ListItem>
-	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"VOTING EQUIPMENT AGE"}/> </ListItemButton> </ListItem>
-	<ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-summary")}> <ListItemText primary={"VOTING EQUIPMENT 2024 SUMMARY"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemText primary={"Display"}/> </ListItem>
+	<ListItem> <ListItemButton onClick={() => hook[1](true)}> <ListItemText primary={"Voting Equipment Age"}/> </ListItemButton> </ListItem>
+	<ListItem> <ListItemButton onClick={() => navigate("/display/voting-machine-summary")}> <ListItemText primary={"Voting Equipment 2024 Summary"}/> </ListItemButton> </ListItem>
       </List>
       <Button variant='contained' color='secondary'>
 	<HighlightOffIcon/> Reset to Default
@@ -144,6 +148,13 @@ function FrontPage() {
     <React.Fragment>
       <WelcomeApplicationDialog/>
       <NotImplementedYet hook={unimplementedHook}/>
+      <Stack>
+      <AppBar sx={{ backgroundColor: "purple"}}>
+        <Typography fontFamily="inherit" variant="h4" align="center">
+            Voter Analysis - Team Knicks
+          </Typography>
+      </AppBar>
+
       <Box>
 	<FrontPageDrawer hook={unimplementedHook}/>
       <FullBoundedUSMap
@@ -157,6 +168,7 @@ function FrontPage() {
   This Voter-Analysis Application was developed by 'The Knicks' with love ♡
 	  </Typography>
       </Box>
+      </Stack>
     </React.Fragment>
   );
 }

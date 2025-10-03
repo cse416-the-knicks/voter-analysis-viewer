@@ -20,7 +20,11 @@ import styles from './DisplayVotingMachineSummaryView.module.css';
 import { getAllVotingEquipment } from '../../api/client';
 
 const columns: GridColDef<(VotingEquipmentModel)[number]>[] = [
-  { field: 'manufacturer', headerName: 'Manufacturer', width: 190 },
+  { 
+    field: 'manufacturer', 
+    headerName: 'Manufacturer', 
+    width: 190 ,
+  },
   {
     field: 'equipmentType',
     headerName: 'Type',
@@ -34,12 +38,12 @@ const columns: GridColDef<(VotingEquipmentModel)[number]>[] = [
   {
     field: 'firstManufactured',
     headerName: 'First Manufactured',
-    width: 110,
+    width: 150,
   },
   {
     field: 'lastManufactured',
     headerName: 'Last Manufactured',
-    width: 110,
+    width: 150,
   },
   {
     field: 'discontinued',
@@ -76,7 +80,7 @@ function DisplayVotingMachineSummaryView() {
     []);
 
   return (
-    <Box className={styles.displayInformationPopup}>
+    <Box className={styles.displayInformationPopup} maxWidth="1000px">
       <Paper
 	sx={{ mt: 2, ml: 'auto' }}
 	elevation={9}>
@@ -96,15 +100,22 @@ function DisplayVotingMachineSummaryView() {
 	    rows={rows}
 	    columns={columns}
 	    getRowId={(x) => x.modelName}
+      disableColumnMenu
+      disableColumnSelector
+      getRowClassName={(r) => r.indexRelativeToCurrentPage % 2 == 0 ? styles.oddRow : ""}
+      sx={{
+        "& .MuiDataGrid-columnHeaderTitle": {
+          fontWeight: "bolder",
+        },
+      }}
 	    initialState={{
 	    pagination: {
 		paginationModel: {
-		pageSize: 15,
+		pageSize: 12,
 		},
 	    },
 	    }}
 	    pageSizeOptions={[10]}
-	    checkboxSelection
 	    disableRowSelectionOnClick
 	/>
       </Paper>

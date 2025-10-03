@@ -164,7 +164,7 @@ function StateInformationViewDrawer(
       variant="permanent"
       sx={{
 	'& .MuiDrawer-paper': {
-	  width: '14em',
+	  width: '16.5em',
 	  height: 'auto',
 	  margin: 2,
 	},
