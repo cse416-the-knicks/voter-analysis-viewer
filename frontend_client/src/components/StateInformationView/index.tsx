@@ -1,9 +1,12 @@
 import type { GridColDef } from '@mui/x-data-grid';
-import { 
-  type PollbookDeletionStatisticsModel,
-  type ProvisionalBallotStatisticsModel, 
-  type VoterRegistrationStatisticsModel,
-  type MailBallotRejectionStatisticsModel,
+import type {
+  PollbookDeletionStatisticsModel,
+  ProvisionalBallotStatisticsModel,
+  VoterRegistrationStatisticsModel,
+  MailBallotRejectionStatisticsModel,
+} from '../../api/client';
+
+import {
   getProvisionalBallots,
   getMailBallotRejections,
   getVoterRegistrationCounts,
@@ -28,6 +31,7 @@ import {
 } from '@mui/material';
 
 import {
+  DETAIL_STATE_TYPE_NONE,
   getDetailStateType
 } from '../FullBoundedUSMap/detailedStatesInfo';
 
@@ -52,6 +56,9 @@ import {
   POLL_BOOK_DELETION_COLUMNS,
   PROVISIONAL_BALLOT_COLUMNS
 } from './dataColumns';
+import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap';
+import digitsInNumber from '../../helpers/digitsInNumber';
+import GradientMapLegend from '../GradientMapLegend';
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -81,9 +88,23 @@ const dropDownSections = [
   }
 ];
 
-type EAVsGeneralFact = ProvisionalBallotStatisticsModel | 
-  PollbookDeletionStatisticsModel | 
-  MailBallotRejectionStatisticsModel | 
+const choroplethColorBuckets = [
+  "hsl(288, 10%, 80%)",
+  "hsl(288, 20%, 78%)",
+  "hsl(288, 30%, 76%)",
+  "hsl(288, 40%, 74%)",
+  "hsl(288, 50%, 72%)",
+  "hsl(288, 60%, 70%)",
+  "hsl(288, 70%, 68%)",
+  "hsl(288, 80%, 66%)",
+  "hsl(288, 90%, 64%)",
+  "hsl(288, 95%, 62%)",
+  "hsl(288, 100%, 60%)",  // full, vibrant purple
+];
+
+type EAVsGeneralFact = ProvisionalBallotStatisticsModel |
+  PollbookDeletionStatisticsModel |
+  MailBallotRejectionStatisticsModel |
   VoterRegistrationStatisticsModel;
 
 function StateInformationView() {
@@ -91,6 +112,8 @@ function StateInformationView() {
   const activeDataStateHook = useState(0);
   const navigate = useNavigate();
   const theme = useTheme();
+  const stateType = getDetailStateType(fipsCode!);
+  const choroplethScaleFactor = 0.05;
 
   const maxWidthForTable = 850;
   const maxHeightForTable = 500;
@@ -103,62 +126,102 @@ function StateInformationView() {
   const [barData, setBarData] = useState<BarChartDataEntry[]>([]);
   const [barGraphTitle, setBarGraphTitle] = useState<string>("");
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
+  const [gradientMap, setGradientMap] = useState<GradientMap>([]);
 
   useEffect(
-    function () {(async function() {
-      switch (activeDataState) {
-        case ID_SELECTION_PROVISIONAL_BALLOT: {
-          const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
-          const [aggregatedData, data] = await Promise.all(promises);
-          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
-          setBarGraphXTitle("Ballots Cast");
-          setDataRows(data.map((x) => {return {id: x.fullRegionId,...x}}));
-          setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
-          setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
-        } break;
-        case ID_SELECTION_MAIL_BALLOT_REJECTIONS: {
-          const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
-          const [aggregatedData, data] = await Promise.all(promises);
-          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
-          setBarGraphXTitle("Rejection Reasons");
-          setDataRows(data.map((x) => {return {id: x.fullRegionId,...x}}));
-          setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
-          setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
-        } break;
-        case ID_SELECTION_ACTIVE_VOTERS: {
-          const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-          const [aggregatedData, data] = await Promise.all(promises);
-          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
-          setBarGraphXTitle("Voter Categories");
-          setDataRows(data.map((x) => {return {id: x.fullRegionId,...x}}));
-          setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
-          setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
-        } break;
-        case ID_SELECTION_POLLBOOK_DELETION: {
-          const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
-          const [aggregatedData, data] = await Promise.all(promises);
-          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
-          setBarGraphXTitle("Deletion Reasons");
-          setDataRows(data.map((x) => {return {id: x.fullRegionId,...x}}));
-          setDataColumns(POLL_BOOK_DELETION_COLUMNS);
-          setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
-        } break;
-        default: {
-          // not handled yet.
-        } break;
-      }
-    })();},
+    function () {
+      (async function () {
+        let high: number = 0;
+        switch (activeDataState) {
+          case ID_SELECTION_PROVISIONAL_BALLOT: {
+            const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
+            const [aggregatedData, data] = await Promise.all(promises);
+            setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
+            setBarGraphXTitle("Ballots Cast");
+            setDataRows(data.map((x) => { return { id: x.fullRegionId, ...x } }));
+            setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
+            setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
+            high = Math.max(...data.map((x) => x.totalBallotsCast!));
+          } break;
+          case ID_SELECTION_MAIL_BALLOT_REJECTIONS: {
+            const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
+            const [aggregatedData, data] = await Promise.all(promises);
+            setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
+            setBarGraphXTitle("Rejection Reasons");
+            setDataRows(data.map((x) => { return { id: x.fullRegionId, ...x } }));
+            setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
+            setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
+            high = Math.max(...data.map((x) => x.rejectTotal!));
+          } break;
+          case ID_SELECTION_ACTIVE_VOTERS: {
+            const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
+            const [aggregatedData, data] = await Promise.all(promises);
+            setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
+            setBarGraphXTitle("Voter Categories");
+            setDataRows(data.map((x) => { return { id: x.fullRegionId, ...x } }));
+            setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
+            setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
+            high = Math.max(...data.map((x) => x.total!));
+          } break;
+          case ID_SELECTION_POLLBOOK_DELETION: {
+            const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
+            const [aggregatedData, data] = await Promise.all(promises);
+            setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
+            setBarGraphXTitle("Deletion Reasons");
+            setDataRows(data.map((x) => { return { id: x.fullRegionId, ...x } }));
+            setDataColumns(POLL_BOOK_DELETION_COLUMNS);
+            setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
+            high = Math.max(...data.map((x) => x.totalRemoved!));
+          } break;
+          default: {
+            // not handled yet.
+          } break;
+        }
+
+        console.log(high);
+        high *= choroplethScaleFactor;
+        let binSize = Math.ceil(high / choroplethColorBuckets.length);
+        const snapGridInterval = Math.pow(10, digitsInNumber(binSize)-1);
+        // Grid snapping + round up.
+        binSize = (binSize+snapGridInterval) / snapGridInterval;
+        binSize = Math.floor(binSize);
+        binSize *= snapGridInterval;
+        console.log(binSize, snapGridInterval, high);
+        let newGradientMap: GradientMap = {};
+        for (let i = 0; i < choroplethColorBuckets.length; ++i) {
+          newGradientMap[(binSize*i)] = choroplethColorBuckets[i];
+        }
+        setGradientMap(newGradientMap);
+      })();
+    },
     [activeDataState]
   );
 
   useKeyDown("Escape", () => navigate("/"));
 
   const styleFunction =
-    (feature: L.FeatureGroup) => {
-      return {
+    (feature: GeoJSON.Feature) => {
+      const { properties } = feature;
+      const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
+      const style = {
         color: theme.palette.secondary.main,
-        fillColor: theme.palette.secondary.main
+        fillColor: theme.palette.secondary.main,
+        fillOpacity: 0.5,
       };
+
+      if (stateType !== DETAIL_STATE_TYPE_NONE) {
+        const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
+        if (row) {
+          style.fillOpacity = 1.0;
+          style.fillColor = gradientMapNearest(
+            (row as ProvisionalBallotStatisticsModel).totalBallotsCast! ||
+            (row as PollbookDeletionStatisticsModel).totalRemoved! ||
+            (row as VoterRegistrationStatisticsModel).total! ||
+            (row as MailBallotRejectionStatisticsModel).rejectTotal!, gradientMap);
+        }
+      }
+
+      return style;
     }
 
   return (
@@ -180,11 +243,17 @@ function StateInformationView() {
             {FIPS_TO_STATES_MAP[fipsCode!]}
           </Typography>
           <StateMap
+            key={activeDataState}
             // @ts-expect-error
             styleFunction={styleFunction}
             width={maxWidthForMap}
             height={maxHeightForMap}
-            fipsCode={fipsCode} />
+            fipsCode={fipsCode}> 
+            {
+              (stateType !== DETAIL_STATE_TYPE_NONE) &&
+              <GradientMapLegend gradientMap={gradientMap}/>
+            }
+          </StateMap>
         </Paper>
       </Stack>
       <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "50.5%" }}>

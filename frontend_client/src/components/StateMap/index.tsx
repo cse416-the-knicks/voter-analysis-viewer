@@ -15,6 +15,7 @@ interface StateMapParameters {
   width: CssUnitValue;
   height: CssUnitValue;
   styleFunction: L.StyleFunction;
+  children: React.ReactNode;
 };
 
 function MapFitToBoundsInternal(
@@ -37,7 +38,8 @@ function StateMap(
     mapRef,
     width,
     height,
-    styleFunction
+    styleFunction,
+    children
   }: StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
@@ -100,6 +102,7 @@ function StateMap(
           onEachFeature={onEachFeatureHandler}
           data={stateGeoJson!} />
         <MapFitToBoundsInternal boundsToFit={stateMapBounds!} />
+        {children}
       </MapContainer>
     )
   } else {
