@@ -1,7 +1,6 @@
 import type { GridColDef } from '@mui/x-data-grid';
 
 import { useParams, useNavigate } from 'react-router';
-import { DataGrid } from '@mui/x-data-grid';
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BallotIcon from '@mui/icons-material/Ballot';
@@ -31,6 +30,7 @@ import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart from '../DataDisplays/BarChart';
 import useKeyDown from '../../hooks/useKeyDown';
+import StyledDataGrid from '../StyledDataGrid';
 
 const columns: GridColDef<(typeof rows)[number]>[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -79,7 +79,7 @@ function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
   const navigate = useNavigate();
-  
+
   useKeyDown("Escape", () => navigate("/"));
 
   const dropDownSections = [
@@ -102,49 +102,53 @@ function StateInformationView() {
     }
   ];
 
-  // TODO: dynamically calculate height.
+  const maxWidthForTable = 850;
+  const maxHeightForTable = 500;
+  const maxWidthForMap = "700px";
+  const maxHeightForMap = "840px";
   return (
     <div className={styles.stateInformationPopup}>
-      <Box>
-        <StateInformationViewDrawer
-          stateHook={activeDataStateHook}
-          sections={dropDownSections}
-          stateType={getDetailStateType(fipsCode!)} />
-      </Box>
-
-      <Stack spacing={3} direction="column" sx={{ mt: 4, ml: 'auto' }}>
+      <StateInformationViewDrawer
+        stateHook={activeDataStateHook}
+        sections={dropDownSections}
+        stateType={getDetailStateType(fipsCode!)} />
+      <Stack spacing={0} direction="column" sx={{ mt: 2.0, ml: 'auto' }}>
         <Paper
-          sx={{ mt: 2, ml: 'auto' }}
+          sx={{
+            mt: 0,
+            ml: 'auto',
+            width: maxWidthForMap,
+            height: maxHeightForMap
+          }}
           elevation={5}>
           <Typography variant="h3" component="h2">
             {FIPS_TO_STATES_MAP[fipsCode!]}
           </Typography>
-          <StateMap width={"600px"} height={"900px"} fipsCode={fipsCode} />
+          <StateMap 
+            width={maxWidthForMap} 
+            height={maxHeightForMap} 
+            fipsCode={fipsCode} />
         </Paper>
       </Stack>
-      <Stack spacing={3} sx={{ mt: 2, ml: 8, height: "50%", width: "50%" }}>
-        <DataGrid
+      <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "50.5%" }}>
+        <StyledDataGrid
           rows={rows}
           columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 7,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
+          width={maxWidthForTable}
+          maxWidth={maxWidthForTable}
+          height={maxHeightForTable}
+          maxHeight={maxHeightForTable}
+          pageSize={7}
+          getRowId={(r) => r.id}
         />
-        <Box width={700} height={500}>
+        <Box width={maxWidthForTable} height={500}>
           <Paper elevation={5}>
-            <BarChart 
-              width={680}
+            <BarChart
+              width={maxWidthForTable - 20}
               height={500}
-              data={[ { category: "dude", value: 314 }]}
+              data={[{ category: "dude", value: 314 }]}
               title={"graph title"}
-              xTitle={"x axis"}/>
+              xTitle={"x axis"} />
           </Paper>
         </Box>
       </Stack>
