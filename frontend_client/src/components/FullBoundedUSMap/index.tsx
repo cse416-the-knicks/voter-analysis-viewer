@@ -5,6 +5,7 @@ import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
 import { DETAIL_STATE_TYPE_NONE, getDetailStateType, getHumanReadableStateType, isDetailState } from './detailedStatesInfo';
 import { useTheme } from '@mui/material';
+import { useState } from 'react';
 
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
@@ -46,6 +47,7 @@ function FullBoundedUSMap(
     onStateClick,
   }: FullBoundedUSMapProperties) {
   const theme = useTheme();
+  const [highlightedStateFipsId, setHighlightedStateFipsId] = useState<string | null>(null);
   const onFeatureClickHandler =
     (event: L.LeafletMouseEvent) => {
       const target = event.target as L.FeatureGroup;
@@ -54,13 +56,26 @@ function FullBoundedUSMap(
         onStateClick(featureData.id! as FipsCode);
       }
     };
+  const onMouseOverHandler = 
+    (event: L.LeafletMouseEvent) => {
+      const target = event.target as L.FeatureGroup;
+      const featureData = target.feature as GeoJSON.Feature;
+      console.log(target);
+      setHighlightedStateFipsId(featureData.id! as FipsCode);
+    };
+  const onMouseOutHandler = 
+    (event: L.LeafletMouseEvent) => {
+      setHighlightedStateFipsId(null);
+    }
   const onEachFeatureHandler =
     (feature: GeoJSON.Feature, layer: L.Layer) => {
       const { id } = feature; // Should not be null.
       const stateName = FIPS_TO_STATES_MAP[id!];
       const stateType = getDetailStateType(id! as string);
       const defaultHandlers = {
-        click: onFeatureClickHandler
+        click: onFeatureClickHandler,
+        mouseover: onMouseOverHandler,
+        mouseout: onMouseOutHandler,
       };
 
       if (stateType !== DETAIL_STATE_TYPE_NONE) {
@@ -68,7 +83,7 @@ function FullBoundedUSMap(
       } else {
         layer.bindTooltip(stateName);
       }
-      
+
       layer.on(defaultHandlers);
     };
   const styleFunction =
@@ -81,12 +96,18 @@ function FullBoundedUSMap(
         weight: 1,
       };
 
+      console.log(highlightedStateFipsId);
       if (fipsCode && isDetailState(fipsCode)) {
         result.weight = 4;
         result.fillOpacity = 0.4;
         result.fillColor = theme.palette.secondary.light;
       }
 
+      if (highlightedStateFipsId === fipsCode) {
+        result.fillOpacity = 1;
+        result.fillColor = theme.palette.secondary.light;
+      }
+      
       return result;
     };
 
