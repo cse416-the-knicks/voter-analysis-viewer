@@ -2,7 +2,7 @@ import type { AxiosRequestConfig, AxiosError } from 'axios';
 import Axios from 'axios';
 
 // Should base off of some url...
-export const AXIOS_INSTANCE = Axios.create({ baseURL: 'http://100.102.249.33:8080' });
+export const AXIOS_INSTANCE = Axios.create({ baseURL: 'http://localhost:8080' });
 
 export const backendConnectorAxiosInstance = <T>(
   config: AxiosRequestConfig,
