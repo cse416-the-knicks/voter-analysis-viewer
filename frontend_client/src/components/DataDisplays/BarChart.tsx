@@ -34,7 +34,7 @@ function BarChart({
     top: margins?.left || 25, 
     right: margins?.right || 45, 
     bottom: margins?.bottom || 25, 
-    left: margins?.left || 100 
+    left: margins?.left || 150 
   };
   
   const barWidth = width - barMargin.left - barMargin.right;
@@ -98,7 +98,7 @@ function BarChart({
             </text>
           ))}
           {/* Title */}
-          <text x={barWidth - 250} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">{title}</text>
+          <text x={barWidth/2} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">{title}</text>
           {horizontalAxis.ticks().map((tick => (
             <g key={tick} transform={`translate(${horizontalAxis(tick)},${barHeight})`}>
               <line x1="0" y1={barHeight - 10} y2={barHeight} stroke="black"></line>
@@ -108,7 +108,7 @@ function BarChart({
           <line x1={0} y1={barHeight} x2={barWidth} y2={barHeight} stroke="darkgray" />
           <line x1={0} y1={barHeight} x2={0} y2={0} stroke="darkgray" />
           <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>{xTitle}</text>
-          <text x={barWidth - 295} y={barHeight + 20} fontSize={15}>{xTitle}</text>
+          <text x={barWidth/2} y={barHeight + 20} fontSize={15}>{xTitle}</text>
         </g>
       </svg>
       {/* Tooltip when moused over. */}
@@ -127,4 +127,7 @@ function BarChart({
   )
 }
 
+export type {
+  BarChartDataEntry
+};
 export default BarChart;
