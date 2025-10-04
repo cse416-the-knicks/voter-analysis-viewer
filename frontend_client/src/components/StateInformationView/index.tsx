@@ -1,7 +1,19 @@
 import type { GridColDef } from '@mui/x-data-grid';
+import type {
+  PollbookDeletionStatisticsModel,
+  ProvisionalBallotStatisticsModel,
+  VoterRegistrationStatisticsModel,
+  MailBallotRejectionStatisticsModel,
+} from '../../api/client';
 
-import { useParams } from 'react-router';
-import { DataGrid } from '@mui/x-data-grid';
+import {
+  getProvisionalBallots,
+  getMailBallotRejections,
+  getVoterRegistrationCounts,
+  getPollbookDeletions,
+} from '../../api/client';
+
+import { useParams, useNavigate } from 'react-router';
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BallotIcon from '@mui/icons-material/Ballot';
@@ -14,130 +26,257 @@ import Stack from '@mui/material/Stack';
 import {
   Box,
   Paper,
-  Typography
+  Typography,
+  useTheme,
 } from '@mui/material';
 
 import {
+  DETAIL_STATE_TYPE_NONE,
   getDetailStateType
 } from '../FullBoundedUSMap/detailedStatesInfo';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
 
 import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
-import { mockData, provisionalBallotData } from '../DataDisplays/DisplayData';
-import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
-import BarChart from '../DataDisplays/BarChart';
+import BarChart, { type BarChartDataEntry } from '../DataDisplays/BarChart';
+import useKeyDown from '../../hooks/useKeyDown';
+import StyledDataGrid from '../StyledDataGrid';
 
-const columns: GridColDef<(typeof rows)[number]>[] = [
-  { field: 'id', headerName: 'ID', width: 90 },
+import {
+  ACTIVE_VOTER_REGISTRATION_COLUMNS,
+  bargraphDataForActiveVoterRegistrations,
+  bargraphDataForMailBallotRejections,
+  bargraphDataForPollBookDeletions,
+  bargraphDataForProvisionalBallots,
+  MAIL_BALLOT_REJECTION_COLUMNS,
+  POLL_BOOK_DELETION_COLUMNS,
+  PROVISIONAL_BALLOT_COLUMNS
+} from './dataColumns';
+import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap';
+import digitsInNumber from '../../helpers/digitsInNumber';
+import GradientMapLegend from '../GradientMapLegend';
+
+const ID_SELECTION_PROVISIONAL_BALLOT = 0;
+const ID_SELECTION_ACTIVE_VOTERS = 1;
+const ID_SELECTION_POLLBOOK_DELETION = 2;
+const ID_SELECTION_MAIL_BALLOT_REJECTIONS = 3;
+
+const ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE = 4;
+const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
+
+const dropDownSections = [
   {
-    field: 'firstName',
-    headerName: 'First name',
-    width: 150,
-    editable: true,
+    title: "Ballot Data",
+    iconComponent: <BallotIcon />,
+    items: [
+      { id: ID_SELECTION_PROVISIONAL_BALLOT, iconComponent: <InboxIcon />, textContent: "Provisional Ballots" },
+      { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
+      { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
+      { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
+    ],
   },
   {
-    field: 'lastName',
-    headerName: 'Last name',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 110,
-    editable: true,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
+    title: "Voting Equipment",
+    items: [
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Type" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
+    ],
+  }
 ];
 
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+const choroplethColorBuckets = [
+  "hsl(288, 10%, 80%)",
+  "hsl(288, 20%, 78%)",
+  "hsl(288, 30%, 76%)",
+  "hsl(288, 40%, 74%)",
+  "hsl(288, 50%, 72%)",
+  "hsl(288, 60%, 70%)",
+  "hsl(288, 70%, 68%)",
+  "hsl(288, 80%, 66%)",
+  "hsl(288, 90%, 64%)",
+  "hsl(288, 95%, 62%)",
+  "hsl(288, 100%, 60%)",  // full, vibrant purple
 ];
+
+type EAVsGeneralFact = ProvisionalBallotStatisticsModel |
+  PollbookDeletionStatisticsModel |
+  MailBallotRejectionStatisticsModel |
+  VoterRegistrationStatisticsModel;
 
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const stateType = getDetailStateType(fipsCode!);
+  const choroplethScaleFactor = 0.05;
 
-  const dropDownSections = [
-    {
-      title: "Ballot Data",
-      iconComponent: <BallotIcon/>,
-      items: [
-	{ id: 0, iconComponent: <InboxIcon/>, textContent: "Provisional Ballots" },
-	{ id: 1, iconComponent: <PersonIcon/>, textContent: "Active Voters" },
-	{ id: 2, iconComponent: <DeleteForeverIcon/>, textContent: "Pollbook Deletions" },
-	{ id: 3, iconComponent: <PersonOffIcon/>, textContent: "Mail Ballot Rejections" },
-      ],
+  const maxWidthForTable = 850;
+  const maxHeightForTable = 500;
+  const maxWidthForMap = "700px";
+  const maxHeightForMap = "900px";
+
+  const activeDataState = activeDataStateHook[0];
+  const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
+  const [dataRows, setDataRows] = useState<EAVsGeneralFact[]>([]);
+  const [barData, setBarData] = useState<BarChartDataEntry[]>([]);
+  const [barGraphTitle, setBarGraphTitle] = useState<string>("");
+  const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
+  const [gradientMap, setGradientMap] = useState<GradientMap>([]);
+
+  useEffect(
+    function () {
+      (async function () {
+        let high: number = 0;
+        switch (activeDataState) {
+          case ID_SELECTION_PROVISIONAL_BALLOT: {
+            const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
+            const [aggregatedData, data] = await Promise.all(promises);
+            setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
+            setBarGraphXTitle("Ballots Cast");
+            setDataRows(data.map((x) => { return { id: x.fullRegionId, ...x } }));
+            setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
+            setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
+            high = Math.max(...data.map((x) => x.totalBallotsCast!));
+          } break;
+          case ID_SELECTION_MAIL_BALLOT_REJECTIONS: {
+            const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
+            const [aggregatedData, data] = await Promise.all(promises);
+            setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
+            setBarGraphXTitle("Rejection Reasons");
+            setDataRows(data.map((x) => { return { id: x.fullRegionId, ...x } }));
+            setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
+            setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
+            high = Math.max(...data.map((x) => x.rejectTotal!));
+          } break;
+          case ID_SELECTION_ACTIVE_VOTERS: {
+            const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
+            const [aggregatedData, data] = await Promise.all(promises);
+            setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
+            setBarGraphXTitle("Voter Categories");
+            setDataRows(data.map((x) => { return { id: x.fullRegionId, ...x } }));
+            setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
+            setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
+            high = Math.max(...data.map((x) => x.total!));
+          } break;
+          case ID_SELECTION_POLLBOOK_DELETION: {
+            const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
+            const [aggregatedData, data] = await Promise.all(promises);
+            setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
+            setBarGraphXTitle("Deletion Reasons");
+            setDataRows(data.map((x) => { return { id: x.fullRegionId, ...x } }));
+            setDataColumns(POLL_BOOK_DELETION_COLUMNS);
+            setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
+            high = Math.max(...data.map((x) => x.totalRemoved!));
+          } break;
+          default: {
+            // not handled yet.
+          } break;
+        }
+
+        console.log(high);
+        high *= choroplethScaleFactor;
+        let binSize = Math.ceil(high / choroplethColorBuckets.length);
+        const snapGridInterval = Math.pow(10, digitsInNumber(binSize)-1);
+        // Grid snapping + round up.
+        binSize = (binSize+snapGridInterval) / snapGridInterval;
+        binSize = Math.floor(binSize);
+        binSize *= snapGridInterval;
+        console.log(binSize, snapGridInterval, high);
+        let newGradientMap: GradientMap = {};
+        for (let i = 0; i < choroplethColorBuckets.length; ++i) {
+          newGradientMap[(binSize*i)] = choroplethColorBuckets[i];
+        }
+        setGradientMap(newGradientMap);
+      })();
     },
-    {
-      title: "Voting Equipment",
-      items: [
-	{ id: 4, iconComponent: <ScannerIcon/>, textContent: "By Type" },
-	{ id: 5, iconComponent: <AccessTimeIcon/>, textContent: "By Age" },
-      ],
-    }
-  ];
+    [activeDataState]
+  );
 
-  // TODO: dynamically calculate height.
+  useKeyDown("Escape", () => navigate("/"));
+
+  const styleFunction =
+    (feature: GeoJSON.Feature) => {
+      const { properties } = feature;
+      const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
+      const style = {
+        color: theme.palette.secondary.main,
+        fillColor: theme.palette.secondary.main,
+        fillOpacity: 0.5,
+      };
+
+      if (stateType !== DETAIL_STATE_TYPE_NONE) {
+        const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
+        if (row) {
+          style.fillOpacity = 1.0;
+          style.fillColor = gradientMapNearest(
+            (row as ProvisionalBallotStatisticsModel).totalBallotsCast! ||
+            (row as PollbookDeletionStatisticsModel).totalRemoved! ||
+            (row as VoterRegistrationStatisticsModel).total! ||
+            (row as MailBallotRejectionStatisticsModel).rejectTotal!, gradientMap);
+        }
+      }
+
+      return style;
+    }
+
   return (
     <div className={styles.stateInformationPopup}>
-      <Box>
-	<StateInformationViewDrawer
-	  stateHook={activeDataStateHook}
-	  sections={dropDownSections}
-	  stateType={getDetailStateType(fipsCode!)}/>
-      </Box>
-
-      <Stack spacing={3} direction="column" sx={{ mt: 4, ml: 'auto' }}>
-	<Paper
-	  sx={{ mt: 2, ml: 'auto' }}
-	  elevation={5}>
-	  <Typography variant="h3" component="h2">
-	    {FIPS_TO_STATES_MAP[fipsCode!]}
-	  </Typography>
-	  <StateMap width={"600px"} height={"900px"} fipsCode={fipsCode}/>
-	</Paper>
-	{/* <BubbleChart data={mockData} width={750} height={400}/> */}
+      <StateInformationViewDrawer
+        stateHook={activeDataStateHook}
+        sections={dropDownSections}
+        stateType={getDetailStateType(fipsCode!)} />
+      <Stack spacing={0} direction="column" sx={{ mt: 2.0, ml: 'auto' }}>
+        <Paper
+          sx={{
+            mt: 0,
+            ml: 'auto',
+            width: maxWidthForMap,
+            height: maxHeightForMap
+          }}
+          elevation={5}>
+          <Typography variant="h3" component="h2">
+            {FIPS_TO_STATES_MAP[fipsCode!]}
+          </Typography>
+          <StateMap
+            // @ts-expect-error
+            styleFunction={styleFunction}
+            mapKey={activeDataState}
+            width={maxWidthForMap}
+            height={maxHeightForMap}
+            fipsCode={fipsCode}> 
+            {
+              (stateType !== DETAIL_STATE_TYPE_NONE) &&
+              <GradientMapLegend gradientMap={gradientMap}/>
+            }
+          </StateMap>
+        </Paper>
       </Stack>
-      <Stack spacing={3} sx={{ mt: 2, ml: 8, height: "50%", width: "50%" }}>
-	<DataGrid
-	    rows={rows}
-	    columns={columns}
-	    initialState={{
-	    pagination: {
-		paginationModel: {
-		pageSize: 7,
-		},
-	    },
-	    }}
-	    pageSizeOptions={[5]}
-	    checkboxSelection
-	    disableRowSelectionOnClick
-	/>
-      <Paper>
-            <BarChart stateInfo={provisionalBallotData[getDetailStateType(fipsCode!)]}/>
-      </Paper>
+      <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "50.5%" }}>
+        <StyledDataGrid
+          rows={dataRows}
+          columns={dataCols}
+          width={maxWidthForTable}
+          maxWidth={maxWidthForTable}
+          height={maxHeightForTable}
+          maxHeight={maxHeightForTable}
+          pageSize={7}
+          getRowId={(r) => r.id}
+        />
+        <Box width={maxWidthForTable} height={500}>
+          <Paper elevation={5}>
+            <BarChart
+              width={maxWidthForTable - 20}
+              height={500}
+              data={barData}
+              title={barGraphTitle}
+              xTitle={barGraphXTitle} />
+          </Paper>
+        </Box>
       </Stack>
     </div>
   );

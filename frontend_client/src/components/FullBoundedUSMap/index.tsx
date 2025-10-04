@@ -3,13 +3,15 @@ import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
-import { isDetailState } from './detailedStatesInfo';
+import { DETAIL_STATE_TYPE_NONE, getDetailStateType, getHumanReadableStateType, isDetailState } from './detailedStatesInfo';
+import { useTheme } from '@mui/material';
+import { useState } from 'react';
 
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
 // although they can be googled from some Medium posts
 // as well.
-const UNITED_STATES_BOUNDARIES : L.LatLngTuple[] = [
+const UNITED_STATES_BOUNDARIES: L.LatLngTuple[] = [
   [24.396308, -125.0], // Southwest Corner
   [49.384358, -66.93457] // Northeast Corner
 ];
@@ -43,41 +45,69 @@ function FullBoundedUSMap(
     zoom,
     children,
     onStateClick,
-  } : FullBoundedUSMapProperties) {
+  }: FullBoundedUSMapProperties) {
+  const theme = useTheme();
+  const [highlightedStateFipsId, setHighlightedStateFipsId] = useState<string | null>(null);
   const onFeatureClickHandler =
     (event: L.LeafletMouseEvent) => {
       const target = event.target as L.FeatureGroup;
       const featureData = target.feature as GeoJSON.Feature;
       if (onStateClick) {
-	onStateClick(featureData.id! as FipsCode);
+        onStateClick(featureData.id! as FipsCode);
       }
     };
-  const onEachFeatureHandler = 
+  const onMouseOverHandler = 
+    (event: L.LeafletMouseEvent) => {
+      const target = event.target as L.FeatureGroup;
+      const featureData = target.feature as GeoJSON.Feature;
+      console.log(target);
+      setHighlightedStateFipsId(featureData.id! as FipsCode);
+    };
+  const onMouseOutHandler = 
+    (event: L.LeafletMouseEvent) => {
+      setHighlightedStateFipsId(null);
+    }
+  const onEachFeatureHandler =
     (feature: GeoJSON.Feature, layer: L.Layer) => {
       const { id } = feature; // Should not be null.
       const stateName = FIPS_TO_STATES_MAP[id!];
+      const stateType = getDetailStateType(id! as string);
       const defaultHandlers = {
-	click: onFeatureClickHandler
+        click: onFeatureClickHandler,
+        mouseover: onMouseOverHandler,
+        mouseout: onMouseOutHandler,
       };
-      layer.bindTooltip(stateName);
+
+      if (stateType !== DETAIL_STATE_TYPE_NONE) {
+        layer.bindTooltip(stateName + " - " + getHumanReadableStateType(stateType));
+      } else {
+        layer.bindTooltip(stateName);
+      }
+
       layer.on(defaultHandlers);
     };
   const styleFunction =
     (feature: GeoJSON.Feature) => {
       const fipsCode = feature.id as string;
       const result = {
-	fillColor: "#00000000",
-	fillOpacity: 0,
-	color: "darkblue",
-	weight: 1,
+        fillColor: "#00000000",
+        fillOpacity: 0,
+        color: theme.palette.secondary.main,
+        weight: 1,
       };
 
+      console.log(highlightedStateFipsId);
       if (fipsCode && isDetailState(fipsCode)) {
-	result.weight = 4;
-	result.fillOpacity = 0.4;
-	result.fillColor = 'lightblue';
+        result.weight = 4;
+        result.fillOpacity = 0.4;
+        result.fillColor = theme.palette.secondary.light;
       }
 
+      if (highlightedStateFipsId === fipsCode) {
+        result.fillOpacity = 1;
+        result.fillColor = theme.palette.secondary.light;
+      }
+      
       return result;
     };
 
@@ -92,13 +122,13 @@ function FullBoundedUSMap(
       className={"full-bounded-us-map"}
       id={id}>
       <TileLayer
-	attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-	url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <GeoJSON
-	style={styleFunction}
-	data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON}
-	onEachFeature={onEachFeatureHandler}
+        style={styleFunction}
+        data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON}
+        onEachFeature={onEachFeatureHandler}
       />
       {children}
     </MapContainer>
@@ -106,8 +136,8 @@ function FullBoundedUSMap(
 }
 
 export type {
-    FipsCode,
-    OnStateClickFn
+  FipsCode,
+  OnStateClickFn
 };
 
 export default FullBoundedUSMap;

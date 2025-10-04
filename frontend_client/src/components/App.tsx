@@ -8,28 +8,34 @@ import BackgroundBlur from "./BackgroundBlur";
 
 import StateInformationView from './StateInformationView';
 import DisplayVotingMachineSummaryView from './DisplayVotingMachineSummaryView';
+import VoterComparisonOptInOptOutTableView from './VoterComparisonOptInOutTableView';
 import FrontPage from './FrontPage';
 
+interface DisplayPathOverlay {
+  matchPortion: string,
+  component: React.ReactNode;
+};
+
 function App() {
-  const stateUrlMatcher = "/state/:fipsCode/*";
-  const displayVotingMachineSummaryMatcher = "/display/voting-machine-summary";
   const location = useLocation();
   const showBlocker = location.pathname !== "/";
+  const overlayPaths: DisplayPathOverlay[] = [
+    { matchPortion: "/display/voting-machine-summary", component: <DisplayVotingMachineSummaryView/> },
+    { matchPortion: "/compare/optvote", component: <VoterComparisonOptInOptOutTableView/> },
+    { matchPortion: "/state/:fipsCode/*", component: <StateInformationView/> },
+  ];
 
   return (
     <React.Fragment>
       <Routes>
         <Route path="/" element={<FrontPage/>}/>
-        <Route path={stateUrlMatcher}element={<FrontPage/>}/>
-        <Route path={displayVotingMachineSummaryMatcher}element={<FrontPage/>}/>
+        {overlayPaths.map((x) => <Route path={x.matchPortion} element={<FrontPage/>}/>)}
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
-      {/* TODO(jerry): This is wrong, should be state flag. */}
       <BackgroundBlur showBlocker={showBlocker}/>
       {/* NOTE(jerry): Needed in order to do the overlay effect that I think looks cool. */}
       <Routes>
-        <Route path={stateUrlMatcher}element={<StateInformationView/>}/>
-        <Route path={displayVotingMachineSummaryMatcher}element={<DisplayVotingMachineSummaryView/>}/>
+        {overlayPaths.map((x) => <Route path={x.matchPortion} element={x.component}/>)}
         <Route path="*" element={<React.Fragment/>}/>
       </Routes> 
    </React.Fragment>

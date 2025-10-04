@@ -51,14 +51,14 @@ function BasicStateTypeInfoCard(
   title: string,
   text: string) {
   return (
-    <Card sx={{m: 2}} variant="outlined">
+    <Card sx={{ m: 2 }} variant="outlined">
       <CardContent>
-	<Typography variant="h6" component="div">
-	  {title}
-	</Typography>
-	<Typography sx={{ color: 'text.secondary', m:0, fontSize: 12 }}>
-	  {text}
-	</Typography>
+        <Typography variant="h6" component="div">
+          {title}
+        </Typography>
+        <Typography sx={{ color: 'text.secondary', m: 0, fontSize: 12 }}>
+          {text}
+        </Typography>
       </CardContent>
     </Card>
   );
@@ -117,13 +117,13 @@ function StateInformationViewDrawerListItem(
 
   return (
     <ListItem>
-	<ListItemButton
-	  key={item.id}
-	  onClick={() => setStateValue(item.id)}
-	  selected={stateValue == item.id}>
-	    {((item.iconComponent) && <ListItemIcon>{item.iconComponent}</ListItemIcon>)}
-	    <ListItemText primary={item.textContent}/>
-	</ListItemButton>
+      <ListItemButton
+        key={item.id}
+        onClick={() => setStateValue(item.id)}
+        selected={stateValue == item.id}>
+        {((item.iconComponent) && <ListItemIcon>{item.iconComponent}</ListItemIcon>)}
+        <ListItemText primary={item.textContent} />
+      </ListItemButton>
     </ListItem>
   );
 }
@@ -132,19 +132,19 @@ function StateInformationViewDrawer(
   {
     sections,
     stateHook,
-    stateType, 
+    stateType,
   }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
   const sectionComponents = sections.map(
     (section) => (
       <>
-	<ListItem>
-	    {((section.iconComponent) && <ListItemIcon>{section.iconComponent}</ListItemIcon>)}
-	    <ListItemText primary={section.title}/>
-	</ListItem>
-	{
-	  section.items.map(item => <StateInformationViewDrawerListItem stateHook={stateHook} item={item}/>)
-	}
+        <ListItem>
+          {((section.iconComponent) && <ListItemIcon>{section.iconComponent}</ListItemIcon>)}
+          <ListItemText primary={section.title} />
+        </ListItem>
+        {
+          section.items.map(item => <StateInformationViewDrawerListItem stateHook={stateHook} item={item} />)
+        }
       </>
     )
   );
@@ -152,10 +152,10 @@ function StateInformationViewDrawer(
   const finalComponentsWithDividers = [];
   for (let i = 0; i < sectionComponents.length; ++i) {
     finalComponentsWithDividers.push(sectionComponents[i]);
-    if (i+1 >= sectionComponents.length) {
+    if (i + 1 >= sectionComponents.length) {
       continue;
     } else {
-      finalComponentsWithDividers.push(<Divider/>);
+      finalComponentsWithDividers.push(<Divider />);
     }
   }
 
@@ -163,31 +163,31 @@ function StateInformationViewDrawer(
     <Drawer
       variant="permanent"
       sx={{
-	'& .MuiDrawer-paper': {
-	  width: '14em',
-	  height: 'auto',
-	  margin: 2,
-	},
+        '& .MuiDrawer-paper': {
+          width: '20em',
+          height: 'auto',
+          margin: 2,
+        },
       }}
     >
-    <StateInfoCard type={stateType}/>
-    <List dense>
-      {finalComponentsWithDividers}
-    </List>
-    <Button onClick={() => navigate("/")} variant='contained' color='secondary'>
-      <HighlightOffIcon/> Exit State Display
-    </Button>
+      <StateInfoCard type={stateType} />
+      <List dense>
+        {finalComponentsWithDividers}
+      </List>
+      <Button onClick={() => navigate("/")} variant='contained' color='secondary'>
+        <HighlightOffIcon /> Exit State Display
+      </Button>
     </Drawer>
   );
 }
 
 export type {
-    StateInformationViewDrawerItem,
-    StateInformationViewDrawerSection,
-    StateInformationViewDrawerProperties,
-    StateInformationViewDrawerListItemProperties,
+  StateInformationViewDrawerItem,
+  StateInformationViewDrawerSection,
+  StateInformationViewDrawerProperties,
+  StateInformationViewDrawerListItemProperties,
 };
 
 export {
-    StateInformationViewDrawer
+  StateInformationViewDrawer
 };
