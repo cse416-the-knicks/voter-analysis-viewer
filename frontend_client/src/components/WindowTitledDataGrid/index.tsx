@@ -22,7 +22,7 @@ interface WindowTitledDataGridProperties {
   title: string;
   rows: readonly any[];
   columns: readonly GridColDef[];
-  getRowId: GridRowIdGetter;
+  getRowId?: GridRowIdGetter;
   pageSize: number;
   left?: string;
   top?: string;
@@ -83,6 +83,7 @@ function WindowTitledDataGrid(
           maxWidth={maxWidth}
           rows={rows}
           columns={columns}
+          // @ts-ignore
           getRowId={getRowId}
           pageSize={pageSize}
           customGetRowClassName={customGetRowClassName}
