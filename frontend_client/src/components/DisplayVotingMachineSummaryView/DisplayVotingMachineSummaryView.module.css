@@ -1,7 +1,4 @@
-.displayInformationPopup {
-  position: fixed;
-  left: 18em;
-  top: 0;
-  z-index: 1200;
-  display: flex;
+.discontinuedRow {
+  color: red;
+  font-weight: bolder;
 }

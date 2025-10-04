@@ -1,26 +1,20 @@
 import type { GridColDef } from '@mui/x-data-grid';
 import type { VotingEquipmentModel } from '../../api/client';
-import { DataGrid } from '@mui/x-data-grid';
+
 import { useEffect, useState } from 'react';
-import Stack from '@mui/material/Stack';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useNavigate } from 'react-router';
 import useKeyDown from '../../hooks/useKeyDown';
-
-import {
-  Box,
-  Paper,
-  AppBar,
-  Typography,
-  Button,
-  Grid
-} from '@mui/material';
-
-import styles from './DisplayVotingMachineSummaryView.module.css';
+import WindowTitledDataGrid from '../WindowTitledDataGrid';
 import { getAllVotingEquipment } from '../../api/client';
 
-const columns: GridColDef<(VotingEquipmentModel)[number]>[] = [
-  { field: 'manufacturer', headerName: 'Manufacturer', width: 190 },
+import styles from './DisplayVotingMachineSummaryView.module.css';
+
+const columns: GridColDef<(VotingEquipmentModel)[]>[] = [
+  { 
+    field: 'manufacturer', 
+    headerName: 'Manufacturer', 
+    width: 190 ,
+  },
   {
     field: 'equipmentType',
     headerName: 'Type',
@@ -34,12 +28,12 @@ const columns: GridColDef<(VotingEquipmentModel)[number]>[] = [
   {
     field: 'firstManufactured',
     headerName: 'First Manufactured',
-    width: 110,
+    width: 150,
   },
   {
     field: 'lastManufactured',
     headerName: 'Last Manufactured',
-    width: 110,
+    width: 150,
   },
   {
     field: 'discontinued',
@@ -61,16 +55,10 @@ const columns: GridColDef<(VotingEquipmentModel)[number]>[] = [
 ];
 
 
-// 	  <Typography variant="h3" component="h2">
-// 		Display Voting Machine Summary
-// 	  </Typography>
-// 	  <Typography component="p">
-// This is some text, but this should be a table some day!
-// 	  </Typography>
-
 function DisplayVotingMachineSummaryView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
+  const maxWidth = 1400; // pixels
 
   useEffect(
     function () {
@@ -82,40 +70,21 @@ function DisplayVotingMachineSummaryView() {
     []);
 
   useKeyDown("Escape", () => navigate("/"));
+
   return (
-    <Box className={styles.displayInformationPopup}>
-      <Paper
-        sx={{ mt: 2, ml: 'auto' }}
-        elevation={9}>
-        <AppBar sx={{ position: "static" }} color="secondary">
-          <Grid container justifyContent="space-between">
-            <Grid size={3.25}>
-              <Typography variant="h6">Voting Equipment Table Summary</Typography>
-            </Grid>
-            <Grid>
-              <Button onClick={() => navigate("/")} variant='text' sx={{ color: "white" }}>
-                <HighlightOffIcon />
-              </Button>
-            </Grid>
-          </Grid>
-        </AppBar>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          getRowId={(x) => x.modelName}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
-            },
-          }}
-          pageSizeOptions={[10]}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
-      </Paper>
-    </Box>
+    <WindowTitledDataGrid
+      title={"Voting Equipment Table Summary"}
+      onXout={() => navigate("/")}
+      width={maxWidth}
+      maxWidth={maxWidth}
+      rows={rows}
+      columns={columns}
+      getRowId={(x) => x.modelName}
+      pageSize={12}
+      customGetRowClassName={(r) => rows.find((x) => x.modelName === r.id)?.discontinued ? styles.discontinuedRow : ""}
+      left={"18em"}
+      top={"0"}
+      />
   );
 }
 
