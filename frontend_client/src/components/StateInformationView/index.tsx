@@ -243,9 +243,9 @@ function StateInformationView() {
             {FIPS_TO_STATES_MAP[fipsCode!]}
           </Typography>
           <StateMap
-            key={activeDataState}
             // @ts-expect-error
             styleFunction={styleFunction}
+            mapKey={activeDataState}
             width={maxWidthForMap}
             height={maxHeightForMap}
             fipsCode={fipsCode}> 

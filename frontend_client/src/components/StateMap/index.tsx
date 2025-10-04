@@ -10,6 +10,7 @@ interface MapFitsToBoundsInternalParameters {
 };
 
 interface StateMapParameters {
+  mapKey?: any;
   fipsCode?: string;
   mapRef?: React.RefObject<MapRef>;
   width: CssUnitValue;
@@ -34,6 +35,7 @@ function MapFitToBoundsInternal(
 
 function StateMap(
   {
+    mapKey,
     fipsCode,
     mapRef,
     width,
@@ -98,6 +100,7 @@ function StateMap(
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <GeoJSON
+          key={mapKey}
           style={styleFunction}
           onEachFeature={onEachFeatureHandler}
           data={stateGeoJson!} />
