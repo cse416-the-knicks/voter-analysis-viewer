@@ -68,8 +68,8 @@ function WindowTitledDataGrid(
         elevation={9}>
         <AppBar sx={{ position: "static" }} color="secondary">
           <Grid container justifyContent="space-between">
-            <Grid size={3.25}>
-              <Typography variant="h6">{title}</Typography>
+            <Grid size={11}>
+              <Typography variant="h5" align="center">{title}</Typography>
             </Grid>
             <Grid>
               <Button onClick={onXout} variant='text' sx={{ color: "white" }}>
