@@ -2,8 +2,9 @@
 -- EAVS facts by region and year
 -- ===========================================
 CREATE TABLE app.eavs_data (
-    region_id            INT NOT NULL
-                         REFERENCES app.eavs_geounit(region_id),
+    region_id            VARCHAR(10) NOT NULL,
+    state_id             INT NOT NULL
+                         REFERENCES app.states(state_id),         -- state of registration
     year                 INT NOT NULL,                        -- 2016, 2020, 2024
 
     -- Registration
@@ -83,3 +84,6 @@ CREATE TABLE app.eavs_data (
 CREATE INDEX IF NOT EXISTS idx_eavs_data_year
     ON app.eavs_data (year);
 
+-- State ID filter
+CREATE INDEX IF NOT EXISTS idx_eavs_data_state_id
+    ON app.eavs_data (state_id);

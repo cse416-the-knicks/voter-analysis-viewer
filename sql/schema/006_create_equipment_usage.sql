@@ -7,8 +7,7 @@ CREATE TABLE app.equipment_usage (
     state_id        INT NOT NULL
                     REFERENCES app.states(state_id),            -- deployment state
 
-    region_id       INT
-                    REFERENCES app.eavs_geounit(region_id),     -- optional county/town
+    region_id       VARCHAR(10) NOT NULL,                       -- optional county/town
 
     year            INT NOT NULL,                               -- election year
 

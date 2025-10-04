@@ -2,8 +2,9 @@
 -- Presidential election results by region and year
 -- ===========================================
 CREATE TABLE app.election_results (
-    region_id   INT NOT NULL
-                REFERENCES app.eavs_geounit(region_id),   -- region / jurisdiction
+    region_id   VARCHAR(10) NOT NULL,                     -- region / jurisdiction
+    state_id    INT NOT NULL
+                REFERENCES app.states(state_id),         -- state of registration
 
     year        INT NOT NULL,                             -- election year
 
@@ -27,3 +28,6 @@ CREATE INDEX IF NOT EXISTS idx_election_results_year
 -- Useful composite for region/year lookups
 CREATE INDEX IF NOT EXISTS idx_election_results_region_year
     ON app.election_results (region_id, year);
+
+CREATE INDEX IF NOT EXISTS idx_election_results_state_id
+    ON app.election_results (state_id);
