@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useNavigate } from 'react-router';
+import useKeyDown from '../../hooks/useKeyDown';
 
 import {
   Box,
@@ -74,44 +75,45 @@ function DisplayVotingMachineSummaryView() {
   useEffect(
     function () {
       (async function () {
-	const equipmentList = await getAllVotingEquipment();
-	setDataRows(equipmentList);
+        const equipmentList = await getAllVotingEquipment();
+        setDataRows(equipmentList);
       })();
     },
     []);
 
+  useKeyDown("Escape", () => navigate("/"));
   return (
     <Box className={styles.displayInformationPopup}>
       <Paper
-	sx={{ mt: 2, ml: 'auto' }}
-	elevation={9}>
-	<AppBar sx={{position: "static"}} color="secondary">
-	    <Grid container justifyContent="space-between">
-		<Grid size={3.25}>
-		    <Typography variant="h6">Voting Equipment Table Summary</Typography>
-		</Grid>
-		<Grid>
-		    <Button onClick={() => navigate("/")} variant='text' sx={{color: "white"}}>
-			<HighlightOffIcon/>
-		    </Button>
-		</Grid>
-	    </Grid>
-	</AppBar>
-	<DataGrid
-	    rows={rows}
-	    columns={columns}
-	    getRowId={(x) => x.modelName}
-	    initialState={{
-	    pagination: {
-		paginationModel: {
-		pageSize: 10,
-		},
-	    },
-	    }}
-	    pageSizeOptions={[10]}
-	    checkboxSelection
-	    disableRowSelectionOnClick
-	/>
+        sx={{ mt: 2, ml: 'auto' }}
+        elevation={9}>
+        <AppBar sx={{ position: "static" }} color="secondary">
+          <Grid container justifyContent="space-between">
+            <Grid size={3.25}>
+              <Typography variant="h6">Voting Equipment Table Summary</Typography>
+            </Grid>
+            <Grid>
+              <Button onClick={() => navigate("/")} variant='text' sx={{ color: "white" }}>
+                <HighlightOffIcon />
+              </Button>
+            </Grid>
+          </Grid>
+        </AppBar>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          getRowId={(x) => x.modelName}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
+              },
+            },
+          }}
+          pageSizeOptions={[10]}
+          checkboxSelection
+          disableRowSelectionOnClick
+        />
       </Paper>
     </Box>
   );

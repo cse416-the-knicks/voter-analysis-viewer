@@ -1,6 +1,6 @@
 import type { GridColDef } from '@mui/x-data-grid';
 
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { DataGrid } from '@mui/x-data-grid';
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -31,6 +31,7 @@ import { mockData, provisionalBallotData } from '../DataDisplays/DisplayData';
 import BubbleChart from '../DataDisplays/BubbleChart';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart from '../DataDisplays/BarChart';
+import useKeyDown from '../../hooks/useKeyDown';
 
 const columns: GridColDef<(typeof rows)[number]>[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -78,23 +79,26 @@ const rows = [
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
+  const navigate = useNavigate();
+  
+  useKeyDown("Escape", () => navigate("/"));
 
   const dropDownSections = [
     {
       title: "Ballot Data",
-      iconComponent: <BallotIcon/>,
+      iconComponent: <BallotIcon />,
       items: [
-	{ id: 0, iconComponent: <InboxIcon/>, textContent: "Provisional Ballots" },
-	{ id: 1, iconComponent: <PersonIcon/>, textContent: "Active Voters" },
-	{ id: 2, iconComponent: <DeleteForeverIcon/>, textContent: "Pollbook Deletions" },
-	{ id: 3, iconComponent: <PersonOffIcon/>, textContent: "Mail Ballot Rejections" },
+        { id: 0, iconComponent: <InboxIcon />, textContent: "Provisional Ballots" },
+        { id: 1, iconComponent: <PersonIcon />, textContent: "Active Voters" },
+        { id: 2, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
+        { id: 3, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
       ],
     },
     {
       title: "Voting Equipment",
       items: [
-	{ id: 4, iconComponent: <ScannerIcon/>, textContent: "By Type" },
-	{ id: 5, iconComponent: <AccessTimeIcon/>, textContent: "By Age" },
+        { id: 4, iconComponent: <ScannerIcon />, textContent: "By Type" },
+        { id: 5, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
       ],
     }
   ];
@@ -103,41 +107,41 @@ function StateInformationView() {
   return (
     <div className={styles.stateInformationPopup}>
       <Box>
-	<StateInformationViewDrawer
-	  stateHook={activeDataStateHook}
-	  sections={dropDownSections}
-	  stateType={getDetailStateType(fipsCode!)}/>
+        <StateInformationViewDrawer
+          stateHook={activeDataStateHook}
+          sections={dropDownSections}
+          stateType={getDetailStateType(fipsCode!)} />
       </Box>
 
       <Stack spacing={3} direction="column" sx={{ mt: 4, ml: 'auto' }}>
-	<Paper
-	  sx={{ mt: 2, ml: 'auto' }}
-	  elevation={5}>
-	  <Typography variant="h3" component="h2">
-	    {FIPS_TO_STATES_MAP[fipsCode!]}
-	  </Typography>
-	  <StateMap width={"600px"} height={"900px"} fipsCode={fipsCode}/>
-	</Paper>
-	{/* <BubbleChart data={mockData} width={750} height={400}/> */}
+        <Paper
+          sx={{ mt: 2, ml: 'auto' }}
+          elevation={5}>
+          <Typography variant="h3" component="h2">
+            {FIPS_TO_STATES_MAP[fipsCode!]}
+          </Typography>
+          <StateMap width={"600px"} height={"900px"} fipsCode={fipsCode} />
+        </Paper>
+        {/* <BubbleChart data={mockData} width={750} height={400}/> */}
       </Stack>
       <Stack spacing={3} sx={{ mt: 2, ml: 8, height: "50%", width: "50%" }}>
-	<DataGrid
-	    rows={rows}
-	    columns={columns}
-	    initialState={{
-	    pagination: {
-		paginationModel: {
-		pageSize: 7,
-		},
-	    },
-	    }}
-	    pageSizeOptions={[5]}
-	    checkboxSelection
-	    disableRowSelectionOnClick
-	/>
-      <Paper>
-            <BarChart stateInfo={provisionalBallotData[getDetailStateType(fipsCode!)]}/>
-      </Paper>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 7,
+              },
+            },
+          }}
+          pageSizeOptions={[5]}
+          checkboxSelection
+          disableRowSelectionOnClick
+        />
+        <Paper>
+          <BarChart stateInfo={provisionalBallotData[getDetailStateType(fipsCode!)]} />
+        </Paper>
       </Stack>
     </div>
   );
