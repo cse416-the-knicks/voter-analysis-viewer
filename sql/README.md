@@ -19,8 +19,6 @@ sql/
         007_create_voter_registration.sql
         008_create_election_results.sql
         009_create_cvap_data.sql
-        010_alter_region_id.sql
-        011_drop_eavs_geounit_and_migrate.sql
     views/ <-- active derived views for frontend queries
         101_v_states_lookup.sql
         104_v_region_year_turnout.sql
@@ -85,8 +83,6 @@ Short summaries of what each file creates and why. Update this table **whenever 
 | 007_create_voter_registration.sql     | `app.voter_registration` | Registered voter records; minimal PII, linked to census blocks.                                             |
 | 008_create_election_results.sql       | `app.election_results`   | Presidential results by `region_id`+`year`, with computed total.                                            |
 | 009_create_cvap_data.sql              | `app.cvap_data`          | CVAP demographics by `region_id` and estimate year.                                                         |
-| 010_alter_region_id.sql               | Alters schema            | Changed `region_id` type to `VARCHAR(10)` across `eavs_geounit` and all referencing tables.                 |
-| 011_drop_eavs_geounit_and_migrate.sql | Alters schema            | Dropped `app.eavs_geounit`; added `state_id` directly to fact tables; rewired foreign keys and state views. |
 
 ### Views
 
@@ -129,3 +125,4 @@ These were **removed from active use** in 011 because they depended on `app.eavs
 | ---------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2025-09-23 | 002, 003, 006, 007, 008, 009 | `region_id` type updated to `VARCHAR(10)` across `eavs_geounit` and all referencing tables.                                                              |
 | 2025-09-27 | 011, 102–119, 120–123        | Dropped `app.eavs_geounit`; removed dependent region-level views (archived); added new lite region-year views (120–123); rewired state views (113, 114). |
+| 2025-10-04 | 011, 010                     | Removed migration / alteration scripts, docker setup allows simple reproducible layout, and so simplifications to the schema setup are now baked in.     |
