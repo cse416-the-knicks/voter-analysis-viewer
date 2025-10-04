@@ -14,6 +14,7 @@ interface StateMapParameters {
   mapRef?: React.RefObject<MapRef>;
   width: CssUnitValue;
   height: CssUnitValue;
+  styleFunction: L.StyleFunction;
 };
 
 function MapFitToBoundsInternal(
@@ -35,7 +36,8 @@ function StateMap(
     fipsCode,
     mapRef,
     width,
-    height
+    height,
+    styleFunction
   }: StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
@@ -69,6 +71,16 @@ function StateMap(
   }
 
   if (readyToDisplay) {
+    const onEachFeatureHandler =
+      (feature: GeoJSON.Feature, layer: L.Layer) => {
+        const { properties } = feature;
+        if (properties!.NAMELSAD) {
+          layer.bindTooltip(properties!.NAMELSAD);
+        } else {
+          // no tool, tip we just have the whole state
+        }
+      };
+
     return (
       <MapContainer
         ref={mapRef}
@@ -83,7 +95,10 @@ function StateMap(
         }
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <GeoJSON data={stateGeoJson!} />
+        <GeoJSON
+          style={styleFunction}
+          onEachFeature={onEachFeatureHandler}
+          data={stateGeoJson!} />
         <MapFitToBoundsInternal boundsToFit={stateMapBounds!} />
       </MapContainer>
     )

@@ -13,7 +13,8 @@ import Stack from '@mui/material/Stack';
 import {
   Box,
   Paper,
-  Typography
+  Typography,
+  useTheme,
 } from '@mui/material';
 
 import {
@@ -79,7 +80,13 @@ function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
   const navigate = useNavigate();
+  const theme = useTheme();
 
+  const maxWidthForTable = 850;
+  const maxHeightForTable = 500;
+  const maxWidthForMap = "700px";
+  const maxHeightForMap = "900px";
+  
   useKeyDown("Escape", () => navigate("/"));
 
   const dropDownSections = [
@@ -102,10 +109,14 @@ function StateInformationView() {
     }
   ];
 
-  const maxWidthForTable = 850;
-  const maxHeightForTable = 500;
-  const maxWidthForMap = "700px";
-  const maxHeightForMap = "840px";
+  const styleFunction =
+    (feature: L.FeatureGroup) => {
+      return {
+        color: theme.palette.secondary.main,
+        fillColor: theme.palette.secondary.main
+      };
+    }
+
   return (
     <div className={styles.stateInformationPopup}>
       <StateInformationViewDrawer
@@ -125,6 +136,7 @@ function StateInformationView() {
             {FIPS_TO_STATES_MAP[fipsCode!]}
           </Typography>
           <StateMap 
+            styleFunction={styleFunction}
             width={maxWidthForMap} 
             height={maxHeightForMap} 
             fipsCode={fipsCode} />
