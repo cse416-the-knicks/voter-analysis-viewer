@@ -7,8 +7,7 @@ CREATE TABLE app.voter_registration (
     state_id     INT NOT NULL
                  REFERENCES app.states(state_id),         -- state of registration
 
-    region_id    INT
-                 REFERENCES app.eavs_geounit(region_id),  -- filled by prepo-10
+    region_id    VARCHAR(10) NOT NULL,                    -- filled by prepo-10
 
     first_name   VARCHAR(50),
     last_name    VARCHAR(50),
@@ -48,3 +47,6 @@ CREATE INDEX IF NOT EXISTS idx_voter_registration_status
 -- Zip lookups
 CREATE INDEX IF NOT EXISTS idx_voter_registration_zip
     ON app.voter_registration (zip_code);
+
+CREATE INDEX IF NOT EXISTS idx_voter_registration_state_id
+    ON app.voter_registration (state_id);
