@@ -11,6 +11,7 @@ import DisplayVotingMachineSummaryView from './DisplayVotingMachineSummaryView';
 import VoterComparisonOptInOptOutTableView from './VoterComparisonOptInOutTableView';
 import FrontPage from './FrontPage';
 import PartyComparisonTableView from './PartyComparisonTableView';
+import EarlyVotingComparisonTableView from './EarlyVotingComparisonTableView';
 
 interface DisplayPathOverlay {
   matchPortion: string,
@@ -23,7 +24,8 @@ function App() {
   const overlayPaths: DisplayPathOverlay[] = [
     { matchPortion: "/display/voting-machine-summary", component: <DisplayVotingMachineSummaryView/> },
     { matchPortion: "/compare/optvote", component: <VoterComparisonOptInOptOutTableView/> },
-    { matchPortion: "/compare/parties", component: <PartyComparisonTableView/> },
+    { matchPortion: "/compare/party-registration", component: <PartyComparisonTableView/> },
+    { matchPortion: "/compare/early-voting", component: <EarlyVotingComparisonTableView/> },
     { matchPortion: "/state/:fipsCode/*", component: <StateInformationView/> },
   ];
 
