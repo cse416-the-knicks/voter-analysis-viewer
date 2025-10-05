@@ -10,6 +10,7 @@ import StateInformationView from './StateInformationView';
 import DisplayVotingMachineSummaryView from './DisplayVotingMachineSummaryView';
 import VoterComparisonOptInOptOutTableView from './VoterComparisonOptInOutTableView';
 import FrontPage from './FrontPage';
+import PartyComparisonTableView from './PartyComparisonTableView';
 
 interface DisplayPathOverlay {
   matchPortion: string,
@@ -22,6 +23,7 @@ function App() {
   const overlayPaths: DisplayPathOverlay[] = [
     { matchPortion: "/display/voting-machine-summary", component: <DisplayVotingMachineSummaryView/> },
     { matchPortion: "/compare/optvote", component: <VoterComparisonOptInOptOutTableView/> },
+    { matchPortion: "/compare/parties", component: <PartyComparisonTableView/> },
     { matchPortion: "/state/:fipsCode/*", component: <StateInformationView/> },
   ];
 

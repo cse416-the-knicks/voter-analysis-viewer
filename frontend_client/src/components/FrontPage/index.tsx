@@ -51,6 +51,7 @@ function FrontPageDrawer(
         <ListItem> <ListItemText primary={"Compare Voting"} /> </ListItem>
         <ListItem> <ListItemButton onClick={() => setNotImplementedYet(true) }> <ListItemText primary={"Bipartisan Early Voting"} /> </ListItemButton> </ListItem>
         <ListItem> <ListItemButton onClick={() => navigate("/compare/optvote")}> <ListItemText primary={"Opt-In, Opt-Out Voting"} /> </ListItemButton> </ListItem>
+        <ListItem> <ListItemButton onClick={() => navigate("/compare/parties")}> <ListItemText primary={"Republican, Democratic Registration"} /> </ListItemButton> </ListItem>
         <Divider />
         <ListItem> <ListItemText primary={"Display"} /> </ListItem>
         <ListItem> <ListItemButton onClick={() => setNotImplementedYet(true) }> <ListItemText primary={"Voting Equipment"} /> </ListItemButton> </ListItem>
