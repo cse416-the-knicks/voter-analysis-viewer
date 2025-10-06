@@ -106,4 +106,23 @@ public interface IStateDAO {
      * @return a ViewStateYearSummaryModel if it exists, none otherwise.
      */
     Optional<ViewStateYearSummaryModel> getStateYearSummaryRowByYear(String fipsCode, int year);
+
+    /**
+     * This access point is meant to return the centroids for all the
+     * significant GeoUnits of a state.
+     *
+     * @param fipsCode - A string for the fipsCode of the state.
+     * @return a dictionary / Map of GeoUnitCentroidModels keyed by the county code
+     *
+     * IE:
+     * {
+     *   "451": { fullRegionId, countyName, centerX, centerY },
+     *   .
+     *   .
+     *   ...
+     * }
+     *
+     * This is intended to be consumed from the frontend for BubbleCharts.
+     */
+    Map<String, GeoUnitCentroidModel> getGeoUnitCentroids(String fipsCode);
 }

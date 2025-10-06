@@ -1,6 +1,10 @@
 package com.theknicks.voteranalysis_backend.helpers;
 
 import java.util.Optional;
+import java.util.function.*;
+import java.nio.file.*;
+import java.util.*;
+import java.io.*;
 
 /**
  * This static class contains some helper methods that I've been
@@ -49,4 +53,22 @@ public class CsvHelpers {
         }
         return Optional.empty();
     }
+
+    public static void Csv(Path csvFileName, Consumer<List<String>> onEachLine) throws IOException {
+        try (var fileLinesStream = Files.lines(csvFileName)) {
+	    var fileLines = fileLinesStream.toList();
+
+            // First line is just headings...
+            for (int i = 1; i < fileLines.size(); ++i) {
+                var currentLine = fileLines.get(i);
+                // NOTE(jerry): the negative limit is to allow for taking in the empty fields
+                // appropriately.
+                var splitLine = currentLine.split(",", -1);
+		onEachLine.accept(Arrays.asList(splitLine));
+            }
+        } catch (IOException ex) {
+            throw ex; // Propagate exception...
+        }
+    }
+
 }
