@@ -1,8 +1,11 @@
 import { useNavigate } from 'react-router';
 import useKeyDown from '../../hooks/useKeyDown';
 import WindowTitledDataGrid from '../WindowTitledDataGrid';
+import { Box, Stack } from '@mui/material';
+import { dropBoxData, equipmentQualityData, regressionData } from '../DataDisplays/PartyStatesMockData';
+import BubbleChart from '../DataDisplays/BubbleChart';
 
-// Mock data
+// All data below is mock data
 const columns = [
   { 
     field: 'category', 
@@ -79,17 +82,25 @@ function EarlyVotingComparisonTableView() {
   useKeyDown("Escape", () => navigate("/"));
 
   return (
-    <WindowTitledDataGrid
-      title={"Democratic vs Republican Voter Registration Rates"}
-      onXout={() => navigate("/")}
-      width={maxWidth}
-      maxWidth={maxWidth}
-      rows={rows}
-      columns={columns}
-      pageSize={12}
-      left={"35em"}
-      top={"0"}
+    <Stack>
+      <WindowTitledDataGrid
+        title={"Democratic vs Republican Early Voting Rates"}
+        onXout={() => navigate("/")}
+        width={maxWidth}
+        maxWidth={maxWidth}
+        rows={rows}
+        columns={columns}
+        pageSize={5}
+        left={"35em"}
+        top={"0"}
       />
+      <Box sx={{ position: "fixed", zIndex: 1200, top: 450 }}>
+        <BubbleChart data={dropBoxData} width={700} height={500} title="Drop Box Voting by Party" xAxisLabel="Voting by Party (%)" yAxisLabel="Drop Box Voting (%)"/>
+      </Box>
+      <Box sx={{ position: "fixed", zIndex: 1200, top: 450, left: 1262 }}>
+        <BubbleChart data={equipmentQualityData} width={700} height={500} title="Voting Equipment Quality Level" xAxisLabel="Quality Level" yAxisLabel="Rejected Ballots (%)" useRegression regressionData={regressionData} />
+      </Box>
+    </Stack>
   );
 }
 
