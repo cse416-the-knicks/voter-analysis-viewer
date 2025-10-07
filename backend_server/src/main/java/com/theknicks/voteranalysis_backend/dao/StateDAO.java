@@ -50,8 +50,8 @@ public class StateDAO implements IStateDAO {
         _jdbcTemplate = jdbcTemplate;
         _fipsCodeToCountyNameMap = new Hashtable<>();
 	_geoUnitCentroidMap = new HashMap<>();
-        populateFipsCodeToCountyNameMapTable();
-        populateGeoUnitCentroidTable();
+        // populateFipsCodeToCountyNameMapTable();
+        // populateGeoUnitCentroidTable();
     }
 
     public Optional<ObjectNode> getGeometryBoundary(String fipsCode) {
