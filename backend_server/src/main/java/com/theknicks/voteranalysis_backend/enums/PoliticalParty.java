@@ -7,12 +7,13 @@ public enum PoliticalParty {
     COUNT;
 
     public static PoliticalParty fromString(String value) {
-	if (value.equals("R")) {
-	    return PoliticalParty.REPUBLICAN;
-	} else if (value.equals("D")) {
-	    return PoliticalParty.DEMOCRAT;
+	if (value != null) {
+	    if (value.equals("R")) {
+		return PoliticalParty.REPUBLICAN;
+	    } else if (value.equals("D")) {
+		return PoliticalParty.DEMOCRAT;
+	    }
 	}
-
 	return PoliticalParty.UNAFFILIATED;
     }
 };

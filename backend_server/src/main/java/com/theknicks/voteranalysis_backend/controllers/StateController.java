@@ -129,4 +129,9 @@ public class StateController {
     ) {
         return _service.getViewStateYearSummaryDataForStateByYear(fipsCode, year);
     }
+
+    @GetMapping("/")
+    public Map<String, StateInformationModel> getStateInformationTable() {
+	return _service.getStateInformationTable();
+    }
 }

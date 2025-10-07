@@ -94,4 +94,16 @@ public class StateService {
     ) {
 	return _dao.getGeoUnitCentroids(fipsCode);
     }
+
+    public Map<String, StateInformationModel> getStateInformationTable() {
+	var stateInformation = _dao.getStateInformationDataRowModels();
+	var result = new HashMap<String, StateInformationModel>();
+
+	for (var state : stateInformation) {
+	    var finalStateFormat = StateInformationModel.fromRaw(state);
+	    result.put(finalStateFormat.fipsCode(), finalStateFormat);
+	}
+
+	return result;
+    }
 }
