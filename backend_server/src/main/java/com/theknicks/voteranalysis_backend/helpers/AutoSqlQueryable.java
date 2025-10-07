@@ -68,27 +68,36 @@ public class AutoSqlQueryable<T> {
 
                 // I'm praying these are in order!
                 int columnNumber = 1;
+                var resultSetMetaData = resultSet.getMetaData();
                 for (var field : qualifyingFields) {
                     var type = field.getType();
-                    if ((type == int.class || type == Integer.class)) {
-                        var newValue = resultSet.getInt(columnNumber);
-                        callingArguments.add(newValue);
-                    } else if ((type == float.class || type == Float.class)) {
-                        var newValue = resultSet.getFloat(columnNumber);
-                        callingArguments.add(newValue);
-                    } else if ((type == long.class || type == Long.class)) {
-                        var newValue = resultSet.getLong(columnNumber);
-                        callingArguments.add(newValue);
-                    } else if ((type == double.class || type == Double.class)) {
-                        var newValue = resultSet.getDouble(columnNumber);
-                        callingArguments.add(newValue);
-                    } else if ((type == String.class)) {
-                        var newValue = resultSet.getString(columnNumber);
-                        callingArguments.add(newValue);
-                    }else {
-                        throw new RuntimeException(
-                                String.format("The class type \"%s\" does not have a mapped function!",
-                                        type.getName()));
+                    try {
+                        if ((type == int.class || type == Integer.class)) {
+                                var newValue = resultSet.getInt(columnNumber);
+                                callingArguments.add(newValue);
+                        } else if ((type == float.class || type == Float.class)) {
+                            var newValue = resultSet.getFloat(columnNumber);
+                            callingArguments.add(newValue);
+                        } else if ((type == long.class || type == Long.class)) {
+                            var newValue = resultSet.getLong(columnNumber);
+                            callingArguments.add(newValue);
+                        } else if ((type == double.class || type == Double.class)) {
+                            var newValue = resultSet.getDouble(columnNumber);
+                            callingArguments.add(newValue);
+                        } else if ((type == String.class)) {
+                            var newValue = resultSet.getString(columnNumber);
+                            callingArguments.add(newValue);
+                        }else {
+                            throw new RuntimeException(
+                                    String.format("The class type \"%s\" does not have a mapped function!",
+                                            type.getName()));
+                        }
+                    } catch (Exception e) {
+                        System.err.format("\tFaulted field \"%s\": %s to column %d (labelled \"%s\")\n",
+                                field.getName(), type.getName(),
+                                columnNumber, resultSetMetaData.getColumnLabel(columnNumber)
+                        );
+                        e.printStackTrace();
                     }
                     columnNumber++;
                 }
@@ -142,11 +151,9 @@ public class AutoSqlQueryable<T> {
     }
 
     private final Class<T> _class;
-    private static Dictionary<String, RowMapper> _mapperInstances; // cache the mapper as a singleton
 
     public AutoSqlQueryable(Class<T> classData) {
         _class = classData;
-        _mapperInstances = new Hashtable<>();
     }
 
     private static boolean isOmittedFromSumAggregate(Field field) {
@@ -176,7 +183,11 @@ public class AutoSqlQueryable<T> {
         return Arrays.stream(fieldsList).filter(
                 (field) -> {
                     if (getSqlName(field).isPresent()) {
-                        return !asSumAggregate || !isOmittedFromSumAggregate(field);
+                        if (asSumAggregate) {
+                            return !isOmittedFromSumAggregate(field);
+                        } else {
+                            return true;
+                        }
                     }
                     return false;
                 }
@@ -241,27 +252,17 @@ public class AutoSqlQueryable<T> {
      * the generation of the row mappers.
      */
     public RowMapper<T> Mapper(Object[] contextArgs, boolean isSumAggregate) {
-        SqlQueryableInvocationHandler invocationHandler;
         var className = _class.getName();
-        RowMapper<T> mapper = _mapperInstances.get(className);
-        if (mapper == null) {
-            invocationHandler = new SqlQueryableInvocationHandler(_class);
-            @SuppressWarnings("unchecked")
-            var proxy = (RowMapper<T>) Proxy.newProxyInstance(
-                RowMapper.class.getClassLoader(),
-                new Class[] { RowMapper.class },
-                invocationHandler
-            );
-            _mapperInstances.put(className, proxy);
-            mapper = proxy;
-        } else {
-            // Using the memoized query handler.
-            invocationHandler = (SqlQueryableInvocationHandler)
-                    Proxy.getInvocationHandler(mapper);
-        }
+        var invocationHandler = new SqlQueryableInvocationHandler(_class);
         invocationHandler.setIsAggregateSumQuery(isSumAggregate);
         invocationHandler.setContextArgs(contextArgs);
-        return mapper;
+        @SuppressWarnings("unchecked")
+        var proxy = (RowMapper<T>) Proxy.newProxyInstance(
+            RowMapper.class.getClassLoader(),
+            new Class[] { RowMapper.class },
+            invocationHandler
+        );
+        return proxy;
     }
 
     public RowMapper<T> Mapper(Object[] contextArgs) {
