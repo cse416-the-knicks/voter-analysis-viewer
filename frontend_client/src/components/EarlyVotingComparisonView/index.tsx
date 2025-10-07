@@ -1,9 +1,7 @@
 import { useNavigate } from 'react-router';
 import useKeyDown from '../../hooks/useKeyDown';
 import WindowTitledDataGrid from '../WindowTitledDataGrid';
-import { Box, Stack } from '@mui/material';
-import { dropBoxData, equipmentQualityData, regressionData } from '../DataDisplays/PartyStatesMockData';
-import BubbleChart from '../DataDisplays/BubbleChart';
+import { Stack } from '@mui/material';
 
 // All data below is mock data
 const columns = [
@@ -90,16 +88,10 @@ function EarlyVotingComparisonTableView() {
         maxWidth={maxWidth}
         rows={rows}
         columns={columns}
-        pageSize={5}
+        pageSize={10}
         left={"35em"}
         top={"0"}
       />
-      <Box sx={{ position: "fixed", zIndex: 1200, top: 450 }}>
-        <BubbleChart data={dropBoxData} width={700} height={500} title="Drop Box Voting by Party" xAxisLabel="Voting by Party (%)" yAxisLabel="Drop Box Voting (%)"/>
-      </Box>
-      <Box sx={{ position: "fixed", zIndex: 1200, top: 450, left: 1262 }}>
-        <BubbleChart data={equipmentQualityData} width={700} height={500} title="Voting Equipment Quality Level" xAxisLabel="Quality Level" yAxisLabel="Rejected Ballots (%)" useRegression regressionData={regressionData} />
-      </Box>
     </Stack>
   );
 }

@@ -21,6 +21,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ScannerIcon from '@mui/icons-material/Scanner';
+
 import Stack from '@mui/material/Stack';
 
 import {
@@ -31,7 +32,9 @@ import {
 } from '@mui/material';
 
 import {
+  DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_NONE,
+  DETAIL_STATE_TYPE_REPUBLICAN,
   getDetailStateType
 } from '../FullBoundedUSMap/detailedStatesInfo';
 
@@ -59,6 +62,8 @@ import {
 import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap';
 import digitsInNumber from '../../helpers/digitsInNumber';
 import GradientMapLegend from '../GradientMapLegend';
+import { dropBoxData } from '../DataDisplays/PartyStatesMockData';
+import BubbleChart from '../DataDisplays/BubbleChart';
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -118,7 +123,8 @@ function StateInformationView() {
   const maxWidthForTable = 850;
   const maxHeightForTable = 500;
   const maxWidthForMap = "700px";
-  const maxHeightForMap = "900px";
+  const maxHeightForMap = (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN) ? "505px" : "900px"
+  "505px";
 
   const activeDataState = activeDataStateHook[0];
   const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
@@ -230,7 +236,7 @@ function StateInformationView() {
         stateHook={activeDataStateHook}
         sections={dropDownSections}
         stateType={getDetailStateType(fipsCode!)} />
-      <Stack spacing={0} direction="column" sx={{ mt: 2.0, ml: 'auto' }}>
+      <Stack spacing={7.5} direction="column" sx={{ mt: 2.0, ml: 'auto' }}>
         <Paper
           sx={{
             mt: 0,
@@ -255,6 +261,10 @@ function StateInformationView() {
             }
           </StateMap>
         </Paper>
+        {
+          (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN) &&
+          <BubbleChart data={dropBoxData} width={700} height={445} title="Drop Box Voting by Party" xAxisLabel="Republican Votes (%)" yAxisLabel="Drop Box Voting (%)"/>
+        }
       </Stack>
       <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "50.5%" }}>
         <StyledDataGrid

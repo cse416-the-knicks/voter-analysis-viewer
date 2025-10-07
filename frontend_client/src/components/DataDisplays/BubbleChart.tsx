@@ -30,9 +30,9 @@ interface BubbleChartProperties {
 }
 
 export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel, useRegression, regressionData = []}: BubbleChartProperties) {
-  const chartMargin = { top: 50, right: 30, bottom: 60, left: 70 };
-  const chartWidth = width - chartMargin.left - chartMargin.right;
-  const chartHeight = height - chartMargin.top - chartMargin.bottom;
+  const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
+  const chartWidth = width - chartMargin.left - chartMargin.right + 125;
+  const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
 
   const xAxisScale = d3.scaleLinear().domain([0, d3.max(data, (x) => x.xValue)! + 5]).range([chartMargin.left, chartWidth - chartMargin.right])
   const yAxisScale = d3.scaleLinear().domain([0, d3.max(data, (x) => x.yValue)! + 5]).range([chartHeight - chartMargin.bottom, chartMargin.top])
@@ -52,7 +52,7 @@ export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel,
       {/* x axis */}
       {xAxisTicks.map((x, y) => ( 
         <g key={y}>
-          <line x1={xAxisScale(x)} x2={xAxisScale(x)} y1={chartMargin.top} y2={chartHeight - chartMargin.bottom} stroke="#000"/>
+          <line x1={xAxisScale(x)} x2={xAxisScale(x)} y1={chartMargin.top} y2={chartHeight - chartMargin.bottom} stroke="#808080"/>
             <text x={xAxisScale(x)} y={chartHeight - chartMargin.bottom + 20} textAnchor="middle" fontSize={15}>
               {x}
             </text>
@@ -65,7 +65,7 @@ export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel,
       {/* y axis */}
       {yAxisTicks.map((x, y) => ( 
         <g key={y}>
-          <line x1={chartMargin.left} x2={chartWidth - chartMargin.right} y1={yAxisScale(x)} y2={yAxisScale(x)} stroke="#000"/>
+          <line x1={chartMargin.left} x2={chartWidth - chartMargin.right} y1={yAxisScale(x)} y2={yAxisScale(x)} stroke="#808080"/>
             <text x={chartMargin.left - 15} y={yAxisScale(x) + 5} textAnchor="middle" fontSize={15}>
               {x}
             </text>
