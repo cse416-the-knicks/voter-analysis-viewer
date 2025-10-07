@@ -125,4 +125,10 @@ public interface IStateDAO {
      * This is intended to be consumed from the frontend for BubbleCharts.
      */
     Map<String, GeoUnitCentroidModel> getGeoUnitCentroids(String fipsCode);
+
+    /**
+     * This access point is meant to return the list of all state information
+     * in the database.
+     */
+    List<StateInformationDataRowModel> getStateInformationDataRowModels();
 }

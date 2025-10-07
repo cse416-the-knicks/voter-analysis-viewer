@@ -148,6 +148,12 @@ public class StateDAO implements IStateDAO {
 	return _geoUnitCentroidMap;
     }
 
+    public List<StateInformationDataRowModel> getStateInformationDataRowModels() {
+        var queryable = AutoSqlQueryable.findQueryableNested(StateInformationDataRowModel.class);
+        assert queryable != null;
+        return _jdbcTemplate.query(queryable.Query(), queryable.Mapper());
+    }
+
     private String fullPaddedFips(String stateFips, String countyFips) {
 	return stateFips + countyFips + "00000";
     }
