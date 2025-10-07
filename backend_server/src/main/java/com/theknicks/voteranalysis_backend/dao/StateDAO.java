@@ -49,16 +49,16 @@ public class StateDAO implements IStateDAO {
         _logger.info(preprocessedGeospatialPath);
         _jdbcTemplate = jdbcTemplate;
         _fipsCodeToCountyNameMap = new Hashtable<>();
-	_geoUnitCentroidMap = new HashMap<>();
-        // populateFipsCodeToCountyNameMapTable();
-        // populateGeoUnitCentroidTable();
+	    _geoUnitCentroidMap = new HashMap<>();
+         populateFipsCodeToCountyNameMapTable();
+         populateGeoUnitCentroidTable();
     }
 
     public Optional<ObjectNode> getGeometryBoundary(String fipsCode) {
         var mapper = new ObjectMapper();
         _logger.info("Reading state with fips code: " + fipsCode);
         try (Reader reader = new FileReader(preprocessedGeospatialPath + "stateByFips/" + fipsCode + ".json")) {
-	    var node = mapper.readValue(reader, ObjectNode.class);
+	        var node = mapper.readValue(reader, ObjectNode.class);
             return Optional.of(node);
         } catch (IOException e) {
             e.printStackTrace();
@@ -159,34 +159,34 @@ public class StateDAO implements IStateDAO {
     }
 
     private void populateGeoUnitCentroidTable() throws IOException {
-	CsvHelpers.Csv(_localCountyCentroidsCsvDataPath,
-		       tokens -> {
-			   var stateFips = tokens.get(CountyGeoUnitCsvRecordColumnId.STATE_FIPS.ordinal());
-			   var countyFips = tokens.get(CountyGeoUnitCsvRecordColumnId.COUNTY_FIPS.ordinal());
-			   var centerXString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_X.ordinal());
-			   var centerYString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_Y.ordinal());
-			   var fullRegionId = fullPaddedFips(stateFips, countyFips);
-			   var countyName = _fipsCodeToCountyNameMap.get(fullRegionId);
-			   _geoUnitCentroidMap.put(fullRegionId,
-						   new GeoUnitCentroidModel(
-						       fullRegionId,
-						       countyName,
-						       Float.parseFloat(centerXString),
-						       Float.parseFloat(centerYString)
-						   ));
-		       }
-	);
+        CsvHelpers.Csv(_localCountyCentroidsCsvDataPath,
+                   tokens -> {
+                   var stateFips = tokens.get(CountyGeoUnitCsvRecordColumnId.STATE_FIPS.ordinal());
+                   var countyFips = tokens.get(CountyGeoUnitCsvRecordColumnId.COUNTY_FIPS.ordinal());
+                   var centerXString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_X.ordinal());
+                   var centerYString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_Y.ordinal());
+                   var fullRegionId = fullPaddedFips(stateFips, countyFips);
+                   var countyName = _fipsCodeToCountyNameMap.get(fullRegionId);
+                   _geoUnitCentroidMap.put(fullRegionId,
+                               new GeoUnitCentroidModel(
+                                   fullRegionId,
+                                   countyName,
+                                   Float.parseFloat(centerXString),
+                                   Float.parseFloat(centerYString)
+                               ));
+                   }
+        );
     }
 
     private void populateFipsCodeToCountyNameMapTable() throws IOException {
-	CsvHelpers.Csv(_localFipsCodeMappingCsvDataPath,
-		       tokens -> {
-			   var _stateName = tokens.get(StateCsvRecordColumnId.STATE_NAME.ordinal()); // skip
-			   var countyName = tokens.get(StateCsvRecordColumnId.COUNTY_NAME.ordinal());
-			   var stateFips = tokens.get(StateCsvRecordColumnId.STATE_FIPS.ordinal());
-			   var countyFips = tokens.get(StateCsvRecordColumnId.COUNTY_FIPS.ordinal());
-			   _fipsCodeToCountyNameMap.put(fullPaddedFips(stateFips, countyFips), countyName);
-		       }
-	);
+        CsvHelpers.Csv(_localFipsCodeMappingCsvDataPath,
+                   tokens -> {
+                   var _stateName = tokens.get(StateCsvRecordColumnId.STATE_NAME.ordinal()); // skip
+                   var countyName = tokens.get(StateCsvRecordColumnId.COUNTY_NAME.ordinal());
+                   var stateFips = tokens.get(StateCsvRecordColumnId.STATE_FIPS.ordinal());
+                   var countyFips = tokens.get(StateCsvRecordColumnId.COUNTY_FIPS.ordinal());
+                   _fipsCodeToCountyNameMap.put(fullPaddedFips(stateFips, countyFips), countyName);
+                   }
+        );
     }
 }

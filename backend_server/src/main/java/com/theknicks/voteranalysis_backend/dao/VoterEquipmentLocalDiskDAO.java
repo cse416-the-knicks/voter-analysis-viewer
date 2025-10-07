@@ -52,7 +52,7 @@ public class VoterEquipmentLocalDiskDAO implements IVoterEquipmentDAO {
             throws IOException
     {
         _logger.info("Creating VoterEquipmentDAO - LocalDisk Persistence");
-        // populateInternalList();
+        populateInternalList();
         _inMemoryDAO = new VoterEquipmentInMemoryDAO(_equipmentList);
     }
 
