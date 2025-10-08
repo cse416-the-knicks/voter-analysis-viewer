@@ -19,6 +19,8 @@ import getProvisionalBallotsMutator from '../helpers/backendConnectorAxiosInstan
 import getPollbookDeletionsMutator from '../helpers/backendConnectorAxiosInstance';
 import getMailBallotRejectionsMutator from '../helpers/backendConnectorAxiosInstance';
 import getStateGeometryMutator from '../helpers/backendConnectorAxiosInstance';
+import getCountyGeoUnitCentroidsMutator from '../helpers/backendConnectorAxiosInstance';
+import getStateInformationTableMutator from '../helpers/backendConnectorAxiosInstance';
 export interface VotingEquipmentModel {
   manufacturer?: string;
   equipmentType?: string;
@@ -113,6 +115,58 @@ export interface ViewStateYearSummaryModel {
   mailinBallotVotingShareRate?: number;
 }
 
+export interface GeoUnitCentroidModel {
+  fullRegionId?: string;
+  countyName?: string;
+  centerX?: number;
+  centerY?: number;
+}
+
+export type StateInformationModelRegistrationMethod = typeof StateInformationModelRegistrationMethod[keyof typeof StateInformationModelRegistrationMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StateInformationModelRegistrationMethod = {
+  NONE: 'NONE',
+  OPT_IN: 'OPT_IN',
+  OPT_OUT: 'OPT_OUT',
+  COUNT: 'COUNT',
+} as const;
+
+export type StateInformationModelFelonyDisenfranchisement = typeof StateInformationModelFelonyDisenfranchisement[keyof typeof StateInformationModelFelonyDisenfranchisement];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StateInformationModelFelonyDisenfranchisement = {
+  UNKNOWN: 'UNKNOWN',
+  NO_DENIAL_OF_VOTING: 'NO_DENIAL_OF_VOTING',
+  RESTORATION_UPON_RELEASE_FROM_PRISON: 'RESTORATION_UPON_RELEASE_FROM_PRISON',
+  RESTORATION_AFTER_PAROLE_AND_PROBATION: 'RESTORATION_AFTER_PAROLE_AND_PROBATION',
+  ADDITIONAL_ACTION_FOR_RESTORATION: 'ADDITIONAL_ACTION_FOR_RESTORATION',
+  COUNT: 'COUNT',
+} as const;
+
+export type StateInformationModelAffiliation = typeof StateInformationModelAffiliation[keyof typeof StateInformationModelAffiliation];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StateInformationModelAffiliation = {
+  UNAFFILIATED: 'UNAFFILIATED',
+  DEMOCRAT: 'DEMOCRAT',
+  REPUBLICAN: 'REPUBLICAN',
+  COUNT: 'COUNT',
+} as const;
+
+export interface StateInformationModel {
+  fipsCode?: string;
+  name?: string;
+  registrationMethod?: StateInformationModelRegistrationMethod;
+  felonyDisenfranchisement?: StateInformationModelFelonyDisenfranchisement;
+  populationTotal?: number;
+  cvapTotal?: number;
+  affiliation?: StateInformationModelAffiliation;
+}
+
 export type GetVoterRegistrationCountsParams = {
 aggregate?: boolean;
 };
@@ -128,6 +182,10 @@ aggregate?: boolean;
 export type GetMailBallotRejectionsParams = {
 aggregate?: boolean;
 };
+
+export type GetCountyGeoUnitCentroids200 = {[key: string]: GeoUnitCentroidModel};
+
+export type GetStateInformationTable200 = {[key: string]: StateInformationModel};
 
 export type GeoJsonObjectType = typeof GeoJsonObjectType[keyof typeof GeoJsonObjectType];
 
@@ -745,6 +803,24 @@ export const getStateGeometry = (
       options);
     }
   
+export const getCountyGeoUnitCentroids = (
+    fipsCode: string,
+ options?: SecondParameter<typeof getCountyGeoUnitCentroidsMutator>,) => {
+      return getCountyGeoUnitCentroidsMutator<GetCountyGeoUnitCentroids200>(
+      {url: `/state/${fipsCode}/centroids`, method: 'GET'
+    },
+      options);
+    }
+  
+export const getStateInformationTable = (
+    
+ options?: SecondParameter<typeof getStateInformationTableMutator>,) => {
+      return getStateInformationTableMutator<GetStateInformationTable200>(
+      {url: `/state/`, method: 'GET'
+    },
+      options);
+    }
+  
 export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipment>>>
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>
 export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>
@@ -760,3 +836,5 @@ export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof 
 export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletions>>>
 export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>
 export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>
+export type GetCountyGeoUnitCentroidsResult = NonNullable<Awaited<ReturnType<typeof getCountyGeoUnitCentroids>>>
+export type GetStateInformationTableResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTable>>>

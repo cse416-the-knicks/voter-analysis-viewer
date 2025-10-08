@@ -43,6 +43,13 @@ public class StateController {
         return _service.getBoundaryGeometry(fipsCode);
     }
 
+     @GetMapping("/{fipsCode}/centroids")
+     public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(
+     	@PathVariable("fipsCode") String fipsCode
+     ) {
+     	return _service.getCountyGeoUnitCentroids(fipsCode);
+     }
+
     @GetMapping("/{fipsCode}/provisional-ballots")
     public List<ProvisionalBallotStatisticsModel> getProvisionalBallots(
             @PathVariable("fipsCode") String fipsCode,
@@ -122,4 +129,9 @@ public class StateController {
     ) {
         return _service.getViewStateYearSummaryDataForStateByYear(fipsCode, year);
     }
+
+     @GetMapping("/")
+     public Map<String, StateInformationModel> getStateInformationTable() {
+     	return _service.getStateInformationTable();
+     }
 }
