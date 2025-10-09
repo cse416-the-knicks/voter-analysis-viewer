@@ -6,6 +6,7 @@ import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
 import { DETAIL_STATE_TYPE_NONE, getDetailStateType, getHumanReadableStateType, isDetailState } from './detailedStatesInfo';
 import { useTheme } from '@mui/material';
 import { useState } from 'react';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
@@ -48,6 +49,7 @@ function FullBoundedUSMap(
   }: FullBoundedUSMapProperties) {
   const theme = useTheme();
   const [highlightedStateFipsId, setHighlightedStateFipsId] = useState<string | null>(null);
+  const useDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const onFeatureClickHandler =
     (event: L.LeafletMouseEvent) => {
       const target = event.target as L.FeatureGroup;
@@ -110,7 +112,7 @@ function FullBoundedUSMap(
       
       return result;
     };
-
+  
   return (
     <MapContainer
       zoom={Math.max(zoom ?? 0, MIN_ACCEPTABLE_ZOOM)}
@@ -123,7 +125,7 @@ function FullBoundedUSMap(
       id={id}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url={(useDarkMode) ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
       />
       <GeoJSON
         style={styleFunction}

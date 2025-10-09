@@ -4,6 +4,7 @@ import L from 'leaflet';
 import type { MapRef } from 'react-leaflet/MapContainer';
 import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { getStateGeometry } from '../../api/client';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface MapFitsToBoundsInternalParameters {
   boundsToFit: L.LatLngBoundsExpression;
@@ -46,6 +47,7 @@ function StateMap(
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
   const [stateMapBounds, setStateMapBounds] = useState<L.LatLngBoundsExpression | null>();
+  const useDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   useEffect(
     function () {
@@ -98,7 +100,10 @@ function StateMap(
           }
         }
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url={(useDarkMode) ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
+        />
         <GeoJSON
           key={mapKey}
           style={styleFunction}
