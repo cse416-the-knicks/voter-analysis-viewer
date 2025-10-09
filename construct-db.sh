@@ -51,5 +51,5 @@ pip install openpyxl # ???
 
 python3 ./load_prelim_states_data.py
 python3 ./load_2024_eavs_data.py
-
+python3 ./generate_mock.py /sql-scripts/schema/007_create_voter_registration.sql 5000 "state_id is an INT (so if it's single digit, only use a single digit). region_id is a varchar(10) so please surround it in quotes like a string. Census blocks do not exist currently, so please omit the column relating to census blocks."
 touch  /var/lib/postgresql/.lockfile
