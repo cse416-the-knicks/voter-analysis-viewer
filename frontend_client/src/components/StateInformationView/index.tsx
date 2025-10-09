@@ -62,7 +62,7 @@ import {
 import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap';
 import digitsInNumber from '../../helpers/digitsInNumber';
 import GradientMapLegend from '../GradientMapLegend';
-import { dropBoxData } from '../DataDisplays/PartyStatesMockData';
+import { equipmentQualityData } from '../DataDisplays/PartyStatesMockData';
 import BubbleChart from '../DataDisplays/BubbleChart';
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
@@ -263,7 +263,8 @@ function StateInformationView() {
         </Paper>
         {
           (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN) &&
-          <BubbleChart data={dropBoxData} width={700} height={445} title="Drop Box Voting by Party" xAxisLabel="Republican Votes (%)" yAxisLabel="Drop Box Voting (%)"/>
+          <BubbleChart data={equipmentQualityData} width={700} height={445} title="Voting Equipment Quality Level" xAxisLabel="Quality Level" yAxisLabel="Rejected Ballots (%)" useRegression/>
+          // <BubbleChart data={equipmentQualityData} width={700} height={445} title="Drop Box Voting by Party" xAxisLabel="Republican Votes (%)" yAxisLabel="Drop Box Voting (%)" useRegression/>
         }
       </Stack>
       <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "50.5%" }}>

@@ -15,7 +15,10 @@ export interface RegressionDataPoint {
 
 export interface RegressionDataLine {
   party: "Rep" | "Dem"
-  points: {xValue: number, yValue: number}[]
+  x1: number;
+  y1: number;
+  x2: number; 
+  y2: number;
 }
 
 interface BubbleChartProperties {
@@ -26,10 +29,9 @@ interface BubbleChartProperties {
   xAxisLabel: string, 
   yAxisLabel: string,
   useRegression?: boolean, 
-  regressionData?: RegressionDataLine[]
 }
 
-export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel, useRegression, regressionData = []}: BubbleChartProperties) {
+export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel, useRegression}: BubbleChartProperties) {
   const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
   const chartWidth = width - chartMargin.left - chartMargin.right + 125;
   const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
@@ -40,6 +42,51 @@ export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel,
 
   const xAxisTicks = xAxisScale.ticks(3);
   const yAxisTicks = yAxisScale.ticks(3);
+
+  const getX = function(p: BubbleChartDataPoint): number { return p.xValue; };
+  const getY = function(p: BubbleChartDataPoint): number { return p.yValue; };
+
+  const calculateLineOfBestFit = function(
+    points: BubbleChartDataPoint[], ): { slope: number; intercept: number } | null {
+    if (points.length < 2) {
+      return null;
+    }
+
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    const len = points.length;
+
+    for (const point of points) {
+      const x = getX(point);
+      const y = getY(point);
+      sumX += x;
+      sumY += y;
+      sumXY += x * y;
+      sumX2 += x * x;
+    }
+
+    const slope = (len * sumXY - sumX * sumY) / (len * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / len;
+    return { slope, intercept };
+  };
+
+  const parties = [...new Set(data.map(function(x) { return x.party; }))];
+  const calculatedRegressionLines: RegressionDataLine[] = parties
+    .map(function(party) {
+      const partyData = data.filter(function(x) { return x.party === party; });
+
+      const regression = calculateLineOfBestFit(partyData);
+      if (!regression) {
+        return null;
+      }
+
+      const { slope, intercept } = regression;
+      const [x1, x2] = xAxisScale.domain();
+      const y1 = slope * x1 + intercept;
+      const y2 = slope * x2 + intercept;
+
+      return { party, x1, y1, x2, y2 }
+    })
+    .filter((line): line is RegressionDataLine => line !== null);
 
   return (
     <svg width={width} height={height} style={{ background: "#ffff", borderRadius: "8px"}}>
@@ -82,12 +129,21 @@ export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel,
       ))}
 
       {/* Bubble Chart Linear Regression */}
-      {useRegression && regressionData.map((regLine, x) => {
-        const color = "#000";
-        const setRegressionPoints = regLine.points.map(p => ({ x: p.xValue, y: p.yValue }));
-        const regressionLine = d3.line<{x: number, y: number}>().x((x) => xAxisScale(x.x)).y((x) => yAxisScale(x.y)).curve(d3.curveBasis)(setRegressionPoints);
-        return(<path key={x} d={regressionLine || ""} fill="none" stroke={color} strokeWidth={5} opacity={1}/>);
-      })}
+      {useRegression && calculatedRegressionLines.map(function(line) {
+          const color = line.party === "Rep" ? "#FF0000" : "#2980b9";
+          return (
+            <line
+              key={line.party}
+              x1={xAxisScale(line.x1)}
+              y1={yAxisScale(line.y1)}
+              x2={xAxisScale(line.x2)}
+              y2={yAxisScale(line.y2)}
+              stroke={color}
+              strokeWidth={3}
+              opacity={0.8}
+            />
+          );
+        })}
 
     </svg>
   );
