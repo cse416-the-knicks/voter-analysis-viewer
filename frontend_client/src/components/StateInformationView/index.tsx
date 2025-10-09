@@ -283,10 +283,6 @@ function StateInformationView() {
       <Box zIndex={2000} position="fixed" paddingLeft={7.75} paddingTop={1}>
         <Routes>
           <Route path="dropbox-chart" element={<BubbleChart data={dropBoxData} width={1560} height={1020} title="Drop Box Voting by Party" xAxisLabel="Republican Votes (%)" yAxisLabel="Drop Box Voting (%)"/>}/>
-        </Routes>
-      </Box>
-      <Box zIndex={2000} position="fixed" paddingLeft={7.75} paddingTop={1}>
-        <Routes>
           <Route path="rejected-ballots-chart" element={<BubbleChart data={equipmentQualityData} width={1560} height={1020} title="Voting Equipment Quality" xAxisLabel="Quality Level" yAxisLabel="Rejected Ballots (%)" useRegression/>}/>
         </Routes>
       </Box>

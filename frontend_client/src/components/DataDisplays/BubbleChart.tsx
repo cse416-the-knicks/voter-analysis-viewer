@@ -4,7 +4,7 @@ type PartyAffiliation = "Rep" | "Dem";
 
 interface BubbleChartDataPoint {
   name: string;
-  party: "Rep" | "Dem";
+  party: PartyAffiliation
   size: number;
   xValue: number;
   yValue: number;
@@ -28,14 +28,16 @@ interface BubbleChartProperties {
   useRegression?: boolean;
 }
 
-function BubbleChart({
-  data, 
-  width, 
-  height, 
-  title, 
-  xAxisLabel, 
-  yAxisLabel, 
-  useRegression}: BubbleChartProperties) {
+function BubbleChart(
+  {
+    data, 
+    width, 
+    height, 
+    title, 
+    xAxisLabel, 
+    yAxisLabel, 
+    useRegression
+  }: BubbleChartProperties) {
   const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
   const chartWidth = width - chartMargin.left - chartMargin.right + 125;
   const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
