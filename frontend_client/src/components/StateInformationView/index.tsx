@@ -13,7 +13,7 @@ import {
   getPollbookDeletions,
 } from '../../api/client';
 
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, Routes, Route } from 'react-router';
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BallotIcon from '@mui/icons-material/Ballot';
@@ -21,6 +21,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ScannerIcon from '@mui/icons-material/Scanner';
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
 
 import Stack from '@mui/material/Stack';
 
@@ -62,7 +64,7 @@ import {
 import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap';
 import digitsInNumber from '../../helpers/digitsInNumber';
 import GradientMapLegend from '../GradientMapLegend';
-import { equipmentQualityData } from '../DataDisplays/PartyStatesMockData';
+import { dropBoxData, equipmentQualityData } from '../DataDisplays/PartyStatesMockData';
 import BubbleChart from '../DataDisplays/BubbleChart';
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
@@ -72,6 +74,9 @@ const ID_SELECTION_MAIL_BALLOT_REJECTIONS = 3;
 
 const ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE = 4;
 const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
+const ID_SELECTION_REJECTED_BALLOTS = 6;
+const ID_SELECTION_DROP_BOX_VOTING = 7;
+
 
 const dropDownSections = [
   {
@@ -82,6 +87,8 @@ const dropDownSections = [
       { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
       { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
       { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
+      { id: ID_SELECTION_DROP_BOX_VOTING, iconComponent: <HowToVoteIcon />, textContent: "Drop Box Voting" },
+      { id: ID_SELECTION_REJECTED_BALLOTS, iconComponent: <DoNotDisturbIcon />, textContent: "Rejected Ballots" },
     ],
   },
   {
@@ -140,6 +147,7 @@ function StateInformationView() {
         let high: number = 0;
         switch (activeDataState) {
           case ID_SELECTION_PROVISIONAL_BALLOT: {
+            navigate(`/state/${fipsCode!}/`)
             const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
@@ -150,6 +158,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.totalBallotsCast!));
           } break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS: {
+            navigate(`/state/${fipsCode!}/`)
             const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
@@ -160,6 +169,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.rejectTotal!));
           } break;
           case ID_SELECTION_ACTIVE_VOTERS: {
+            navigate(`/state/${fipsCode!}/`)
             const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
@@ -170,6 +180,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.total!));
           } break;
           case ID_SELECTION_POLLBOOK_DELETION: {
+            navigate(`/state/${fipsCode!}/`)
             const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
@@ -178,6 +189,12 @@ function StateInformationView() {
             setDataColumns(POLL_BOOK_DELETION_COLUMNS);
             setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
             high = Math.max(...data.map((x) => x.totalRemoved!));
+          } break;
+          case ID_SELECTION_REJECTED_BALLOTS: {
+            navigate(`/state/${fipsCode}/rejected-ballots-chart/`);
+          } break;
+          case ID_SELECTION_DROP_BOX_VOTING: {
+            navigate(`/state/${fipsCode}/dropbox-chart/`);
           } break;
           default: {
             // not handled yet.
@@ -261,12 +278,17 @@ function StateInformationView() {
             }
           </StateMap>
         </Paper>
-        {
-          (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN) &&
-          <BubbleChart data={equipmentQualityData} width={700} height={445} title="Voting Equipment Quality Level" xAxisLabel="Quality Level" yAxisLabel="Rejected Ballots (%)" useRegression/>
-          // <BubbleChart data={equipmentQualityData} width={700} height={445} title="Drop Box Voting by Party" xAxisLabel="Republican Votes (%)" yAxisLabel="Drop Box Voting (%)" useRegression/>
-        }
       </Stack>
+      <Box zIndex={2000} position="fixed" paddingLeft={7.75} paddingTop={1}>
+        <Routes>
+          <Route path="dropbox-chart" element={<BubbleChart data={dropBoxData} width={1560} height={1020} title="Drop Box Voting by Party" xAxisLabel="Republican Votes (%)" yAxisLabel="Drop Box Voting (%)"/>}/>
+        </Routes>
+      </Box>
+      <Box zIndex={2000} position="fixed" paddingLeft={7.75} paddingTop={1}>
+        <Routes>
+          <Route path="rejected-ballots-chart" element={<BubbleChart data={equipmentQualityData} width={1560} height={1020} title="Voting Equipment Quality" xAxisLabel="Quality Level" yAxisLabel="Rejected Ballots (%)" useRegression/>}/>
+        </Routes>
+      </Box>
       <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "50.5%" }}>
         <StyledDataGrid
           rows={dataRows}
