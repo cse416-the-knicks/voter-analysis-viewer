@@ -65,7 +65,7 @@ import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap'
 import digitsInNumber from '../../helpers/digitsInNumber';
 import GradientMapLegend from '../GradientMapLegend';
 import { dropBoxData, equipmentQualityData } from '../DataDisplays/PartyStatesMockData';
-import BubbleChart from '../DataDisplays/BubbleChart';
+import { BubbleChart } from '../DataDisplays/BubbleChart';
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -125,12 +125,13 @@ function StateInformationView() {
   const navigate = useNavigate();
   const theme = useTheme();
   const stateType = getDetailStateType(fipsCode!);
+  const isPartyState = (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN)
   const choroplethScaleFactor = 0.05;
 
   const maxWidthForTable = 850;
   const maxHeightForTable = 500;
   const maxWidthForMap = "700px";
-  const maxHeightForMap = (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN) ? "505px" : "900px"
+  const maxHeightForMap = isPartyState ? "505px" : "900px"
   "505px";
 
   const activeDataState = activeDataStateHook[0];

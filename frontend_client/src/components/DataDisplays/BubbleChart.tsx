@@ -1,20 +1,17 @@
 import * as d3 from "d3";
 
-export interface BubbleChartDataPoint {
-  name: string,
-  party: "Rep" | "Dem"
-  size: number,
-  xValue: number,
-  yValue: number
+type PartyAffiliation = "Rep" | "Dem";
+
+interface BubbleChartDataPoint {
+  name: string;
+  party: "Rep" | "Dem";
+  size: number;
+  xValue: number;
+  yValue: number;
 }
 
-export interface RegressionDataPoint {
-  xValue: number,
-  yValue: number
-}
-
-export interface RegressionDataLine {
-  party: "Rep" | "Dem"
+interface RegressionDataLine {
+  party: PartyAffiliation;
   x1: number;
   y1: number;
   x2: number; 
@@ -22,16 +19,23 @@ export interface RegressionDataLine {
 }
 
 interface BubbleChartProperties {
-  data: BubbleChartDataPoint[],
-  width: number, 
-  height: number, 
-  title: string, 
-  xAxisLabel: string, 
-  yAxisLabel: string,
-  useRegression?: boolean, 
+  data: BubbleChartDataPoint[];
+  width: number;
+  height: number; 
+  title: string;
+  xAxisLabel: string;
+  yAxisLabel: string;
+  useRegression?: boolean;
 }
 
-export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel, useRegression}: BubbleChartProperties) {
+function BubbleChart({
+  data, 
+  width, 
+  height, 
+  title, 
+  xAxisLabel, 
+  yAxisLabel, 
+  useRegression}: BubbleChartProperties) {
   const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
   const chartWidth = width - chartMargin.left - chartMargin.right + 125;
   const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
@@ -149,4 +153,10 @@ export function BubbleChart({data, width, height, title, xAxisLabel, yAxisLabel,
   );
 }
 
-export default BubbleChart;
+export type {
+  BubbleChartDataPoint
+};
+
+export {
+  BubbleChart
+};
