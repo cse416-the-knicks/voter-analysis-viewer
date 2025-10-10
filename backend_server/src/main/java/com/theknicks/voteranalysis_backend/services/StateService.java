@@ -30,54 +30,54 @@ public class StateService {
     }
 
     public Optional<ProvisionalBallotStatisticsModel> getProvisionalBallotDataForCounty(
-	    String fipsCode, String countyCode) {
+        String fipsCode, String countyCode, int year) {
         return _dao.getProvisionBallotRowByCounty(
-	    fipsCode, countyCode);
+            fipsCode, countyCode, year);
     }
 
     public List<ProvisionalBallotStatisticsModel> getProvisionalBallotData(
-	    String fipsCode, boolean inAggregate) {
-        return _dao.getProvisionBallotRows(fipsCode, inAggregate);
+        String fipsCode, int year, boolean inAggregate) {
+        return _dao.getProvisionBallotRows(fipsCode, year, inAggregate);
     }
 
     public List<VoterRegistrationStatisticsModel> getVoterRegistrationData(
-	    String fipsCode, boolean inAggregate) {
+        String fipsCode, int year, boolean inAggregate) {
         return _dao.getVoterRegistrationRows(
-	    fipsCode, inAggregate);
+            fipsCode, year, inAggregate);
     }
 
     public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationDataForCounty(
-	    String fipsCode, String countyCode) {
+        String fipsCode, String countyCode, int year) {
         return _dao.getVoterRegistrationRowByCounty(
-	    fipsCode, countyCode);
+            fipsCode, countyCode, year);
     }
 
     public List<PollbookDeletionStatisticsModel> getPollbookDeletionData(
-	    String fipsCode, boolean inAggregate) {
+        String fipsCode, int year, boolean inAggregate) {
         return _dao.getPollbookDeletionRows(
-	    fipsCode, inAggregate);
+            fipsCode, year, inAggregate);
     }
 
     public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionDataForCounty(
-	    String fipsCode, String countyCode) {
+        String fipsCode, String countyCode, int year) {
         return _dao.getPollbookDeletionRowByCounty(
-	    fipsCode, countyCode);
+            fipsCode, countyCode, year);
     }
 
     public List<MailBallotRejectionStatisticsModel> getMailBallotRejectionData(
-	    String fipsCode, boolean inAggregate) {
+        String fipsCode, int year, boolean inAggregate) {
         return _dao.getMailBallotRejectionRows(
-	    fipsCode, inAggregate);
+            fipsCode, year, inAggregate);
     }
 
     public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionDataForCounty(
-	    String fipsCode, String countyCode) {
+        String fipsCode, String countyCode, int year) {
         return _dao.getMailBallotRejectionRowByCounty(
-	    fipsCode, countyCode);
+            fipsCode, countyCode, year);
     }
 
     public List<ViewStateYearSummaryModel> getViewStateYearSummaryDataForState(
-	    String fipsCode
+        String fipsCode
     ) {
         return _dao.getStateYearSummaryRows(fipsCode);
     }
@@ -90,20 +90,22 @@ public class StateService {
     }
 
     public List<BallotStatisticsModel> getBallotStatistics(
-            String fipsCode
+        String fipsCode,
+        int year
     ) {
-        return _dao.getBallotStatisticsRows(fipsCode);
+        return _dao.getBallotStatisticsRows(fipsCode, year);
     }
 
     public Optional<BallotStatisticsModel> getBallotStatisticsForCounty(
-            String fipsCode,
-            String countyFipsCode
+        String fipsCode,
+        String countyFipsCode,
+        int year
     ) {
-        return _dao.getBallotStatisticsRowByCounty(fipsCode, countyFipsCode);
+        return _dao.getBallotStatisticsRowByCounty(fipsCode, countyFipsCode, year);
     }
 
     public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(
-	    String fipsCode
+        String fipsCode
     ) {
         return _dao.getGeoUnitCentroids(fipsCode);
     }
