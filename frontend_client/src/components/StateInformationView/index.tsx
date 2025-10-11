@@ -128,11 +128,12 @@ function StateInformationView() {
   const isPartyState = (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN)
   const choroplethScaleFactor = 0.05;
 
+  const boxMarginTop = "2vh";
+
   const maxWidthForTable = 850;
   const maxHeightForTable = 500;
   const maxWidthForMap = "700px";
-  const maxHeightForMap = isPartyState ? "505px" : "900px"
-  "505px";
+  const maxHeightForMap = "80vh";
 
   const activeDataState = activeDataStateHook[0];
   const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
@@ -253,8 +254,14 @@ function StateInformationView() {
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
         sections={dropDownSections}
-        stateType={getDetailStateType(fipsCode!)} />
-      <Stack spacing={7.5} direction="column" sx={{ mt: 2.0, ml: 'auto' }}>
+        stateType={getDetailStateType(fipsCode!)}
+	topMargin={boxMarginTop}/>
+      <Stack spacing={7.5} direction="column" sx={
+	{
+	  mt: boxMarginTop,
+	  ml: 'auto'
+	}
+      }>
         <Paper
           sx={{
             mt: 0,
@@ -286,7 +293,14 @@ function StateInformationView() {
           <Route path="rejected-ballots-chart" element={<BubbleChart data={equipmentQualityData} width={1560} height={1020} title="Voting Equipment Quality" xAxisLabel="Quality Level" yAxisLabel="Rejected Ballots (%)" useRegression/>}/>
         </Routes>
       </Box>
-      <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "50.5%" }}>
+      <Stack spacing={0.2} sx={
+	{
+	  mt: boxMarginTop,
+	  ml: 1.15,
+	  height: "50%",
+	  width: "50.5%"
+	}
+      }>
         <StyledDataGrid
           rows={dataRows}
           columns={dataCols}

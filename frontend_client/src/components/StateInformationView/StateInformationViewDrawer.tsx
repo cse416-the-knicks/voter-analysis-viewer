@@ -40,6 +40,7 @@ interface StateInformationViewDrawerProperties {
   stateHook: [number, (arg0: number) => void];
   sections: StateInformationViewDrawerSection[];
   stateType: DetailStateType;
+  topMargin: string | number;
 };
 
 interface StateInformationViewDrawerListItemProperties {
@@ -133,6 +134,7 @@ function StateInformationViewDrawer(
     sections,
     stateHook,
     stateType,
+    topMargin,
   }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
   const sectionComponents = sections.map(
@@ -167,6 +169,7 @@ function StateInformationViewDrawer(
           width: '20em',
           height: 'auto',
           margin: 2,
+	  marginTop: topMargin,
         },
       }}
     >
