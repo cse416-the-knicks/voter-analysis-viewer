@@ -53,8 +53,8 @@ function BubbleChart(
   const yAxisScale = d3.scaleLinear().domain([0, d3.max(data, (x) => x.yValue)! + 5]).range([chartHeight - chartMargin.bottom, chartMargin.top])
   const chartScale = d3.scaleSqrt().domain([d3.min(data, (x) => x.size)!, d3.max(data, (x) => x.size)!]).range([5, 25]);
 
-  const xAxisTicks = xAxisScale.ticks(3);
-  const yAxisTicks = yAxisScale.ticks(3);
+  const xAxisTicks = xAxisScale.ticks(16);
+  const yAxisTicks = yAxisScale.ticks(16);
 
   const getX = function(p: BubbleChartDataPoint): number { return p.xValue; };
   const getY = function(p: BubbleChartDataPoint): number { return p.yValue; };
