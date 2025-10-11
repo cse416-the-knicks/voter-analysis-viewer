@@ -13,24 +13,28 @@ import FrontPage from './FrontPage';
 import PartyComparisonView from './PartyComparisonView';
 import EarlyVotingComparisonView from './EarlyVotingComparisonView';
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import {
+  ThemeProvider,
+  createTheme,
+  responsiveFontSizes
+} from '@mui/material/styles';
 
 interface DisplayPathOverlay {
   matchPortion: string,
   component: React.ReactNode;
 };
 
-const theme = createTheme({ 
+const theme = responsiveFontSizes(createTheme({ 
   colorSchemes: {
   }
-});
+}));
 
-const darkTheme = createTheme({ 
+const darkTheme = responsiveFontSizes(createTheme({ 
   colorSchemes: {
     dark: true,
   }
-});
+}));
 
 function App() {
   const location = useLocation();
