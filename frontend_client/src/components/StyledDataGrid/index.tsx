@@ -9,10 +9,10 @@ interface StyledDataGridProperties {
   getRowId: GridRowIdGetter;
   pageSize: number;
   customGetRowClassName?: getRowClassNameFn;
-  width?: number;
-  height?: number;
-  maxWidth?: number;
-  maxHeight?: number;
+  width?: number | string;
+  height?: number | string;
+  maxWidth?: number | string;
+  maxHeight?: number | string;
 };
 
 function StyledDataGrid(
