@@ -4,7 +4,8 @@ import subprocess
 
 scripts = [
     "./load_prelim_states_data.py",
-    "./load_2024_eavs_data.py"
+    "./load_2024_eavs_data.py",
+    "./load_boundary_data.py"
 ]
 
 print("Starting database population")
