@@ -49,7 +49,6 @@ source .venv/bin/activate
 pip install -r requirements.txt 
 pip install openpyxl # ???
 
-python3 ./load_prelim_states_data.py
-python3 ./load_2024_eavs_data.py
+python3 run_loaders.py
 
 touch  /var/lib/postgresql/.lockfile

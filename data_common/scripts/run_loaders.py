@@ -12,7 +12,7 @@ print("Starting database population")
 for script in scripts:
     print(f"Running {script}")
     try:
-        subprocess.run(["python", script], check=True)
+        subprocess.run(["python3", script], check=True)
     except subprocess.CalledProcessError as e:
         print("Error:", e)
 print("Finished database population")
