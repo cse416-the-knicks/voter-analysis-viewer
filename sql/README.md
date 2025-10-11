@@ -19,6 +19,7 @@ sql/
         007_create_voter_registration.sql
         008_create_election_results.sql
         009_create_cvap_data.sql
+        010_create_region_boundary
     views/ <-- active derived views for frontend queries
         101_v_states_lookup.sql
         104_v_region_year_turnout.sql
@@ -61,6 +62,7 @@ sql/
 **Examples**
 
 - `001_create_states.sql` – creates `app.states`
+- `002_create_region_boundary.sql` – creates `app.region_boundary`
 - `009_create_cvap_data.sql` – creates `app.cvap_data`
 - `115_v_eavs_latest_year.sql` – latest-year snapshot view
 
@@ -72,17 +74,17 @@ Short summaries of what each file creates and why. Update this table **whenever 
 
 ### Tables & Indexes
 
-| File                                  | Creates                  | Purpose                                                                                                     |
-| ------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| 001_create_states.sql                 | `app.states`             | State-level attributes (policies, summary stats). Stores geometry as text since we are not using PostGIS.   |
-| 002_create_eavs_geounit.sql           | `app.eavs_geounit`       | **(deprecated)** Jurisdictions keyed by `region_id`. Dropped in 011; kept for history.                      |
-| 003_create_eavs_data.sql              | `app.eavs_data`          | EAVS facts per `region_id`+`year` (registration, removals, ballots, provisional, mail-reject stats).        |
-| 004_create_census_block.sql           | `app.census_block`       | Census block centroids for mapping; fast state filtering.                                                   |
-| 005_create_device_model.sql           | `app.device_model`       | Voting equipment catalog (vendor/model, certs, metrics).                                                    |
-| 006_create_equipment_usage.sql        | `app.equipment_usage`    | Device deployments per state/region/year; supports history and rollups.                                     |
-| 007_create_voter_registration.sql     | `app.voter_registration` | Registered voter records; minimal PII, linked to census blocks.                                             |
-| 008_create_election_results.sql       | `app.election_results`   | Presidential results by `region_id`+`year`, with computed total.                                            |
-| 009_create_cvap_data.sql              | `app.cvap_data`          | CVAP demographics by `region_id` and estimate year.                                                         |
+| File                              | Creates                  | Purpose                                                                                                   |
+| --------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------- |
+| 001_create_states.sql             | `app.states`             | State-level attributes (policies, summary stats). Stores geometry as text since we are not using PostGIS. |
+| 002_create_region_boundary.sql    | `app.region_boundary`    | Geographic boundaries for states and local EAVS units; stores GeoJSON text polygons and centroids.        |
+| 003_create_eavs_data.sql          | `app.eavs_data`          | EAVS facts per `region_id`+`year` (registration, removals, ballots, provisional, mail-reject stats).      |
+| 004_create_census_block.sql       | `app.census_block`       | Census block centroids for mapping; fast state filtering.                                                 |
+| 005_create_device_model.sql       | `app.device_model`       | Voting equipment catalog (vendor/model, certs, metrics).                                                  |
+| 006_create_equipment_usage.sql    | `app.equipment_usage`    | Device deployments per state/region/year; supports history and rollups.                                   |
+| 007_create_voter_registration.sql | `app.voter_registration` | Registered voter records; minimal PII, linked to census blocks.                                           |
+| 008_create_election_results.sql   | `app.election_results`   | Presidential results by `region_id`+`year`, with computed total.                                          |
+| 009_create_cvap_data.sql          | `app.cvap_data`          | CVAP demographics by `region_id` and estimate year.                                                       |
 
 ### Views
 
@@ -105,24 +107,13 @@ Short summaries of what each file creates and why. Update this table **whenever 
 | 122_v_region_year_equipment_lite.sql    | `app.v_region_year_equipment_lite`    | Replacement for region equipment without geounit metadata.            |
 | 123_v_region_year_cvap_lite.sql         | `app.v_region_year_cvap_lite`         | Replacement for region CVAP demographics without geounit metadata.    |
 
-### Archived Views
-
-These were **removed from active use** in 011 because they depended on `app.eavs_geounit`. They remain in `sql/views/archived/` for reference.
-
-- 102_v_regions_lookup.sql
-- 103_v_region_year_basics.sql
-- 108_v_region_year_results.sql
-- 109_v_region_year_equipment.sql
-- 112_v_region_year_cvap.sql
-- 118_v_regions_centroids.sql
-- 119_v_regions_bounds.sql
-
 ---
 
 ## Change Log (append entries here)
 
-| Date       | File(s)                      | Summary                                                                                                                                                  |
-| ---------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2025-09-23 | 002, 003, 006, 007, 008, 009 | `region_id` type updated to `VARCHAR(10)` across `eavs_geounit` and all referencing tables.                                                              |
-| 2025-09-27 | 011, 102–119, 120–123        | Dropped `app.eavs_geounit`; removed dependent region-level views (archived); added new lite region-year views (120–123); rewired state views (113, 114). |
-| 2025-10-04 | 011, 010                     | Removed migration / alteration scripts, docker setup allows simple reproducible layout, and so simplifications to the schema setup are now baked in.     |
+| Date       | File(s)                        | Summary                                                                                                                                                  |
+| ---------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2025-09-23 | 002, 003, 006, 007, 008, 009   | `region_id` type updated to `VARCHAR(10)` across `eavs_geounit` and all referencing tables.                                                              |
+| 2025-09-27 | 011, 102–119, 120–123          | Dropped `app.eavs_geounit`; removed dependent region-level views (archived); added new lite region-year views (120–123); rewired state views (113, 114). |
+| 2025-10-04 | 011, 010                       | Removed migration / alteration scripts, docker setup allows simple reproducible layout, and so simplifications to the schema setup are now baked in.     |
+| 2025-10-09 | 002_create_region_boundary.sql | Added new table `app.region_boundary` for state and local geographic boundary storage (GeoJSON-based, non-PostGIS).                                      |
