@@ -43,8 +43,8 @@ import {
 import {
   useState,
   useEffect,
-  useLayoutEffect,
 } from 'react';
+
 
 import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
@@ -53,6 +53,7 @@ import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart, { type BarChartDataEntry } from '../DataDisplays/BarChart';
 import useKeyDown from '../../hooks/useKeyDown';
+import useCssCalc from '../../hooks/useCssCalc';
 import StyledDataGrid from '../StyledDataGrid';
 
 import {
@@ -123,25 +124,6 @@ type EAVsGeneralFact = ProvisionalBallotStatisticsModel |
   MailBallotRejectionStatisticsModel |
   VoterRegistrationStatisticsModel;
 
-/**
-    NOTE(jerry):
-    This is stupid trick so I can evaluate the CSS sizes for stuff,
-    since the D3 code is very difficult to rewrite as I didn't write it!
-**/
-function getCssCalculation(css: string): number {
-  const dummyElement = document.createElement("div");
-  dummyElement.style.width = css;
-  dummyElement.style.position = "absolute";
-  dummyElement.style.visibility = "hidden";
-
-  document.body.appendChild(dummyElement);
-
-  const elementWidth = dummyElement.getBoundingClientRect().width
-
-  dummyElement.remove();
-  return elementWidth;
-}
-
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
@@ -156,13 +138,11 @@ function StateInformationView() {
   const selectionDrawerWidth = "15em";
   const maxWidthForMap = "44vw";
   const maxHeightForMap = "80vh";
-  const remainingWidthAfterSelectionDrawer = `calc(100vw - (${selectionDrawerWidth} + 1.5em + ${maxWidthForMap} + 1vw))`;
+  const remainingWidthAfterSelectionDrawer = useCssCalc(`calc(100vw - (${selectionDrawerWidth} + 1.5em + ${maxWidthForMap} + 1vw))`);
   const maxWidthForTable = remainingWidthAfterSelectionDrawer;
-  const maxHeightForTable = "43vh";
-  // const maxWidthForChart = getCssCalculation(maxWidthForTable);
-  const maxHeightForChart = getCssCalculation("43vh");
-
-  const [maxWidthForChart, setMaxWidthForChart] = useState(0);
+  const maxHeightForTable = useCssCalc("43vh");
+  const maxWidthForChart = maxWidthForTable
+  const maxHeightForChart = maxHeightForTable;
 
   const activeDataState = activeDataStateHook[0];
   const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
@@ -250,21 +230,6 @@ function StateInformationView() {
     },
     [activeDataState]
   );
-
-  useLayoutEffect(
-    function () {
-      const resizeHandler =
-	() => {
-	  console.log("resize handler hit");
-	  setMaxWidthForChart(getCssCalculation(maxWidthForTable));
-	  console.log(maxWidthForChart);
-	}
-      console.log("register!");
-      resizeHandler();
-      window.addEventListener("resize", resizeHandler);
-      return () => window.removeEventListener("resize", resizeHandler);
-    },
-    []);
 
   useKeyDown("Escape", () => navigate("/"));
 
