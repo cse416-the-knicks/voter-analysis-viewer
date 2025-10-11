@@ -19,7 +19,8 @@ import {
   ListItemText,
   Card,
   CardContent,
-  Typography
+  Typography,
+  Tooltip
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useNavigate } from 'react-router';
@@ -113,18 +114,24 @@ function StateInformationViewDrawerListItem(
   {
     item,
     stateHook,
+    smallMode,
   }: StateInformationViewDrawerListItemProperties) {
   const [stateValue, setStateValue] = stateHook;
 
   return (
-    <ListItem>
-      <ListItemButton
-        key={item.id}
-        onClick={() => setStateValue(item.id)}
-        selected={stateValue == item.id}>
-        {((item.iconComponent) && <ListItemIcon>{item.iconComponent}</ListItemIcon>)}
-        <ListItemText primary={item.textContent} />
-      </ListItemButton>
+    <ListItem >
+      <Tooltip
+	title={"View "+ item.textContent}
+	placement="right"
+	arrow>
+	<ListItemButton
+	    key={item.id}
+	    onClick={() => setStateValue(item.id)}
+	    selected={stateValue == item.id}>
+	    {((item.iconComponent) && <ListItemIcon>{item.iconComponent}</ListItemIcon>)}
+	    <ListItemText primary={item.textContent} />
+	</ListItemButton>
+      </Tooltip>
     </ListItem>
   );
 }
@@ -166,7 +173,7 @@ function StateInformationViewDrawer(
       variant="permanent"
       sx={{
         '& .MuiDrawer-paper': {
-          width: '20em',
+          width: '17em',
           height: 'auto',
           margin: 2,
 	  marginTop: topMargin,
