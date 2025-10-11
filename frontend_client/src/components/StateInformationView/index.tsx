@@ -146,10 +146,11 @@ function StateInformationView() {
   const boxMarginTop = "2vh";
   const selectionDrawerWidth = "15em";
   const maxWidthForMap = "44vw";
-  const maxHeightForMap = "80vh";
+  const heightUsage = "88vh";
+  const maxHeightForMap = heightUsage;
   const remainingWidthAfterSelectionDrawer = useCssCalc(`calc(100vw - (${selectionDrawerWidth} + 1.5em + ${maxWidthForMap} + 1vw))`);
   const maxWidthForTable = remainingWidthAfterSelectionDrawer;
-  const maxHeightForTable = useCssCalc("43vh");
+  const maxHeightForTable = useCssCalc(`calc(${heightUsage} / 2)`);
   const maxWidthForChart = maxWidthForTable
   const maxHeightForChart = maxHeightForTable;
 
@@ -296,10 +297,6 @@ function StateInformationView() {
 	    height: maxHeightForMap
 	  }}
 	  elevation={5}>
-	  <Typography variant="h3" component="h2"
-	   sx={{textAlign: "center"}}>
-	    {FIPS_TO_STATES_MAP[fipsCode!]}
-	  </Typography>
 	  <StateMap
 	    // @ts-expect-error
 	    styleFunction={styleFunction}
@@ -311,6 +308,25 @@ function StateInformationView() {
 	      (stateType !== DETAIL_STATE_TYPE_NONE) &&
 		<GradientMapLegend gradientMap={gradientMap}/>
 	    }
+	    <Typography variant="h4"
+		sx={{
+		position: "relative",
+		textAlign: "center",
+		display: "inline",
+		top: `calc(100% - 1.25em)`,
+		left: `0`,
+		paddingLeft: "0.45em",
+		paddingRight: "1.0em",
+		paddingBottom: "0.35em",
+		paddingTop: "0.15em",
+		background: "rgba(0.5, 0.5, 0.5, 0.7)",
+		borderRadius: "0 16px 0 0",
+		color: "white",
+		fontWeight: "boldest",
+		zIndex: 1000,
+	    }}>
+		{FIPS_TO_STATES_MAP[fipsCode!]}
+	    </Typography>
 	  </StateMap>
 	</Paper>
       </Stack>
