@@ -40,7 +40,11 @@ import {
   getDetailStateType
 } from '../FullBoundedUSMap/detailedStatesInfo';
 
-import { useState, useEffect } from 'react';
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+} from 'react';
 
 import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
@@ -119,6 +123,25 @@ type EAVsGeneralFact = ProvisionalBallotStatisticsModel |
   MailBallotRejectionStatisticsModel |
   VoterRegistrationStatisticsModel;
 
+/**
+    NOTE(jerry):
+    This is stupid trick so I can evaluate the CSS sizes for stuff,
+    since the D3 code is very difficult to rewrite as I didn't write it!
+**/
+function getCssCalculation(css: string): number {
+  const dummyElement = document.createElement("div");
+  dummyElement.style.width = css;
+  dummyElement.style.position = "absolute";
+  dummyElement.style.visibility = "hidden";
+
+  document.body.appendChild(dummyElement);
+
+  const elementWidth = dummyElement.getBoundingClientRect().width
+
+  dummyElement.remove();
+  return elementWidth;
+}
+
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
@@ -136,6 +159,10 @@ function StateInformationView() {
   const remainingWidthAfterSelectionDrawer = `calc(100vw - (${selectionDrawerWidth} + 1.5em + ${maxWidthForMap} + 1vw))`;
   const maxWidthForTable = remainingWidthAfterSelectionDrawer;
   const maxHeightForTable = "43vh";
+  // const maxWidthForChart = getCssCalculation(maxWidthForTable);
+  const maxHeightForChart = getCssCalculation("43vh");
+
+  const [maxWidthForChart, setMaxWidthForChart] = useState(0);
 
   const activeDataState = activeDataStateHook[0];
   const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
@@ -223,6 +250,21 @@ function StateInformationView() {
     },
     [activeDataState]
   );
+
+  useLayoutEffect(
+    function () {
+      const resizeHandler =
+	() => {
+	  console.log("resize handler hit");
+	  setMaxWidthForChart(getCssCalculation(maxWidthForTable));
+	  console.log(maxWidthForChart);
+	}
+      console.log("register!");
+      resizeHandler();
+      window.addEventListener("resize", resizeHandler);
+      return () => window.removeEventListener("resize", resizeHandler);
+    },
+    []);
 
   useKeyDown("Escape", () => navigate("/"));
 
@@ -319,8 +361,8 @@ function StateInformationView() {
         <Box width={maxWidthForTable} height={500}>
           <Paper elevation={5}>
             <BarChart
-              width={maxWidthForTable}
-              height={maxHeightForTable}
+              width={maxWidthForChart}
+              height={maxHeightForChart}
               data={barData}
               title={barGraphTitle}
               xTitle={barGraphXTitle} />
