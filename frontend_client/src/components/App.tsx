@@ -4,7 +4,6 @@ import { Route, Routes, useLocation } from 'react-router';
 import './App.css';
 
 import NotFoundPage from "./NotFoundPage";
-import BackgroundBlur from "./BackgroundBlur";
 
 import StateInformationView from './StateInformationView';
 import DisplayVotingMachineSummaryView from './DisplayVotingMachineSummaryView';
@@ -15,13 +14,14 @@ import EarlyVotingComparisonView from './EarlyVotingComparisonView';
 
 import {
   CssBaseline,
-  useMediaQuery
+  useMediaQuery,
+  Backdrop,
 } from '@mui/material';
 
 import {
   ThemeProvider,
   createTheme,
-  responsiveFontSizes
+  responsiveFontSizes,
 } from '@mui/material/styles';
 
 interface DisplayPathOverlay {
@@ -61,12 +61,13 @@ function App() {
           {overlayPaths.map((x) => <Route path={x.matchPortion} element={<FrontPage/>}/>)}
           <Route path="*" element={<NotFoundPage/>}/>
         </Routes>
-        <BackgroundBlur showBlocker={showBlocker}/>
         {/* NOTE(jerry): Needed in order to do the overlay effect that I think looks cool. */}
-        <Routes>
-          {overlayPaths.map((x) => <Route path={x.matchPortion} element={x.component}/>)}
-          <Route path="*" element={<React.Fragment/>}/>
-        </Routes> 
+	<Backdrop open={showBlocker} sx={{zIndex:1200}}>
+	    <Routes>
+	    {overlayPaths.map((x) => <Route path={x.matchPortion} element={x.component}/>)}
+	    <Route path="*" element={<React.Fragment/>}/>
+	    </Routes> 
+	</Backdrop>
       </ThemeProvider>
    </React.Fragment>
   )
