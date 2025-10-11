@@ -31,7 +31,7 @@ function WelcomeApplicationDialog() {
 	    Welcome to the Knicks Teams CSE416.01 Voter-Analysis Project
 	    <br/>
 	    <br/>
-	    Backend: Java with SpringBoot, GSON
+	    Backend: Java with SpringBoot, Jackson
 	    <br/>
 	    Frontend: Typescript with React, and MaterialUI
 	    <br/>
