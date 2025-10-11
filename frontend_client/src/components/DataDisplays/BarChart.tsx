@@ -1,6 +1,8 @@
 import * as d3 from "d3";
 import { useState, useEffect, useRef } from 'react';
 
+import SimpleTooltip from '../SimpleTooltip';
+
 interface BarChartDataEntry {
   category: string;
   value: number;
@@ -112,17 +114,7 @@ function BarChart({
         </g>
       </svg>
       {/* Tooltip when moused over. */}
-      {boundingRectangle &&
-        <p style={{
-          position: "absolute", left: (boundingRectangle.x - barWidth / 2) + "px", top: boundingRectangle.y + "px", background: "white",
-          borderRadius: "8px",
-          padding: "8px",
-          paddingLeft: "16px",
-          paddingRight: "16px",
-          pointerEvents: "none",
-          fontSize: "16px",
-          boxShadow: "5px 5px 15px gray",
-        }}><b>{tooltipText}</b></p>}
+      <SimpleTooltip show={boundingRectangle!==null}>{tooltipText}</SimpleTooltip>
     </>
   )
 }

@@ -62,7 +62,9 @@ function App() {
           <Route path="*" element={<NotFoundPage/>}/>
         </Routes>
         {/* NOTE(jerry): Needed in order to do the overlay effect that I think looks cool. */}
-	<Backdrop open={showBlocker} sx={{zIndex:1200}}>
+	<Backdrop
+	  open={showBlocker}
+	  sx={{zIndex:1200}}>
 	    <Routes>
 	    {overlayPaths.map((x) => <Route path={x.matchPortion} element={x.component}/>)}
 	    <Route path="*" element={<React.Fragment/>}/>
