@@ -21,6 +21,7 @@ import {
   Toolbar,
   Typography,
   useTheme,
+  CssBaseline
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
@@ -96,10 +97,14 @@ function FrontPage() {
 
   return (
     <React.Fragment>
+      <CssBaseline/>
       <FrontPageTopBanner/>
       <WelcomeApplicationDialog />
       <NotImplementedYet hook={showNotImplementedYetHook}/>
-      <Box>
+      <Box
+	sx={{
+	  ml: 34,
+	}}>
         <FrontPageDrawer 
           setNotImplementedYet={showNotImplementedYetHook[1]} />
         <FullBoundedUSMap
