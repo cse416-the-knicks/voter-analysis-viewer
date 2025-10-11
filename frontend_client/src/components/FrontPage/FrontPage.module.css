@@ -1,6 +1,6 @@
 #mainMap {
-    width: 80vw;
-    height: 85vh;
+    width: calc(100vw - 240px);
+    height: calc(100vh - 64px);
     border: lightgray solid 1px;
     margin: 0;
     box-shadow: 8px 8px 16px #888888;

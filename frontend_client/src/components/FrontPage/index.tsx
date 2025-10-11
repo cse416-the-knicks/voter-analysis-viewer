@@ -103,7 +103,8 @@ function FrontPage() {
       <NotImplementedYet hook={showNotImplementedYetHook}/>
       <Box
 	sx={{
-	  ml: 34,
+	  ml: "225px",
+	  mt: "48px"
 	}}>
         <FrontPageDrawer 
           setNotImplementedYet={showNotImplementedYetHook[1]} />
