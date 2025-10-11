@@ -128,12 +128,14 @@ function StateInformationView() {
   const isPartyState = (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN)
   const choroplethScaleFactor = 0.05;
 
+  /* NOTE(jerry): size tuning parameters */
   const boxMarginTop = "2vh";
-
-  const maxWidthForTable = 850;
-  const maxHeightForTable = 500;
-  const maxWidthForMap = "700px";
+  const selectionDrawerWidth = "15em";
+  const maxWidthForMap = "44vw";
   const maxHeightForMap = "80vh";
+  const remainingWidthAfterSelectionDrawer = `calc(100vw - (${selectionDrawerWidth} + 1.5em + ${maxWidthForMap} + 1vw))`;
+  const maxWidthForTable = remainingWidthAfterSelectionDrawer;
+  const maxHeightForTable = "43vh";
 
   const activeDataState = activeDataStateHook[0];
   const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
@@ -250,16 +252,21 @@ function StateInformationView() {
     }
 
   return (
-    <div className={styles.stateInformationPopup}>
+    <div
+      className={styles.stateInformationPopup}
+      style={{
+	left: `calc(${selectionDrawerWidth} + 1.5em)`
+      }}>
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
         sections={dropDownSections}
         stateType={getDetailStateType(fipsCode!)}
+	drawerWidth={selectionDrawerWidth}
 	topMargin={boxMarginTop}/>
       <Stack spacing={7.5} direction="column" sx={
 	{
 	  mt: boxMarginTop,
-	  ml: 'auto'
+	  left: selectionDrawerWidth
 	}
       }>
         <Paper
@@ -296,9 +303,7 @@ function StateInformationView() {
       <Stack spacing={0.2} sx={
 	{
 	  mt: boxMarginTop,
-	  ml: 1.15,
-	  height: "50%",
-	  width: "50.5%"
+	  ml: 0.5,
 	}
       }>
         <StyledDataGrid
@@ -314,8 +319,8 @@ function StateInformationView() {
         <Box width={maxWidthForTable} height={500}>
           <Paper elevation={5}>
             <BarChart
-              width={maxWidthForTable - 20}
-              height={500}
+              width={maxWidthForTable}
+              height={maxHeightForTable}
               data={barData}
               title={barGraphTitle}
               xTitle={barGraphXTitle} />

@@ -42,6 +42,7 @@ interface StateInformationViewDrawerProperties {
   sections: StateInformationViewDrawerSection[];
   stateType: DetailStateType;
   topMargin: string | number;
+  drawerWidth: string | number;
 };
 
 interface StateInformationViewDrawerListItemProperties {
@@ -114,7 +115,6 @@ function StateInformationViewDrawerListItem(
   {
     item,
     stateHook,
-    smallMode,
   }: StateInformationViewDrawerListItemProperties) {
   const [stateValue, setStateValue] = stateHook;
 
@@ -142,6 +142,7 @@ function StateInformationViewDrawer(
     stateHook,
     stateType,
     topMargin,
+    drawerWidth,
   }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
   const sectionComponents = sections.map(
@@ -173,7 +174,7 @@ function StateInformationViewDrawer(
       variant="permanent"
       sx={{
         '& .MuiDrawer-paper': {
-          width: '17em',
+          width: drawerWidth,
           height: 'auto',
           margin: 2,
 	  marginTop: topMargin,
