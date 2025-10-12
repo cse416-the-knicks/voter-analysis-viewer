@@ -8,7 +8,6 @@ FIPS_TO_STATES_MAP = {
     "08": "Colorado",
     "09": "Connecticut",
     "10": "Delaware",
-    "11": "District Of Columbia",
     "12": "Florida",
     "13": "Georgia",
     "15": "Hawaii",
