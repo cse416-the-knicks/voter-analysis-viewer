@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import SimpleTooltip from '../SimpleTooltip';
 
 type PartyAffiliation = "Rep" | "Dem";
 
@@ -28,6 +29,12 @@ interface BubbleChartProperties {
   useRegression?: boolean;
 }
 
+import {
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
+
 function BubbleChart(
   {
     data, 
@@ -46,8 +53,8 @@ function BubbleChart(
   const yAxisScale = d3.scaleLinear().domain([0, d3.max(data, (x) => x.yValue)! + 5]).range([chartHeight - chartMargin.bottom, chartMargin.top])
   const chartScale = d3.scaleSqrt().domain([d3.min(data, (x) => x.size)!, d3.max(data, (x) => x.size)!]).range([5, 25]);
 
-  const xAxisTicks = xAxisScale.ticks(3);
-  const yAxisTicks = yAxisScale.ticks(3);
+  const xAxisTicks = xAxisScale.ticks(16);
+  const yAxisTicks = yAxisScale.ticks(16);
 
   const getX = function(p: BubbleChartDataPoint): number { return p.xValue; };
   const getY = function(p: BubbleChartDataPoint): number { return p.yValue; };
@@ -94,8 +101,35 @@ function BubbleChart(
     })
     .filter((line): line is RegressionDataLine => line !== null);
 
+  const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  const [tooltipText, setTooltipText] = useState("TEXT!");
+
+  const defaultBlockColor = "hsl(288, 90%, 44%)";
+  const defaultHighlightColor = "hsl(288, 90%, 90%)";
+
+  const svgRef = useRef<SVGSVGElement>(null);
+  useEffect(
+    // @ts-expect-error
+    () => {
+      const svg = d3.select(svgRef.current);
+      const circleSelector = svg.selectAll("circle");
+      circleSelector
+        .on("mouseover",
+          function (event, d) {
+            const element = this as Element;
+            setShowTooltip(true);
+            setTooltipText(element.getAttribute("data-title")!);
+          })
+        .on("mouseout",
+          function (event, d) {
+            setShowTooltip(false);
+          });
+      return () => circleSelector.on("mouseover", null).on("mouseout", null);
+    }, [data]);
+
   return (
-    <svg width={width} height={height} style={{ background: "#ffff", borderRadius: "8px"}}>
+    <>
+    <svg ref={svgRef} width={width} height={height} style={{ background: "#ffff", borderRadius: "8px"}}>
       
       {/* Bubble Chart Title */}
       <text x={width/2} y={30} textAnchor="middle" fontSize={20}>
@@ -130,8 +164,15 @@ function BubbleChart(
 
       {/* Bubble Chart Bubbles */}
       {data.map((x, y) => (
-        <circle key={y} cx={xAxisScale(x.xValue)} cy={yAxisScale(x.yValue)} r={chartScale(x.size)} fill={x.party === "Rep" ? "#d73027" : "#4575b4"} opacity={0.5} stroke="#000">
-        </circle>
+        <circle
+	  key={y}
+	  data-title={x.name}
+	  cx={xAxisScale(x.xValue)}
+	  cy={yAxisScale(x.yValue)}
+	  r={chartScale(x.size)}
+	  fill={x.party === "Rep" ? "#d73027" : "#4575b4"}
+	  opacity={0.5}
+	  stroke="#000"/>
       ))}
 
       {/* Bubble Chart Linear Regression */}
@@ -152,6 +193,9 @@ function BubbleChart(
         })}
 
     </svg>
+    {/* Tooltip when moused over. */}
+    <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
+    </>
   );
 }
 
