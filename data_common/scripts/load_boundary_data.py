@@ -58,17 +58,17 @@ df = pd.DataFrame(records)
 print(df)
 
 # Connecting to db
-# engine = create_engine(
-#     f"postgresql://{user}:{password}@{host}:{port}/{database}"
-# )
+engine = create_engine(
+    f"postgresql://{user}:{password}@{host}:{port}/{database}"
+)
 
-# # Inserting into db
-# df.to_sql(
-#     "region_boundary",
-#     engine,
-#     schema="app",
-#     if_exists="append",
-#     index=False
-# )
+# Inserting into db
+df.to_sql(
+    "region_boundary",
+    engine,
+    schema="app",
+    if_exists="append",
+    index=False
+)
 
 print("Finished inserting boundary data into the database")
