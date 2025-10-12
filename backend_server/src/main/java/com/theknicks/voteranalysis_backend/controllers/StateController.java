@@ -115,6 +115,21 @@ public class StateController {
         return _service.getMailBallotRejectionDataForCounty(fipsCode, countyFipsCode);
     }
 
+    @GetMapping("/{fipsCode}/ballot-statistics")
+    public List<BallotStatisticsModel> getBallotStatistics(
+            @PathVariable("fipsCode") String fipsCode
+    ) {
+        return _service.getBallotStatistics(fipsCode);
+    }
+
+    @GetMapping("/{fipsCode}/{countyFipsCode}/ballot-statistics")
+    public Optional<BallotStatisticsModel> getBallotStatisticsByCounty(
+            @PathVariable("fipsCode") String fipsCode,
+            @PathVariable("countyFipsCode") String countyFipsCode
+    ) {
+        return _service.getBallotStatisticsForCounty(fipsCode, countyFipsCode);
+    }
+
     @GetMapping("/{fipsCode}/year-summary")
     public List<ViewStateYearSummaryModel> getViewStateYearSummaryByState(
             @PathVariable("fipsCode") String fipsCode
