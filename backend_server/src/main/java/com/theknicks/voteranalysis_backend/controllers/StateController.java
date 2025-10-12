@@ -140,7 +140,6 @@ public class StateController {
         return _service.getBallotStatisticsForCounty(fipsCode, countyFipsCode, year);
     }
 
-
     @GetMapping("/{fipsCode}/year-summary")
     public List<ViewStateYearSummaryModel> getViewStateYearSummaryByState(
 	@PathVariable("fipsCode") String fipsCode
