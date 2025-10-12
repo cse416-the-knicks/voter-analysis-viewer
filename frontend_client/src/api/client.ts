@@ -191,23 +191,51 @@ state?: string;
 county?: string;
 };
 
+export type GetVoterRegistrationCountsByCountyParams = {
+year?: number;
+};
+
+export type GetProvisionalBallotsByCountyParams = {
+year?: number;
+};
+
+export type GetPollbookDeletionsByCountyParams = {
+year?: number;
+};
+
+export type GetMailBallotRejectionsByCountyParams = {
+year?: number;
+};
+
+export type GetBallotStatisticsByCountyParams = {
+year?: number;
+};
+
 export type GetVoterRegistrationCountsParams = {
+year?: number;
 aggregate?: boolean;
 };
 
 export type GetProvisionalBallotsParams = {
+year?: number;
 aggregate?: boolean;
 };
 
 export type GetPollbookDeletionsParams = {
+year?: number;
 aggregate?: boolean;
 };
 
 export type GetMailBallotRejectionsParams = {
+year?: number;
 aggregate?: boolean;
 };
 
 export type GetCountyGeoUnitCentroids200 = {[key: string]: GeoUnitCentroidModel};
+
+export type GetBallotStatisticsParams = {
+year?: number;
+};
 
 export type GetStateInformationTable200 = {[key: string]: StateInformationModel};
 
@@ -728,9 +756,11 @@ export const getDetailedVoterRegistrationData = (
 export const getVoterRegistrationCountsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetVoterRegistrationCountsByCountyParams,
  options?: SecondParameter<typeof getVoterRegistrationCountsByCountyMutator>,) => {
       return getVoterRegistrationCountsByCountyMutator<VoterRegistrationStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/voter-registration-count`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/voter-registration-count`, method: 'GET',
+        params
     },
       options);
     }
@@ -738,9 +768,11 @@ export const getVoterRegistrationCountsByCounty = (
 export const getProvisionalBallotsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetProvisionalBallotsByCountyParams,
  options?: SecondParameter<typeof getProvisionalBallotsByCountyMutator>,) => {
       return getProvisionalBallotsByCountyMutator<ProvisionalBallotStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/provisional-ballots`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/provisional-ballots`, method: 'GET',
+        params
     },
       options);
     }
@@ -748,9 +780,11 @@ export const getProvisionalBallotsByCounty = (
 export const getPollbookDeletionsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetPollbookDeletionsByCountyParams,
  options?: SecondParameter<typeof getPollbookDeletionsByCountyMutator>,) => {
       return getPollbookDeletionsByCountyMutator<PollbookDeletionStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/pollbook-deletions`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/pollbook-deletions`, method: 'GET',
+        params
     },
       options);
     }
@@ -758,9 +792,11 @@ export const getPollbookDeletionsByCounty = (
 export const getMailBallotRejectionsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetMailBallotRejectionsByCountyParams,
  options?: SecondParameter<typeof getMailBallotRejectionsByCountyMutator>,) => {
       return getMailBallotRejectionsByCountyMutator<MailBallotRejectionStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/mail-ballot-rejections`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/mail-ballot-rejections`, method: 'GET',
+        params
     },
       options);
     }
@@ -768,9 +804,11 @@ export const getMailBallotRejectionsByCounty = (
 export const getBallotStatisticsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetBallotStatisticsByCountyParams,
  options?: SecondParameter<typeof getBallotStatisticsByCountyMutator>,) => {
       return getBallotStatisticsByCountyMutator<BallotStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/ballot-statistics`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/ballot-statistics`, method: 'GET',
+        params
     },
       options);
     }
@@ -858,9 +896,11 @@ export const getCountyGeoUnitCentroids = (
   
 export const getBallotStatistics = (
     fipsCode: string,
+    params?: GetBallotStatisticsParams,
  options?: SecondParameter<typeof getBallotStatisticsMutator>,) => {
       return getBallotStatisticsMutator<BallotStatisticsModel[]>(
-      {url: `/state/${fipsCode}/ballot-statistics`, method: 'GET'
+      {url: `/state/${fipsCode}/ballot-statistics`, method: 'GET',
+        params
     },
       options);
     }
