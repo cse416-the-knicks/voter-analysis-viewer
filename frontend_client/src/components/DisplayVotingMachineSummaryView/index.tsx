@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import useKeyDown from '../../hooks/useKeyDown';
 import WindowTitledDataGrid from '../WindowTitledDataGrid';
 import { getAllVotingEquipment } from '../../api/client';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import styles from './DisplayVotingMachineSummaryView.module.css';
 
@@ -58,7 +59,8 @@ const columns: GridColDef<(VotingEquipmentModel)[]>[] = [
 function DisplayVotingMachineSummaryView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
-  const maxWidth = 1400; // pixels
+  const useLargerMaxWidth = useMediaQuery('(min-width:1600px)');
+  const maxWidth = (useLargerMaxWidth) ? 1400 : 1000; // pixels
 
   useEffect(
     function () {
@@ -82,8 +84,8 @@ function DisplayVotingMachineSummaryView() {
       getRowId={(x) => x.modelName}
       pageSize={12}
       customGetRowClassName={(r) => rows.find((x) => x.modelName === r.id)?.discontinued ? styles.discontinuedRow : ""}
-      left={"18em"}
-      top={"0"}
+      left={`calc(50vw - ${maxWidth/2}px)`}
+      top={'0'}
       />
   );
 }

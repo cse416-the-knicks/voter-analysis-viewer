@@ -99,7 +99,11 @@ function FrontPage() {
       <FrontPageTopBanner/>
       <WelcomeApplicationDialog />
       <NotImplementedYet hook={showNotImplementedYetHook}/>
-      <Box>
+      <Box
+	sx={{
+	  ml: "225px",
+	  mt: "48px"
+	}}>
         <FrontPageDrawer 
           setNotImplementedYet={showNotImplementedYetHook[1]} />
         <FullBoundedUSMap

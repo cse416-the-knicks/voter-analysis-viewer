@@ -101,8 +101,8 @@ function PartyComparisonView() {
         rows={rows}
         columns={columns}
         pageSize={10}
-        left={"35em"}
-        top={"0"}
+	left={`calc(50vw - ${maxWidth/2}px)`}
+	top={'0'}
       />
     </Stack>
   );
