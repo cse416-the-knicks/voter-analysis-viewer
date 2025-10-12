@@ -130,6 +130,14 @@ public class StateDAO implements IStateDAO {
         return getStateDataRowByCounty(BallotStatisticsModel.class, fipsCode, countyCode, year);
     }
 
+    public List<BallotStatisticsModel> getBallotStatisticsRows(String fipsCode) {
+        return getStateDataRows(BallotStatisticsModel.class, fipsCode, false);
+    }
+
+    public Optional<BallotStatisticsModel> getBallotStatisticsRowByCounty(String fipsCode, String countyCode) {
+        return getStateDataRowByCounty(BallotStatisticsModel.class, fipsCode, countyCode);
+    }
+
     public List<ViewStateYearSummaryModel> getStateYearSummaryRows(String fipsCode) {
         var queryable = AutoSqlQueryable.findQueryableNested(ViewStateYearSummaryModel.class);
         assert queryable != null;

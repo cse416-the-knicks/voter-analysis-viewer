@@ -1,6 +1,8 @@
 import * as d3 from "d3";
 import { useState, useEffect, useRef } from 'react';
 
+import SimpleTooltip from '../SimpleTooltip';
+
 interface BarChartDataEntry {
   category: string;
   value: number;
@@ -43,7 +45,7 @@ function BarChart({
   const horizontalAxis = d3.scaleLinear().domain([0, d3.max(data, (x) => x.value)!]).range([0, barWidth]);
   const verticalAxis = d3.scaleBand().domain(data.map((x) => x.category)).range([0, barHeight]).padding(0.3);
 
-  const [boundingRectangle, setBoundingRectangle] = useState<DOMRect | null>(null);
+  const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
 
   const defaultBlockColor = "hsl(288, 90%, 44%)";
@@ -60,14 +62,13 @@ function BarChart({
           function (event, d) {
             const element = this as Element;
             d3.select(this).attr("fill", defaultHighlightColor);
-            const r = element.getBoundingClientRect();
-            setBoundingRectangle(r);
+            setShowTooltip(true);
             setTooltipText(element.getAttribute("data-title") + ": " + element.getAttribute("data-value"));
           })
         .on("mouseout",
           function (event, d) {
             d3.select(this).attr("fill", defaultBlockColor);
-            setBoundingRectangle(null);
+            setShowTooltip(false);
           });
       return () => rectangleSelector.on("mouseover", null).on("mouseout", null);
     }, [data]);
@@ -112,17 +113,7 @@ function BarChart({
         </g>
       </svg>
       {/* Tooltip when moused over. */}
-      {boundingRectangle &&
-        <p style={{
-          position: "absolute", left: (boundingRectangle.x - barWidth / 2) + "px", top: boundingRectangle.y + "px", background: "white",
-          borderRadius: "8px",
-          padding: "8px",
-          paddingLeft: "16px",
-          paddingRight: "16px",
-          pointerEvents: "none",
-          fontSize: "16px",
-          boxShadow: "5px 5px 15px gray",
-        }}><b>{tooltipText}</b></p>}
+      <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
   )
 }

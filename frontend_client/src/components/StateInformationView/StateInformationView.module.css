@@ -1,6 +1,5 @@
 .stateInformationPopup {
   position: fixed;
-  left: 18em;
   top: 0;
   z-index: 1200;
   display: flex;

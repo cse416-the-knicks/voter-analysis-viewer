@@ -13,7 +13,13 @@ import {
   getPollbookDeletions,
 } from '../../api/client';
 
-import { useParams, useNavigate, Routes, Route } from 'react-router';
+import {
+  useLocation,
+  useParams,
+  useNavigate,
+  Routes,
+  Route,
+} from 'react-router';
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BallotIcon from '@mui/icons-material/Ballot';
@@ -31,6 +37,8 @@ import {
   Paper,
   Typography,
   useTheme,
+  Backdrop,
+  Grow,
 } from '@mui/material';
 
 import {
@@ -40,7 +48,11 @@ import {
   getDetailStateType
 } from '../FullBoundedUSMap/detailedStatesInfo';
 
-import { useState, useEffect } from 'react';
+import {
+  useState,
+  useEffect,
+} from 'react';
+
 
 import styles from './StateInformationView.module.css';
 import StateMap from '../StateMap';
@@ -49,6 +61,7 @@ import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
 import BarChart, { type BarChartDataEntry } from '../DataDisplays/BarChart';
 import useKeyDown from '../../hooks/useKeyDown';
+import useCssCalc from '../../hooks/useCssCalc';
 import StyledDataGrid from '../StyledDataGrid';
 
 import {
@@ -125,14 +138,24 @@ function StateInformationView() {
   const navigate = useNavigate();
   const theme = useTheme();
   const stateType = getDetailStateType(fipsCode!);
+  const location = useLocation();
   const isPartyState = (stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN)
   const choroplethScaleFactor = 0.05;
 
-  const maxWidthForTable = 850;
-  const maxHeightForTable = 500;
-  const maxWidthForMap = "700px";
-  const maxHeightForMap = isPartyState ? "505px" : "900px"
-  "505px";
+  /* NOTE(jerry): size tuning parameters */
+  const boxMarginTop = "2vh";
+  const selectionDrawerWidth = "15em";
+  const maxWidthForMap = "44vw";
+  const heightUsage = "88vh";
+  const maxHeightForMap = heightUsage;
+  const remainingWidthAfterSelectionDrawer = useCssCalc(`calc(100vw - (${selectionDrawerWidth} + 1.5em + ${maxWidthForMap} + 1vw))`);
+  const maxWidthForTable = remainingWidthAfterSelectionDrawer;
+  const maxHeightForTable = useCssCalc(`calc(${heightUsage} / 2)`);
+  const maxWidthForChart = maxWidthForTable
+  const maxHeightForChart = maxHeightForTable;
+
+  const bubbleChartWidth = useCssCalc("75vw");
+  const bubbleChartHeight = useCssCalc("90vh");
 
   const activeDataState = activeDataStateHook[0];
   const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
@@ -249,64 +272,124 @@ function StateInformationView() {
     }
 
   return (
-    <div className={styles.stateInformationPopup}>
+    <div
+      className={styles.stateInformationPopup}
+      style={{
+	left: `calc(${selectionDrawerWidth} + 1.5em)`
+      }}>
       <StateInformationViewDrawer
-        stateHook={activeDataStateHook}
-        sections={dropDownSections}
-        stateType={getDetailStateType(fipsCode!)} />
-      <Stack spacing={7.5} direction="column" sx={{ mt: 2.0, ml: 'auto' }}>
-        <Paper
-          sx={{
-            mt: 0,
-            ml: 'auto',
-            width: maxWidthForMap,
-            height: maxHeightForMap
-          }}
-          elevation={5}>
-          <Typography variant="h3" component="h2">
-            {FIPS_TO_STATES_MAP[fipsCode!]}
-          </Typography>
-          <StateMap
-            // @ts-expect-error
-            styleFunction={styleFunction}
-            mapKey={activeDataState}
-            width={maxWidthForMap}
-            height={maxHeightForMap}
-            fipsCode={fipsCode}> 
-            {
-              (stateType !== DETAIL_STATE_TYPE_NONE) &&
-              <GradientMapLegend gradientMap={gradientMap}/>
-            }
-          </StateMap>
-        </Paper>
+	stateHook={activeDataStateHook}
+	sections={dropDownSections}
+	stateType={getDetailStateType(fipsCode!)}
+	drawerWidth={selectionDrawerWidth}
+	topMargin={boxMarginTop}/>
+      <Stack spacing={7.5} direction="column" sx={
+	{
+	  mt: boxMarginTop,
+	  left: selectionDrawerWidth
+	}
+      }>
+	<Paper
+	  sx={{
+	    mt: 0,
+	    ml: 'auto',
+	    width: maxWidthForMap,
+	    height: maxHeightForMap
+	  }}
+	  elevation={5}>
+	  <StateMap
+	    // @ts-expect-error
+	    styleFunction={styleFunction}
+	    mapKey={activeDataState}
+	    width={maxWidthForMap}
+	    height={maxHeightForMap}
+	    fipsCode={fipsCode}> 
+	    {
+	      (stateType !== DETAIL_STATE_TYPE_NONE) &&
+		<GradientMapLegend gradientMap={gradientMap}/>
+	    }
+	    <Typography variant="h4"
+		sx={{
+		position: "relative",
+		textAlign: "center",
+		display: "inline",
+		top: `calc(100% - 1.25em)`,
+		left: `0`,
+		paddingLeft: "0.45em",
+		paddingRight: "1.0em",
+		paddingBottom: "0.35em",
+		paddingTop: "0.15em",
+		background: "rgba(0.5, 0.5, 0.5, 0.7)",
+		borderRadius: "0 16px 0 0",
+		color: "white",
+		fontWeight: "boldest",
+		zIndex: 1000,
+	    }}>
+		{FIPS_TO_STATES_MAP[fipsCode!]}
+	    </Typography>
+	  </StateMap>
+	</Paper>
       </Stack>
-      <Box zIndex={2000} position="fixed" paddingLeft={7.75} paddingTop={1}>
-        <Routes>
-          <Route path="dropbox-chart" element={<BubbleChart data={dropBoxData} width={1560} height={1020} title="Drop Box Voting by Party" xAxisLabel="Republican Votes (%)" yAxisLabel="Drop Box Voting (%)"/>}/>
-          <Route path="rejected-ballots-chart" element={<BubbleChart data={equipmentQualityData} width={1560} height={1020} title="Voting Equipment Quality" xAxisLabel="Quality Level" yAxisLabel="Rejected Ballots (%)" useRegression/>}/>
-        </Routes>
+      <Backdrop
+	open={location.pathname.includes("dropbox-chart") || location.pathname.includes("rejected-ballots-chart")}
+	sx={{zIndex:1199}}/>
+	<Grow
+	  in={location.pathname.includes("dropbox-chart") || location.pathname.includes("rejected-ballots-chart")}>
+      <Box 
+	sx={{
+	  position: "fixed",
+	  display: "flex",
+	  left: `calc(${selectionDrawerWidth} * 1.2)`,
+	  top: boxMarginTop,
+	  zIndex: 2000
+	}}>
+	    <Routes>
+	    <Route path="dropbox-chart" element={
+	      <BubbleChart
+		data={dropBoxData}
+		width={bubbleChartWidth}
+		height={bubbleChartHeight}
+		title="Drop Box Voting by Party"
+		xAxisLabel="Republican Votes (%)"
+		yAxisLabel="Drop Box Voting (%)"/>}/>
+	    <Route path="rejected-ballots-chart" element={
+	      <BubbleChart
+		data={equipmentQualityData}
+		width={bubbleChartWidth}
+		height={bubbleChartHeight}
+		title="Voting Equipment Quality"
+		xAxisLabel="Quality Level"
+		yAxisLabel="Rejected Ballots (%)"
+		useRegression/>}/>
+	    </Routes>
       </Box>
-      <Stack spacing={0.2} sx={{ mt: 2, ml: 1.15, height: "50%", width: "50.5%" }}>
-        <StyledDataGrid
-          rows={dataRows}
-          columns={dataCols}
-          width={maxWidthForTable}
-          maxWidth={maxWidthForTable}
-          height={maxHeightForTable}
-          maxHeight={maxHeightForTable}
-          pageSize={7}
-          getRowId={(r) => r.id}
-        />
-        <Box width={maxWidthForTable} height={500}>
-          <Paper elevation={5}>
-            <BarChart
-              width={maxWidthForTable - 20}
-              height={500}
-              data={barData}
-              title={barGraphTitle}
-              xTitle={barGraphXTitle} />
-          </Paper>
-        </Box>
+	  </Grow>
+      <Stack spacing={0.2} sx={
+	{
+	  mt: boxMarginTop,
+	  ml: 0.5,
+	}
+      }>
+	<StyledDataGrid
+	  rows={dataRows}
+	  columns={dataCols}
+	  width={maxWidthForTable}
+	  maxWidth={maxWidthForTable}
+	  height={maxHeightForTable}
+	  maxHeight={maxHeightForTable}
+	  pageSize={7}
+	  getRowId={(r) => r.id}
+	/>
+	<Box width={maxWidthForTable} height={500}>
+	  <Paper elevation={5}>
+	    <BarChart
+	      width={maxWidthForChart}
+	      height={maxHeightForChart}
+	      data={barData}
+	      title={barGraphTitle}
+	      xTitle={barGraphXTitle} />
+	  </Paper>
+	</Box>
       </Stack>
     </div>
   );

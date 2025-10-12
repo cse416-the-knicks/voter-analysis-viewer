@@ -4,7 +4,6 @@ import { Route, Routes, useLocation } from 'react-router';
 import './App.css';
 
 import NotFoundPage from "./NotFoundPage";
-import BackgroundBlur from "./BackgroundBlur";
 
 import StateInformationView from './StateInformationView';
 import DisplayVotingMachineSummaryView from './DisplayVotingMachineSummaryView';
@@ -13,24 +12,33 @@ import FrontPage from './FrontPage';
 import PartyComparisonView from './PartyComparisonView';
 import EarlyVotingComparisonView from './EarlyVotingComparisonView';
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import {
+  CssBaseline,
+  useMediaQuery,
+  Backdrop,
+} from '@mui/material';
+
+import {
+  ThemeProvider,
+  createTheme,
+  responsiveFontSizes,
+} from '@mui/material/styles';
 
 interface DisplayPathOverlay {
   matchPortion: string,
   component: React.ReactNode;
 };
 
-const theme = createTheme({ 
+const theme = responsiveFontSizes(createTheme({ 
   colorSchemes: {
   }
-});
+}));
 
-const darkTheme = createTheme({ 
+const darkTheme = responsiveFontSizes(createTheme({ 
   colorSchemes: {
     dark: true,
   }
-});
+}));
 
 function App() {
   const location = useLocation();
@@ -46,18 +54,22 @@ function App() {
 
   return (
     <React.Fragment>
+      <CssBaseline/>
       <ThemeProvider theme={(useDarkMode) ? darkTheme : theme}>
         <Routes>
           <Route path="/" element={<FrontPage/>}/>
           {overlayPaths.map((x) => <Route path={x.matchPortion} element={<FrontPage/>}/>)}
           <Route path="*" element={<NotFoundPage/>}/>
         </Routes>
-        <BackgroundBlur showBlocker={showBlocker}/>
         {/* NOTE(jerry): Needed in order to do the overlay effect that I think looks cool. */}
-        <Routes>
-          {overlayPaths.map((x) => <Route path={x.matchPortion} element={x.component}/>)}
-          <Route path="*" element={<React.Fragment/>}/>
-        </Routes> 
+	<Backdrop
+	  open={showBlocker}
+	  sx={{zIndex:1200}}>
+	    <Routes>
+	    {overlayPaths.map((x) => <Route path={x.matchPortion} element={x.component}/>)}
+	    <Route path="*" element={<React.Fragment/>}/>
+	    </Routes> 
+	</Backdrop>
       </ThemeProvider>
    </React.Fragment>
   )

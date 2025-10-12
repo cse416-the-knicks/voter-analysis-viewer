@@ -117,6 +117,23 @@ public interface IStateDAO {
     Optional<BallotStatisticsModel> getBallotStatisticsRowByCounty(String fipsCode, String countyCode, int year);
 
     /**
+     * This access point is meant to return the ballot statistics information of a state by county,
+     * allowing for the choice of aggregating to get a whole state count.
+     * @param fipsCode - A string for the fipsCode of the state.
+     * @return a list of BallotStatisticsModel
+     */
+    List<BallotStatisticsModel> getBallotStatisticsRows(String fipsCode);
+
+    /**
+     * This access point is meant to return the ballot statistics information of a specific county within
+     * a state.
+     * @param fipsCode - A string for the fipsCode of the state.
+     * @param countyCode - A string for the fipsCode of the county.
+     * @return a BallotStatisticsModel if it exists, none otherwise.
+     */
+    Optional<BallotStatisticsModel> getBallotStatisticsRowByCounty(String fipsCode, String countyCode);
+
+    /**
      * This access point is meant to return a summary of the general voting information for a state for every year we have
      * data about (voter turnout, total ballots, etc...)
      * @param fipsCode - A string for the fipsCode of the state.

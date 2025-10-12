@@ -19,7 +19,8 @@ import {
   ListItemText,
   Card,
   CardContent,
-  Typography
+  Typography,
+  Tooltip
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useNavigate } from 'react-router';
@@ -40,6 +41,8 @@ interface StateInformationViewDrawerProperties {
   stateHook: [number, (arg0: number) => void];
   sections: StateInformationViewDrawerSection[];
   stateType: DetailStateType;
+  topMargin: string | number;
+  drawerWidth: string | number;
 };
 
 interface StateInformationViewDrawerListItemProperties {
@@ -116,14 +119,19 @@ function StateInformationViewDrawerListItem(
   const [stateValue, setStateValue] = stateHook;
 
   return (
-    <ListItem>
-      <ListItemButton
-        key={item.id}
-        onClick={() => setStateValue(item.id)}
-        selected={stateValue == item.id}>
-        {((item.iconComponent) && <ListItemIcon>{item.iconComponent}</ListItemIcon>)}
-        <ListItemText primary={item.textContent} />
-      </ListItemButton>
+    <ListItem >
+      <Tooltip
+	title={"View "+ item.textContent}
+	placement="right"
+	arrow>
+	<ListItemButton
+	    key={item.id}
+	    onClick={() => setStateValue(item.id)}
+	    selected={stateValue == item.id}>
+	    {((item.iconComponent) && <ListItemIcon>{item.iconComponent}</ListItemIcon>)}
+	    <ListItemText primary={item.textContent} />
+	</ListItemButton>
+      </Tooltip>
     </ListItem>
   );
 }
@@ -133,6 +141,8 @@ function StateInformationViewDrawer(
     sections,
     stateHook,
     stateType,
+    topMargin,
+    drawerWidth,
   }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
   const sectionComponents = sections.map(
@@ -164,9 +174,10 @@ function StateInformationViewDrawer(
       variant="permanent"
       sx={{
         '& .MuiDrawer-paper': {
-          width: '20em',
+          width: drawerWidth,
           height: 'auto',
           margin: 2,
+	  marginTop: topMargin,
         },
       }}
     >
