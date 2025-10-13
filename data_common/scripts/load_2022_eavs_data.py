@@ -12,16 +12,16 @@ host = os.getenv("DB_HOST")
 port = os.getenv("DB_PORT")
 database = os.getenv("DB_NAME")
 
-# Loading 2024 EAVS data
-data_path = "../raw/2024_EAVS_for_Public_Release_V1_xlsx.xlsx"
+# Loading 2022 EAVS data
+data_path = "../raw/2022_EAVS_for_Public_Release_V1.1.xlsx"
 df = pd.read_excel(data_path, dtype={"FIPSCode": str})
 
 # Columns to pull from the spreadsheet
 cols = ["FIPSCode", "State_Abbr",
         "A1a","A1b","A1c",
-        "A12a","A12b","A12c","A12d","A12e","A12f","A12g","A12h","A12i","A12j","A12k",
+        "A9a","A9b","A9c","A9d","A9e","A9f","A9g","A9h","A9i","A9j",
         "C8a","C3a",
-        "E1a","E2a","E2b","E2c","E2d","E2e","E2f","E2g","E2h","E2i","E2j","E2k","E2l",
+        "E1a","E2a","E2b","E2c","E2d","E2e","E2f","E2g","E2h","E2i","E2j","E2k",
         "C9a","C9b","C9c","C9d","C9e","C9f","C9g","C9h","C9i","C9j","C9k","C9l","C9m","C9n","C9o","C9p","C9q",
         "C9r","C9s","C9t"]
 df = df[cols]
@@ -57,16 +57,16 @@ def to_int(val):
 for c in cols[1:]:
     df[c] = df[c].apply(to_int)
 
-# Compute removed_other as A12i + A12j + A12k (skipping NaN)
-df["removed_other"] = df[["A12i","A12j","A12k"]].sum(axis=1, skipna=True, min_count=1)
+# Compute removed_other as A9h + A9i + A9j (skipping NaN)
+df["removed_other"] = df[["A9h","A9i","A9j"]].sum(axis=1, skipna=True, min_count=1)
 
-# Compute prov_other as E2j + E2k + E2l (skipping NaN)
-df["prov_other"] = df[["E2j","E2k","E2l"]].sum(axis=1, skipna=True, min_count=1)
+# Compute prov_other as E2i + E2j + E2k (skipping NaN)
+df["prov_other"] = df[["E2i","E2j","E2k"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute mail_reject_other as C9r + C9s + C9t (skipping NaN)
 df["mail_reject_other"] = df[["C9r","C9s","C9t"]].sum(axis=1, skipna=True, min_count=1)
 
-df["year"] = 2024
+df["year"] = 2022
 
 df["state_id"] = df["FIPSCode"].str[:2].astype(int)
 
@@ -74,7 +74,7 @@ df["state_id"] = df["FIPSCode"].str[:2].astype(int)
 df.drop(df[df["State_Abbr"] == "AS"].index, inplace=True)
 
 # Dropping the unused other columns before writing
-df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr"])
+df = df.drop(columns=["A9h","A9i","A9j","E2i","E2j","E2k","C9r","C9s","C9t","State_Abbr"])
 
 # Mapping each code to the actual schema column names
 rename_map = {
@@ -82,14 +82,13 @@ rename_map = {
     "A1a": "total_registered",
     "A1b": "active_registered",
     "A1c": "inactive_registered",
-    "A12a" : "total_removed",
-    "A12b" : "removed_moved",
-    "A12c" : "removed_deceased",
-    "A12d" : "removed_felony",
-    "A12e" : "removed_failed_confirm",
-    "A12f" : "removed_incompetent",
-    "A12g" : "removed_requested",
-    "A12h" : "removed_duplicate",
+    "A9a" : "total_removed",
+    "A9b" : "removed_moved",
+    "A9c" : "removed_deceased",
+    "A9d" : "removed_felony",
+    "A9e" : "removed_failed_confirm",
+    "A9f" : "removed_incompetent",
+    "A9g" : "removed_requested",
     "removed_other" : "removed_other",
     "C8a" : "ballots_by_mail",
     "C3a" : "ballots_dropbox",
@@ -102,7 +101,6 @@ rename_map = {
     "E2f": "prov_reason_name_address",
     "E2g": "prov_reason_mail_ballot_unsurrendered",
     "E2h": "prov_reason_hours_extended",
-    "E2i": "prov_reason_same_day_reg",
     "prov_other": "prov_other",
     "C9a" : "mail_reject_total",
     "C9b" : "mail_reject_late",
@@ -134,7 +132,21 @@ df = df[df["state_id"] != 69]
 df = df[df["state_id"] != 72]
 df = df[df["state_id"] != 78]
 
-print(df)
+# Fixing entry with same FIPS code (Wisconsin county aggregate)
+target = "5531550000"
+print(df[df["region_id"] == target])
+subset = df[df["region_id"] == target]
+def safe_sum(series):
+    if series.isna().all():
+        return np.nan
+    return series.sum(skipna=True)
+summed = subset.apply(safe_sum, axis=0)
+summed["region_id"] = target
+summed["year"] = 2022
+summed["state_id"] = subset["state_id"].iloc[0]
+df = pd.concat([df[df["region_id"] != target], pd.DataFrame([summed])], ignore_index=True)
+
+print(df[df["region_id"] == target])
 
 # Connecting to db
 engine = create_engine(
@@ -150,4 +162,4 @@ df.to_sql(
     index=False
 )
 
-print("Finished inserting preliminary eavs data into the database")
+print("Finished inserting preliminary 2022 eavs data into the database")
