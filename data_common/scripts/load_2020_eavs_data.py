@@ -96,14 +96,13 @@ rename_map = {
     "E2b": "prov_reason_not_in_roll",
     "E2e": "prov_reason_no_id",
     "E2d": "prov_reason_wrong_precinct",
-    """ Missing provisional rejection reasons from 2020 codebook
-        "E2c": "prov_reason_not_eligibe_official",
-        "E2d": "prov_reason_challenged",
-        "E2f": "prov_reason_name_address",
-        "E2g": "prov_reason_mail_ballot_unsurrendered",
-        "E2h": "prov_reason_hours_extended",
-        "E2i": "prov_reason_same_day_reg",
-    """
+    # Missing provisional rejection reasons from 2020 codebook:
+    # "E2c": "prov_reason_not_eligibe_official",
+    # "E2d": "prov_reason_challenged",
+    # "E2f": "prov_reason_name_address",
+    # "E2g": "prov_reason_mail_ballot_unsurrendered",
+    # "E2h": "prov_reason_hours_extended",
+    # "E2i": "prov_reason_same_day_reg",
     "prov_other": "prov_other",
     "C4a" : "mail_reject_total",
     "C4b" : "mail_reject_late",
@@ -119,11 +118,10 @@ rename_map = {
     "C4m" : "mail_reject_duplicate_vote",
     "C4n" : "mail_reject_missing_docs",
     "C4o" : "mail_reject_no_application",
-    """ Missing mail rejection reasons from 2020 codebook
-        "C9h" : "mail_reject_no_secrecy_env",
-        "C9k" : "mail_reject_no_postmark",
-        "C9p" : "mail_reject_not_eligible",
-    """
+    # Missing mail rejection reasons from 2020 codebook:
+    # "C9h" : "mail_reject_no_secrecy_env",
+    # "C9k" : "mail_reject_no_postmark",
+    # "C9p" : "mail_reject_not_eligible",
     "mail_reject_other" : "mail_reject_other",
     "state_id" : "state_id"
 }
