@@ -96,10 +96,19 @@ rename_map = {
     "A11g" : "removed_requested",
     "removed_other" : "removed_other",
     "ballots_by_mail" : "ballots_by_mail",
+    # Missing ballots_drop_box from 2016 codebook
     "E1a": "prov_cast",
     "E2a": "prov_reason_not_in_roll",
     "E2d": "prov_reason_no_id",
     "E2c": "prov_reason_wrong_precinct",
+    """ Missing provisional rejection reasons from 2016 codebook
+        "E2c": "prov_reason_not_eligibe_official",
+        "E2d": "prov_reason_challenged",
+        "E2f": "prov_reason_name_address",
+        "E2g": "prov_reason_mail_ballot_unsurrendered",
+        "E2h": "prov_reason_hours_extended",
+        "E2i": "prov_reason_same_day_reg",
+    """
     "prov_other": "prov_other",
     "C4b" : "mail_reject_total",
     "C5a" : "mail_reject_late",
@@ -115,6 +124,11 @@ rename_map = {
     "C5l" : "mail_reject_duplicate_vote",
     "C5m" : "mail_reject_missing_docs",
     "C5n" : "mail_reject_no_application",
+    """ Missing mail rejection reasons from 2016 codebook
+        "C9h" : "mail_reject_no_secrecy_env",
+        "C9k" : "mail_reject_no_postmark",
+        "C9p" : "mail_reject_not_eligible",
+    """
     "mail_reject_other" : "mail_reject_other",
     "state_id" : "state_id"
 }
