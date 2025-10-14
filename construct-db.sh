@@ -60,5 +60,7 @@ python3 load_boundary_data.py
 python3 load_2024_eavs_data.py
 python3 load_2022_eavs_data.py
 python3 load_2020_eavs_data.py
+python3 load_2018_eavs_data.py
+python3 load_2016_eavs_data.py
 
 touch  /var/lib/postgresql/.lockfile
