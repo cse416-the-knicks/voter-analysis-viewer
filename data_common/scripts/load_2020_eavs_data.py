@@ -91,6 +91,7 @@ rename_map = {
     "A9g" : "removed_requested",
     "removed_other" : "removed_other",
     "C3a" : "ballots_by_mail",
+    # Missing ballots_drop_box from 2020 codebook
     "E1a": "prov_cast",
     "E2b": "prov_reason_not_in_roll",
     "E2e": "prov_reason_no_id",
