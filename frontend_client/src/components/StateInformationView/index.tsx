@@ -4,6 +4,7 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
+  VoterRegistrationDataModel,
 } from '../../api/client';
 
 import {
@@ -11,6 +12,8 @@ import {
   getMailBallotRejections,
   getVoterRegistrationCounts,
   getPollbookDeletions,
+  getDetailedVoterRegistrationData,
+  getVoterRegistrationCountsByCounty,
 } from '../../api/client';
 
 import {
@@ -73,7 +76,8 @@ import {
   bargraphDataForProvisionalBallots,
   MAIL_BALLOT_REJECTION_COLUMNS,
   POLL_BOOK_DELETION_COLUMNS,
-  PROVISIONAL_BALLOT_COLUMNS
+  PROVISIONAL_BALLOT_COLUMNS,
+  VOTER_REGISTRATION_INFO_COLUMNS,
 } from './dataColumns';
 import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap';
 import digitsInNumber from '../../helpers/digitsInNumber';
@@ -167,6 +171,13 @@ function StateInformationView() {
   const [barGraphTitle, setBarGraphTitle] = useState<string>("");
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
+
+  const shouldOpenPopup =
+    [
+      "dropbox-chart",
+      "rejected-ballots-chart",
+      "voter-table"
+    ].some((x) => location.pathname.includes(x));
 
   const dropDownSections = [...defaultDropDownSections];
   if (stateType == DETAIL_STATE_TYPE_VOTER_REGISTRATION) {
@@ -355,10 +366,9 @@ function StateInformationView() {
 	</Paper>
       </Stack>
       <Backdrop
-	open={location.pathname.includes("dropbox-chart") || location.pathname.includes("rejected-ballots-chart")}
+	open={shouldOpenPopup}
 	sx={{zIndex:1199}}/>
-	<Grow
-	  in={location.pathname.includes("dropbox-chart") || location.pathname.includes("rejected-ballots-chart")}>
+	<Grow in={shouldOpenPopup}>
       <Box 
 	sx={{
 	  position: "fixed",
@@ -386,14 +396,14 @@ function StateInformationView() {
 		yAxisLabel="Rejected Ballots (%)"
 		useRegression/>}/>
 	    <Route path="voter-table" element={
-	      <BubbleChart
-		data={equipmentQualityData}
+	      <StyledDataGrid
+		rows={async () => { return await getDetailedVoterRegistrationData() }}
+		columns={VOTER_REGISTRATION_INFO_COLUMNS}
 		width={bubbleChartWidth}
 		height={bubbleChartHeight}
-		title="Voting Equipment Quality"
-		xAxisLabel="Quality Level"
-		yAxisLabel="Rejected Ballots (%)"
-		useRegression/>}/>
+		pageSize={7}
+		getRowId={(r) => r.regionId}
+	      />}/>
 	    </Routes>
       </Box>
 	  </Grow>
