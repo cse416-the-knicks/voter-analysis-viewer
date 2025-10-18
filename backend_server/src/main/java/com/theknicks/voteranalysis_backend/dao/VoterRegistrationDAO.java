@@ -29,12 +29,14 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
             if (countyFips.isPresent()) {
                 return _jdbcTemplate.query(
                     selectQuery + " where state_id = ? and region_id = ?",
-                        mapper, stateFips.get(), countyFips.get()
+                    mapper,
+                    Integer.parseInt(stateFips.get(), 10), countyFips.get()
                 );
             } else {
                 return _jdbcTemplate.query(
                     selectQuery + " where state_id = ?",
-                        mapper, stateFips.get()
+                    mapper,
+                    Integer.parseInt(stateFips.get(), 10)
                 );
             }
         } else {
