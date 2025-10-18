@@ -5,7 +5,6 @@ import type {
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
   VoterRegistrationDataModel,
-  GeoUnitCentroidModel,
 } from '../../api/client';
 
 import {
@@ -15,7 +14,6 @@ import {
   getPollbookDeletions,
   getDetailedVoterRegistrationData,
   getVoterRegistrationCountsByCounty,
-  getCountyGeoUnitCentroids,
 } from '../../api/client';
 
 import {
@@ -25,6 +23,7 @@ import {
   Routes,
   Route,
 } from 'react-router';
+
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BallotIcon from '@mui/icons-material/Ballot';
@@ -67,7 +66,6 @@ import StateMap from '../StateMap';
 
 import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
-import BarChart, { type BarChartDataEntry } from '../DataDisplays/BarChart';
 import useKeyDown from '../../hooks/useKeyDown';
 import useCssCalc from '../../hooks/useCssCalc';
 import StyledDataGrid from '../StyledDataGrid';
@@ -86,9 +84,11 @@ import {
 import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap';
 import digitsInNumber from '../../helpers/digitsInNumber';
 import GradientMapLegend from '../GradientMapLegend';
+
 import { dropBoxData, equipmentQualityData } from '../DataDisplays/PartyStatesMockData';
-import { BubbleChart } from '../DataDisplays/BubbleChart';
-import { Circle } from 'react-leaflet';
+import BarChart, { type BarChartDataEntry } from '../DataDisplays/BarChart';
+import GeoUnitBubbleChart from '../DataDisplays/GeoUnitBubbleChart';
+import BubbleChart from '../DataDisplays/BubbleChart';
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -149,35 +149,6 @@ function a11yProps(index: number) {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   };
-}
-
-interface GeoUnitBubbleChartProperties {
-  fipsCode: string;
-};
-
-function GeoUnitBubbleChart(
-  {
-    fipsCode,
-  }: GeoUnitBubbleChartProperties) {
-  const [geoUnitCenters, setGeoUnitCenters] = useState<GeoUnitCentroidModel[]>([]);
-  useEffect(
-    function() {
-      (async function() {
-	const data = await getCountyGeoUnitCentroids(fipsCode);
-	setGeoUnitCenters(Object.values(data));
-      })();
-    },
-    []
-  );
-  return (
-    <>
-    {
-      geoUnitCenters.map((guc) =>
-	<Circle center={[guc.centerY!, guc.centerX!]} color={"red"} radius={16000}/> /* What units are these? */
-      )
-    }
-    </>
-  );
 }
 
 function StateInformationView() {
@@ -314,7 +285,7 @@ function StateInformationView() {
         binSize = Math.floor(binSize);
         binSize *= snapGridInterval;
         console.log(binSize, snapGridInterval, high);
-        let newGradientMap: GradientMap = {};
+        const newGradientMap: GradientMap = {};
         for (let i = 0; i < choroplethColorBuckets.length; ++i) {
           newGradientMap[(binSize*i)] = choroplethColorBuckets[i];
         }
@@ -425,7 +396,8 @@ function StateInformationView() {
 	    }}>
 		{FIPS_TO_STATES_MAP[fipsCode!]}
 	    </Typography>
-	    {tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart && <GeoUnitBubbleChart fipsCode={fipsCode!}/>}
+	    {tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart &&
+	      <GeoUnitBubbleChart fipsCode={fipsCode!}/>}
 	  </StateMap>
 	</Paper>
       </Stack>
