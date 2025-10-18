@@ -5,6 +5,7 @@ import type {
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
   VoterRegistrationDataModel,
+  GeoUnitCentroidModel,
 } from '../../api/client';
 
 import {
@@ -14,6 +15,7 @@ import {
   getPollbookDeletions,
   getDetailedVoterRegistrationData,
   getVoterRegistrationCountsByCounty,
+  getCountyGeoUnitCentroids,
 } from '../../api/client';
 
 import {
@@ -42,6 +44,8 @@ import {
   useTheme,
   Backdrop,
   Grow,
+  Tabs,
+  Tab
 } from '@mui/material';
 
 import {
@@ -84,6 +88,7 @@ import digitsInNumber from '../../helpers/digitsInNumber';
 import GradientMapLegend from '../GradientMapLegend';
 import { dropBoxData, equipmentQualityData } from '../DataDisplays/PartyStatesMockData';
 import { BubbleChart } from '../DataDisplays/BubbleChart';
+import { Circle } from 'react-leaflet';
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -139,6 +144,42 @@ type EAVsGeneralFact = ProvisionalBallotStatisticsModel |
   MailBallotRejectionStatisticsModel |
   VoterRegistrationStatisticsModel;
 
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+interface GeoUnitBubbleChartProperties {
+  fipsCode: string;
+};
+
+function GeoUnitBubbleChart(
+  {
+    fipsCode,
+  }: GeoUnitBubbleChartProperties) {
+  const [geoUnitCenters, setGeoUnitCenters] = useState<GeoUnitCentroidModel[]>([]);
+  useEffect(
+    function() {
+      (async function() {
+	const data = await getCountyGeoUnitCentroids(fipsCode);
+	setGeoUnitCenters(Object.values(data));
+      })();
+    },
+    []
+  );
+  return (
+    <>
+    {
+      geoUnitCenters.map((guc) =>
+	<Circle center={[guc.centerY!, guc.centerX!]} color={"red"} radius={16000}/> /* What units are these? */
+      )
+    }
+    </>
+  );
+}
+
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
@@ -171,6 +212,10 @@ function StateInformationView() {
   const [barGraphTitle, setBarGraphTitle] = useState<string>("");
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
+  const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
+
+  const tryingToViewDetailedVoterRegistration =
+    (stateType === DETAIL_STATE_TYPE_VOTER_REGISTRATION && activeDataState === ID_SELECTION_VOTER_REGISTRATION);
 
   const shouldOpenPopup =
     [
@@ -289,6 +334,7 @@ function StateInformationView() {
         color: theme.palette.secondary.main,
         fillColor: theme.palette.secondary.main,
         fillOpacity: 0.5,
+	weight: 2.5,
       };
 
       if (stateType !== DETAIL_STATE_TYPE_NONE) {
@@ -301,6 +347,11 @@ function StateInformationView() {
             (row as VoterRegistrationStatisticsModel).total! ||
             (row as MailBallotRejectionStatisticsModel).rejectTotal!, gradientMap);
         }
+
+	if (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) {
+	  style.fillOpacity = 0;
+	  style.weight = 1;
+	}
       }
 
       return style;
@@ -332,6 +383,18 @@ function StateInformationView() {
 	    height: maxHeightForMap
 	  }}
 	  elevation={5}>
+	  {tryingToViewDetailedVoterRegistration &&
+	    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+	      <Tabs
+		    value={viewDetailedVoterRegistrationBubbleChart ? 1 : 0}
+		    onChange={function(_, x){setViewDetailedVoterRegistrationBubbleChart(x == 1);}} 
+		    textColor="secondary"
+		    indicatorColor="secondary"
+		    variant="fullWidth">
+			<Tab label={"Choropleth"} {...a11yProps(0)}/>
+			<Tab label={"Bubblechart Overlay"} {...a11yProps(1)}/>
+		</Tabs>
+	    </Box>}
 	  <StateMap
 	    // @ts-expect-error
 	    styleFunction={styleFunction}
@@ -340,7 +403,7 @@ function StateInformationView() {
 	    height={maxHeightForMap}
 	    fipsCode={fipsCode}> 
 	    {
-	      (stateType !== DETAIL_STATE_TYPE_NONE) &&
+	      (stateType !== DETAIL_STATE_TYPE_NONE) && !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
 		<GradientMapLegend gradientMap={gradientMap}/>
 	    }
 	    <Typography variant="h4"
@@ -362,6 +425,7 @@ function StateInformationView() {
 	    }}>
 		{FIPS_TO_STATES_MAP[fipsCode!]}
 	    </Typography>
+	    {tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart && <GeoUnitBubbleChart fipsCode={fipsCode!}/>}
 	  </StateMap>
 	</Paper>
       </Stack>
