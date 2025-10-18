@@ -45,6 +45,7 @@ import {
   DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_NONE,
   DETAIL_STATE_TYPE_REPUBLICAN,
+  DETAIL_STATE_TYPE_VOTER_REGISTRATION,
   getDetailStateType
 } from '../FullBoundedUSMap/detailedStatesInfo';
 
@@ -90,8 +91,10 @@ const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
 const ID_SELECTION_REJECTED_BALLOTS = 6;
 const ID_SELECTION_DROP_BOX_VOTING = 7;
 
+const ID_SELECTION_VOTER_REGISTRATION = 8;
+const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
 
-const dropDownSections = [
+const defaultDropDownSections = [
   {
     title: "Ballot Data",
     iconComponent: <BallotIcon />,
@@ -165,13 +168,26 @@ function StateInformationView() {
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
 
+  const dropDownSections = [...defaultDropDownSections];
+  if (stateType == DETAIL_STATE_TYPE_VOTER_REGISTRATION) {
+    dropDownSections.push(
+      {
+	title: "Voter Registration",
+	items: [
+	  { id: ID_SELECTION_VOTER_REGISTRATION, iconComponent: <PersonIcon />, textContent: "Registration Data" },
+	  { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
+	],
+      }
+    );
+  }
+
   useEffect(
     function () {
       (async function () {
         let high: number = 0;
         switch (activeDataState) {
           case ID_SELECTION_PROVISIONAL_BALLOT: {
-            navigate(`/state/${fipsCode!}/`)
+            navigate(`/state/${fipsCode!}/`);
             const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
@@ -182,7 +198,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.totalBallotsCast!));
           } break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS: {
-            navigate(`/state/${fipsCode!}/`)
+            navigate(`/state/${fipsCode!}/`);
             const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
@@ -193,7 +209,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.rejectTotal!));
           } break;
           case ID_SELECTION_ACTIVE_VOTERS: {
-            navigate(`/state/${fipsCode!}/`)
+            navigate(`/state/${fipsCode!}/`);
             const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
@@ -204,7 +220,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.total!));
           } break;
           case ID_SELECTION_POLLBOOK_DELETION: {
-            navigate(`/state/${fipsCode!}/`)
+            navigate(`/state/${fipsCode!}/`);
             const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
@@ -214,12 +230,20 @@ function StateInformationView() {
             setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
             high = Math.max(...data.map((x) => x.totalRemoved!));
           } break;
+	  case ID_SELECTION_VOTER_REGISTRATION: {
+            navigate(`/state/${fipsCode!}/`);
+	    // TODO(jerry): add the endpoint to
+	    // fill in the data from...
+	  } break;
           case ID_SELECTION_REJECTED_BALLOTS: {
             navigate(`/state/${fipsCode}/rejected-ballots-chart/`);
           } break;
           case ID_SELECTION_DROP_BOX_VOTING: {
             navigate(`/state/${fipsCode}/dropbox-chart/`);
           } break;
+	  case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE: {
+            navigate(`/state/${fipsCode}/voter-table/`);
+	  } break;
           default: {
             // not handled yet.
           } break;
@@ -353,6 +377,15 @@ function StateInformationView() {
 		xAxisLabel="Republican Votes (%)"
 		yAxisLabel="Drop Box Voting (%)"/>}/>
 	    <Route path="rejected-ballots-chart" element={
+	      <BubbleChart
+		data={equipmentQualityData}
+		width={bubbleChartWidth}
+		height={bubbleChartHeight}
+		title="Voting Equipment Quality"
+		xAxisLabel="Quality Level"
+		yAxisLabel="Rejected Ballots (%)"
+		useRegression/>}/>
+	    <Route path="voter-table" element={
 	      <BubbleChart
 		data={equipmentQualityData}
 		width={bubbleChartWidth}
