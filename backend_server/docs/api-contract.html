@@ -141,30 +141,31 @@ id="toc-voterregistrationdatamodel"><code>VoterRegistrationDataModel</code></a><
 <ul>
 <li><a href="#eavs-data-1" id="toc-eavs-data-1">EAVS Data</a>
 <ul>
-<li><a href="#get-statefipscodeprovisional-ballots"
-id="toc-get-statefipscodeprovisional-ballots"><strong>GET</strong>
-<code>/state/{fipsCode}/provisional-ballots</code></a></li>
-<li><a href="#get-statefipscodecountyfipscodeprovisional-ballots"
-id="toc-get-statefipscodecountyfipscodeprovisional-ballots"><strong>GET</strong>
-<code>/state/{fipsCode}/{countyFipsCode}/provisional-ballots</code></a></li>
-<li><a href="#get-statefipscodevoter-registration-count"
-id="toc-get-statefipscodevoter-registration-count"><strong>GET</strong>
-<code>/state/{fipsCode}/voter-registration-count</code></a></li>
-<li><a href="#get-statefipscodecountyfipscodevoter-registration-count"
-id="toc-get-statefipscodecountyfipscodevoter-registration-count"><strong>GET</strong>
-<code>/state/{fipsCode}/{countyFipsCode}/voter-registration-count</code></a></li>
-<li><a href="#get-statefipscodepollbook-deletions"
-id="toc-get-statefipscodepollbook-deletions"><strong>GET</strong>
-<code>/state/{fipsCode}/pollbook-deletions</code></a></li>
-<li><a href="#get-statefipscodecountyfipscodepollbook-deletions"
-id="toc-get-statefipscodecountyfipscodepollbook-deletions"><strong>GET</strong>
-<code>/state/{fipsCode}/{countyFipsCode}/pollbook-deletions</code></a></li>
-<li><a href="#get-statefipscodemail-ballot-rejections"
-id="toc-get-statefipscodemail-ballot-rejections"><strong>GET</strong>
-<code>/state/{fipsCode}/mail-ballot-rejections</code></a></li>
-<li><a href="#get-statefipscodecountyfipscodemail-ballot-rejections"
-id="toc-get-statefipscodecountyfipscodemail-ballot-rejections"><strong>GET</strong>
-<code>/state/{fipsCode}/{countyFipsCode}/mail-ballot-rejections</code></a></li>
+<li><a href="#get-statefipscodeprovisional-ballotsyearaggregate"
+id="toc-get-statefipscodeprovisional-ballotsyearaggregate"><strong>GET</strong>
+<code>/state/{fipsCode}/provisional-ballots?year&amp;aggregate</code></a></li>
+<li><a href="#get-statefipscodecountyfipscodeprovisional-ballotsyear"
+id="toc-get-statefipscodecountyfipscodeprovisional-ballotsyear"><strong>GET</strong>
+<code>/state/{fipsCode}/{countyFipsCode}/provisional-ballots?year</code></a></li>
+<li><a href="#get-statefipscodevoter-registration-countyearaggregate"
+id="toc-get-statefipscodevoter-registration-countyearaggregate"><strong>GET</strong>
+<code>/state/{fipsCode}/voter-registration-count?year&amp;aggregate</code></a></li>
+<li><a
+href="#get-statefipscodecountyfipscodevoter-registration-countyear"
+id="toc-get-statefipscodecountyfipscodevoter-registration-countyear"><strong>GET</strong>
+<code>/state/{fipsCode}/{countyFipsCode}/voter-registration-count?year</code></a></li>
+<li><a href="#get-statefipscodepollbook-deletionsyearaggregate"
+id="toc-get-statefipscodepollbook-deletionsyearaggregate"><strong>GET</strong>
+<code>/state/{fipsCode}/pollbook-deletions?year&amp;aggregate</code></a></li>
+<li><a href="#get-statefipscodecountyfipscodepollbook-deletionsyear"
+id="toc-get-statefipscodecountyfipscodepollbook-deletionsyear"><strong>GET</strong>
+<code>/state/{fipsCode}/{countyFipsCode}/pollbook-deletions?year</code></a></li>
+<li><a href="#get-statefipscodemail-ballot-rejectionsyearaggregate"
+id="toc-get-statefipscodemail-ballot-rejectionsyearaggregate"><strong>GET</strong>
+<code>/state/{fipsCode}/mail-ballot-rejections?year&amp;aggregate</code></a></li>
+<li><a href="#get-statefipscodecountyfipscodemail-ballot-rejectionsyear"
+id="toc-get-statefipscodecountyfipscodemail-ballot-rejectionsyear"><strong>GET</strong>
+<code>/state/{fipsCode}/{countyFipsCode}/mail-ballot-rejections?year</code></a></li>
 <li><a href="#get-statefipscodeyear-summary"
 id="toc-get-statefipscodeyear-summary"><strong>GET</strong>
 <code>/state/{fipsCode}/year-summary</code></a></li>
@@ -200,9 +201,9 @@ id="toc-get-votingequipmentmanufacturermodel"><strong>GET</strong>
 <li><a href="#detailed-voter-registration-1"
 id="toc-detailed-voter-registration-1">Detailed Voter Registration</a>
 <ul>
-<li><a href="#get-voter-registration"
-id="toc-get-voter-registration"><strong>GET</strong>
-<code>/voter-registration/</code></a></li>
+<li><a href="#get-voter-registrationstatefipscountyfips"
+id="toc-get-voter-registrationstatefipscountyfips"><strong>GET</strong>
+<code>/voter-registration/?stateFips&amp;countyFips</code></a></li>
 </ul></li>
 </ul></li>
 </ul></li>
@@ -232,122 +233,552 @@ the backend will return.</p>
 define ourselves.</p>
 <h3 id="eavs-data">EAVS Data</h3>
 <hr />
+<p>These are the data structures relating to EAVS Data for 2016 -&gt;
+2024, fitting under the format of the 2024 format.</p>
+<p>For earlier years, we have done our best interpretation of remapping
+the older EAVS data columns to the most recent format, so that all of
+the years have a consistent format that is easier to compare.</p>
 <h4 id="ballotstatisticsmodel"><code>BallotStatisticsModel</code></h4>
+<hr />
+<p>This data structure holds columns <code>C8a</code> and
+<code>C3a</code>, which is used for counting total drop box ballots.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BallotStatisticsModel {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                          <span class="co">//                            2 . 3 . 5</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">fullRegionId</span><span class="op">:</span> string<span class="op">;</span> <span class="co">// A full padded-out fipsCode ST-COUNTY-RESERVED</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">regionName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">dropboxBallots</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">totalBallotsCast</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong> N/A</p>
 <h4
 id="mailballotrejectionstatisticsmodel"><code>MailBallotRejectionStatisticsModel</code></h4>
+<hr />
+<p>This data structure holds the columns from <code>C9a</code> to
+<code>C9q</code>, which is used for counting mail ballot rejection
+reasons.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>MailBallotRejectionStatisticsModel {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                          <span class="co">//                            2 . 3 . 5</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">fullRegionId</span><span class="op">:</span> string<span class="op">;</span> <span class="co">// A full padded-out fipsCode ST-COUNTY-RESERVED</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">countyName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectTotal</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectLate</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectNoSignature</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectNoWitnessSignature</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectSignatureMismatch</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectUnofficialEnv</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectBallotMissing</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectNoSecrecyEnvironment</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectMultipleInEnvironment</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectUnsealedEnvironment</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectNoPostMark</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectNoAddress</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectVoterDeceased</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectDuplicateVote</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectMissingDocumentation</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectNotEligible</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectNoApplication</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rejectOther</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-statefipscodemail-ballot-rejections">GET
+/state/{fipsCode}/mail-ballot-rejections</a></li>
+<li><a href="#get-statefipscodecountyfipscodemail-ballot-rejections">GET
+/state/{fipsCode}/{countyFipsCode}/mail-ballot-rejections</a></li>
+</ul>
 <h4
 id="pollbookdeletionstatisticsmodel"><code>PollbookDeletionStatisticsModel</code></h4>
+<hr />
+<p>This data structure holds the columns from <code>A12a</code> to
+<code>A12h</code>, which is used for counting poll book deletion
+reasons.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>PollbookDeletionStatisticsModel {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                          <span class="co">//                            2 . 3 . 5</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">fullRegionId</span><span class="op">:</span> string<span class="op">;</span> <span class="co">// A full padded-out fipsCode ST-COUNTY-RESERVED</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">countyName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">totalRemoved</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">removedReasonMoved</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">removedReasonDeceased</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">removedReasonFelony</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">removedReasonFailedToConfirm</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">removedReasonIncompetent</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">removedReasonRequested</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">removedReasonDuplicate</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">removedOther</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-statefipscodepollbook-deletions">GET
+/state/{fipsCode}/pollbook-deletions</a></li>
+<li><a href="#get-statefipscodecountyfipscodepollbook-deletions">GET
+/state/{fipsCode}/{countyFipsCode}/pollbook-deletions</a></li>
+</ul>
 <h4
 id="provisionalballotstatisticsmodel"><code>ProvisionalBallotStatisticsModel</code></h4>
+<hr />
+<p>This data structure holds the columns from <code>E1a</code> to
+<code>E2i</code>, which is used for provisional ballot qualification
+reasons.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ProvisionalBallotStatisticsModel {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                          <span class="co">//                            2 . 3 . 5</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">fullRegionId</span><span class="op">:</span> string<span class="op">;</span> <span class="co">// A full padded-out fipsCode ST-COUNTY-RESERVED</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">countyName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">totalBallotsCast</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonNotOnList</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonNoIdAvailable</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonChallengedByOfficial</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonChallengedByOther</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonWrongPrecinct</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonNotUpdatedAddress</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonDidNotSurrender</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonExtendedVotingHours</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonSameDayRegistration</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotReasonOther</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-statefipscodeprovisional-ballots">GET
+/state/{fipsCode}/provisional-ballots</a></li>
+<li><a href="#get-statefipscodecountyfipscodeprovisional-ballots">GET
+/state/{fipsCode}/{countyFipsCode}/provisional-ballots</a></li>
+</ul>
 <h4
 id="voterregistrationstatisticsmodel"><code>VoterRegistrationStatisticsModel</code></h4>
+<hr />
+<p>This data structure holds the columns from <code>A1a</code> to
+<code>A1c</code>, which is used for counting broad voter registration
+statistics.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>VoterRegistrationStatisticsModel {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                          <span class="co">//                            2 . 3 . 5</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">fullRegionId</span><span class="op">:</span> string<span class="op">;</span> <span class="co">// A full padded-out fipsCode ST-COUNTY-RESERVED</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">countyName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">total</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">active</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">inactive</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-statefipscodevoter-registration-count">GET
+/state/{fipsCode}/voter-registration-count</a></li>
+<li><a
+href="#get-statefipscodecountyfipscodevoter-registration-count">GET
+/state/{fipsCode}/{countyFipsCode}/voter-registration-count</a></li>
+</ul>
 <h4
 id="viewstateyearsummarymodel"><code>ViewStateYearSummaryModel</code></h4>
+<hr />
+<p>This data structure holds some summary data and calculated
+percentages for primarily voter turnout details for a given year of a
+state.</p>
+<p>Intended to fulfill usecase GUI-21.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ViewStateYearSummaryModel {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">stateFipsCode</span><span class="op">:</span> int<span class="op">;</span> <span class="co">// This is unpadded.</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">stateCode</span><span class="op">:</span> string<span class="op">;</span> <span class="co">// Postal code</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">stateName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">forYear</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">activeRegistered</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">inactiveRegistered</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">totalRegistered</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">totalBallotsCast</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">earlyVotingTotal</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ballotsByMail</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">totalProvisionalBallotsCast</span><span class="op">:</span> int<span class="op">;</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">activeVoterRate</span><span class="op">:</span> double<span class="op">;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">inactiveVoterRate</span><span class="op">:</span> double<span class="op">;</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">turnOutRate</span><span class="op">:</span> double<span class="op">;</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">earlyVotingShareRate</span><span class="op">:</span> double<span class="op">;</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">mailinBallotVotingShareRate</span><span class="op">:</span> double<span class="op">;</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-statefipscodeyear-summary">GET
+/state/{fipsCode}/year-summary</a></li>
+<li><a href="#get-statefipscodeyear-summaryyear">GET
+/state/{fipsCode}/year-summary/{year}</a></li>
+</ul>
 <h3 id="geometry">Geometry</h3>
 <hr />
 <p>All the data structures here relate to <em>EAVS</em> GeoUnit boundary
 data. Primarily centroids and the boundary polygons.</p>
 <h4 id="geounitcentroidmodel"><code>GeoUnitCentroidModel</code></h4>
+<hr />
 <p>This is the data structure used to define the center of an
 <em>EAVS</em> GeoUnit, which is typically a county.</p>
 <p>It is populated through as part of the preprocessing steps.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>GeoUnitCentroidModel {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">fullRegionId</span><span class="op">:</span> string<span class="op">;</span> <span class="co">/// fully 10 digit padded fips code</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">countyName</span><span class="op">:</span>   string<span class="op">;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">centerX</span><span class="op">:</span>      float<span class="op">;</span>  <span class="co">/// centerX and centerY are longitude and latitude.</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">centerY</span><span class="op">:</span>      float<span class="op">;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>GeoUnitCentroidModel {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">fullRegionId</span><span class="op">:</span> string<span class="op">;</span> <span class="co">/// fully 10 digit padded fips code</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">countyName</span><span class="op">:</span>   string<span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">centerX</span><span class="op">:</span>      float<span class="op">;</span>  <span class="co">/// centerX and centerY are longitude and latitude.</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">centerY</span><span class="op">:</span>      float<span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-statefipscodecentroids">GET
+/state/{fipsCode}/centroids</a></li>
+</ul>
 <h4 id="geojson"><code>GeoJSON</code></h4>
+<hr />
 <p>We do not define this structure here, so please refer to the official
 <a href="https://geojson.org/">GeoJSON Specification.</a></p>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-statefipscodegeometry">GET
+/state/{fipsCode}/geometry</a></li>
+</ul>
 <h3 id="voter-equipment">Voter Equipment</h3>
 <hr />
 <p>All the data structures here relate to voting equipment usecases.</p>
 <h4 id="voterequipmentmodel"><code>VoterEquipmentModel</code></h4>
+<hr />
 <p>This is the data structure used to define a voting equipment machine
 by make, type, and manufacturer.</p>
 <p>It is based on the class-wide shared data spreadsheet, and is synced
 from it through a Python script.</p>
 <p>This structure is currently read from a CSV file, instead of being
 retrieved from a database.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>VoterEquipmentModel {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">manufacturer</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">equipmentType</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">modelName</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// </span><span class="al">NOTE</span><span class="co">(jerry):</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// These are intentionally optional. We distinguish the state of</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// not knowing the value vs. a falsy value.</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">discontinued</span><span class="op">:</span> boolean<span class="op">?;</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">firstManufactured</span><span class="op">:</span> int<span class="op">?;</span> <span class="co">// Year</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">lastManufactured</span><span class="op">:</span> int<span class="op">?;</span> <span class="co">// Year</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">operatingSystem</span><span class="op">:</span> string<span class="op">?;</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">vvpat</span><span class="op">:</span> bool<span class="op">?;</span> <span class="co">// Voter Verified Paper Audit Trail</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                  <span class="co">// whether the machine produces a paper receipt</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                  <span class="co">// of the users&#39; digital ballot.</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                  <span class="co">//</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                  <span class="co">// Can be used for recounting.</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">certificationLevel</span><span class="op">:</span> string<span class="op">?;</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">securityRiskDescription</span><span class="op">:</span> string<span class="op">?;</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>VoterEquipmentModel {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">manufacturer</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">equipmentType</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">modelName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// </span><span class="al">NOTE</span><span class="co">(jerry):</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// These are intentionally optional. We distinguish the state of</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// not knowing the value vs. a falsy value.</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">discontinued</span><span class="op">:</span> boolean<span class="op">?;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">firstManufactured</span><span class="op">:</span> int<span class="op">?;</span> <span class="co">// Year</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">lastManufactured</span><span class="op">:</span> int<span class="op">?;</span> <span class="co">// Year</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">operatingSystem</span><span class="op">:</span> string<span class="op">?;</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">vvpat</span><span class="op">:</span> bool<span class="op">?;</span> <span class="co">// Voter Verified Paper Audit Trail</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>                  <span class="co">// whether the machine produces a paper receipt</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>                  <span class="co">// of the users&#39; digital ballot.</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>                  <span class="co">//</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>                  <span class="co">// Can be used for recounting.</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">certificationLevel</span><span class="op">:</span> string<span class="op">?;</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">securityRiskDescription</span><span class="op">:</span> string<span class="op">?;</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-votingequipment">GET /votingequipment/</a></li>
+<li><a href="#get-votingequipmentby-manufacturermanufacturer">GET
+/votingequipment/by-manufacturer/{manufacturer}</a></li>
+<li><a href="#get-votingequipmentby-typetype">GET
+/votingequipment/by-type/{type}</a></li>
+<li><a href="#get-votingequipmentmanufacturermodel">GET
+/votingequipment/{manufacturer}/{model}</a></li>
+</ul>
 <h3 id="detailed-voter-registration">Detailed Voter Registration</h3>
 <hr />
 <p>All the data structures defined here pertain to <em>Detailed Voter
 Registration</em> usecases.</p>
 <h4
 id="voterregistrationdatamodel"><code>VoterRegistrationDataModel</code></h4>
+<hr />
 <p>This is the data structure used to define a registered voter’s
 information.</p>
 <p>It contains enough to identify the person, and be used as part of a
 <em>Display Registered Voters</em> functionality.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>VoterRegistrationDataModel {</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">regionId</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">firstName</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">middleName</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">lastName</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">partyAffiliation</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">status</span><span class="op">:</span> string<span class="op">;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>VoterRegistrationDataModel {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">regionId</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">firstName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">middleName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">lastName</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">partyAffiliation</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">status</span><span class="op">:</span> string<span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Related Endpoints</strong></p>
+<ul>
+<li><a href="#get-voter-registration">GET /voter-registration/</a></li>
+</ul>
 <h2 id="endpoints">Endpoints</h2>
 <hr />
 <p>These are the endpoints with their appropriate <code>client.ts</code>
 function name for invocation.</p>
 <h3 id="eavs-data-1">EAVS Data</h3>
 <hr />
-<h4 id="get-statefipscodeprovisional-ballots"><strong>GET</strong>
-<code>/state/{fipsCode}/provisional-ballots</code></h4>
 <h4
-id="get-statefipscodecountyfipscodeprovisional-ballots"><strong>GET</strong>
-<code>/state/{fipsCode}/{countyFipsCode}/provisional-ballots</code></h4>
-<h4 id="get-statefipscodevoter-registration-count"><strong>GET</strong>
-<code>/state/{fipsCode}/voter-registration-count</code></h4>
+id="get-statefipscodeprovisional-ballotsyearaggregate"><strong>GET</strong>
+<code>/state/{fipsCode}/provisional-ballots?year&amp;aggregate</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint returns the provisional ballot statistics for a
+specific state and all of its counties, optionally allowing a request
+for a specific year.</p>
+<p>The corresponding client library function is:
+<code>getProvisionalBallots</code></p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code>
+<code>{year}</code> - This is a <strong>query parameter</strong> which
+is an integer describing the year of query. The <em>default value</em>
+is <code>2024</code>. <code>{aggregate}</code> - This is a <strong>query
+parameter</strong> which is a boolean describing whether to aggregate
+the columns as a sum or not. The <em>default value</em> is
+<code>false</code>.</p>
+<p><strong>Returns</strong>:</p>
+<p>A list of <a
+href="#provisionalballotstatisticsmodel">ProvisionalBallotStatisticsModel</a>.</p>
+<p>If <code>aggregate</code> is specified as true, then it will return a
+list containing a <strong>singular</strong> element representing the
+aggregate sum of all the data columns for that state.</p>
+<hr />
 <h4
-id="get-statefipscodecountyfipscodevoter-registration-count"><strong>GET</strong>
-<code>/state/{fipsCode}/{countyFipsCode}/voter-registration-count</code></h4>
-<h4 id="get-statefipscodepollbook-deletions"><strong>GET</strong>
-<code>/state/{fipsCode}/pollbook-deletions</code></h4>
+id="get-statefipscodecountyfipscodeprovisional-ballotsyear"><strong>GET</strong>
+<code>/state/{fipsCode}/{countyFipsCode}/provisional-ballots?year</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint returns the provisional ballot statistics for a
+specific state and county, optionally allowing a request for a specific
+year.</p>
+<p>The corresponding client library function is:
+<code>getProvisionalBallotsByCounty</code>.</p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code>
+<code>{year}</code> - This is a <strong>query parameter</strong> which
+is an integer describing the year of query. The <em>default value</em>
+is <code>2024</code>.</p>
+<p><strong>Returns</strong>:</p>
+<p>A <a
+href="#provisionalballotstatisticsmodel">ProvisionalBallotStatisticsModel</a>.</p>
+<hr />
 <h4
-id="get-statefipscodecountyfipscodepollbook-deletions"><strong>GET</strong>
-<code>/state/{fipsCode}/{countyFipsCode}/pollbook-deletions</code></h4>
-<h4 id="get-statefipscodemail-ballot-rejections"><strong>GET</strong>
-<code>/state/{fipsCode}/mail-ballot-rejections</code></h4>
+id="get-statefipscodevoter-registration-countyearaggregate"><strong>GET</strong>
+<code>/state/{fipsCode}/voter-registration-count?year&amp;aggregate</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint returns the broad voter registration statistics for a
+specific state and all of its counties, optionally allowing a request
+for a specific year.</p>
+<p>The corresponding client library function is:
+<code>getVoterRegistrationCounts</code></p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code>
+<code>{year}</code> - This is a <strong>query parameter</strong> which
+is an integer describing the year of query. The <em>default value</em>
+is <code>2024</code>. <code>{aggregate}</code> - This is a <strong>query
+parameter</strong> which is a boolean describing whether to aggregate
+the columns as a sum or not. The <em>default value</em> is
+<code>false</code>.</p>
+<p><strong>Returns</strong>:</p>
+<p>A list of <a
+href="#voterregistrationstatisticsmodel">VoterRegistrationStatisticsModel</a>.</p>
+<p>If <code>aggregate</code> is specified as true, then it will return a
+list containing a <strong>singular</strong> element representing the
+aggregate sum of all the data columns for that state.</p>
+<hr />
 <h4
-id="get-statefipscodecountyfipscodemail-ballot-rejections"><strong>GET</strong>
-<code>/state/{fipsCode}/{countyFipsCode}/mail-ballot-rejections</code></h4>
+id="get-statefipscodecountyfipscodevoter-registration-countyear"><strong>GET</strong>
+<code>/state/{fipsCode}/{countyFipsCode}/voter-registration-count?year</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint returns the broad voter registration statistics for a
+specific state and county, optionally allowing a request for a specific
+year.</p>
+<p>The corresponding client library function is:
+<code>getVoterRegistrationCountsByCounty</code>.</p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code>
+<code>{year}</code> - This is a <strong>query parameter</strong> which
+is an integer describing the year of query. The <em>default value</em>
+is <code>2024</code>.</p>
+<p><strong>Returns</strong>:</p>
+<p>A <a
+href="#voterregistrationstatisticsmodel">VoterRegistrationStatisticsModel</a>.</p>
+<hr />
+<h4
+id="get-statefipscodepollbook-deletionsyearaggregate"><strong>GET</strong>
+<code>/state/{fipsCode}/pollbook-deletions?year&amp;aggregate</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint returns the poll book deletion statistics for a
+specific state and all of its counties, optionally allowing a request
+for a specific year.</p>
+<p>The corresponding client library function is:
+<code>getPollbookDeletions</code></p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code>
+<code>{year}</code> - This is a <strong>query parameter</strong> which
+is an integer describing the year of query. The <em>default value</em>
+is <code>2024</code>. <code>{aggregate}</code> - This is a <strong>query
+parameter</strong> which is a boolean describing whether to aggregate
+the columns as a sum or not. The <em>default value</em> is
+<code>false</code>.</p>
+<p><strong>Returns</strong>:</p>
+<p>A list of <a
+href="#pollbookdeletionstatisticsmodel">PollbookDeletionStatisticsModel</a>.</p>
+<p>If <code>aggregate</code> is specified as true, then it will return a
+list containing a <strong>singular</strong> element representing the
+aggregate sum of all the data columns for that state.</p>
+<hr />
+<h4
+id="get-statefipscodecountyfipscodepollbook-deletionsyear"><strong>GET</strong>
+<code>/state/{fipsCode}/{countyFipsCode}/pollbook-deletions?year</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint returns the pollbook deletion statistics for a specific
+state and county, optionally allowing a request for a specific year.</p>
+<p>The corresponding client library function is:
+<code>getPollbookDeletionsByCounty</code></p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code>
+<code>{year}</code> - This is a <strong>query parameter</strong> which
+is an integer describing the year of query. The <em>default value</em>
+is <code>2024</code>.</p>
+<p><strong>Returns</strong>:</p>
+<p>A <a
+href="#pollbookdeletionstatisticsmodel">PollbookDeletionStatisticsModel</a>.</p>
+<hr />
+<h4
+id="get-statefipscodemail-ballot-rejectionsyearaggregate"><strong>GET</strong>
+<code>/state/{fipsCode}/mail-ballot-rejections?year&amp;aggregate</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint returns the mail ballot rejection statistics for a
+specific state and all of its counties, optionally allowing a request
+for a specific year.</p>
+<p>The corresponding client library function is:
+<code>getMailBallotRejections</code></p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code>
+<code>{year}</code> - This is a <strong>query parameter</strong> which
+is an integer describing the year of query. The <em>default value</em>
+is <code>2024</code>. <code>{aggregate}</code> - This is a <strong>query
+parameter</strong> which is a boolean describing whether to aggregate
+the columns as a sum or not. The <em>default value</em> is
+<code>false</code>.</p>
+<p><strong>Returns</strong>:</p>
+<p>A list of <a
+href="#mailballotrejectionstatisticsmodel">MailBallotRejectionStatisticsModel</a>.</p>
+<p>If <code>aggregate</code> is specified as true, then it will return a
+list containing a <strong>singular</strong> element representing the
+aggregate sum of all the data columns for that state.</p>
+<hr />
+<h4
+id="get-statefipscodecountyfipscodemail-ballot-rejectionsyear"><strong>GET</strong>
+<code>/state/{fipsCode}/{countyFipsCode}/mail-ballot-rejections?year</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint returns the mail ballot rejection statistics for a
+specific state and county, optionally allowing a request for a specific
+year.</p>
+<p>The corresponding client library function is:
+<code>getMailBallotRejectionsByCounty</code></p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code>
+<code>{year}</code> - This is a <strong>query parameter</strong> which
+is an integer describing the year of query. The <em>default value</em>
+is <code>2024</code>.</p>
+<p><strong>Returns</strong>:</p>
+<p>A <a
+href="#mailballotrejectionstatisticsmodel">MailBallotRejectionStatisticsModel</a>.</p>
+<hr />
 <h4 id="get-statefipscodeyear-summary"><strong>GET</strong>
 <code>/state/{fipsCode}/year-summary</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint will return all the voting summary data for a specified
+state for all the recorded years based on EAVS data.</p>
+<p>The corresponding client library function is:
+<code>getViewStateYearSummaryByState</code></p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code></p>
+<p><strong>Returns</strong>:</p>
+<p>A list of <a
+href="#viewstateyearsummarymodel">ViewStateYearSummaryModel</a> for the
+following years:</p>
+<ul>
+<li>2024</li>
+<li>2022</li>
+<li>2020</li>
+<li>2018</li>
+<li>2016</li>
+</ul>
+<hr />
 <h4 id="get-statefipscodeyear-summaryyear"><strong>GET</strong>
 <code>/state/{fipsCode}/year-summary/{year}</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint will return the voting summary data for a specified
+state and year based on the availability from the EAVS data sources.</p>
+<p>The corresponding client library function is:
+<code>getViewStateYearSummaryByStateForYear</code></p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code></p>
+<p><code>{year}</code> - This is a <strong>path parameter</strong> which
+is an integer representing the year of query. The year must be one of
+the valid years of which there is EAVS data, which is one of the
+following:</p>
+<ul>
+<li>2024</li>
+<li>2022</li>
+<li>2020</li>
+<li>2018</li>
+<li>2016</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>A <a href="#viewstateyearsummarymodel">ViewStateYearSummaryModel</a>
+for a specific year.</p>
 <h3 id="geometry-1">Geometry</h3>
 <hr />
 <h4 id="get-statefipscodegeometry"><strong>GET</strong>
 <code>/state/{fipsCode}/geometry</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint will return the boundary data of a specified state,
+identified by its FIPS code as a <a href="#geojson">GeoJSON</a>
+document.</p>
+<p>The corresponding client library function is:
+<code>getStateGeometry</code>.</p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code></p>
+<p><strong>Returns</strong>:</p>
+<p>A <a href="#geojson">GeoJSON</a> document.</p>
+<hr />
 <h4 id="get-statefipscodecentroids"><strong>GET</strong>
 <code>/state/{fipsCode}/centroids</code></h4>
+<hr />
+<p><strong>Description</strong>:</p>
+<p>This endpoint will return the centroids for a specified state,
+identified by its FIPS code.</p>
+<p>The corresponding client library function is:
+<code>getCountyGeoUnitCentroids</code>.</p>
+<p><strong>NOTE</strong>: This endpoint is only well defined, if we are
+asking for the centroids of a <em>detailed state</em>, if a query is
+directed towards a non-detail state the behavior is not defined.</p>
+<p><strong>Parameters</strong>:</p>
+<p><code>{fipsCode}</code> - This is a <strong>path parameter</strong>
+which is a string representing the FIPS code of a state. The FIPS code
+must be padded to 2 digits, IE: <code>2</code> =&gt; <code>02</code></p>
+<p><strong>Returns</strong>:</p>
+<p>A list of <a
+href="#geounitcentroidmodel">GeoUnitCentroidModel</a>.</p>
 <h3 id="voter-equipment-1">Voter Equipment</h3>
-<p>These endpoints deal with voter equipment related usecases.</p>
+<p>These endpoints deal with voter equipment related usecases, and be
+used to access things such as voting equipment models / types, and
+things such as voting equipment quality.</p>
 <hr />
 <h4 id="get-votingequipment"><strong>GET</strong>
 <code>/votingequipment/</code></h4>
@@ -426,8 +857,8 @@ representing the model of the equipment.</p>
 exists, <code>null</code> if not.</p>
 <h3 id="detailed-voter-registration-1">Detailed Voter Registration</h3>
 <hr />
-<h4 id="get-voter-registration"><strong>GET</strong>
-<code>/voter-registration/</code></h4>
+<h4 id="get-voter-registrationstatefipscountyfips"><strong>GET</strong>
+<code>/voter-registration/?stateFips&amp;countyFips</code></h4>
 <hr />
 <p><strong>Description</strong></p>
 <p>This will return all the detailed voter registration we have,
