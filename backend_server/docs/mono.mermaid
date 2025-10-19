@@ -1,9 +1,11 @@
+%% mmdc --width 2560 --height 1080 --theme neutral -o class-diagram.svg -i mono.mermaid
 ---
   config:
     class:
       hideEmptyMembersBox: true
 ---
 classDiagram
+direction LR
 namespace com.theknicks.voteranalysis_backend.models {
     class ProvisionalBallotStatisticsModel {
         <<SqlQueryable(collection="app.eavs_data")>>
@@ -253,13 +255,13 @@ namespace com.theknicks.voteranalysis_backend.dao {
         -populateFipsCodeToCountyNameMapTable()
     }
 }
-%% namespace com.theknicks.voteranalysis_backend.helpers {
-%%     class AutoSqlQueryable~T~ {
-%%         +Mapper() RowMapper~T~
-%%         +QueryView() string
-%%         +Query(asSumAggregate: boolean) string
-%%     }
-%% }
+namespace com.theknicks.voteranalysis_backend.helpers {
+    class AutoSqlQueryable~T~ {
+        +Mapper() RowMapper~T~
+        +QueryView() string
+        +Query(asSumAggregate: boolean) string
+    }
+}
 
 %% relationships
 VoterRegistrationDAO <|-- IVoterRegistrationDAO : Implements
