@@ -8,10 +8,12 @@ import getVotingEquipmentMutator from '../helpers/backendConnectorAxiosInstance'
 import getAllVotingEquipmentByTypeMutator from '../helpers/backendConnectorAxiosInstance';
 import getAllVotingEquipmentByManufacturerMutator from '../helpers/backendConnectorAxiosInstance';
 import getAllVotingEquipmentMutator from '../helpers/backendConnectorAxiosInstance';
+import getDetailedVoterRegistrationDataMutator from '../helpers/backendConnectorAxiosInstance';
 import getVoterRegistrationCountsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
 import getProvisionalBallotsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
 import getPollbookDeletionsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
 import getMailBallotRejectionsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
+import getBallotStatisticsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
 import getViewStateYearSummaryByStateMutator from '../helpers/backendConnectorAxiosInstance';
 import getViewStateYearSummaryByStateForYearMutator from '../helpers/backendConnectorAxiosInstance';
 import getVoterRegistrationCountsMutator from '../helpers/backendConnectorAxiosInstance';
@@ -20,6 +22,7 @@ import getPollbookDeletionsMutator from '../helpers/backendConnectorAxiosInstanc
 import getMailBallotRejectionsMutator from '../helpers/backendConnectorAxiosInstance';
 import getStateGeometryMutator from '../helpers/backendConnectorAxiosInstance';
 import getCountyGeoUnitCentroidsMutator from '../helpers/backendConnectorAxiosInstance';
+import getBallotStatisticsMutator from '../helpers/backendConnectorAxiosInstance';
 import getStateInformationTableMutator from '../helpers/backendConnectorAxiosInstance';
 export interface VotingEquipmentModel {
   manufacturer?: string;
@@ -33,6 +36,15 @@ export interface VotingEquipmentModel {
   vvpat?: boolean;
   certificationLevel?: string;
   securityRiskDescription?: string;
+}
+
+export interface VoterRegistrationDataModel {
+  regionId?: string;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  partyAffiliation?: string;
+  status?: string;
 }
 
 export interface VoterRegistrationStatisticsModel {
@@ -94,6 +106,13 @@ export interface MailBallotRejectionStatisticsModel {
   rejectNotEligible?: number;
   rejectNoApplication?: number;
   rejectOther?: number;
+}
+
+export interface BallotStatisticsModel {
+  fullRegionId?: string;
+  regionName?: string;
+  dropboxBallots?: number;
+  totalBallotsCast?: number;
 }
 
 export interface ViewStateYearSummaryModel {
@@ -167,23 +186,56 @@ export interface StateInformationModel {
   affiliation?: StateInformationModelAffiliation;
 }
 
+export type GetDetailedVoterRegistrationDataParams = {
+state?: string;
+county?: string;
+};
+
+export type GetVoterRegistrationCountsByCountyParams = {
+year?: number;
+};
+
+export type GetProvisionalBallotsByCountyParams = {
+year?: number;
+};
+
+export type GetPollbookDeletionsByCountyParams = {
+year?: number;
+};
+
+export type GetMailBallotRejectionsByCountyParams = {
+year?: number;
+};
+
+export type GetBallotStatisticsByCountyParams = {
+year?: number;
+};
+
 export type GetVoterRegistrationCountsParams = {
+year?: number;
 aggregate?: boolean;
 };
 
 export type GetProvisionalBallotsParams = {
+year?: number;
 aggregate?: boolean;
 };
 
 export type GetPollbookDeletionsParams = {
+year?: number;
 aggregate?: boolean;
 };
 
 export type GetMailBallotRejectionsParams = {
+year?: number;
 aggregate?: boolean;
 };
 
 export type GetCountyGeoUnitCentroids200 = {[key: string]: GeoUnitCentroidModel};
+
+export type GetBallotStatisticsParams = {
+year?: number;
+};
 
 export type GetStateInformationTable200 = {[key: string]: StateInformationModel};
 
@@ -691,12 +743,24 @@ export const getAllVotingEquipment = (
       options);
     }
   
+export const getDetailedVoterRegistrationData = (
+    params?: GetDetailedVoterRegistrationDataParams,
+ options?: SecondParameter<typeof getDetailedVoterRegistrationDataMutator>,) => {
+      return getDetailedVoterRegistrationDataMutator<VoterRegistrationDataModel[]>(
+      {url: `/voter-registration/`, method: 'GET',
+        params
+    },
+      options);
+    }
+  
 export const getVoterRegistrationCountsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetVoterRegistrationCountsByCountyParams,
  options?: SecondParameter<typeof getVoterRegistrationCountsByCountyMutator>,) => {
       return getVoterRegistrationCountsByCountyMutator<VoterRegistrationStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/voter-registration-count`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/voter-registration-count`, method: 'GET',
+        params
     },
       options);
     }
@@ -704,9 +768,11 @@ export const getVoterRegistrationCountsByCounty = (
 export const getProvisionalBallotsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetProvisionalBallotsByCountyParams,
  options?: SecondParameter<typeof getProvisionalBallotsByCountyMutator>,) => {
       return getProvisionalBallotsByCountyMutator<ProvisionalBallotStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/provisional-ballots`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/provisional-ballots`, method: 'GET',
+        params
     },
       options);
     }
@@ -714,9 +780,11 @@ export const getProvisionalBallotsByCounty = (
 export const getPollbookDeletionsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetPollbookDeletionsByCountyParams,
  options?: SecondParameter<typeof getPollbookDeletionsByCountyMutator>,) => {
       return getPollbookDeletionsByCountyMutator<PollbookDeletionStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/pollbook-deletions`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/pollbook-deletions`, method: 'GET',
+        params
     },
       options);
     }
@@ -724,9 +792,23 @@ export const getPollbookDeletionsByCounty = (
 export const getMailBallotRejectionsByCounty = (
     fipsCode: string,
     countyFipsCode: string,
+    params?: GetMailBallotRejectionsByCountyParams,
  options?: SecondParameter<typeof getMailBallotRejectionsByCountyMutator>,) => {
       return getMailBallotRejectionsByCountyMutator<MailBallotRejectionStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/mail-ballot-rejections`, method: 'GET'
+      {url: `/state/${fipsCode}/${countyFipsCode}/mail-ballot-rejections`, method: 'GET',
+        params
+    },
+      options);
+    }
+  
+export const getBallotStatisticsByCounty = (
+    fipsCode: string,
+    countyFipsCode: string,
+    params?: GetBallotStatisticsByCountyParams,
+ options?: SecondParameter<typeof getBallotStatisticsByCountyMutator>,) => {
+      return getBallotStatisticsByCountyMutator<BallotStatisticsModel>(
+      {url: `/state/${fipsCode}/${countyFipsCode}/ballot-statistics`, method: 'GET',
+        params
     },
       options);
     }
@@ -812,6 +894,17 @@ export const getCountyGeoUnitCentroids = (
       options);
     }
   
+export const getBallotStatistics = (
+    fipsCode: string,
+    params?: GetBallotStatisticsParams,
+ options?: SecondParameter<typeof getBallotStatisticsMutator>,) => {
+      return getBallotStatisticsMutator<BallotStatisticsModel[]>(
+      {url: `/state/${fipsCode}/ballot-statistics`, method: 'GET',
+        params
+    },
+      options);
+    }
+  
 export const getStateInformationTable = (
     
  options?: SecondParameter<typeof getStateInformationTableMutator>,) => {
@@ -825,10 +918,12 @@ export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof get
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>
 export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>
 export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>
+export type GetDetailedVoterRegistrationDataResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationData>>>
 export type GetVoterRegistrationCountsByCountyResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCountsByCounty>>>
 export type GetProvisionalBallotsByCountyResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallotsByCounty>>>
 export type GetPollbookDeletionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletionsByCounty>>>
 export type GetMailBallotRejectionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejectionsByCounty>>>
+export type GetBallotStatisticsByCountyResult = NonNullable<Awaited<ReturnType<typeof getBallotStatisticsByCounty>>>
 export type GetViewStateYearSummaryByStateResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByState>>>
 export type GetViewStateYearSummaryByStateForYearResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByStateForYear>>>
 export type GetVoterRegistrationCountsResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCounts>>>
@@ -837,4 +932,5 @@ export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof g
 export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>
 export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>
 export type GetCountyGeoUnitCentroidsResult = NonNullable<Awaited<ReturnType<typeof getCountyGeoUnitCentroids>>>
+export type GetBallotStatisticsResult = NonNullable<Awaited<ReturnType<typeof getBallotStatistics>>>
 export type GetStateInformationTableResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTable>>>

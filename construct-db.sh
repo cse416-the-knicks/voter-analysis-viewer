@@ -44,12 +44,23 @@ echo "Populating data..."
 echo "============================="
 
 cd /project-root/data_common/scripts/
+
+# Deactivate conda only if it exists
+if command -v conda &> /dev/null; then
+    conda deactivate || true
+fi
+
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt 
 pip install openpyxl # ???
 
-python3 ./load_prelim_states_data.py
-python3 ./load_2024_eavs_data.py
+python3 load_prelim_states_data.py
+python3 load_boundary_data.py
+python3 load_2024_eavs_data.py
+python3 load_2022_eavs_data.py
+python3 load_2020_eavs_data.py
+python3 load_2018_eavs_data.py
+python3 load_2016_eavs_data.py
 
 touch  /var/lib/postgresql/.lockfile

@@ -76,12 +76,12 @@ function VoterComparisonOptInOptOutTableView() {
       title={"Opt-in / Opt-out Voting Data Comparison"}
       width={maxWidth}
       maxWidth={maxWidth}
-      left={"35em"}
-      top={"0"}
       pageSize={13}
       rows={rows}
       columns={cols}
       onXout={() => navigate("/")}
+      left={`calc(50vw - ${maxWidth/2}px)`}
+      top={'0'}
     />
   );
 }

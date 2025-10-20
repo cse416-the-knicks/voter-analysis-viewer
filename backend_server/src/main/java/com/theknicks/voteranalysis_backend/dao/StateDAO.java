@@ -67,60 +67,67 @@ public class StateDAO implements IStateDAO {
         return Optional.empty();
     }
 
-    private <T> List<T> getStateDataRows(Class<T> type, String fipsCode, boolean aggregated) {
+    private <T> List<T> getStateDataRows(Class<T> type, String fipsCode, int year, boolean aggregated) {
         var queryable = AutoSqlQueryable.findQueryableNested(type);
         assert queryable != null;
         return _jdbcTemplate.query(
-                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ?",
+                queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ? and year = ?",
                 queryable.Mapper(new Object[] {_fipsCodeToCountyNameMap}, aggregated),
-                fipsCode
+                fipsCode, year
         );
     }
 
-    public <T> Optional<T> getStateDataRowByCounty(Class<T> type, String fipsCode, String countyCode) {
+    public <T> Optional<T> getStateDataRowByCounty(Class<T> type, String fipsCode, String countyCode, int year) {
         var queryable = AutoSqlQueryable.findQueryableNested(type);
         var fullPaddedFipsCode = fipsCode + countyCode + "00000";
         assert queryable != null;
         var queryResult = (List<T>)_jdbcTemplate.query(
-                queryable.Query(false) + " where region_id = ?",
+                queryable.Query(false) + " where region_id = ? and year = ?",
                 queryable.Mapper(new Object[] { _fipsCodeToCountyNameMap }, false),
-                fullPaddedFipsCode
+                fullPaddedFipsCode, year
         );
 
         return ListHelpers.getFirst(queryResult);
     }
 
-    public List<ProvisionalBallotStatisticsModel> getProvisionBallotRows(String fipsCode, boolean aggregated) {
-        return getStateDataRows(ProvisionalBallotStatisticsModel.class, fipsCode, aggregated);
+    public List<ProvisionalBallotStatisticsModel> getProvisionBallotRows(String fipsCode, int year, boolean aggregated) {
+        return getStateDataRows(ProvisionalBallotStatisticsModel.class, fipsCode, year, aggregated);
     }
 
-    public Optional<ProvisionalBallotStatisticsModel> getProvisionBallotRowByCounty(
-            String fipsCode, String countyCode) {
-        return getStateDataRowByCounty(ProvisionalBallotStatisticsModel.class, fipsCode, countyCode);
+    public Optional<ProvisionalBallotStatisticsModel> getProvisionBallotRowByCounty(String fipsCode, String countyCode, int year) {
+        return getStateDataRowByCounty(ProvisionalBallotStatisticsModel.class, fipsCode, countyCode, year);
     }
 
-    public List<VoterRegistrationStatisticsModel> getVoterRegistrationRows(String fipsCode, boolean aggregated) {
-        return getStateDataRows(VoterRegistrationStatisticsModel.class, fipsCode, aggregated);
+    public List<VoterRegistrationStatisticsModel> getVoterRegistrationRows(String fipsCode, int year, boolean aggregated) {
+        return getStateDataRows(VoterRegistrationStatisticsModel.class, fipsCode, year, aggregated);
     }
 
-    public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationRowByCounty(String fipsCode, String countyCode) {
-        return getStateDataRowByCounty(VoterRegistrationStatisticsModel.class, fipsCode, countyCode);
+    public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationRowByCounty(String fipsCode, String countyCode, int year) {
+        return getStateDataRowByCounty(VoterRegistrationStatisticsModel.class, fipsCode, countyCode, year);
     }
 
-    public List<PollbookDeletionStatisticsModel> getPollbookDeletionRows(String fipsCode, boolean aggregated) {
-        return getStateDataRows(PollbookDeletionStatisticsModel.class, fipsCode, aggregated);
+    public List<PollbookDeletionStatisticsModel> getPollbookDeletionRows(String fipsCode, int year, boolean aggregated) {
+        return getStateDataRows(PollbookDeletionStatisticsModel.class, fipsCode, year, aggregated);
     }
 
-    public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionRowByCounty(String fipsCode, String countyCode) {
-        return getStateDataRowByCounty(PollbookDeletionStatisticsModel.class, fipsCode, countyCode);
+    public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionRowByCounty(String fipsCode, String countyCode, int year) {
+        return getStateDataRowByCounty(PollbookDeletionStatisticsModel.class, fipsCode, countyCode, year);
     }
 
-    public List<MailBallotRejectionStatisticsModel> getMailBallotRejectionRows(String fipsCode, boolean aggregated) {
-        return getStateDataRows(MailBallotRejectionStatisticsModel.class, fipsCode, aggregated);
+    public List<MailBallotRejectionStatisticsModel> getMailBallotRejectionRows(String fipsCode, int year, boolean aggregated) {
+        return getStateDataRows(MailBallotRejectionStatisticsModel.class, fipsCode, year, aggregated);
     }
 
-    public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionRowByCounty(String fipsCode, String countyCode) {
-        return getStateDataRowByCounty(MailBallotRejectionStatisticsModel.class, fipsCode, countyCode);
+    public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionRowByCounty(String fipsCode, String countyCode, int year) {
+        return getStateDataRowByCounty(MailBallotRejectionStatisticsModel.class, fipsCode, countyCode, year);
+    }
+
+    public List<BallotStatisticsModel> getBallotStatisticsRows(String fipsCode, int year) {
+        return getStateDataRows(BallotStatisticsModel.class, fipsCode, year, false);
+    }
+
+    public Optional<BallotStatisticsModel> getBallotStatisticsRowByCounty(String fipsCode, String countyCode, int year) {
+        return getStateDataRowByCounty(BallotStatisticsModel.class, fipsCode, countyCode, year);
     }
 
     public List<ViewStateYearSummaryModel> getStateYearSummaryRows(String fipsCode) {
