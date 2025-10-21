@@ -1,12 +1,16 @@
-%% mmdc --width 2560 --height 1080 --theme neutral -o class-diagram.svg -i mono.mermaid
 ---
   config:
     class:
       hideEmptyMembersBox: true
+    layout: elk
+    look: neo
+    theme: light
 ---
+%% mmdc --width 2560 --height 1080 --theme neutral -o class-diagram.svg -i mono.mermaid
+
 classDiagram
-direction LR
-namespace com.theknicks.voteranalysis_backend.models {
+direction BT
+namespace Models {
     class ProvisionalBallotStatisticsModel {
         <<SqlQueryable(collection="app.eavs_data")>>
         +fullRegionId: string
@@ -146,7 +150,7 @@ namespace com.theknicks.voteranalysis_backend.models {
     }
 }
 
-namespace com.theknicks.voteranalysis_backend.controllers {
+namespace Controllers {
     class StateController {
         <<RequestMapping("/state")>>
         +GET /$fipsCode/geometry(fipsCode: string) GeoJSON?
@@ -184,7 +188,55 @@ namespace com.theknicks.voteranalysis_backend.controllers {
         +GET /$manufacturer/$model(manufacturer: string, model: string) VotingEquipmentModel?
     }
 }
-namespace com.theknicks.voteranalysis_backend.dao {
+
+namespace Services {
+    class StateService {
+        <<Service>>
+        - dao: IStateDAO;
+        + getBoundaryGeometry(fipsCode: string) GeoJSON?;
+
+        + getProvisionalBallotDataForCounty(fipsCode: string, countyCode: string, year: int) ProvisionalBallotStatisticsModel?;
+        + getProvisionalBallotData(fipsCode: string, year: int, inAggregate: bool) ProvisionalBallotStatisticsModel[];
+
+
+        + getVoterRegistrationDataForCounty(fipsCode: string, countyCode: string, year: int) VoterRegistrationStatisticsModel?;
+        + getVoterRegistrationData(fipsCode: string, year: int, inAggregate: bool) VoterRegistrationStatisticsModel[];
+
+        
+        + getPollbookDeletionDataForCounty(fipsCode: string, countyCode: string, year: int) PollbookDeletionStatisticsModel?;
+        + getPollbookDeletionData(fipsCode: string, year: int, inAggregate: bool) PollbookDeletionStatisticsModel[];
+
+
+        + getMailBallotRejectionDataForCounty(fipsCode: string, countyCode: string, year: int) MailBallotRejectionStatisticsModel?;
+        + getMailBallotRejectionData(fipsCode: string, year: int, inAggregate: bool) MailBallotRejectionStatisticsModel[];
+
+        + getBallotStatistics(fipsCode: string, year: int) BallotStatisticsModel?;
+        + getBallotStatisticsForCounty(fipsCode: string, countyFipsCode: string, year: int) BallotStatisticsModel[];
+
+        + getViewStateYearSummaryDataByYear(fipsCode: string, year: int) ViewStateYearSummaryModel?;
+        + getViewStateYearSummaryData(fipsCode: string) ViewStateYearSummaryModel[];
+
+        + getCountyGeoUnitCentroids(fipsCode: string) Dictionary~string, GeoUnitCentroidModel~;
+        + getStateInformationTable() Dictionary~string, StateInformationModel~;
+    }
+
+    class VoterEquipmentService {
+        <<Service>>
+        -dao: IVoterEquipmentDAO;
+        +getAllVotingEquipment() VotingEquipmentModel[];
+        +getAllVotingEquipmentByManufacturer(manufacturer: string) VotingEquipmentModel[];
+        +getAllVotingEquipmentByType(type: string) VotingEquipmentModel[];
+        +getVotingEquipment(manufacturer: string, model: string) VotingEquipmentModel?;
+    }
+
+    class VoterRegistrationService {
+        <<Service>>
+        - dao: IVoterRegistrationDAO;
+        + getDetailedVoterRegistrationData(stateFips: string, countyFips: string) VoterRegistrationDataModel[]
+    }
+}
+
+namespace DataAccessObject {
     class IVoterRegistrationDAO {
         +getDetailedVoterRegistrationDataRows(stateFips: string?, countyFips: string?) VoterRegistrationDataModel[]
     }
@@ -255,7 +307,7 @@ namespace com.theknicks.voteranalysis_backend.dao {
         -populateFipsCodeToCountyNameMapTable()
     }
 }
-namespace com.theknicks.voteranalysis_backend.helpers {
+namespace Helpers {
     class AutoSqlQueryable~T~ {
         +Mapper() RowMapper~T~
         +QueryView() string
@@ -279,6 +331,10 @@ ViewStateYearSummaryModel <-- AutoSqlQueryable : Has
 StateInformationDataRowModel <-- AutoSqlQueryable : Has
 VoterRegistrationDataModel <-- AutoSqlQueryable : Has
 
-StateController <-- IStateDAO : Uses
-VoterEquipmentController <-- IVoterEquipmentDAO : Uses
-VoterRegistrationController <-- IVoterRegistrationDAO : Uses
+StateService <-- IStateDAO : Has
+VoterEquipmentService <-- IVoterEquipmentDAO : Has
+VoterRegistrationService <-- IVoterRegistrationDAO : Has
+
+StateController <-- StateService : Uses
+VoterEquipmentController <-- VoterEquipmentService : Uses
+VoterRegistrationController <-- VoterRegistrationService : Uses
