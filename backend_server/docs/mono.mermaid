@@ -1,0 +1,340 @@
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+    layout: elk
+    look: neo
+    theme: light
+---
+%% mmdc --width 2560 --height 1080 --theme neutral -o class-diagram.svg -i mono.mermaid
+
+classDiagram
+direction BT
+namespace Models {
+    class ProvisionalBallotStatisticsModel {
+        <<SqlQueryable(collection="app.eavs_data")>>
+        +fullRegionId: string
+        +countyName: string
+        +totalBallotsCast: int
+        +ballotReasonNotOnList: int
+        +ballotReasonNoIdAvailable: int
+        +ballotReasonChallengedByOfficial: int
+        +ballotReasonChallengedByOther: int
+        +ballotReasonWrongPrecinct: int
+        +ballotReasonNotUpdatedAddress: int
+        +ballotReasonDidNotSurrender: int
+        +ballotReasonExtendedVotingHours: int
+        +ballotReasonSameDayRegistration: int
+        +ballotReasonOther: int
+        +Queryable() AutoSqlQueryable~~
+    }
+    class VoterRegistrationStatisticsModel {
+        <<SqlQueryable(collection="app.eavs_data")>>
+        +fullRegionId: string
+        +countyName: string
+        +total: int
+        +active: int
+        +inactive: int
+        +Queryable() AutoSqlQueryable~~
+    }
+    class PollbookDeletionStatisticsModel {
+        <<SqlQueryable(collection="app.eavs_data")>>
+        +fullRegionId: string
+        +countyName: string
+        +totalRemoved: int
+        +removedReasonMoved: int
+        +removedReasonDeceased: int
+        +removedReasonFelony: int
+        +removedReasonFailedToConfirm: int
+        +removedReasonIncompetent: int
+        +removedReasonRequested: int
+        +removedReasonDuplicate: int
+        +removedOther: int
+        +Queryable() AutoSqlQueryable~~
+    }
+    class MailBallotRejectionStatisticsModel {
+        <<SqlQueryable(collection="app.eavs_data")>>
+        +fullRegionId: string
+        +countyName: string
+        +rejectTotal: int
+        +rejectLate: int
+        +rejectNoSignature: int
+        +rejectNoWitnessSignature: int
+        +rejectSignatureMismatch: int
+        +rejectUnofficialEnv: int
+        +rejectBallotMissing: int
+        +rejectNoSecrecyEnvironment: int
+        +rejectMultipleInEnvironment: int
+        +rejectUnsealedEnvironment: int
+        +rejectNoPostMark: int
+        +rejectNoAddress: int
+        +rejectVoterDeceased: int
+        +rejectDuplicateVote: int
+        +rejectMissingDocumentation: int
+        +rejectNotEligible: int
+        +rejectNoApplication: int
+        +rejectOther: int
+        +Queryable() AutoSqlQueryable~~
+    }
+    class BallotStatisticsModel {
+        <<SqlQueryable(view="app.v_state_year_summary")>>
+        +fullRegionId: string
+        +regionName: string
+        +dropboxBallots: int
+        +totalBallotsCast: int
+        +Queryable() AutoSqlQueryable~~
+    }
+    class ViewStateYearSummaryModel {
+        <<SqlQueryable(view="app.v_state_year_summary")>>
+        +stateFipsCode: int
+        +stateCode: string
+        +stateName: string
+        +forYear: int
+        +activeRegistered: int
+        +inactiveRegistered: int
+        +totalRegistered: int
+        +totalBallotsCast: int
+        +earlyVotingTotal: int
+        +ballotsByMail: int
+        +totalProvisionalBallotsCast: int
+        +activeVoterRate: double
+        +inactiveVoterRate: double
+        +turnOutRate: double
+        +earlyVotingShareRate: double
+        +mailinBallotVotingShareRate: double
+        +Queryable() AutoSqlQueryable~~
+    }
+    class StateInformationDataRowModel {
+        <<SqlQueryable(view="app.states")>>
+        +state_id: int
+        +name: string
+        +code: string
+        +registration_method: string
+        +felony_disenfranchisement: int
+        +population_total: int
+        +citizens_of_voting_age_population: int
+        +house_seats_rep: int
+        +house_seats_dem: int
+        +redistricting_control: string
+        +dominant_party: string
+        +Queryable() AutoSqlQueryable~~
+    }
+    class GeoUnitCentroidModel {
+        fullRegionId: string
+        countyName: string
+        centerX: float
+        centerY: float
+    }
+    class VotingEquipmentModel {
+        +manufacturer: string
+        +equipmentType: string
+        +modelName: string
+        +discontinued: boolean?
+        +firstManufactured: int?
+        +lastManufactured: int?
+        +operatingSystem: string?
+        +firmwareVersion: string?
+        +vvpat: boolean?
+        +certificationLevel: string?
+        +securityRiskDescription: string?
+    }
+    class VoterRegistrationDataModel {
+        <<SqlQueryable(view="app.voter_registration")>>
+        +regionId: string
+        +firstName: string
+        +middleName: string
+        +lastName: string
+        +partyAffiliation: string
+        +status: string
+        +Queryable() AutoSqlQueryable~~
+    }
+}
+
+namespace Controllers {
+    class StateController {
+        <<RequestMapping("/state")>>
+        +GET /$fipsCode/geometry(fipsCode: string) GeoJSON?
+        +GET /$fipsCode/centroids(fipsCode: string) Dictionary~String, GeoUnitCentroidModel~
+
+        +GET /$fipsCode/provisional-ballots(fipsCode: string, year: int, aggregate: boolean) ProvisionalBallotStatisticsModel[]
+        +GET /$fipsCode/$countyFipsCode/provisional-ballots(fipsCode: string, countyFipsCode: string, year: int, aggregate: boolean) ProvisionalBallotStatisticsModel?
+        
+        +GET /$fipsCode/voter-registration-count(fipsCode: string, year: int, aggregate: boolean) VoterRegistrationStatisticsModel[]
+        +GET /$fipsCode/$countyFipsCode/voter-registration-count(fipsCode: string, countyFipsCode: string, year: int, aggregate: boolean) VoterRegistrationStatisticsModel?
+
+        +GET /$fipsCode/pollbook-deletions(fipsCode: string, year: int, aggregate: boolean) PollbookDeletionStatisticsModel[]
+        +GET /$fipsCode/$countyFipsCode/pollbook-deletions(fipsCode: string, year: int) PollbookDeletionStatisticsModel?
+
+        +GET /$fipsCode/mail-ballot-rejections(fipsCode: string, year: int, aggregate: boolean) MailBallotRejectionStatisticsModel[]
+        +GET /$fipsCode/$countyFipsCode/mail-ballot-rejections(fipsCode: string, year: int) MailBallotRejectionStatisticsModel?
+        
+        +GET /$fipsCode/ballot-statistics(fipsCode: string, year: int, aggregate: boolean) BallotStatisticsModel[]
+        +GET /$fipsCode/$countyFipsCode/ballot-statistics(fipsCode: string, year: int) BallotStatisticsModel?
+
+        +GET /$fipsCode/year-summary(fipsCode: string) ViewStateYearSummaryModel[]
+        +GET /$fipsCode/year-summary/$year(fipsCode: string, year: int) ViewStateYearSummaryModel?
+    }
+
+    class VoterRegistrationController {
+        <<RequestMapping("/voter-registration")>>
+
+        +GET /(stateFips: string, countyFips: string) VoterRegistrationDataModel[]
+    }
+
+    class VoterEquipmentController {
+        <<RequestMapping("/votingequipment")>>
+        +GET /by-manufacturer/$manufacturer(manufacturer: string) VotingEquipmentModel[]
+        +GET /by-type/$type(type: String) VotingEquipmentModel[]
+        +GET /$manufacturer/$model(manufacturer: string, model: string) VotingEquipmentModel?
+    }
+}
+
+namespace Services {
+    class StateService {
+        <<Service>>
+        - dao: IStateDAO;
+        + getBoundaryGeometry(fipsCode: string) GeoJSON?;
+
+        + getProvisionalBallotDataForCounty(fipsCode: string, countyCode: string, year: int) ProvisionalBallotStatisticsModel?;
+        + getProvisionalBallotData(fipsCode: string, year: int, inAggregate: bool) ProvisionalBallotStatisticsModel[];
+
+
+        + getVoterRegistrationDataForCounty(fipsCode: string, countyCode: string, year: int) VoterRegistrationStatisticsModel?;
+        + getVoterRegistrationData(fipsCode: string, year: int, inAggregate: bool) VoterRegistrationStatisticsModel[];
+
+        
+        + getPollbookDeletionDataForCounty(fipsCode: string, countyCode: string, year: int) PollbookDeletionStatisticsModel?;
+        + getPollbookDeletionData(fipsCode: string, year: int, inAggregate: bool) PollbookDeletionStatisticsModel[];
+
+
+        + getMailBallotRejectionDataForCounty(fipsCode: string, countyCode: string, year: int) MailBallotRejectionStatisticsModel?;
+        + getMailBallotRejectionData(fipsCode: string, year: int, inAggregate: bool) MailBallotRejectionStatisticsModel[];
+
+        + getBallotStatistics(fipsCode: string, year: int) BallotStatisticsModel?;
+        + getBallotStatisticsForCounty(fipsCode: string, countyFipsCode: string, year: int) BallotStatisticsModel[];
+
+        + getViewStateYearSummaryDataByYear(fipsCode: string, year: int) ViewStateYearSummaryModel?;
+        + getViewStateYearSummaryData(fipsCode: string) ViewStateYearSummaryModel[];
+
+        + getCountyGeoUnitCentroids(fipsCode: string) Dictionary~string, GeoUnitCentroidModel~;
+        + getStateInformationTable() Dictionary~string, StateInformationModel~;
+    }
+
+    class VoterEquipmentService {
+        <<Service>>
+        -dao: IVoterEquipmentDAO;
+        +getAllVotingEquipment() VotingEquipmentModel[];
+        +getAllVotingEquipmentByManufacturer(manufacturer: string) VotingEquipmentModel[];
+        +getAllVotingEquipmentByType(type: string) VotingEquipmentModel[];
+        +getVotingEquipment(manufacturer: string, model: string) VotingEquipmentModel?;
+    }
+
+    class VoterRegistrationService {
+        <<Service>>
+        - dao: IVoterRegistrationDAO;
+        + getDetailedVoterRegistrationData(stateFips: string, countyFips: string) VoterRegistrationDataModel[]
+    }
+}
+
+namespace DataAccessObject {
+    class IVoterRegistrationDAO {
+        +getDetailedVoterRegistrationDataRows(stateFips: string?, countyFips: string?) VoterRegistrationDataModel[]
+    }
+
+    class VoterRegistrationDAO {
+        -logger: Logger
+        -jdbcTemplate: JdbcTemplate
+    }
+
+    class IVoterEquipmentDAO {
+        <<Interface>>
+        +getAllVotingEquipment() VotingEquipmentModel[]
+        +getVotingEquipmentByType(type: string) VotingEquipmentModel[]
+        +getVotingEquipmentByManufacturer(manufacturer: string) VotingEquipmentModel[]
+
+        +getVotingEquipmentModel(manufacturer: string, model: string) VotingEquipmentModel?
+    }
+    class VoterEquipmentLocalDiskDAO {
+        -localCsvDataPath: Path
+        -logger: Logger
+        -equipmentList: VotingEquipmentModel[]
+        -inMemoryDAO: VoterEquipmentInMemoryDAO
+
+        -populateInternalList() void
+    }
+
+    class VoterEquipmentInMemoryDAO {
+        -equipmentList: VotingEquipmentModel[]
+    }
+
+    class IStateDAO {
+        <<Interface>>
+        +getGeometryBoundary(fipsCode: string) Optional~GeoJSON~
+
+        +getProvisionBallotRows(fipsCode: string, year: int, aggregate: boolean) ProvisionalBallotStatisticsModel[]
+        +getProvisionBallotRowByCounty(fipsCode: string, countyCode: string, year: int) ProvisionalBallotStatisticsModel?
+
+        +getVoterRegistrationRows(fipsCode: String, year: int, aggregate: boolean) VoterRegistrationStatisticsModel[]
+        +getVoterRegistrationRowByCounty(fipsCode: String, year: int) VoterRegistrationStatisticsModel?
+        
+        +getPollbookDeletionRows(fipsCode: String, year: int, aggregate: boolean) PollbookDeletionStatisticsModel[]
+        +getPollbookDeletionRowByCounty(fipsCode: String, year: int) PollbookDeletionStatisticsModel?
+
+        +getMailBallotRejectionRows(fipsCode: string, year: int, aggregate: boolean) MailBallotRejectionStatisticsModel[]
+        +getMailBallotRejectionRowByCounty(fipsCode: string, year: int) MailBallotRejectionStatisticsModel?
+
+        +getBallotStatisticsRows(fipsCode: string, year: int) BallotStatisticsModel[]
+        +getBallotStatisticsRowByCounty(fipsCode: string, countyCode: string, year: int) BallotStatisticsModel?
+
+        +getStateYearSummaryRows(fipsCode: string) ViewStateYearSummaryModel[]
+        +getStateYearSummaryRowByYear(fipsCode: string, year: int) ViewStateYearSummaryModel?
+
+        +getGeoUnitCentroids(fipsCode: string) Dictionary~FipsCode, GeoUnitCentroidModel~
+        +getStateInformationDataRowModels() StateInformationDataRowModel[]
+    }
+
+    class StateDAO {
+        -logger: Logger
+        -preprocessedGeospatialPath: Path
+        -localFipsCodeMappingCsvDataPath: Path
+        -localCountyCentroidsCsvDataPath: Path
+        -fipsCodeToCountyNameMap: Dictionary~String, String~
+        -geoUnitCentroidMap: Dictionary~String, GeoUnitCentroidModel~
+        -jdbcTemplate: JdbcTemplate
+
+        -getStateDataRows(type: Class~T~, fipsCode:string, year:int, aggregated:boolean) List~T~
+        -populateGeoUnitCentroidTable()
+        -populateFipsCodeToCountyNameMapTable()
+    }
+}
+namespace Helpers {
+    class AutoSqlQueryable~T~ {
+        +Mapper() RowMapper~T~
+        +QueryView() string
+        +Query(asSumAggregate: boolean) string
+    }
+}
+
+%% relationships
+VoterRegistrationDAO <|-- IVoterRegistrationDAO : Implements
+VoterEquipmentLocalDiskDAO <|-- IVoterEquipmentDAO : Implements
+VoterEquipmentInMemoryDAO <|-- IVoterEquipmentDAO : Implements
+VoterEquipmentLocalDiskDAO <-- VoterEquipmentInMemoryDAO : Has
+StateDAO <|-- IStateDAO : Implements
+
+ProvisionalBallotStatisticsModel <-- AutoSqlQueryable : Has
+VoterRegistrationStatisticsModel <-- AutoSqlQueryable : Has
+PollbookDeletionStatisticsModel <-- AutoSqlQueryable : Has
+MailBallotRejectionStatisticsModel <-- AutoSqlQueryable : Has
+BallotStatisticsModel <-- AutoSqlQueryable : Has
+ViewStateYearSummaryModel <-- AutoSqlQueryable : Has
+StateInformationDataRowModel <-- AutoSqlQueryable : Has
+VoterRegistrationDataModel <-- AutoSqlQueryable : Has
+
+StateService <-- IStateDAO : Has
+VoterEquipmentService <-- IVoterEquipmentDAO : Has
+VoterRegistrationService <-- IVoterRegistrationDAO : Has
+
+StateController <-- StateService : Uses
+VoterEquipmentController <-- VoterEquipmentService : Uses
+VoterRegistrationController <-- VoterRegistrationService : Uses
