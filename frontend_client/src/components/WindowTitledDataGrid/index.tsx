@@ -8,30 +8,17 @@ import {
 } from '@mui/material';
 
 import type {
-  GridRowClassNameParams, 
-  GridRowIdGetter, 
-  GridValidRowModel,
-  GridColDef,
-} from '@mui/x-data-grid';
+  StyledDataGridProperties,
+} from '../StyledDataGrid';
 
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import StyledDataGrid from '../StyledDataGrid';
 
-type getRowClassNameFn = (r: GridRowClassNameParams<GridValidRowModel>) => string;
-interface WindowTitledDataGridProperties {
+interface WindowTitledDataGridProperties extends StyledDataGridProperties {
   title: string;
-  rows: readonly any[];
-  columns: readonly GridColDef[];
-  getRowId?: GridRowIdGetter;
-  pageSize: number;
   left?: string;
   top?: string;
-  customGetRowClassName?: getRowClassNameFn;
   onXout?: () => void;
-  width?: number | string;
-  height?: number | string;
-  maxWidth?: number | string;
-  maxHeight?: number | string;
 };
 
 function WindowTitledDataGrid(
@@ -83,7 +70,6 @@ function WindowTitledDataGrid(
           maxWidth={maxWidth}
           rows={rows}
           columns={columns}
-          // @ts-ignore
           getRowId={getRowId}
           pageSize={pageSize}
           customGetRowClassName={customGetRowClassName}

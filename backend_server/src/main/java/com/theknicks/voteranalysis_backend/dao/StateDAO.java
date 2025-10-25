@@ -152,7 +152,19 @@ public class StateDAO implements IStateDAO {
     }
 
     public Map<String, GeoUnitCentroidModel> getGeoUnitCentroids(String fipsCode) {
-	return _geoUnitCentroidMap;
+        var result = new HashMap<String, GeoUnitCentroidModel>();
+
+        if (fipsCode.length() < 2) {
+            fipsCode = "0" + fipsCode;
+        }
+
+        for (var key : _geoUnitCentroidMap.keySet()) {
+            if (key.startsWith(fipsCode)) {
+                result.put(key, _geoUnitCentroidMap.get(key));
+            }
+        }
+
+	return result;
     }
 
     public List<StateInformationDataRowModel> getStateInformationDataRowModels() {

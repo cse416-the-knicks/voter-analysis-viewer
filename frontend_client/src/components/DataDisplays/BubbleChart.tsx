@@ -203,6 +203,4 @@ export type {
   BubbleChartDataPoint
 };
 
-export {
-  BubbleChart
-};
+export default BubbleChart;
