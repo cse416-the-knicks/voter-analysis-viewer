@@ -4,6 +4,7 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
+  VoterRegistrationDataModel,
 } from '../../api/client';
 
 import {
@@ -11,6 +12,8 @@ import {
   getMailBallotRejections,
   getVoterRegistrationCounts,
   getPollbookDeletions,
+  getDetailedVoterRegistrationData,
+  getVoterRegistrationCountsByCounty,
 } from '../../api/client';
 
 import {
@@ -20,6 +23,7 @@ import {
   Routes,
   Route,
 } from 'react-router';
+
 import InboxIcon from '@mui/icons-material/Inbox';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BallotIcon from '@mui/icons-material/Ballot';
@@ -39,12 +43,15 @@ import {
   useTheme,
   Backdrop,
   Grow,
+  Tabs,
+  Tab
 } from '@mui/material';
 
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_NONE,
   DETAIL_STATE_TYPE_REPUBLICAN,
+  DETAIL_STATE_TYPE_VOTER_REGISTRATION,
   getDetailStateType
 } from '../FullBoundedUSMap/detailedStatesInfo';
 
@@ -59,7 +66,6 @@ import StateMap from '../StateMap';
 
 import { FIPS_TO_STATES_MAP } from '../FullBoundedUSMap/boundaryData';
 import { StateInformationViewDrawer } from './StateInformationViewDrawer';
-import BarChart, { type BarChartDataEntry } from '../DataDisplays/BarChart';
 import useKeyDown from '../../hooks/useKeyDown';
 import useCssCalc from '../../hooks/useCssCalc';
 import StyledDataGrid from '../StyledDataGrid';
@@ -72,13 +78,17 @@ import {
   bargraphDataForProvisionalBallots,
   MAIL_BALLOT_REJECTION_COLUMNS,
   POLL_BOOK_DELETION_COLUMNS,
-  PROVISIONAL_BALLOT_COLUMNS
+  PROVISIONAL_BALLOT_COLUMNS,
+  VOTER_REGISTRATION_INFO_COLUMNS,
 } from './dataColumns';
 import { gradientMapNearest, type GradientMap } from '../../helpers/GradientMap';
 import digitsInNumber from '../../helpers/digitsInNumber';
 import GradientMapLegend from '../GradientMapLegend';
+
 import { dropBoxData, equipmentQualityData } from '../DataDisplays/PartyStatesMockData';
-import { BubbleChart } from '../DataDisplays/BubbleChart';
+import BarChart, { type BarChartDataEntry } from '../DataDisplays/BarChart';
+import GeoUnitBubbleChart from '../DataDisplays/GeoUnitBubbleChart';
+import BubbleChart from '../DataDisplays/BubbleChart';
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -90,8 +100,10 @@ const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
 const ID_SELECTION_REJECTED_BALLOTS = 6;
 const ID_SELECTION_DROP_BOX_VOTING = 7;
 
+const ID_SELECTION_VOTER_REGISTRATION = 8;
+const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
 
-const dropDownSections = [
+const defaultDropDownSections = [
   {
     title: "Ballot Data",
     iconComponent: <BallotIcon />,
@@ -132,6 +144,13 @@ type EAVsGeneralFact = ProvisionalBallotStatisticsModel |
   MailBallotRejectionStatisticsModel |
   VoterRegistrationStatisticsModel;
 
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
 function StateInformationView() {
   const { fipsCode } = useParams();
   const activeDataStateHook = useState(0);
@@ -164,6 +183,30 @@ function StateInformationView() {
   const [barGraphTitle, setBarGraphTitle] = useState<string>("");
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
+  const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
+
+  const tryingToViewDetailedVoterRegistration =
+    (stateType === DETAIL_STATE_TYPE_VOTER_REGISTRATION && activeDataState === ID_SELECTION_VOTER_REGISTRATION);
+
+  const shouldOpenPopup =
+    [
+      "dropbox-chart",
+      "rejected-ballots-chart",
+      "voter-table"
+    ].some((x) => location.pathname.includes(x));
+
+  const dropDownSections = [...defaultDropDownSections];
+  if (stateType == DETAIL_STATE_TYPE_VOTER_REGISTRATION) {
+    dropDownSections.push(
+      {
+	title: "Voter Registration",
+	items: [
+	  { id: ID_SELECTION_VOTER_REGISTRATION, iconComponent: <PersonIcon />, textContent: "Registration Data" },
+	  { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
+	],
+      }
+    );
+  }
 
   useEffect(
     function () {
@@ -171,7 +214,7 @@ function StateInformationView() {
         let high: number = 0;
         switch (activeDataState) {
           case ID_SELECTION_PROVISIONAL_BALLOT: {
-            navigate(`/state/${fipsCode!}/`)
+            navigate(`/state/${fipsCode!}/`);
             const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
@@ -182,7 +225,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.totalBallotsCast!));
           } break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS: {
-            navigate(`/state/${fipsCode!}/`)
+            navigate(`/state/${fipsCode!}/`);
             const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
@@ -193,7 +236,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.rejectTotal!));
           } break;
           case ID_SELECTION_ACTIVE_VOTERS: {
-            navigate(`/state/${fipsCode!}/`)
+            navigate(`/state/${fipsCode!}/`);
             const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
@@ -204,7 +247,7 @@ function StateInformationView() {
             high = Math.max(...data.map((x) => x.total!));
           } break;
           case ID_SELECTION_POLLBOOK_DELETION: {
-            navigate(`/state/${fipsCode!}/`)
+            navigate(`/state/${fipsCode!}/`);
             const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
             const [aggregatedData, data] = await Promise.all(promises);
             setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
@@ -214,12 +257,20 @@ function StateInformationView() {
             setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
             high = Math.max(...data.map((x) => x.totalRemoved!));
           } break;
+	  case ID_SELECTION_VOTER_REGISTRATION: {
+            navigate(`/state/${fipsCode!}/`);
+	    // TODO(jerry): add the endpoint to
+	    // fill in the data from...
+	  } break;
           case ID_SELECTION_REJECTED_BALLOTS: {
             navigate(`/state/${fipsCode}/rejected-ballots-chart/`);
           } break;
           case ID_SELECTION_DROP_BOX_VOTING: {
             navigate(`/state/${fipsCode}/dropbox-chart/`);
           } break;
+	  case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE: {
+            navigate(`/state/${fipsCode}/voter-table/`);
+	  } break;
           default: {
             // not handled yet.
           } break;
@@ -234,7 +285,7 @@ function StateInformationView() {
         binSize = Math.floor(binSize);
         binSize *= snapGridInterval;
         console.log(binSize, snapGridInterval, high);
-        let newGradientMap: GradientMap = {};
+        const newGradientMap: GradientMap = {};
         for (let i = 0; i < choroplethColorBuckets.length; ++i) {
           newGradientMap[(binSize*i)] = choroplethColorBuckets[i];
         }
@@ -254,6 +305,7 @@ function StateInformationView() {
         color: theme.palette.secondary.main,
         fillColor: theme.palette.secondary.main,
         fillOpacity: 0.5,
+	weight: 2.5,
       };
 
       if (stateType !== DETAIL_STATE_TYPE_NONE) {
@@ -266,6 +318,11 @@ function StateInformationView() {
             (row as VoterRegistrationStatisticsModel).total! ||
             (row as MailBallotRejectionStatisticsModel).rejectTotal!, gradientMap);
         }
+
+	if (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) {
+	  style.fillOpacity = 0;
+	  style.weight = 1;
+	}
       }
 
       return style;
@@ -297,6 +354,18 @@ function StateInformationView() {
 	    height: maxHeightForMap
 	  }}
 	  elevation={5}>
+	  {tryingToViewDetailedVoterRegistration &&
+	    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+	      <Tabs
+		    value={viewDetailedVoterRegistrationBubbleChart ? 1 : 0}
+		    onChange={function(_, x){setViewDetailedVoterRegistrationBubbleChart(x == 1);}} 
+		    textColor="secondary"
+		    indicatorColor="secondary"
+		    variant="fullWidth">
+			<Tab label={"Choropleth"} {...a11yProps(0)}/>
+			<Tab label={"Bubblechart Overlay"} {...a11yProps(1)}/>
+		</Tabs>
+	    </Box>}
 	  <StateMap
 	    // @ts-expect-error
 	    styleFunction={styleFunction}
@@ -305,7 +374,7 @@ function StateInformationView() {
 	    height={maxHeightForMap}
 	    fipsCode={fipsCode}> 
 	    {
-	      (stateType !== DETAIL_STATE_TYPE_NONE) &&
+	      (stateType !== DETAIL_STATE_TYPE_NONE) && !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
 		<GradientMapLegend gradientMap={gradientMap}/>
 	    }
 	    <Typography variant="h4"
@@ -327,14 +396,15 @@ function StateInformationView() {
 	    }}>
 		{FIPS_TO_STATES_MAP[fipsCode!]}
 	    </Typography>
+	    {tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart &&
+	      <GeoUnitBubbleChart fipsCode={fipsCode!}/>}
 	  </StateMap>
 	</Paper>
       </Stack>
       <Backdrop
-	open={location.pathname.includes("dropbox-chart") || location.pathname.includes("rejected-ballots-chart")}
+	open={shouldOpenPopup}
 	sx={{zIndex:1199}}/>
-	<Grow
-	  in={location.pathname.includes("dropbox-chart") || location.pathname.includes("rejected-ballots-chart")}>
+	<Grow in={shouldOpenPopup}>
       <Box 
 	sx={{
 	  position: "fixed",
@@ -361,6 +431,15 @@ function StateInformationView() {
 		xAxisLabel="Quality Level"
 		yAxisLabel="Rejected Ballots (%)"
 		useRegression/>}/>
+	    <Route path="voter-table" element={
+	      <StyledDataGrid
+		rows={async () => { return await getDetailedVoterRegistrationData() }}
+		columns={VOTER_REGISTRATION_INFO_COLUMNS}
+		width={bubbleChartWidth}
+		height={bubbleChartHeight}
+		pageSize={7}
+		getRowId={(r) => r.regionId}
+	      />}/>
 	    </Routes>
       </Box>
 	  </Grow>
