@@ -1,7 +1,7 @@
 # $File: formatter.yml
 # $Author: Jerry Zhu (jerry.zhu@stonybrook.edu)
 # $Date: 10-28-2025 22:47:57
-# $Updated: 10-28-2025 22:47:57
+# $Updated: 10-28-2025 23:01:41
 # $Description: CI/CD action to enforce format checks. Please either setup the pre-commit hook
 # or remember to run the formatter.
 
@@ -11,12 +11,12 @@ on:
         pull_request:
                 branches: [ main ]
                 paths:
-                        - 'frontend/**'
+                        - 'frontend_client/**'
         push:
         # I don't think we enable pushing to main, but just in-case.
                 branches: [ main ]
                 paths:
-                        - 'frontend/**'
+                        - 'frontend_client/**'
                 
 jobs:
         format-check:
