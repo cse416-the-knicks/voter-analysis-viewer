@@ -30,7 +30,7 @@ jobs:
                           uses: actions/checkout@v4
 
                         - name: Install Java
-                          run: actions/setup-java@v4
+                          uses: actions/setup-java@v4
 
                         - name: Grant Gradle permissions
                           run: chmod +x ./gradlew
