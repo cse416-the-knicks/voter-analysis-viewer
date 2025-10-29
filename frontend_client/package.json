@@ -11,6 +11,7 @@
     "formatter": "prettier src",
     "formatter:fix": "npm run formatter -- --write .",
     "autoformat": "npm run lint:fix && npm run formatter:fix",
+    "autoformat:check": "npm run lint && npm run formatter -- --check .",
     "preview": "vite preview",
     "apigen": "orval --config ./orval.config.cts",
     "gradle": "cd ../backend_server && node ../frontend_client/run-gradle-wrapper.js"
