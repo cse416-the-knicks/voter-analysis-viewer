@@ -16,7 +16,7 @@ export const backendConnectorAxiosInstance = <T>(
     cancelToken: source.token,
   }).then(({ data }) => data);
 
-  // @ts-ignore
+  // @ts-expect-error: https://orval.dev/guides/custom-axios
   promise.cancel = () => {
     source.cancel('Query was cancelled');
   };

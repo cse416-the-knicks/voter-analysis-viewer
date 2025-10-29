@@ -1,0 +1,38 @@
+# $File: formatter.yml
+# $Author: Jerry Zhu (jerry.zhu@stonybrook.edu)
+# $Date: 10-28-2025 22:47:57
+# $Updated: 10-28-2025 23:01:41
+# $Description: CI/CD action to enforce format checks. Please either setup the pre-commit hook
+# or remember to run the formatter.
+
+name: Code Format Police (Frontend)
+
+on:
+        pull_request:
+                branches: [ main ]
+                paths:
+                        - 'frontend_client/**'
+        push:
+        # I don't think we enable pushing to main, but just in-case.
+                branches: [ main ]
+                paths:
+                        - 'frontend_client/**'
+                
+jobs:
+        format-check:
+                runs-on: ubuntu-latest
+                defaults:
+                        run:
+                                working-directory: frontend_client
+
+                steps:
+                        - name: Checkout HEAD
+                          uses: actions/checkout@v4
+
+                        - name: Install dependencies
+                          run: npm ci
+
+                        - name: ESLint Check
+                          run: npm run lint
+                        - name: Prettier Check
+                          run: npm run formatter -- --check

@@ -367,7 +367,8 @@ function StateInformationView() {
 		</Tabs>
 	    </Box>}
 	  <StateMap
-	    // @ts-expect-error
+  // @ts-expect-error, the style function *is* of the right type
+  // although it's not immediately obvious to typescript atm.
 	    styleFunction={styleFunction}
 	    mapKey={activeDataState}
 	    width={maxWidthForMap}

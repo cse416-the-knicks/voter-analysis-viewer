@@ -109,22 +109,21 @@ function BubbleChart(
 
   const svgRef = useRef<SVGSVGElement>(null);
   useEffect(
-    // @ts-expect-error
     () => {
       const svg = d3.select(svgRef.current);
       const circleSelector = svg.selectAll("circle");
       circleSelector
         .on("mouseover",
-          function (event, d) {
+          function (_event, _d) {
             const element = this as Element;
             setShowTooltip(true);
             setTooltipText(element.getAttribute("data-title")!);
           })
         .on("mouseout",
-          function (event, d) {
+          function (_event, _d) {
             setShowTooltip(false);
           });
-      return () => circleSelector.on("mouseover", null).on("mouseout", null);
+      return () => { circleSelector.on("mouseover", null).on("mouseout", null); };
     }, [data]);
 
   return (
