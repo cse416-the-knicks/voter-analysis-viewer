@@ -1,14 +1,14 @@
-import type { CssUnitValue } from '../../helpers/CssUnits';
-import { useEffect, useState } from 'react';
-import L from 'leaflet';
-import type { MapRef } from 'react-leaflet/MapContainer';
-import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
-import { getStateGeometry } from '../../api/client';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import type { CssUnitValue } from "../../helpers/CssUnits";
+import { useEffect, useState } from "react";
+import L from "leaflet";
+import type { MapRef } from "react-leaflet/MapContainer";
+import { GeoJSON, MapContainer, TileLayer, useMap } from "react-leaflet";
+import { getStateGeometry } from "../../api/client";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface MapFitsToBoundsInternalParameters {
   boundsToFit: L.LatLngBoundsExpression;
-};
+}
 
 interface StateMapParameters {
   mapKey?: any;
@@ -18,10 +18,9 @@ interface StateMapParameters {
   height: CssUnitValue;
   styleFunction: L.StyleFunction;
   children: React.ReactNode;
-};
+}
 
-function MapFitToBoundsInternal(
-  { boundsToFit }: MapFitsToBoundsInternalParameters) {
+function MapFitToBoundsInternal({ boundsToFit }: MapFitsToBoundsInternalParameters) {
   const map = useMap();
   useEffect(
     function () {
@@ -29,63 +28,49 @@ function MapFitToBoundsInternal(
       map.fitBounds(boundsToFit);
       map.setMinZoom(minStateZoom);
     },
-    [map, boundsToFit]);
+    [map, boundsToFit]
+  );
 
   return null;
 }
 
-function StateMap(
-  {
-    mapKey,
-    fipsCode,
-    mapRef,
-    width,
-    height,
-    styleFunction,
-    children
-  }: StateMapParameters) {
+function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, children }: StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
   const [stateMapBounds, setStateMapBounds] = useState<L.LatLngBoundsExpression | null>();
-  const useDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const useDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-  useEffect(
-    function () {
-      (async function () {
-        if (!fipsCode) {
-          return;
-        }
+  useEffect(function () {
+    (async function () {
+      if (!fipsCode) {
+        return;
+      }
 
-        const response = await getStateGeometry(fipsCode);
-        if (response) {
-          setStateGeoJson(response as GeoJSON.GeoJSON);
-          setStateMapBounds(
-            [
-              [response.bbox![1], response.bbox![0]],
-              [response.bbox![3], response.bbox![2]],
-            ]
-          );
-          setReadyToDisplay(true);
-        }
-      })();
-    }, []);
+      const response = await getStateGeometry(fipsCode);
+      if (response) {
+        setStateGeoJson(response as GeoJSON.GeoJSON);
+        setStateMapBounds([
+          [response.bbox![1], response.bbox![0]],
+          [response.bbox![3], response.bbox![2]],
+        ]);
+        setReadyToDisplay(true);
+      }
+    })();
+  }, []);
 
   if (!fipsCode) {
-    return (
-      <p>No FIPS code for state. No map!</p>
-    );
+    return <p>No FIPS code for state. No map!</p>;
   }
 
   if (readyToDisplay) {
-    const onEachFeatureHandler =
-      (feature: GeoJSON.Feature, layer: L.Layer) => {
-        const { properties } = feature;
-        if (properties!.NAMELSAD) {
-          layer.bindTooltip(properties!.NAMELSAD);
-        } else {
-          // no tool, tip we just have the whole state
-        }
-      };
+    const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) => {
+      const { properties } = feature;
+      if (properties!.NAMELSAD) {
+        layer.bindTooltip(properties!.NAMELSAD);
+      } else {
+        // no tool, tip we just have the whole state
+      }
+    };
 
     return (
       <MapContainer
@@ -93,26 +78,20 @@ function StateMap(
         bounds={stateMapBounds!}
         maxBounds={stateMapBounds!}
         maxBoundsViscosity={1.0}
-        style={
-          {
-            width: width,
-            height: height,
-          }
-        }
+        style={{
+          width: width,
+          height: height,
+        }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={(useDarkMode) ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
+          url={useDarkMode ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
         />
-        <GeoJSON
-          key={mapKey}
-          style={styleFunction}
-          onEachFeature={onEachFeatureHandler}
-          data={stateGeoJson!} />
+        <GeoJSON key={mapKey} style={styleFunction} onEachFeature={onEachFeatureHandler} data={stateGeoJson!} />
         <MapFitToBoundsInternal boundsToFit={stateMapBounds!} />
         {children}
       </MapContainer>
-    )
+    );
   } else {
     return (
       <>
@@ -122,8 +101,6 @@ function StateMap(
   }
 }
 
-export type {
-  StateMapParameters
-};
+export type { StateMapParameters };
 
 export default StateMap;

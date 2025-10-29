@@ -1,13 +1,11 @@
 interface GradientMap {
-  [key: number]: string
-};
+  [key: number]: string;
+}
 
 const gradientMapPoints = (x: GradientMap) => Object.keys(x).map(Number);
 const gradientMapColors = (x: GradientMap) => Object.values(x);
 
-function gradientMapNearest(
-  x: number,
-  gradientBreakpoints: GradientMap): string {
+function gradientMapNearest(x: number, gradientBreakpoints: GradientMap): string {
   let i = 0;
   const breakpoints = gradientMapPoints(gradientBreakpoints);
   const colors = gradientMapColors(gradientBreakpoints);
@@ -22,12 +20,6 @@ function gradientMapNearest(
   return result;
 }
 
-export {
-    gradientMapNearest,
-    gradientMapPoints,
-    gradientMapColors,
-};
+export { gradientMapNearest, gradientMapPoints, gradientMapColors };
 
-export type {
-    GradientMap,
-};
+export type { GradientMap };

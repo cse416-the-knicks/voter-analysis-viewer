@@ -1,12 +1,12 @@
-import React from 'react';
-import L from 'leaflet';
-import type { MapRef } from 'react-leaflet/MapContainer';
-import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
-import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from './boundaryData';
-import { DETAIL_STATE_TYPE_NONE, getDetailStateType, getHumanReadableStateType, isDetailState } from './detailedStatesInfo';
-import { useTheme } from '@mui/material';
-import { useState } from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import React from "react";
+import L from "leaflet";
+import type { MapRef } from "react-leaflet/MapContainer";
+import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
+import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from "./boundaryData";
+import { DETAIL_STATE_TYPE_NONE, getDetailStateType, getHumanReadableStateType, isDetailState } from "./detailedStatesInfo";
+import { useTheme } from "@mui/material";
+import { useState } from "react";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 // NOTE(jerry):
 // These boundaries were given by ChatGPT
@@ -14,7 +14,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 // as well.
 const UNITED_STATES_BOUNDARIES: L.LatLngTuple[] = [
   [24.396308, -125.0], // Southwest Corner
-  [49.384358, -66.93457] // Northeast Corner
+  [49.384358, -66.93457], // Northeast Corner
 ];
 
 const MIN_ACCEPTABLE_ZOOM = 4;
@@ -28,7 +28,7 @@ interface FullBoundedUSMapProperties {
   onStateClick?: OnStateClickFn;
   zoom?: number;
   children?: React.ReactNode;
-};
+}
 
 /**
     Full Map of the United States as a component,
@@ -39,80 +39,68 @@ interface FullBoundedUSMapProperties {
     Will show state names and such, and allow registering
     callbacks on click.
 **/
-function FullBoundedUSMap(
-  {
-    id,
-    mapRef,
-    zoom,
-    children,
-    onStateClick,
-  }: FullBoundedUSMapProperties) {
+function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoundedUSMapProperties) {
   const theme = useTheme();
   const [highlightedStateFipsId, setHighlightedStateFipsId] = useState<string | null>(null);
-  const useDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const onFeatureClickHandler =
-    (event: L.LeafletMouseEvent) => {
-      const target = event.target as L.FeatureGroup;
-      const featureData = target.feature as GeoJSON.Feature;
-      if (onStateClick) {
-        onStateClick(featureData.id! as FipsCode);
-      }
-    };
-  const onMouseOverHandler = 
-    (event: L.LeafletMouseEvent) => {
-      const target = event.target as L.FeatureGroup;
-      const featureData = target.feature as GeoJSON.Feature;
-      console.log(target);
-      setHighlightedStateFipsId(featureData.id! as FipsCode);
-    };
-  const onMouseOutHandler = 
-    (event: L.LeafletMouseEvent) => {
-      setHighlightedStateFipsId(null);
+  const useDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const onFeatureClickHandler = (event: L.LeafletMouseEvent) => {
+    const target = event.target as L.FeatureGroup;
+    const featureData = target.feature as GeoJSON.Feature;
+    if (onStateClick) {
+      onStateClick(featureData.id! as FipsCode);
     }
-  const onEachFeatureHandler =
-    (feature: GeoJSON.Feature, layer: L.Layer) => {
-      const { id } = feature; // Should not be null.
-      const stateName = FIPS_TO_STATES_MAP[id!];
-      const stateType = getDetailStateType(id! as string);
-      const defaultHandlers = {
-        click: onFeatureClickHandler,
-        mouseover: onMouseOverHandler,
-        mouseout: onMouseOutHandler,
-      };
-
-      if (stateType !== DETAIL_STATE_TYPE_NONE) {
-        layer.bindTooltip(stateName + " - " + getHumanReadableStateType(stateType));
-      } else {
-        layer.bindTooltip(stateName);
-      }
-
-      layer.on(defaultHandlers);
+  };
+  const onMouseOverHandler = (event: L.LeafletMouseEvent) => {
+    const target = event.target as L.FeatureGroup;
+    const featureData = target.feature as GeoJSON.Feature;
+    console.log(target);
+    setHighlightedStateFipsId(featureData.id! as FipsCode);
+  };
+  const onMouseOutHandler = (event: L.LeafletMouseEvent) => {
+    setHighlightedStateFipsId(null);
+  };
+  const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) => {
+    const { id } = feature; // Should not be null.
+    const stateName = FIPS_TO_STATES_MAP[id!];
+    const stateType = getDetailStateType(id! as string);
+    const defaultHandlers = {
+      click: onFeatureClickHandler,
+      mouseover: onMouseOverHandler,
+      mouseout: onMouseOutHandler,
     };
-  const styleFunction =
-    (feature: GeoJSON.Feature) => {
-      const fipsCode = feature.id as string;
-      const result = {
-        fillColor: "#00000000",
-        fillOpacity: 0,
-        color: theme.palette.secondary.main,
-        weight: 1,
-      };
 
-      console.log(highlightedStateFipsId);
-      if (fipsCode && isDetailState(fipsCode)) {
-        result.weight = 4;
-        result.fillOpacity = 0.4;
-        result.fillColor = theme.palette.secondary.light;
-      }
+    if (stateType !== DETAIL_STATE_TYPE_NONE) {
+      layer.bindTooltip(stateName + " - " + getHumanReadableStateType(stateType));
+    } else {
+      layer.bindTooltip(stateName);
+    }
 
-      if (highlightedStateFipsId === fipsCode) {
-        result.fillOpacity = 1;
-        result.fillColor = theme.palette.secondary.light;
-      }
-      
-      return result;
+    layer.on(defaultHandlers);
+  };
+  const styleFunction = (feature: GeoJSON.Feature) => {
+    const fipsCode = feature.id as string;
+    const result = {
+      fillColor: "#00000000",
+      fillOpacity: 0,
+      color: theme.palette.secondary.main,
+      weight: 1,
     };
-  
+
+    console.log(highlightedStateFipsId);
+    if (fipsCode && isDetailState(fipsCode)) {
+      result.weight = 4;
+      result.fillOpacity = 0.4;
+      result.fillColor = theme.palette.secondary.light;
+    }
+
+    if (highlightedStateFipsId === fipsCode) {
+      result.fillOpacity = 1;
+      result.fillColor = theme.palette.secondary.light;
+    }
+
+    return result;
+  };
+
   return (
     <MapContainer
       zoom={Math.max(zoom ?? 0, MIN_ACCEPTABLE_ZOOM)}
@@ -122,24 +110,18 @@ function FullBoundedUSMap(
       maxBoundsViscosity={1.0}
       ref={mapRef}
       className={"full-bounded-us-map"}
-      id={id}>
+      id={id}
+    >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url={(useDarkMode) ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
+        url={useDarkMode ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
       />
-      <GeoJSON
-        style={styleFunction}
-        data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON}
-        onEachFeature={onEachFeatureHandler}
-      />
+      <GeoJSON style={styleFunction} data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON} onEachFeature={onEachFeatureHandler} />
       {children}
     </MapContainer>
-  )
+  );
 }
 
-export type {
-  FipsCode,
-  OnStateClickFn
-};
+export type { FipsCode, OnStateClickFn };
 
 export default FullBoundedUSMap;

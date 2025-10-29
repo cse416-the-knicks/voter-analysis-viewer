@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 interface MousePosition {
   x: number;
   y: number;
-};
+}
 
 function useMousePosition(): MousePosition {
   const [mouseX, setMouseX] = useState(0);
@@ -11,24 +11,22 @@ function useMousePosition(): MousePosition {
 
   useEffect(
     function () {
-      const mouseMoveHandler =
-	function(e: MouseEvent) {
-	  setMouseX(e.clientX);
-	  setMouseY(e.clientY);
-	};
+      const mouseMoveHandler = function (e: MouseEvent) {
+        setMouseX(e.clientX);
+        setMouseY(e.clientY);
+      };
 
-      window.addEventListener('mousemove', mouseMoveHandler);
-      return () => window.removeEventListener('mousemove', mouseMoveHandler);
-    }
-    , [mouseX, mouseY]);
+      window.addEventListener("mousemove", mouseMoveHandler);
+      return () => window.removeEventListener("mousemove", mouseMoveHandler);
+    },
+    [mouseX, mouseY]
+  );
 
   return {
     x: mouseX,
-    y: mouseY
+    y: mouseY,
   };
 }
 
 export default useMousePosition;
-export type {
-  MousePosition,
-};
+export type { MousePosition };

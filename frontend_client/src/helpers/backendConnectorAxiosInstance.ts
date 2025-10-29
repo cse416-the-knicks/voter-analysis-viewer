@@ -1,14 +1,10 @@
-import type { AxiosRequestConfig, AxiosError } from 'axios';
-import Axios from 'axios';
+import type { AxiosRequestConfig, AxiosError } from "axios";
+import Axios from "axios";
 
 // Should base off of some url...
-export const AXIOS_INSTANCE = Axios.create({ baseURL: 'http://localhost:8080' });
+export const AXIOS_INSTANCE = Axios.create({ baseURL: "http://localhost:8080" });
 
-export const backendConnectorAxiosInstance = <T>(
-  config: AxiosRequestConfig,
-  options?: AxiosRequestConfig,
-): Promise<T> => {
-
+export const backendConnectorAxiosInstance = <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<T> => {
   const source = Axios.CancelToken.source();
   const promise = AXIOS_INSTANCE({
     ...config,
@@ -18,7 +14,7 @@ export const backendConnectorAxiosInstance = <T>(
 
   // @ts-expect-error: https://orval.dev/guides/custom-axios
   promise.cancel = () => {
-    source.cancel('Query was cancelled');
+    source.cancel("Query was cancelled");
   };
 
   return promise;

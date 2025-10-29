@@ -1,7 +1,4 @@
-import {
-  useState,
-  useLayoutEffect,
-} from 'react';
+import { useState, useLayoutEffect } from "react";
 
 /**
     NOTE(jerry):
@@ -27,7 +24,7 @@ function getCssCalculation(css: string): number {
 
   document.body.appendChild(dummyElement);
 
-  const elementWidth = dummyElement.getBoundingClientRect().width
+  const elementWidth = dummyElement.getBoundingClientRect().width;
 
   dummyElement.remove();
   return elementWidth;
@@ -37,15 +34,15 @@ function useCssCalc(css: string): number {
   const [value, setValue] = useState<number>(0);
   useLayoutEffect(
     function () {
-      const resizeHandler =
-	function() {
-	  setValue(getCssCalculation(css));
-	}
+      const resizeHandler = function () {
+        setValue(getCssCalculation(css));
+      };
       resizeHandler(); // Do an initial setting of the render.
       window.addEventListener("resize", resizeHandler);
       return () => window.removeEventListener("resize", resizeHandler);
     },
-    [css]);
+    [css]
+  );
   return value;
 }
 
