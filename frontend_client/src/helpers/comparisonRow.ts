@@ -14,7 +14,7 @@ interface StateSummaryComparisonRow {
 */
 function comparisonRow(name: string, ...values: any[]): StateSummaryComparisonRow {
   const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let result: StateSummaryComparisonRow = { id: name, metricName: name };
+  const result: StateSummaryComparisonRow = { id: name, metricName: name };
   for (let i = 0; i < alphabet.length; ++i) {
     result[alphabet[i]] = values[i];
   }

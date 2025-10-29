@@ -17,6 +17,13 @@ export default tseslint.config([
       reactRefresh.configs.vite,
       prettier,
     ],
+    rules: {
+      // Unused variables might be for
+      // future code, so this is not super
+      // important to error on.
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,

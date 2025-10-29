@@ -53,24 +53,25 @@ function BarChart({
 
   const svgRef = useRef<SVGSVGElement>(null);
   useEffect(
-    // @ts-expect-error
     () => {
       const svg = d3.select(svgRef.current);
       const rectangleSelector = svg.selectAll("rect");
       rectangleSelector
         .on("mouseover",
-          function (event, d) {
+          function (_event, _d) {
             const element = this as Element;
             d3.select(this).attr("fill", defaultHighlightColor);
             setShowTooltip(true);
             setTooltipText(element.getAttribute("data-title") + ": " + element.getAttribute("data-value"));
           })
         .on("mouseout",
-          function (event, d) {
+          function (_event, _d) {
             d3.select(this).attr("fill", defaultBlockColor);
             setShowTooltip(false);
           });
-      return () => rectangleSelector.on("mouseover", null).on("mouseout", null);
+      return () => {
+	rectangleSelector.on("mouseover", null).on("mouseout", null)
+      };
     }, [data]);
 
   return (

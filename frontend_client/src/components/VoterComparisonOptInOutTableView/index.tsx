@@ -48,7 +48,7 @@ function VoterComparisonOptInOptOutTableView() {
               width: 160,
             },
           ]);
-        let transposedRows = [];
+        const transposedRows = [];
         transposedRows.push(
           comparisonRow("Type", "Opt-In", "Opt-Out (SDR)", "Opt-Out"),
           comparisonRow("Active Registered",...awaited.map((x) => x.activeRegistered)),
@@ -65,7 +65,11 @@ function VoterComparisonOptInOptOutTableView() {
           comparisonRow("Mail-in Ballot Share %",...awaited.map((x) => (x.mailinBallotVotingShareRate! * 100).toFixed(1) + "%")),
         );
         
-        // @ts-expect-error
+        // @ts-expect-error, This is actually correctly an error
+	// because the right fix is that we should be using a union type,
+	// although this code was hacked together.
+	//
+	// TODO(frontend): proper type annotation.
         setDataRows(transposedRows);
       })();
     },
