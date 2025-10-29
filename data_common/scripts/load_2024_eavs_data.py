@@ -160,4 +160,4 @@ df.to_sql(
     index=False
 )
 
-print("Finished inserting preliminary eavs data into the database")
+print("Finished inserting 2024 eavs data into the database")
