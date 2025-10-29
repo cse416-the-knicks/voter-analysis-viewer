@@ -114,7 +114,7 @@ rename_map = {
     "E2h": "prov_reason_hours_extended",
     "E2i": "prov_reason_same_day_reg",
     "prov_other": "prov_other",
-    "C9a" : "mail_reject_total",
+    "mail_reject_total" : "mail_reject_total",
     "C9b" : "mail_reject_late",
     "C9c" : "mail_reject_no_sig",
     "C9d" : "mail_reject_no_witness_sig",
