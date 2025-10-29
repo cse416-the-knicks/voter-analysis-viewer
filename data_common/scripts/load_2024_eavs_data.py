@@ -81,7 +81,7 @@ df["state_id"] = df["FIPSCode"].str[:2].astype(int)
 df.drop(df[df["State_Abbr"] == "AS"].index, inplace=True)
 
 # Dropping the unused other columns before writing
-df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr", "B24a", "F1c"])
+df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr","B24a","F1c","C9a"])
 
 # Mapping each code to the actual schema column names
 rename_map = {
