@@ -17,7 +17,8 @@ public record PollbookDeletionStatisticsModel(
     @SqlColumnName(name = "removed_incompetent") int removedReasonIncompetent,
     @SqlColumnName(name = "removed_requested") int removedReasonRequested,
     @SqlColumnName(name = "removed_duplicate") int removedReasonDuplicate,
-    @SqlColumnName(name = "removed_other") int removedOther) {
+    @SqlColumnName(name = "removed_other") int removedOther,
+    @SqlColumnName(name = "total_registered") int totalRegisteredVoters) {
   public static class Queryable extends AutoSqlQueryable<PollbookDeletionStatisticsModel> {
     public Queryable() {
       super(PollbookDeletionStatisticsModel.class);

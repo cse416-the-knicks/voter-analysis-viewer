@@ -83,6 +83,7 @@ export interface PollbookDeletionStatisticsModel {
   removedReasonRequested?: number;
   removedReasonDuplicate?: number;
   removedOther?: number;
+  totalRegisteredVoters?: number;
 }
 
 export interface MailBallotRejectionStatisticsModel {
@@ -106,6 +107,7 @@ export interface MailBallotRejectionStatisticsModel {
   rejectNotEligible?: number;
   rejectNoApplication?: number;
   rejectOther?: number;
+  totalBallotsCast?: number;
 }
 
 export interface BallotStatisticsModel {
