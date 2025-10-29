@@ -1,0 +1,39 @@
+# $File: backend-formatter.yml
+# $Author: Jerry Zhu (jerry.zhu@stonybrook.edu)
+# $Date: 10-28-2025 22:47:57
+# $Updated: 10-28-2025 23:22:17
+# $Description: CI/CD action to enforce format checks. Please either setup the pre-commit hook
+# or remember to run the formatter.
+
+name: Code Format Police (Backend)
+
+on:
+        pull_request:
+                branches: [ main ]
+                paths:
+                        - 'backend_server/**'
+        push:
+        # I don't think we enable pushing to main, but just in-case.
+                branches: [ main ]
+                paths:
+                        - 'backend_server/**'
+                
+jobs:
+        format-check:
+                runs-on: ubuntu-latest
+                defaults:
+                        run:
+                                working-directory: backend_server
+
+                steps:
+                        - name: Checkout HEAD
+                          uses: actions/checkout@v4
+
+                        - name: Install Java
+                          run: actions/setup-java@v4
+
+                        - name: Grant Gradle permissions
+                          run: chmod +x ./gradlew
+
+                        - name: Spotless Check
+                          run: ./gradlew spotlessCheck
