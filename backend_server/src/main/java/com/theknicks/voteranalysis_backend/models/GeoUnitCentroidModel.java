@@ -1,15 +1,10 @@
 package com.theknicks.voteranalysis_backend.models;
 
 /**
- * This retrieves the data for getting all the centroid information
- * of the counties within a state (if applicable)
+ * This retrieves the data for getting all the centroid information of the counties within a state
+ * (if applicable)
  *
- * NOTE(jerry): just like the GeoJson data it is read from a file.
+ * <p>NOTE(jerry): just like the GeoJson data it is read from a file.
  */
 public record GeoUnitCentroidModel(
-    String fullRegionId,
-    String countyName,
-    float centerX,
-    float centerY 
-) {
-}
+    String fullRegionId, String countyName, float centerX, float centerY) {}

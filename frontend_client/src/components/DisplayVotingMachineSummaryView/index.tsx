@@ -1,75 +1,72 @@
-import type { GridColDef } from '@mui/x-data-grid';
-import type { VotingEquipmentModel } from '../../api/client';
+import type { GridColDef } from "@mui/x-data-grid";
+import type { VotingEquipmentModel } from "../../api/client";
 
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import useKeyDown from '../../hooks/useKeyDown';
-import WindowTitledDataGrid from '../WindowTitledDataGrid';
-import { getAllVotingEquipment } from '../../api/client';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import useKeyDown from "../../hooks/useKeyDown";
+import WindowTitledDataGrid from "../WindowTitledDataGrid";
+import { getAllVotingEquipment } from "../../api/client";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-import styles from './DisplayVotingMachineSummaryView.module.css';
+import styles from "./DisplayVotingMachineSummaryView.module.css";
 
-const columns: GridColDef<(VotingEquipmentModel)[]>[] = [
-  { 
-    field: 'manufacturer', 
-    headerName: 'Manufacturer', 
-    width: 190 ,
+const columns: GridColDef<VotingEquipmentModel[]>[] = [
+  {
+    field: "manufacturer",
+    headerName: "Manufacturer",
+    width: 190,
   },
   {
-    field: 'equipmentType',
-    headerName: 'Type',
+    field: "equipmentType",
+    headerName: "Type",
     width: 250,
   },
   {
-    field: 'modelName',
-    headerName: 'Name',
+    field: "modelName",
+    headerName: "Name",
     width: 150,
   },
   {
-    field: 'firstManufactured',
-    headerName: 'First Manufactured',
+    field: "firstManufactured",
+    headerName: "First Manufactured",
     width: 150,
   },
   {
-    field: 'lastManufactured',
-    headerName: 'Last Manufactured',
+    field: "lastManufactured",
+    headerName: "Last Manufactured",
     width: 150,
   },
   {
-    field: 'discontinued',
-    headerName: 'Discontinued',
-    type: 'boolean',
+    field: "discontinued",
+    headerName: "Discontinued",
+    type: "boolean",
     width: 160,
   },
   {
-    field: 'operatingSystem',
-    headerName: 'Operating System',
+    field: "operatingSystem",
+    headerName: "Operating System",
     width: 160,
   },
   {
-    field: 'vvpat',
-    headerName: 'VVPAT?',
-    type: 'boolean',
+    field: "vvpat",
+    headerName: "VVPAT?",
+    type: "boolean",
     width: 100,
   },
 ];
 
-
 function DisplayVotingMachineSummaryView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
-  const useLargerMaxWidth = useMediaQuery('(min-width:1600px)');
-  const maxWidth = (useLargerMaxWidth) ? 1400 : 1000; // pixels
+  const useLargerMaxWidth = useMediaQuery("(min-width:1600px)");
+  const maxWidth = useLargerMaxWidth ? 1400 : 1000; // pixels
 
-  useEffect(
-    function () {
-      (async function () {
-        const equipmentList = await getAllVotingEquipment();
-        setDataRows(equipmentList);
-      })();
-    },
-    []);
+  useEffect(function () {
+    (async function () {
+      const equipmentList = await getAllVotingEquipment();
+      setDataRows(equipmentList);
+    })();
+  }, []);
 
   useKeyDown("Escape", () => navigate("/"));
 
@@ -83,10 +80,10 @@ function DisplayVotingMachineSummaryView() {
       columns={columns}
       getRowId={(x) => x.modelName}
       pageSize={12}
-      customGetRowClassName={(r) => rows.find((x) => x.modelName === r.id)?.discontinued ? styles.discontinuedRow : ""}
-      left={`calc(50vw - ${maxWidth/2}px)`}
-      top={'0'}
-      />
+      customGetRowClassName={(r) => (rows.find((x) => x.modelName === r.id)?.discontinued ? styles.discontinuedRow : "")}
+      left={`calc(50vw - ${maxWidth / 2}px)`}
+      top={"0"}
+    />
   );
 }
 

@@ -1,25 +1,25 @@
-import { useNavigate } from 'react-router';
-import useKeyDown from '../../hooks/useKeyDown';
-import WindowTitledDataGrid from '../WindowTitledDataGrid';
-import { Stack } from '@mui/material';
+import { useNavigate } from "react-router";
+import useKeyDown from "../../hooks/useKeyDown";
+import WindowTitledDataGrid from "../WindowTitledDataGrid";
+import { Stack } from "@mui/material";
 
 // All data below is mock data
 const columns = [
-  { 
-    field: 'category', 
-    headerName: 'Category', 
-    width: 300 ,
+  {
+    field: "category",
+    headerName: "Category",
+    width: 300,
   },
   {
-    field: 'repState',
-    headerName: 'Oklahoma',
+    field: "repState",
+    headerName: "Oklahoma",
     width: 250,
   },
   {
-    field: 'demState',
-    headerName: 'New York',
+    field: "demState",
+    headerName: "New York",
     width: 250,
-  }
+  },
 ];
 
 const rows = [
@@ -89,8 +89,8 @@ function EarlyVotingComparisonTableView() {
         rows={rows}
         columns={columns}
         pageSize={10}
-	left={`calc(50vw - ${maxWidth/2}px)`}
-	top={'0'}
+        left={`calc(50vw - ${maxWidth / 2}px)`}
+        top={"0"}
       />
     </Stack>
   );

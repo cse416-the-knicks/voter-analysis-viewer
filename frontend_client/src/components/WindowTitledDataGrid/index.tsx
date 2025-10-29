@@ -1,42 +1,32 @@
-import {
-  Box,
-  Paper,
-  AppBar,
-  Typography,
-  Button,
-  Grid,
-} from '@mui/material';
+import { Box, Paper, AppBar, Typography, Button, Grid } from "@mui/material";
 
-import type {
-  StyledDataGridProperties,
-} from '../StyledDataGrid';
+import type { StyledDataGridProperties } from "../StyledDataGrid";
 
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import StyledDataGrid from '../StyledDataGrid';
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import StyledDataGrid from "../StyledDataGrid";
 
 interface WindowTitledDataGridProperties extends StyledDataGridProperties {
   title: string;
   left?: string;
   top?: string;
   onXout?: () => void;
-};
+}
 
-function WindowTitledDataGrid(
-  {
-    title,
-    rows,
-    columns,
-    getRowId,
-    pageSize,
-    left,
-    top,
-    customGetRowClassName,
-    width,
-    height,
-    maxWidth,
-    maxHeight,
-    onXout
-  }: WindowTitledDataGridProperties) {
+function WindowTitledDataGrid({
+  title,
+  rows,
+  columns,
+  getRowId,
+  pageSize,
+  left,
+  top,
+  customGetRowClassName,
+  width,
+  height,
+  maxWidth,
+  maxHeight,
+  onXout,
+}: WindowTitledDataGridProperties) {
   return (
     <Box
       sx={{
@@ -44,22 +34,23 @@ function WindowTitledDataGrid(
         display: "flex",
         left: left,
         top: top,
-        zIndex: 1200
+        zIndex: 1200,
       }}
       width={width}
       height={height}
       maxWidth={maxWidth}
-      maxHeight={maxHeight}>
-      <Paper
-        sx={{ mt: 2, ml: 'auto' }}
-        elevation={9}>
+      maxHeight={maxHeight}
+    >
+      <Paper sx={{ mt: 2, ml: "auto" }} elevation={9}>
         <AppBar sx={{ position: "static" }} color="secondary">
           <Grid container justifyContent="space-between">
             <Grid size={11}>
-              <Typography variant="h5" align="center">{title}</Typography>
+              <Typography variant="h5" align="center">
+                {title}
+              </Typography>
             </Grid>
             <Grid>
-              <Button onClick={onXout} variant='text' sx={{ color: "white" }}>
+              <Button onClick={onXout} variant="text" sx={{ color: "white" }}>
                 <HighlightOffIcon />
               </Button>
             </Grid>
@@ -79,7 +70,5 @@ function WindowTitledDataGrid(
   );
 }
 
-export type {
-  WindowTitledDataGridProperties
-};
+export type { WindowTitledDataGridProperties };
 export default WindowTitledDataGrid;

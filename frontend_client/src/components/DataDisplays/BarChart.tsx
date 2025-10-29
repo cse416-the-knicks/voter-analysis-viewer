@@ -1,19 +1,19 @@
 import * as d3 from "d3";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
-import SimpleTooltip from '../SimpleTooltip';
+import SimpleTooltip from "../SimpleTooltip";
 
 interface BarChartDataEntry {
   category: string;
   value: number;
-};
+}
 
 interface BarChartMargins {
   top?: number;
   left?: number;
   bottom?: number;
   right?: number;
-};
+}
 
 interface BarChartProperties {
   title: string;
@@ -24,26 +24,26 @@ interface BarChartProperties {
   margins?: BarChartMargins;
 }
 
-function BarChart({ 
-  title,
-  xTitle,
-  data,
-  width,
-  height,
-  margins
- }: BarChartProperties) {
-  const barMargin = { 
-    top: margins?.left || 25, 
-    right: margins?.right || 45, 
-    bottom: margins?.bottom || 25, 
-    left: margins?.left || 150 
+function BarChart({ title, xTitle, data, width, height, margins }: BarChartProperties) {
+  const barMargin = {
+    top: margins?.left || 25,
+    right: margins?.right || 45,
+    bottom: margins?.bottom || 25,
+    left: margins?.left || 150,
   };
-  
+
   const barWidth = width - barMargin.left - barMargin.right;
   const barHeight = height - barMargin.top - barMargin.bottom;
 
-  const horizontalAxis = d3.scaleLinear().domain([0, d3.max(data, (x) => x.value)!]).range([0, barWidth]);
-  const verticalAxis = d3.scaleBand().domain(data.map((x) => x.category)).range([0, barHeight]).padding(0.3);
+  const horizontalAxis = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, (x) => x.value)!])
+    .range([0, barWidth]);
+  const verticalAxis = d3
+    .scaleBand()
+    .domain(data.map((x) => x.category))
+    .range([0, barHeight])
+    .padding(0.3);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
@@ -52,40 +52,39 @@ function BarChart({
   const defaultHighlightColor = "hsl(288, 90%, 90%)";
 
   const svgRef = useRef<SVGSVGElement>(null);
-  useEffect(
-    () => {
-      const svg = d3.select(svgRef.current);
-      const rectangleSelector = svg.selectAll("rect");
-      rectangleSelector
-        .on("mouseover",
-          function (_event, _d) {
-            const element = this as Element;
-            d3.select(this).attr("fill", defaultHighlightColor);
-            setShowTooltip(true);
-            setTooltipText(element.getAttribute("data-title") + ": " + element.getAttribute("data-value"));
-          })
-        .on("mouseout",
-          function (_event, _d) {
-            d3.select(this).attr("fill", defaultBlockColor);
-            setShowTooltip(false);
-          });
-      return () => {
-	rectangleSelector.on("mouseover", null).on("mouseout", null)
-      };
-    }, [data]);
+  useEffect(() => {
+    const svg = d3.select(svgRef.current);
+    const rectangleSelector = svg.selectAll("rect");
+    rectangleSelector
+      .on("mouseover", function (_event, _d) {
+        const element = this as Element;
+        d3.select(this).attr("fill", defaultHighlightColor);
+        setShowTooltip(true);
+        setTooltipText(element.getAttribute("data-title") + ": " + element.getAttribute("data-value"));
+      })
+      .on("mouseout", function (_event, _d) {
+        d3.select(this).attr("fill", defaultBlockColor);
+        setShowTooltip(false);
+      });
+    return () => {
+      rectangleSelector.on("mouseover", null).on("mouseout", null);
+    };
+  }, [data]);
 
   return (
     <>
       <svg ref={svgRef} width={width} height={height} style={{ background: "#ffffff" }}>
         <g transform={`translate(${barMargin.left}, ${barMargin.top})`}>
           {data.map((x) => (
-            <rect key={x.category} 
-                  data-title={x.category} 
-                  y={verticalAxis(x.category)!} 
-                  data-value={x.value} 
-                  width={horizontalAxis(x.value)} 
-                  height={verticalAxis.bandwidth()} 
-                  fill={defaultBlockColor} />
+            <rect
+              key={x.category}
+              data-title={x.category}
+              y={verticalAxis(x.category)!}
+              data-value={x.value}
+              width={horizontalAxis(x.value)}
+              height={verticalAxis.bandwidth()}
+              fill={defaultBlockColor}
+            />
           ))}
           {data.map((x) => (
             <text
@@ -100,26 +99,32 @@ function BarChart({
             </text>
           ))}
           {/* Title */}
-          <text x={barWidth/2} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">{title}</text>
-          {horizontalAxis.ticks().map((tick => (
+          <text x={barWidth / 2} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">
+            {title}
+          </text>
+          {horizontalAxis.ticks().map((tick) => (
             <g key={tick} transform={`translate(${horizontalAxis(tick)},${barHeight})`}>
               <line x1="0" y1={barHeight - 10} y2={barHeight} stroke="black"></line>
-              <text x={0} y={barHeight + 15} textAnchor="middle" fontSize={12}>{tick.toString()}</text>
+              <text x={0} y={barHeight + 15} textAnchor="middle" fontSize={12}>
+                {tick.toString()}
+              </text>
             </g>
-          )))}
+          ))}
           <line x1={0} y1={barHeight} x2={barWidth} y2={barHeight} stroke="darkgray" />
           <line x1={0} y1={barHeight} x2={0} y2={0} stroke="darkgray" />
-          <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>{xTitle}</text>
-          <text x={barWidth/2} y={barHeight + 20} fontSize={15}>{xTitle}</text>
+          <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>
+            {xTitle}
+          </text>
+          <text x={barWidth / 2} y={barHeight + 20} fontSize={15}>
+            {xTitle}
+          </text>
         </g>
       </svg>
       {/* Tooltip when moused over. */}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
-  )
+  );
 }
 
-export type {
-  BarChartDataEntry
-};
+export type { BarChartDataEntry };
 export default BarChart;

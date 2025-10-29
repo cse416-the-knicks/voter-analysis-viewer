@@ -1,38 +1,34 @@
 package com.theknicks.voteranalysis_backend.models;
 
-import java.util.Date;
 import java.util.Optional;
 
 /**
  * Voting Equipment Model Response
  *
- * For simplicity, this model is going to be almost directly
- * in sync with the spreadsheet columns.
+ * <p>For simplicity, this model is going to be almost directly in sync with the spreadsheet
+ * columns.
  *
- * NOTE(jerry):
- * For the scope of this, I have no strong feelings about typing,
- * and I think it's basically fine to keep it all as strings.
+ * <p>NOTE(jerry): For the scope of this, I have no strong feelings about typing, and I think it's
+ * basically fine to keep it all as strings.
  *
- * NOTE/TODO(jerry): This should probably be auto-generated, I think we could
- * auto generate it to be honest.
+ * <p>NOTE/TODO(jerry): This should probably be auto-generated, I think we could auto generate it to
+ * be honest.
  *
- * I might do this in another PR.
+ * <p>I might do this in another PR.
  */
 public record VotingEquipmentModel(
-        String manufacturer,
-        // No strong opinions, but this could be an enum.
-        String equipmentType,
-        String modelName,
-        Optional<Boolean> discontinued,
-        // Could/Should be dates, can change later.
-        Optional<Integer> firstManufactured,
-        Optional<Integer> lastManufactured,
-        Optional<String> operatingSystem,
-        Optional<String> firmwareVersion,
-        // Voter Verified Paper Audit Trail
-        Optional<Boolean> vvpat,
-        // Mostly VVSG
-        Optional<String> certificationLevel,
-        Optional<String> securityRiskDescription
-) {
-}
+    String manufacturer,
+    // No strong opinions, but this could be an enum.
+    String equipmentType,
+    String modelName,
+    Optional<Boolean> discontinued,
+    // Could/Should be dates, can change later.
+    Optional<Integer> firstManufactured,
+    Optional<Integer> lastManufactured,
+    Optional<String> operatingSystem,
+    Optional<String> firmwareVersion,
+    // Voter Verified Paper Audit Trail
+    Optional<Boolean> vvpat,
+    // Mostly VVSG
+    Optional<String> certificationLevel,
+    Optional<String> securityRiskDescription) {}
