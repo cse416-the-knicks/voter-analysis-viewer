@@ -59,7 +59,7 @@ for c in cols[1:]:
     df[c] = df[c].apply(to_int)
 
 # Computing total absentee rejections
-df["mail_reject_other"] = df[["C9a","B24a"]].sum(axis=1, skipna=True, min_count=1)
+df["mail_reject_total"] = df[["C9a","B24a"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute removed_other as A12i + A12j + A12k (skipping NaN)
 df["removed_other"] = df[["A12i","A12j","A12k"]].sum(axis=1, skipna=True, min_count=1)
