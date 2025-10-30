@@ -4,7 +4,7 @@ This file should be updated regularly to help us keep track of what we need to w
 
 I (Sean) will update the list here each time Prof. Kelly updates the list.
 
-**_Last Update: 10/9_**
+**_Last Update: 10/28_**
 
 > ✅ = completed, 🚧 = in progress
 
@@ -38,9 +38,10 @@ I (Sean) will update the list here each time Prof. Kelly updates the list.
 - [ ] **GUI-24. Drop box voting bubble chart (required)**
 - [ ] **GUI-25. Bubble chart for voting equipment quality & rejected ballots (required)**
 - [ ✅ ] **GUI-26. Bubble chart regression line (preferred)**
-- [ ] **GUI-27. Ecological Inference (EI) analysis – voting equipment (required)**
-- [ ] **GUI-28. Ecological Inference (EI) analysis – rejected ballots (required)**
-- [ ✅ ] **GUI-29. Reset page (preferred)**
+- [ ] **GUI-27. Display Gingles Chart (required)**
+- [ ] **GUI-28. Ecological Inference (EI) analysis – voting equipment (required)**
+- [ ] **GUI-29. Ecological Inference (EI) analysis – rejected ballots (required)**
+- [ ✅ ] **GUI-30. Reset page (preferred)**
 
 ---
 
