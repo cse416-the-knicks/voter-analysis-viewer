@@ -71,7 +71,7 @@ df["prov_other"] = df[["E2k","E2l","E2m"]].sum(axis=1, skipna=True, min_count=1)
 # Compute mail_reject_other as C4p + C4q + C4r (skipping NaN)
 df["mail_reject_other"] = df[["C4p","C4q","C4r"]].sum(axis=1, skipna=True, min_count=1)
 
-# Comput total_ballots_cast as the sum of absentee, early, eday, and provisional
+# Compute total_ballots_cast as the sum of absentee, early, eday, and provisional
 df["total_ballots_cast"] = df[["C3a","B14a","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
 
 df["year"] = 2020
@@ -98,6 +98,7 @@ rename_map = {
     "A9f" : "removed_incompetent",
     "A9g" : "removed_requested",
     "removed_other" : "removed_other",
+    "total_ballots_cast" : "total_ballots_cast",
     "C3a" : "ballots_by_mail",
     # Missing ballots_drop_box from 2020 codebook
     "F1b": "ballots_in_person_eday",
