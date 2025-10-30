@@ -21,9 +21,9 @@ cols = ["FIPSCode", "State_Abbr",
         "A1a","A1b","A1c",
         "A12a","A12b","A12c","A12d","A12e","A12f","A12g","A12h","A12i","A12j","A12k",
         "C8a","C3a",
-        "F1b","F1c","F1f",
+        "F1b","F1f",
         "E1a","E2a","E2b","E2c","E2d","E2e","E2f","E2g","E2h","E2i","E2j","E2k","E2l",
-        "B24a",
+        "B24a","B18a",
         "C9a","C9b","C9c","C9d","C9e","C9f","C9g","C9h","C9i","C9j","C9k","C9l","C9m","C9n","C9o","C9p","C9q",
         "C9r","C9s","C9t"]
 df = df[cols]
@@ -71,7 +71,7 @@ df["prov_other"] = df[["E2j","E2k","E2l"]].sum(axis=1, skipna=True, min_count=1)
 df["mail_reject_other"] = df[["C9r","C9s","C9t"]].sum(axis=1, skipna=True, min_count=1)
 
 # Computing total_ballots_cast as the sum of absentee, early, eday, and provisional
-df["total_ballots_cast"] = df[["C8a","F1c","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
+df["total_ballots_cast"] = df[["C8a","B18a","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
 
 df["year"] = 2024
 
@@ -81,7 +81,7 @@ df["state_id"] = df["FIPSCode"].str[:2].astype(int)
 df.drop(df[df["State_Abbr"] == "AS"].index, inplace=True)
 
 # Dropping the unused other columns before writing
-df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr","B24a","F1c","C9a"])
+df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr","B24a","B18a","C9a"])
 
 # Mapping each code to the actual schema column names
 rename_map = {
