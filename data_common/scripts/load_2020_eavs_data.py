@@ -21,7 +21,9 @@ cols = ["FIPSCode", "State_Abbr",
         "A1a","A1b","A1c",
         "A9a","A9b","A9c","A9d","A9e","A9f","A9g","A9h","A9i","A9j",
         "C3a",
+        "F1b","F1f",
         "E1a","E2b","E2e","E2d","E2k","E2l","E2m",
+        "B14a","B18a",
         "C4a","C4b","C4c","C4d","C4e","C4g","C4h","C4k","C4i","C4j","C4l","C4m","C4n","C4o",
         "C4p","C4q","C4r"]
 df = df[cols]
@@ -57,6 +59,9 @@ def to_int(val):
 for c in cols[1:]:
     df[c] = df[c].apply(to_int)
 
+# Computing total absentee rejections
+df["mail_reject_total"] = df[["C4a","B18a"]].sum(axis=1, skipna=True, min_count=1)
+
 # Compute removed_other as A9h + A9i + A9j (skipping NaN)
 df["removed_other"] = df[["A9h","A9i","A9j"]].sum(axis=1, skipna=True, min_count=1)
 
@@ -66,6 +71,9 @@ df["prov_other"] = df[["E2k","E2l","E2m"]].sum(axis=1, skipna=True, min_count=1)
 # Compute mail_reject_other as C4p + C4q + C4r (skipping NaN)
 df["mail_reject_other"] = df[["C4p","C4q","C4r"]].sum(axis=1, skipna=True, min_count=1)
 
+# Comput total_ballots_cast as the sum of absentee, early, eday, and provisional
+df["total_ballots_cast"] = df[["C3a","B14a","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
+
 df["year"] = 2020
 
 df["state_id"] = df["FIPSCode"].str[:2].astype(int)
@@ -74,7 +82,7 @@ df["state_id"] = df["FIPSCode"].str[:2].astype(int)
 df.drop(df[df["State_Abbr"] == "AS"].index, inplace=True)
 
 # Dropping the unused other columns before writing
-df = df.drop(columns=["A9h","A9i","A9j","E2k","E2l","E2m","C4p","C4q","C4r","State_Abbr"])
+df = df.drop(columns=["A9h","A9i","A9j","E2k","E2l","E2m","C4p","C4q","C4r","State_Abbr","B18a","C4a","B14a"])
 
 # Mapping each code to the actual schema column names
 rename_map = {
@@ -92,6 +100,8 @@ rename_map = {
     "removed_other" : "removed_other",
     "C3a" : "ballots_by_mail",
     # Missing ballots_drop_box from 2020 codebook
+    "F1b": "ballots_in_person_eday",
+    "F1f": "early_voting_total",
     "E1a": "prov_cast",
     "E2b": "prov_reason_not_in_roll",
     "E2e": "prov_reason_no_id",
@@ -104,7 +114,7 @@ rename_map = {
     # "E2h": "prov_reason_hours_extended",
     # "E2i": "prov_reason_same_day_reg",
     "prov_other": "prov_other",
-    "C4a" : "mail_reject_total",
+    "mail_reject_total" : "mail_reject_total",
     "C4b" : "mail_reject_late",
     "C4c" : "mail_reject_no_sig",
     "C4d" : "mail_reject_no_witness_sig",
