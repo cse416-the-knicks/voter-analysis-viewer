@@ -21,10 +21,11 @@ cols = ["FIPSCode", "State",
         "A1a","A3a","A3b",
         "A11a", "A11b", "A11c", "A11d", "A11e", "A11f", "A11g",
         "A11h", "A11i", "A11j", "A11k",
-        "F1d", "F1g",
+        "B8a","B13a",
+        "F1b","F1f",
         "E1a","E2a","E2d","E2c",
         "E2j","E2k","E2l","E2m","E2n","E2o","E2p",
-        "C4b","C5a","C5b","C5c","C5d","C5f","C5g","C5j","C5h","C5i","C5k","C5l","C5m","C5n",
+        "C4a","C4b","C5a","C5b","C5c","C5d","C5f","C5g","C5j","C5h","C5i","C5k","C5l","C5m","C5n",
         "C5o","C5p","C5q","C5r","C5s","C5t","C5u","C5v"]
 df = df[cols]
 
@@ -48,7 +49,6 @@ def pad_wi_code(code):
 # Wisconsin handled separately with custom prefix logic
 df.loc[is_wi, "FIPSCode"] = df.loc[is_wi, "FIPSCode"].apply(pad_wi_code)
 
-
 # Numeric conversion
 def to_int(val):
     try:
@@ -59,17 +59,20 @@ def to_int(val):
 for c in cols[1:]:
     df[c] = df[c].apply(to_int)
 
+# Computing total absentee rejections
+df["mail_reject_total"] = df[["C4b","B13a"]].sum(axis=1, skipna=True, min_count=1)
+
 # Compute removed_other as A11h + A11i + A11j + A11k (skipping NaN)
 df["removed_other"] = df[["A11h","A11i","A11j","A11k"]].sum(axis=1, skipna=True, min_count=1)
-
-# Compute ballots_by_mail as F1d + F1g (skipping NaN)
-df["ballots_by_mail"] = df[["F1d", "F1g"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute prov_other as E2j + E2k + E2l + E2m + E2n + E2o + E2p (skipping NaN)
 df["prov_other"] = df[["E2j","E2k","E2l","E2m","E2n","E2o","E2p"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute mail_reject_other as C5o + C5p + C5q + C5r + C5s + C5t + C5u + C5v (skipping NaN)
 df["mail_reject_other"] = df[["C5o","C5p","C5q","C5r","C5s","C5t","C5u","C5v"]].sum(axis=1, skipna=True, min_count=1)
+
+# Compute total_ballots_cast as the sum of absentee, early, eday, and provisional
+df["total_ballots_cast"] = df[["C4a","B8a","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
 
 df["year"] = 2016
 
@@ -79,7 +82,7 @@ df["state_id"] = df["FIPSCode"].str[:2].astype(int)
 df.drop(df[df["State"] == "AS"].index, inplace=True)
 
 # Dropping the unused other columns before writing
-df = df.drop(columns=["A11h","A11i","A11j","A11k","F1d","F1g","E2j","E2k","E2l","E2m","E2n","E2o","E2p","C5o","C5p","C5q","C5r","C5s","C5t","C5u","C5v","State"])
+df = df.drop(columns=["A11h","A11i","A11j","A11k","E2j","E2k","E2l","E2m","E2n","E2o","E2p","C5o","C5p","C5q","C5r","C5s","C5t","C5u","C5v","State","B13a","C4b","B8a"])
 
 # Mapping each code to the actual schema column names
 rename_map = {
@@ -95,8 +98,11 @@ rename_map = {
     "A11f" : "removed_incompetent",
     "A11g" : "removed_requested",
     "removed_other" : "removed_other",
-    "ballots_by_mail" : "ballots_by_mail",
+    "total_ballots_cast" : "total_ballots_cast",
+    "C4a" : "ballots_by_mail",
     # Missing ballots_drop_box from 2016 codebook
+    "F1b": "ballots_in_person_eday",
+    "F1f": "early_voting_total",
     "E1a": "prov_cast",
     "E2a": "prov_reason_not_in_roll",
     "E2d": "prov_reason_no_id",
@@ -109,7 +115,7 @@ rename_map = {
     # "E2h": "prov_reason_hours_extended",
     # "E2i": "prov_reason_same_day_reg",
     "prov_other": "prov_other",
-    "C4b" : "mail_reject_total",
+    "mail_reject_total" : "mail_reject_total",
     "C5a" : "mail_reject_late",
     "C5b" : "mail_reject_no_sig",
     "C5c" : "mail_reject_no_witness_sig",

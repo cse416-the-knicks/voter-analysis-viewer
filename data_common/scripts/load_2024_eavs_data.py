@@ -21,7 +21,9 @@ cols = ["FIPSCode", "State_Abbr",
         "A1a","A1b","A1c",
         "A12a","A12b","A12c","A12d","A12e","A12f","A12g","A12h","A12i","A12j","A12k",
         "C8a","C3a",
+        "F1b","F1f",
         "E1a","E2a","E2b","E2c","E2d","E2e","E2f","E2g","E2h","E2i","E2j","E2k","E2l",
+        "B24a","B18a",
         "C9a","C9b","C9c","C9d","C9e","C9f","C9g","C9h","C9i","C9j","C9k","C9l","C9m","C9n","C9o","C9p","C9q",
         "C9r","C9s","C9t"]
 df = df[cols]
@@ -46,7 +48,6 @@ def pad_wi_code(code):
 # Wisconsin handled separately with custom prefix logic
 df.loc[is_wi, "FIPSCode"] = df.loc[is_wi, "FIPSCode"].apply(pad_wi_code)
 
-
 # Numeric conversion
 def to_int(val):
     try:
@@ -57,6 +58,9 @@ def to_int(val):
 for c in cols[1:]:
     df[c] = df[c].apply(to_int)
 
+# Computing total absentee rejections
+df["mail_reject_total"] = df[["C9a","B24a"]].sum(axis=1, skipna=True, min_count=1)
+
 # Compute removed_other as A12i + A12j + A12k (skipping NaN)
 df["removed_other"] = df[["A12i","A12j","A12k"]].sum(axis=1, skipna=True, min_count=1)
 
@@ -66,6 +70,9 @@ df["prov_other"] = df[["E2j","E2k","E2l"]].sum(axis=1, skipna=True, min_count=1)
 # Compute mail_reject_other as C9r + C9s + C9t (skipping NaN)
 df["mail_reject_other"] = df[["C9r","C9s","C9t"]].sum(axis=1, skipna=True, min_count=1)
 
+# Computing total_ballots_cast as the sum of absentee, early, eday, and provisional
+df["total_ballots_cast"] = df[["C8a","B18a","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
+
 df["year"] = 2024
 
 df["state_id"] = df["FIPSCode"].str[:2].astype(int)
@@ -74,7 +81,7 @@ df["state_id"] = df["FIPSCode"].str[:2].astype(int)
 df.drop(df[df["State_Abbr"] == "AS"].index, inplace=True)
 
 # Dropping the unused other columns before writing
-df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr"])
+df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr","B24a","B18a","C9a"])
 
 # Mapping each code to the actual schema column names
 rename_map = {
@@ -93,6 +100,9 @@ rename_map = {
     "removed_other" : "removed_other",
     "C8a" : "ballots_by_mail",
     "C3a" : "ballots_dropbox",
+    "total_ballots_cast": "total_ballots_cast",
+    "F1b": "ballots_in_person_eday",
+    "F1f": "early_voting_total",
     "E1a": "prov_cast",
     "E2a": "prov_reason_not_in_roll",
     "E2b": "prov_reason_no_id",
@@ -104,7 +114,7 @@ rename_map = {
     "E2h": "prov_reason_hours_extended",
     "E2i": "prov_reason_same_day_reg",
     "prov_other": "prov_other",
-    "C9a" : "mail_reject_total",
+    "mail_reject_total" : "mail_reject_total",
     "C9b" : "mail_reject_late",
     "C9c" : "mail_reject_no_sig",
     "C9d" : "mail_reject_no_witness_sig",
@@ -150,4 +160,4 @@ df.to_sql(
     index=False
 )
 
-print("Finished inserting preliminary eavs data into the database")
+print("Finished inserting 2024 eavs data into the database")
