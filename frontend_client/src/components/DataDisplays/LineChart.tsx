@@ -71,8 +71,23 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
 
   // NOTE(jerry): unused currently
   const svgRef = useRef<SVGSVGElement>(null);
+  const svgRef2 = useRef<SVGSVGElement>(null);
+
+
   useEffect(() => {
-    const svg = d3.select(svgRef.current);
+    const svg = d3.select(svgRef2.current);
+
+    function handleZoom(e) {
+      d3.select(svgRef.current)
+	.attr('transform', e.transform);
+    }
+
+    const zoom = d3.zoom()
+      .scaleExtent([1.0, 10.0])
+      .translateExtent([[0,0], [width,height]])
+      .on('zoom', handleZoom);
+    svg.call(zoom);
+
     const circleSelector = svg.selectAll("circle");
     circleSelector
       .on("mouseover", function (_event, _d) {
@@ -86,11 +101,12 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
     return () => {
       circleSelector.on("mouseover", null).on("mouseout", null);
     };
-  }, [data]);
+  }, []);
 
   return (
     <>
-      <svg ref={svgRef} width={width} height={height} style={{ background: "#ffff", borderRadius: "8px" }}>
+      <svg ref={svgRef2} width={width} height={height} style={{ background: "#ffffff", borderRadius: "8px" }}>
+	<svg ref={svgRef} width={width} height={height} style={{ background: "#ffffff", borderRadius: "8px" }}>
         {/* Bubble Chart Title */}
         <text x={width / 2} y={30} textAnchor="middle" fontSize={20}>
           {title}
@@ -166,6 +182,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
 			  stroke={"black"}/>)))
 	  )
 	}
+	  </svg>
       </svg>
       {/* Tooltip when moused over. */}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
