@@ -70,6 +70,7 @@ import { dropBoxData, equipmentQualityData } from "../DataDisplays/PartyStatesMo
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
+import LineChart from "../DataDisplays/LineChart";
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -477,13 +478,28 @@ function StateInformationView() {
             <Route
               path="compare-voter-registration-rates"
               element={
-                <BubbleChart
-                  data={equipmentQualityData}
+                <LineChart
+                  data={async() => {
+		    const eavsYears = [2016,2018,2020,2022,2024];
+		    const promises = eavsYears.map(year => getVoterRegistrationCounts(fipsCode!, { aggregate: true, year: year }));
+		    const completed = (await Promise.all(promises)).map((yearDataArray) => yearDataArray[0]);
+		    const pointSet = {
+		      points: completed.map((yearData, index) => {
+			const obj = {
+			  x: yearData.total,
+			  y: eavsYears[index],
+			};
+			return obj;
+		      }),
+		      label: eavsYears[index].toString()
+		    };
+		    return [pointSet];
+		  }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
-                  title="Voting Equipment Quality"
-                  xAxisLabel="Quality Level"
-                  yAxisLabel="Rejected Ballots (%)"
+                  title="Voter Registration By Year"
+                  xAxisLabel="EAVS Year"
+                  yAxisLabel="Registration Count"
                 />
               }
             />
