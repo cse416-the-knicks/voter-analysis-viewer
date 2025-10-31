@@ -320,10 +320,10 @@ function StateInformationView() {
       if (row) {
         style.fillOpacity = 1.0;
         style.fillColor = gradientMapNearest(
-          (row as ProvisionalBallotStatisticsModel).totalBallotsCast! ||
+          (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
+            (row as ProvisionalBallotStatisticsModel).totalBallotsCast! ||
             (row as PollbookDeletionStatisticsModel).totalRemoved! ||
-            (row as VoterRegistrationStatisticsModel).total! ||
-            (row as MailBallotRejectionStatisticsModel).rejectTotal!,
+            (row as VoterRegistrationStatisticsModel).total!,
           gradientMap
         );
       }

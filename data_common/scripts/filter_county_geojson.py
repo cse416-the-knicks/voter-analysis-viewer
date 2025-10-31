@@ -1,6 +1,6 @@
 import geopandas as gpd
 
-TARGET_STATES = ["Georgia", "Michigan", "Texas", "New York", "Oklahoma", "Indiana"]
+TARGET_STATES = ["Georgia", "Michigan", "Texas", "New York", "Oklahoma", "Ohio"]
 
 gdf = gpd.read_file("../geospatial_raw/US_County_Boundaries.geojson")
 
