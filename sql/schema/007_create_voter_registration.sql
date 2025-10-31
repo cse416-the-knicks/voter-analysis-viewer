@@ -14,7 +14,7 @@ CREATE TABLE app.voter_registration (
     middle_name  VARCHAR(50),
 
     party_affiliation  VARCHAR(20),                       -- political party
-    status             VARCHAR(10),                       -- "Active", "Inactive", "Removed"
+    status             VARCHAR(20),                       -- "Active", "Inactive", "Removed"
 
     city         VARCHAR(50),
     zip_code     VARCHAR(10),

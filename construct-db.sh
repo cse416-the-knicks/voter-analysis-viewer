@@ -62,5 +62,6 @@ python3 load_2022_eavs_data.py
 python3 load_2020_eavs_data.py
 python3 load_2018_eavs_data.py
 python3 load_2016_eavs_data.py
+python3 load_ohio_voter_reg_data.py # COMMENT OUT IF NOT NEEDED, TAKES 5 OR MORE MIN TO RUN
 
 touch  /var/lib/postgresql/.lockfile
