@@ -17,27 +17,51 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
   }
 
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationDataRows(
-      Optional<String> stateFips, Optional<String> countyFips) {
+      String stateFips, Optional<String> countyFips, int pageSize, int pageIndex) {
     var queryable = new VoterRegistrationDataModel.Queryable();
     var mapper = queryable.Mapper();
     var selectQuery = queryable.Query();
 
-    if (stateFips.isPresent()) {
-      if (countyFips.isPresent()) {
-        return _jdbcTemplate.query(
-            selectQuery + " where state_id = ? and region_id = ?",
-            mapper,
-            Integer.parseInt(stateFips.get(), 10),
-            countyFips.get());
-      } else {
-        return _jdbcTemplate.query(
-            selectQuery + " where state_id = ?", mapper, Integer.parseInt(stateFips.get(), 10));
+    if (countyFips.isPresent()) {
+      return _jdbcTemplate.query(
+          selectQuery + " where state_id = ? and region_id = ? limit ? offset ?",
+          mapper,
+          Integer.parseInt(stateFips, 10),
+          countyFips.get(),
+          pageSize,
+          pageIndex);
+    } else {
+      return _jdbcTemplate.query(
+          selectQuery + " where state_id = ? limit ? offset ?",
+          mapper,
+          Integer.parseInt(stateFips, 10),
+          pageSize,
+          pageIndex);
+    }
+  }
+
+  public int getDetailedVoterRegistrationDataCount(String stateFips, Optional<String> countyFips) {
+    int result = 0;
+    if (countyFips.isPresent()) {
+      var queryResult =
+          _jdbcTemplate.queryForObject(
+              "select count(*) from app.voter_registration where state_id = ? and region_id = ?",
+              Integer.class,
+              Integer.parseInt(stateFips, 10),
+              countyFips.get());
+      if (queryResult != null) {
+        result = queryResult;
       }
     } else {
-      if (countyFips.isEmpty()) {
-        return _jdbcTemplate.query(selectQuery, mapper);
+      var queryResult =
+          _jdbcTemplate.queryForObject(
+              "select count(*) from app.voter_registration where state_id = ?",
+              Integer.class,
+              Integer.parseInt(stateFips, 10));
+      if (queryResult != null) {
+        result = queryResult;
       }
     }
-    return List.of();
+    return result;
   }
 }

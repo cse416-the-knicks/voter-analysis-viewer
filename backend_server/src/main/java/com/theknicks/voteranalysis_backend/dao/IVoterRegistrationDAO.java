@@ -12,10 +12,20 @@ public interface IVoterRegistrationDAO {
    * None - State - State + County/RegionFips Providing only a county without a state will result in
    * an empty list.
    *
-   * @param stateFips - State code fips. Can be left as empty / null
+   * @param stateFips - State code fips. This is required.
    * @param countyFips - County code fips. Can be left as empty / null
    * @return A list of detailed voter registration data rows.
    */
   List<VoterRegistrationDataModel> getDetailedVoterRegistrationDataRows(
-      Optional<String> stateFips, Optional<String> countyFips);
+      String stateFips, Optional<String> countyFips, int pageSize, int pageIndex);
+
+  /**
+   * This access point is meant to count all the rows for detailed voter registration information of
+   * a particular state.
+   *
+   * @param stateFips - State code fips. This is required.
+   * @param countyFips - County code fips. This is not required, can be left as empty / null
+   * @return
+   */
+  int getDetailedVoterRegistrationDataCount(String stateFips, Optional<String> countyFips);
 }

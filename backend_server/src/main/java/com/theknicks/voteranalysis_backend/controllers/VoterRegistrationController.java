@@ -23,10 +23,21 @@ public class VoterRegistrationController {
     _service = service;
   }
 
+  @GetMapping("/count")
+  public int getDetailedVoterRegistrationDataCount(
+      @RequestParam(name = "state", defaultValue = "") String stateFips,
+      @RequestParam(name = "county", defaultValue = "") String countyFips) {
+    // NOTE(jerry):
+    // this end-point exists to help support pagination on the frontend.
+    return _service.getDetailedVoterRegistrationDataCount(stateFips, countyFips);
+  }
+
   @GetMapping("/")
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationData(
       @RequestParam(name = "state", defaultValue = "") String stateFips,
-      @RequestParam(name = "county", defaultValue = "") String countyFips) {
-    return _service.getDetailedVoterRegistrationData(stateFips, countyFips);
+      @RequestParam(name = "county", defaultValue = "") String countyFips,
+      @RequestParam(name = "pageSize", defaultValue = "50") int pageSize,
+      @RequestParam(name = "pageIndex", defaultValue = "0") int pageIndex) {
+    return _service.getDetailedVoterRegistrationData(stateFips, countyFips, pageSize, pageIndex);
   }
 }
