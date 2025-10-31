@@ -75,6 +75,7 @@ const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
 const ID_SELECTION_POLLBOOK_DELETION = 2;
 const ID_SELECTION_MAIL_BALLOT_REJECTIONS = 3;
+const ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES = 10;
 
 const ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE = 4;
 const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
@@ -169,16 +170,24 @@ function StateInformationView() {
 
   const tryingToViewDetailedVoterRegistration = stateType === DETAIL_STATE_TYPE_VOTER_REGISTRATION && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-  const shouldOpenPopup = ["dropbox-chart", "rejected-ballots-chart", "voter-table"].some((x) => location.pathname.includes(x));
+  const shouldOpenPopup = ["dropbox-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates"].some((x) =>
+    location.pathname.includes(x)
+  );
 
   const dropDownSections = [...defaultDropDownSections];
   if (stateType == DETAIL_STATE_TYPE_VOTER_REGISTRATION) {
     dropDownSections.push({
       title: "Voter Registration",
       items: [
+        { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
         { id: ID_SELECTION_VOTER_REGISTRATION, iconComponent: <PersonIcon />, textContent: "Registration Data" },
         { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
       ],
+    });
+  } else {
+    dropDownSections.push({
+      title: "Voter Registration",
+      items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
     });
   }
 
@@ -260,6 +269,11 @@ function StateInformationView() {
               navigate(`/state/${fipsCode!}/`);
               // TODO(jerry): add the endpoint to
               // fill in the data from...
+            }
+            break;
+          case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
+            {
+              navigate(`/state/${fipsCode}/compare-voter-registration-rates/`);
             }
             break;
           case ID_SELECTION_REJECTED_BALLOTS:
@@ -457,6 +471,19 @@ function StateInformationView() {
                   xAxisLabel="Quality Level"
                   yAxisLabel="Rejected Ballots (%)"
                   useRegression
+                />
+              }
+            />
+            <Route
+              path="compare-voter-registration-rates"
+              element={
+                <BubbleChart
+                  data={equipmentQualityData}
+                  width={bubbleChartWidth}
+                  height={bubbleChartHeight}
+                  title="Voting Equipment Quality"
+                  xAxisLabel="Quality Level"
+                  yAxisLabel="Rejected Ballots (%)"
                 />
               }
             />
