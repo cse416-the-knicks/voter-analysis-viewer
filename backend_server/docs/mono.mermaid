@@ -119,11 +119,22 @@ namespace Models {
         +dominant_party: string
         +Queryable() AutoSqlQueryable~~
     }
+    class StateInformationModel {
+        +fipsCode: string
+        +name: string
+        +registrationMethod: RegistrationMethod
+        +felonyDisenfranchisement: FelonyDisenfranchisement
+        +populationTotal: int
+        +cvapTotal: int
+        +affiliation: PoliticalParty
+
+        +fromRaw(rowModel: StateInformationDataRowModel): StateInformationModel
+    }
     class GeoUnitCentroidModel {
-        fullRegionId: string
-        countyName: string
-        centerX: float
-        centerY: float
+        +fullRegionId: string
+        +countyName: string
+        +centerX: float
+        +centerY: float
     }
     class VotingEquipmentModel {
         +manufacturer: string
@@ -147,6 +158,9 @@ namespace Models {
         +partyAffiliation: string
         +status: string
         +Queryable() AutoSqlQueryable~~
+    }
+    class GeoJSON {
+        refer to official GeoJSON documentation for schema.
     }
 }
 
@@ -314,6 +328,27 @@ namespace Helpers {
         +Query(asSumAggregate: boolean) string
     }
 }
+namespace Enums {
+    class FelonyDisenfranchisement {
+        <<enum>>
+        UNKNOWN = 0
+        NO_DENIAL_OF_VOTING = 1
+        RESTORATION_UPON_RELEASE_FROM_PRISON = 2
+        RESTORATION_AFTER_PAROLE_AND_PROBATION = 3
+        ADDITIONAL_ACTION_FOR_RESTORATION = 4
+    }
+    class PoliticalParty {
+        <<enum>>
+        UNAFFILIATED,
+        DEMOCRAT = 'D'
+        REPUBLICAN = 'R'
+    }
+    class RegistrationMethod {
+        NONE=0,
+        OPT-IN = "opt-in",
+        OPT-OUT = "opt-out",
+    }
+}
 
 %% relationships
 VoterRegistrationDAO <|-- IVoterRegistrationDAO : Implements
@@ -322,14 +357,16 @@ VoterEquipmentInMemoryDAO <|-- IVoterEquipmentDAO : Implements
 VoterEquipmentLocalDiskDAO <-- VoterEquipmentInMemoryDAO : Has
 StateDAO <|-- IStateDAO : Implements
 
-ProvisionalBallotStatisticsModel <-- AutoSqlQueryable : Has
-VoterRegistrationStatisticsModel <-- AutoSqlQueryable : Has
-PollbookDeletionStatisticsModel <-- AutoSqlQueryable : Has
-MailBallotRejectionStatisticsModel <-- AutoSqlQueryable : Has
-BallotStatisticsModel <-- AutoSqlQueryable : Has
-ViewStateYearSummaryModel <-- AutoSqlQueryable : Has
-StateInformationDataRowModel <-- AutoSqlQueryable : Has
-VoterRegistrationDataModel <-- AutoSqlQueryable : Has
+AutoSqlQueryable <-- ProvisionalBallotStatisticsModel : Has
+AutoSqlQueryable <-- VoterRegistrationStatisticsModel : Has
+AutoSqlQueryable <-- PollbookDeletionStatisticsModel : Has
+AutoSqlQueryable <-- MailBallotRejectionStatisticsModel : Has
+AutoSqlQueryable <-- BallotStatisticsModel : Has
+AutoSqlQueryable <-- ViewStateYearSummaryModel : Has
+AutoSqlQueryable <-- StateInformationDataRowModel : Has
+AutoSqlQueryable <-- VoterRegistrationDataModel : Has
+
+StateInformationModel <-- StateInformationDataRowModel : ConvertedInto
 
 StateService <-- IStateDAO : Has
 VoterEquipmentService <-- IVoterEquipmentDAO : Has
