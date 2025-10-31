@@ -481,7 +481,13 @@ function StateInformationView() {
                 <LineChart
                   data={async () => {
                     const eavs2024Data = await getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: 2024 });
-                    const eavsYears = [2016, 2018, 2020, 2022];
+                    const eavsYears = [
+                      2016,
+                      // 2018,
+                      2020,
+                      // 2022,
+                      2024,
+                    ];
                     const eavsColors = ["red", "blue", "green", "magenta", "yellow"];
                     const promises = eavsYears.map((year) => getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: year }));
 

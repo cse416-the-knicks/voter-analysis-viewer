@@ -106,6 +106,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
 
   useEffect(() => {
     const svg = d3.select(svgRef2.current);
+    const svg2 = d3.select(svgRef.current);
 
     function handleZoom(e) {
       d3.select(svgRef.current).attr("transform", e.transform);
@@ -121,12 +122,13 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
       .on("zoom", handleZoom);
     svg.call(zoom);
 
-    const circleSelector = svg.selectAll("circle");
+    const circleSelector = svg2.selectAll("circle");
+    console.log(circleSelector);
     circleSelector
       .on("mouseover", function (_event, _d) {
         const element = this as Element;
         setShowTooltip(true);
-        setTooltipText(element.getAttribute("data-title")!);
+        setTooltipText(element.getAttribute("data-title") + ": " + element.getAttribute("data-value"));
       })
       .on("mouseout", function (_event, _d) {
         setShowTooltip(false);
@@ -134,7 +136,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
     return () => {
       circleSelector.on("mouseover", null).on("mouseout", null);
     };
-  }, []);
+  }, [actualData]);
 
   return (
     <>
@@ -161,18 +163,21 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
 
           {/* label x axis */}
           {xAxisLabels.map((x) => (
-            <text
-              key={x}
-              x={xAxisScale(x)}
-              y={chartHeight * 0.99}
-              transform={`rotate(-45, ${xAxisScale(x)}, ${chartHeight * 0.99})`}
-              textAnchor="start"
-              alignmentBaseline="middle"
-              fontWeight="bold"
-              fontSize={"0.5em"}
-            >
-              {x}
-            </text>
+            <>
+              <line x1={xAxisScale(x)} y1={yAxisScale(0) + 20} x2={xAxisScale(x)} y2={yAxisScale(0)} stroke={"#808080"} />
+              <text
+                key={x}
+                x={xAxisScale(x)}
+                y={chartHeight * 0.99}
+                transform={`rotate(-45, ${xAxisScale(x)}, ${chartHeight * 0.99})`}
+                textAnchor="start"
+                alignmentBaseline="middle"
+                fontWeight="bold"
+                fontSize={"0.5em"}
+              >
+                {x}
+              </text>
+            </>
           ))}
 
           <text
@@ -186,33 +191,59 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
             {yAxisLabel}
           </text>
 
+          {/* Visual-aide to have the points lined up with their target */}
+          {isLoaded ? (
+            actualData[0].points.map((_, index) => (
+              <line
+                x1={xAxisScale(actualData[0].points[index].x)}
+                y1={yAxisScale(actualData[0].points[index].y)}
+                x2={xAxisScale(actualData[0].points[index].x)}
+                y2={yAxisScale(0)}
+                strokeDasharray={"0 4 0"}
+                stroke={"lightgray"}
+              />
+            ))
+          ) : (
+            <></>
+          )}
           {/* Graph Line for pointset */}
           {actualData.map((pointSet) =>
             pointSet.points.map((_, index) =>
               index + 1 >= pointSet.points.length ? (
                 <></>
               ) : (
-                <line
-                  x1={xAxisScale(pointSet.points[index].x)}
-                  y1={yAxisScale(pointSet.points[index].y)}
-                  x2={xAxisScale(pointSet.points[index + 1].x)}
-                  y2={yAxisScale(pointSet.points[index + 1].y)}
-                  stroke={pointSet.color}
-                />
+                <>
+                  <line
+                    x1={xAxisScale(pointSet.points[index].x)}
+                    y1={yAxisScale(pointSet.points[index].y)}
+                    x2={xAxisScale(pointSet.points[index + 1].x)}
+                    y2={yAxisScale(pointSet.points[index + 1].y)}
+                    stroke={pointSet.color}
+                  />
+                </>
               )
             )
           )}
           {/* Plot Data Points*/}
           {actualData.map((pointSet) =>
             pointSet.points.map((point) => (
-              <circle key={point.x + pointSet.label} cx={xAxisScale(point.x)} cy={yAxisScale(point.y)} r={2} fill={pointSet.color} stroke={"black"} />
+              <circle
+                key={point.x + pointSet.label}
+                cx={xAxisScale(point.x)}
+                cy={yAxisScale(point.y)}
+                r={3}
+                fill={pointSet.color}
+                stroke={"black"}
+                data-value={point.y}
+                data-title={point.x + " - " + pointSet.label}
+              />
             ))
           )}
         </svg>
       </svg>
       {/* Tooltip when moused over. */}
-      <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
       {isLoaded && <SimpleLineChartLegend chartWidth={chartWidth} data={actualData} />}
+      <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
   );
 }
