@@ -480,26 +480,38 @@ function StateInformationView() {
               element={
                 <LineChart
                   data={async() => {
-		    const eavsYears = [2016,2018,2020,2022,2024];
-		    const promises = eavsYears.map(year => getVoterRegistrationCounts(fipsCode!, { aggregate: true, year: year }));
-		    const completed = (await Promise.all(promises)).map((yearDataArray) => yearDataArray[0]);
-		    const pointSet = {
-		      points: completed.map((yearData, index) => {
+		    const eavsYears = [2016, 2018, 2020, 2022, 2024];
+		    const eavsColors = ["red", "blue", "green", "magenta", "yellow"];
+		    const promises = eavsYears.map(year =>
+		      getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: year }));
+
+		    const completed = (await Promise.all(promises));
+		    const pointSets = completed.map(
+		      (data, index) => {
+			const points = data.map(
+			  (data1) => {
+			    const obj = {
+			      x: data1.countyName!,
+			      y: data1.total!,
+			    };
+			    return obj;
+			  }
+			)
 			const obj = {
-			  x: yearData.total,
-			  y: eavsYears[index],
+			  points,
+			  label: eavsYears[index],
+			  color: eavsColors[index],
 			};
 			return obj;
-		      }),
-		      label: eavsYears[index].toString()
-		    };
-		    return [pointSet];
+		      }
+		    )
+		    return pointSets;
 		  }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
                   title="Voter Registration By Year"
-                  xAxisLabel="EAVS Year"
-                  yAxisLabel="Registration Count"
+                  xAxisLabel="EAVs Unit"
+                  yAxisLabel="Registered Voters"
                 />
               }
             />

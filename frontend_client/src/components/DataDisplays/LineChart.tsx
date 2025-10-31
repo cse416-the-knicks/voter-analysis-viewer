@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import SimpleTooltip from "../SimpleTooltip";
 
 interface LineChartDataPoint {
-  x: number;
+  x: string; // label county
   y: number;
 }
 
@@ -25,8 +25,11 @@ interface LineChartProperties {
 
 import { useState, useEffect, useRef } from "react";
 
+// NOTE(jerry):
+// this is not a very general purpose line-chart
+// it was built to express the visualization for GUI 16. exclusively.
 function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineChartProperties) {
-  const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
+  const chartMargin = { top: 60, right: 40, bottom: 60, left: 70 };
   const chartWidth = width - chartMargin.left - chartMargin.right + 125;
   const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
 
@@ -49,16 +52,18 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
     [data]
   );
 
+  // I make a horrible assumption for GUI16 here.
+  const xAxisLabels = actualData[0]?.points.map(x => x.x) || ["loading"];
   const xAxisScale = d3
-    .scaleLinear()
-    .domain([0, d3.max(actualData, (x) => Math.max(...x.points.map(x1 => x1.x)))! + 5])
+    .scaleBand()
+    .domain(xAxisLabels)
     .range([chartMargin.left, chartWidth - chartMargin.right]);
   const yAxisScale = d3
     .scaleLinear()
     .domain([0, d3.max(actualData, (x) => Math.max(...x.points.map(x1 => x1.y)))! + 5])
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
 
-  const xAxisTicks = xAxisScale.ticks(16);
+  // const xAxisTicks = xAxisScale.ticks(16);
   const yAxisTicks = yAxisScale.ticks(4);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
@@ -91,16 +96,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
           {title}
         </text>
 
-        {/* x axis */}
-        {xAxisTicks.map((x, y) => (
-          <g key={y}>
-            <line x1={xAxisScale(x)} x2={xAxisScale(x)} y1={chartMargin.top} y2={chartHeight - chartMargin.bottom} stroke="#808080" />
-            <text x={xAxisScale(x)} y={chartHeight - chartMargin.bottom + 20} textAnchor="middle" fontSize={15}>
-              {x}
-            </text>
-          </g>
-        ))}
-        <text x={chartWidth / 2 + 10} y={chartHeight - 5} textAnchor="middle" fontSize={15} fontWeight="bold">
+        <text x={chartWidth / 2 + 10} y={chartHeight+10} textAnchor="middle" fontSize={15} fontWeight="bold">
           {xAxisLabel}
         </text>
 
@@ -113,8 +109,25 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
             </text>
           </g>
         ))}
-        <text
-          x={chartMargin.left - 50}
+
+	{/* label x axis */}
+	{xAxisLabels.map((x) => (
+	  <text
+	    key={x}
+	    x={xAxisScale(x)}
+	    y={chartHeight*0.99}
+	    transform={`rotate(-45, ${xAxisScale(x)}, ${chartHeight*0.99})`}
+	    textAnchor="start"
+	    alignmentBaseline="middle"
+	    fontWeight="bold"
+	    fontSize={"0.5em"}
+	  >
+	    {x}
+	  </text>
+	))}
+
+	<text
+	  x={chartMargin.left - 50}
           y={chartHeight / 2}
           textAnchor="middle"
           fontSize={15}
@@ -124,6 +137,22 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
           {yAxisLabel}
         </text>
 
+	{/* Graph Line for pointset */}
+	{
+	  actualData.map(
+	    pointSet => (pointSet.points.map(
+	      (_, index) => (
+		(index+1 >= pointSet.points.length) ? <></> :
+		<line
+		  x1={xAxisScale(pointSet.points[index].x)}
+		  y1={yAxisScale(pointSet.points[index].y)}
+		  x2={xAxisScale(pointSet.points[index+1].x)}
+		  y2={yAxisScale(pointSet.points[index+1].y)}
+		  stroke={pointSet.color}
+		/>
+	      )))
+	  )
+	}
 	{/* Plot Data Points*/}
 	{
 	  actualData.map(
@@ -132,9 +161,9 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
 			  key={point.x+pointSet.label}
 			  cx={xAxisScale(point.x)}
 			  cy={yAxisScale(point.y)}
-			  r={4}
-			  fill={"red"}
-			  stroke={"blue"}/>)))
+			  r={2}
+			  fill={pointSet.color}
+			  stroke={"black"}/>)))
 	  )
 	}
       </svg>
