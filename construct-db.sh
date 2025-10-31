@@ -3,7 +3,7 @@
 # $File: construct-db.sh
 # $Author: Jerry Zhu (jerry.zhu@stonybrook.edu)
 # $Date: 10-01-2025 18:10:18
-# $Updated: 10-04-2025 18:47:03
+# $Updated: 10-31-2025 10:26:00
 # $Description: Running SQL scripts in specific order.
 
 if [ -f /var/lib/postgresql/.lockfile ]; then
@@ -42,6 +42,15 @@ done
 echo "============================="
 echo "Populating data..."
 echo "============================="
+
+# Special-case step for Ohio Voter State Data
+# since it is massive and cannot be placed in GitHub
+# due to raw file-size limit.
+#
+# We store split up archive parts which we need to rejoin and
+# unzip afterwards.
+cd /project-root/data_common/raw/ohio_voter_files/
+./join.sh
 
 cd /project-root/data_common/scripts/
 
