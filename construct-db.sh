@@ -50,7 +50,8 @@ echo "============================="
 # We store split up archive parts which we need to rejoin and
 # unzip afterwards.
 cd /project-root/data_common/raw/ohio_voter_files/
-./join.sh
+chmod +x join.sh
+bash /project-root/data_common/raw/ohio_voter_files/join.sh
 
 cd /project-root/data_common/scripts/
 
