@@ -479,36 +479,32 @@ function StateInformationView() {
               path="compare-voter-registration-rates"
               element={
                 <LineChart
-                  data={async() => {
-		    const eavs2024Data = await getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: 2024 });
-		    const eavsYears = [2016, 2018, 2020, 2022];
-		    const eavsColors = ["red", "blue", "green", "magenta", "yellow"];
-		    const promises = eavsYears.map(year => getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: year }));
+                  data={async () => {
+                    const eavs2024Data = await getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: 2024 });
+                    const eavsYears = [2016, 2018, 2020, 2022];
+                    const eavsColors = ["red", "blue", "green", "magenta", "yellow"];
+                    const promises = eavsYears.map((year) => getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: year }));
 
-		    const completed = (await Promise.all(promises));
-		    const pointSets = completed.map(
-		      (data, index) => {
-			// TODO(backend), this should be done on the server-side
-			// so ideally the sorting doesn't happen here. I am personally A-OK with
-			// this but I know Professor Kelly is not.
-			data.sort((a, b) => {
-			  const equivalentA = eavs2024Data.find((x) => x.countyName === a.countyName)!;
-			  const equivalentB = eavs2024Data.find((x) => x.countyName === b.countyName)!;
-			  return (equivalentB.total || 0) - (equivalentA.total || 0);
-			});
-			const points = data.map(
-			  (data1) => ({x: data1.countyName!, y: data1.total!,})
-			)
-			const obj = {
-			  points,
-			  label: eavsYears[index].toString(),
-			  color: eavsColors[index],
-			};
-			return obj;
-		      }
-		    )
-		    return pointSets;
-		  }}
+                    const completed = await Promise.all(promises);
+                    const pointSets = completed.map((data, index) => {
+                      // TODO(backend), this should be done on the server-side
+                      // so ideally the sorting doesn't happen here. I am personally A-OK with
+                      // this but I know Professor Kelly is not.
+                      data.sort((a, b) => {
+                        const equivalentA = eavs2024Data.find((x) => x.countyName === a.countyName)!;
+                        const equivalentB = eavs2024Data.find((x) => x.countyName === b.countyName)!;
+                        return (equivalentB.total || 0) - (equivalentA.total || 0);
+                      });
+                      const points = data.map((data1) => ({ x: data1.countyName!, y: data1.total! }));
+                      const obj = {
+                        points,
+                        label: eavsYears[index].toString(),
+                        color: eavsColors[index],
+                      };
+                      return obj;
+                    });
+                    return pointSets;
+                  }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
                   title="Voter Registration By Year"
