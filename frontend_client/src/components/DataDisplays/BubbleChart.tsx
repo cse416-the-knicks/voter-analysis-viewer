@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import regression from 'regression'
 import SimpleTooltip from "../SimpleTooltip";
 
 type PartyAffiliation = "Rep" | "Dem";
@@ -13,10 +14,7 @@ interface BubbleChartDataPoint {
 
 interface RegressionDataLine {
   party: PartyAffiliation;
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
+  points: BubbleChartDataPoint[];
 }
 
 interface BubbleChartProperties {
@@ -59,31 +57,6 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     return p.yValue;
   };
 
-  const calculateLineOfBestFit = function (points: BubbleChartDataPoint[]): { slope: number; intercept: number } | null {
-    if (points.length < 2) {
-      return null;
-    }
-
-    let sumX = 0,
-      sumY = 0,
-      sumXY = 0,
-      sumX2 = 0;
-    const len = points.length;
-
-    for (const point of points) {
-      const x = getX(point);
-      const y = getY(point);
-      sumX += x;
-      sumY += y;
-      sumXY += x * y;
-      sumX2 += x * x;
-    }
-
-    const slope = (len * sumXY - sumX * sumY) / (len * sumX2 - sumX * sumX);
-    const intercept = (sumY - slope * sumX) / len;
-    return { slope, intercept };
-  };
-
   const parties = [
     ...new Set(
       data.map(function (x) {
@@ -91,25 +64,78 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
       })
     ),
   ];
-  const calculatedRegressionLines: RegressionDataLine[] = parties
-    .map(function (party) {
-      const partyData = data.filter(function (x) {
-        return x.party === party;
-      });
 
-      const regression = calculateLineOfBestFit(partyData);
-      if (!regression) {
-        return null;
+  const calculatedRegressionCurves: RegressionDataLine[] = parties
+    .map(party => {
+    const partyData: [number, number][] = data
+      .filter(d => d.party === party)
+      .map(d => [getX(d), getY(d)] as [number, number]);
+
+    if (partyData.length < 3) return null;
+
+    const result = regression.polynomial(partyData as readonly [number, number][], { order: 3 });
+
+    const linePoints: BubbleChartDataPoint[] = [];
+    const [minX, maxX] = xAxisScale.domain() as [number, number];
+      for (let x = minX; x <= maxX; x += 0.5) {
+        const y = result.predict(x)[1];
+        linePoints.push({ name: '', party: party, size: 0, xValue: x, yValue: y });
       }
 
-      const { slope, intercept } = regression;
-      const [x1, x2] = xAxisScale.domain();
-      const y1 = slope * x1 + intercept;
-      const y2 = slope * x2 + intercept;
-
-      return { party, x1, y1, x2, y2 };
+      return { party, points: linePoints };
     })
     .filter((line): line is RegressionDataLine => line !== null);
+
+    const lineGenerator = d3.line<BubbleChartDataPoint>()
+    .x(d => xAxisScale(d.xValue))
+    .y(d => yAxisScale(d.yValue))
+    .curve(d3.curveBasis);
+
+  // Linear regression
+  // const calculateLineOfBestFit = function (points: BubbleChartDataPoint[]): { slope: number; intercept: number } | null {
+  //   if (points.length < 2) {
+  //     return null;
+  //   }
+
+  //   let sumX = 0,
+  //     sumY = 0,
+  //     sumXY = 0,
+  //     sumX2 = 0;
+  //   const len = points.length;
+
+  //   for (const point of points) {
+  //     const x = getX(point);
+  //     const y = getY(point);
+  //     sumX += x;
+  //     sumY += y;
+  //     sumXY += x * y;
+  //     sumX2 += x * x;
+  //   }
+
+  //   const slope = (len * sumXY - sumX * sumY) / (len * sumX2 - sumX * sumX);
+  //   const intercept = (sumY - slope * sumX) / len;
+  //   return { slope, intercept };
+  // };
+
+  // const calculatedRegressionLines: RegressionDataLine[] = parties
+  //   .map(function (party) {
+  //     const partyData = data.filter(function (x) {
+  //       return x.party === party;
+  //     });
+
+  //     const regression = calculateLineOfBestFit(partyData);
+  //     if (!regression) {
+  //       return null;
+  //     }
+
+  //     const { slope, intercept } = regression;
+  //     const [x1, x2] = xAxisScale.domain();
+  //     const y1 = slope * x1 + intercept;
+  //     const y2 = slope * x2 + intercept;
+
+  //     return { party, x1, y1, x2, y2 };
+  //   })
+  //   .filter((line): line is RegressionDataLine => line !== null);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
@@ -190,7 +216,23 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           />
         ))}
 
-        {/* Bubble Chart Linear Regression */}
+        {/* Bubble Chart Nonlinear Regression */}
+        {useRegression && calculatedRegressionCurves.map(function(curve) {
+          const color = curve.party === "Rep" ? "#FF0000" : "#2980b9";
+          return (
+            <path
+              key={curve.party}
+              d={lineGenerator(curve.points) || ""}
+              fill="none"
+              stroke={color}
+              strokeWidth={3}
+              opacity={0.8}
+              strokeDasharray="6,4"
+            />
+          );
+        })}
+
+        {/* Bubble Chart Linear Regression
         {useRegression &&
           calculatedRegressionLines.map(function (line) {
             const color = line.party === "Rep" ? "#FF0000" : "#2980b9";
@@ -206,7 +248,8 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
                 opacity={0.8}
               />
             );
-          })}
+          })} */}
+
       </svg>
       {/* Tooltip when moused over. */}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
