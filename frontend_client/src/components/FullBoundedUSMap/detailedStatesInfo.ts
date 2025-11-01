@@ -13,6 +13,7 @@ type DetailStateType =
   | typeof DETAIL_STATE_TYPE_REPUBLICAN
   | typeof DETAIL_STATE_TYPE_VOTER_REGISTRATION;
 
+// TODO(frontend): support multiple detail state types? some will overlap.
 function getDetailStateType(fipsCode: string): DetailStateType {
   switch (fipsCode) {
     case "48":
@@ -31,12 +32,13 @@ function getDetailStateType(fipsCode: string): DetailStateType {
         return DETAIL_STATE_TYPE_DEMOCRAT;
       }
       break;
+    // case "48":
     case "40":
       {
         return DETAIL_STATE_TYPE_REPUBLICAN;
       }
       break;
-    case "18":
+    case "39":
       {
         return DETAIL_STATE_TYPE_VOTER_REGISTRATION;
       }
