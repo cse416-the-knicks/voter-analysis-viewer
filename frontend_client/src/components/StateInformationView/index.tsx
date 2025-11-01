@@ -497,9 +497,9 @@ function StateInformationView() {
                       // so ideally the sorting doesn't happen here. I am personally A-OK with
                       // this but I know Professor Kelly is not.
                       data.sort((a, b) => {
-                        const equivalentA = eavs2024Data.find((x) => x.countyName === a.countyName)!;
-                        const equivalentB = eavs2024Data.find((x) => x.countyName === b.countyName)!;
-                        return (equivalentB.total || 0) - (equivalentA.total || 0);
+                        const equivalentA = eavs2024Data.find((x) => x.countyName === a?.countyName);
+                        const equivalentB = eavs2024Data.find((x) => x.countyName === b?.countyName);
+                        return (equivalentB?.total || 0) - (equivalentA?.total || 0);
                       });
                       const points = data.map((data1) => ({ x: data1.countyName!, y: data1.total! }));
                       const obj = {
