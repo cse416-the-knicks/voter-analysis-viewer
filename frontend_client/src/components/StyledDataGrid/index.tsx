@@ -15,9 +15,21 @@ interface StyledDataGridProperties {
   height?: number | string;
   maxWidth?: number | string;
   maxHeight?: number | string;
+  customCssRules?: object;
 }
 
-function StyledDataGrid({ rows, columns, getRowId, pageSize, customGetRowClassName, width, height, maxWidth, maxHeight }: StyledDataGridProperties) {
+function StyledDataGrid({
+  rows,
+  columns,
+  getRowId,
+  pageSize,
+  customGetRowClassName,
+  width,
+  height,
+  maxWidth,
+  maxHeight,
+  customCssRules
+}: StyledDataGridProperties) {
   const getRowClassNameFunction: getRowClassNameFn = function (r) {
     const colorAsAlternatingRows: getRowClassNameFn = (r) => (r.indexRelativeToCurrentPage % 2 == 0 ? "oddRowStyle" : "");
     return (customGetRowClassName && customGetRowClassName(r)) + " " + colorAsAlternatingRows(r);
@@ -67,6 +79,7 @@ function StyledDataGrid({ rows, columns, getRowId, pageSize, customGetRowClassNa
           ".oddRowStyle": {
             backgroundColor: "hsl(225, 35%, 93%)",
           },
+	  ...customCssRules
         }}
         disableRowSelectionOnClick
       />

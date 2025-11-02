@@ -21,6 +21,7 @@ function WindowTitledDataGrid({
   left,
   top,
   customGetRowClassName,
+  customCssRules,
   width,
   height,
   maxWidth,
@@ -64,6 +65,7 @@ function WindowTitledDataGrid({
           getRowId={getRowId}
           pageSize={pageSize}
           customGetRowClassName={customGetRowClassName}
+	  customCssRules={customCssRules}
         />
       </Paper>
     </Box>
