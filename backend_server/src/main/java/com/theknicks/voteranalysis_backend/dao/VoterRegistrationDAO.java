@@ -29,14 +29,14 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
           Integer.parseInt(stateFips, 10),
           countyFips.get(),
           pageSize,
-          pageIndex);
+          pageIndex * pageSize);
     } else {
       return _jdbcTemplate.query(
           selectQuery + " where state_id = ? limit ? offset ?",
           mapper,
           Integer.parseInt(stateFips, 10),
           pageSize,
-          pageIndex);
+          pageIndex * pageSize);
     }
   }
 
