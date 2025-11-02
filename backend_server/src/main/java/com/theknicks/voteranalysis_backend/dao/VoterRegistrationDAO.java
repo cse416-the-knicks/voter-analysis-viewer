@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.dao;
 
+import com.theknicks.voteranalysis_backend.models.CollectionSortParamModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationDataModel;
 import java.util.*;
 import org.slf4j.*;
@@ -17,14 +18,21 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
   }
 
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationDataRows(
-      String stateFips, Optional<String> countyFips, int pageSize, int pageIndex) {
+      String stateFips,
+      Optional<String> countyFips,
+      int pageSize,
+      int pageIndex,
+      Optional<CollectionSortParamModel> sortingParams) {
     var queryable = new VoterRegistrationDataModel.Queryable();
     var mapper = queryable.Mapper();
     var selectQuery = queryable.Query();
 
     if (countyFips.isPresent()) {
       return _jdbcTemplate.query(
-          selectQuery + " where state_id = ? and region_id = ? limit ? offset ?",
+          selectQuery
+              + " WHERE state_id = ? AND region_id = ? "
+              + queryable.QueryOrdering(sortingParams)
+              + " LIMIT ? OFFSET ?",
           mapper,
           Integer.parseInt(stateFips, 10),
           countyFips.get(),
@@ -32,7 +40,10 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
           pageIndex * pageSize);
     } else {
       return _jdbcTemplate.query(
-          selectQuery + " where state_id = ? limit ? offset ?",
+          selectQuery
+              + " WHERE state_id = ? "
+              + queryable.QueryOrdering(sortingParams)
+              + " LIMIT ? OFFSET ?",
           mapper,
           Integer.parseInt(stateFips, 10),
           pageSize,
@@ -45,7 +56,7 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     if (countyFips.isPresent()) {
       var queryResult =
           _jdbcTemplate.queryForObject(
-              "select count(*) from app.voter_registration where state_id = ? and region_id = ?",
+              "select count(*) from app.voter_registration where state_id = ? and region_id = ? ",
               Integer.class,
               Integer.parseInt(stateFips, 10),
               countyFips.get());
@@ -55,7 +66,7 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     } else {
       var queryResult =
           _jdbcTemplate.queryForObject(
-              "select count(*) from app.voter_registration where state_id = ?",
+              "select count(*) from app.voter_registration where state_id = ? ",
               Integer.class,
               Integer.parseInt(stateFips, 10));
       if (queryResult != null) {

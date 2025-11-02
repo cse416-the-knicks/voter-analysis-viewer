@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.dao;
 
+import com.theknicks.voteranalysis_backend.models.CollectionSortParamModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationDataModel;
 import java.util.*;
 
@@ -17,7 +18,11 @@ public interface IVoterRegistrationDAO {
    * @return A list of detailed voter registration data rows.
    */
   List<VoterRegistrationDataModel> getDetailedVoterRegistrationDataRows(
-      String stateFips, Optional<String> countyFips, int pageSize, int pageIndex);
+      String stateFips,
+      Optional<String> countyFips,
+      int pageSize,
+      int pageIndex,
+      Optional<CollectionSortParamModel> sortingParams);
 
   /**
    * This access point is meant to count all the rows for detailed voter registration information of

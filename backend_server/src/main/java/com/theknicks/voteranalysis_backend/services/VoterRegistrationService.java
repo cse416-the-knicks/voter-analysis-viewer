@@ -17,11 +17,15 @@ public class VoterRegistrationService {
   }
 
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationData(
-      String stateFips, String countyFips, int pageSize, int pageIndex) {
+      String stateFips,
+      String countyFips,
+      int pageSize,
+      int pageIndex,
+      Optional<CollectionSortParamModel> sortParams) {
     Optional<String> countyFipsParam =
         countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
     return _dao.getDetailedVoterRegistrationDataRows(
-        stateFips, countyFipsParam, pageSize, pageIndex);
+        stateFips, countyFipsParam, pageSize, pageIndex, sortParams);
   }
 
   public int getDetailedVoterRegistrationDataCount(String stateFips, String countyFips) {
