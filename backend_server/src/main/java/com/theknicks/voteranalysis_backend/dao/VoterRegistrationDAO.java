@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.dao;
 
+import com.theknicks.voteranalysis_backend.models.CollectionSortParamModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationDataModel;
 import java.util.*;
 import org.slf4j.*;
@@ -16,28 +17,65 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     _jdbcTemplate = jdbcTemplate;
   }
 
+  private static String getFilterClauseForPartySelection(int partySelectionFilterId) {
+    switch (partySelectionFilterId) {
+      case 0:
+        return " ";
+      case 1:
+        return " AND party_affiliation = 'D'";
+      case 2:
+        return " AND party_affiliation = 'R'";
+    }
+    return " AND party_affiliation is NULL";
+  }
+
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationDataRows(
-      Optional<String> stateFips, Optional<String> countyFips) {
+      String stateFips,
+      Optional<String> countyFips,
+      int pageSize,
+      int pageIndex,
+      Optional<CollectionSortParamModel> sortingParams,
+      int partySelectionFilterId) {
     var queryable = new VoterRegistrationDataModel.Queryable();
     var mapper = queryable.Mapper();
     var selectQuery = queryable.Query();
 
-    if (stateFips.isPresent()) {
-      if (countyFips.isPresent()) {
-        return _jdbcTemplate.query(
-            selectQuery + " where state_id = ? and region_id = ?",
-            mapper,
-            Integer.parseInt(stateFips.get(), 10),
-            countyFips.get());
-      } else {
-        return _jdbcTemplate.query(
-            selectQuery + " where state_id = ?", mapper, Integer.parseInt(stateFips.get(), 10));
-      }
-    } else {
-      if (countyFips.isEmpty()) {
-        return _jdbcTemplate.query(selectQuery, mapper);
-      }
+    StringBuilder sql = new StringBuilder(selectQuery);
+    List<Object> params = new ArrayList<>();
+
+    sql.append(" WHERE state_id = ?");
+    params.add(Integer.parseInt(stateFips, 10));
+
+    if (countyFips.isPresent()) {
+      sql.append(" AND region_id = ?");
+      params.add(countyFips.get());
     }
-    return List.of();
+    sql.append(getFilterClauseForPartySelection(partySelectionFilterId));
+
+    sql.append(" ").append(queryable.QueryOrdering(sortingParams)).append(" LIMIT ? OFFSET ?");
+
+    params.add(pageSize);
+    params.add(pageIndex * pageSize);
+
+    return _jdbcTemplate.query(sql.toString(), mapper, params.toArray());
+  }
+
+  public int getDetailedVoterRegistrationDataCount(
+      String stateFips, Optional<String> countyFips, int partySelectionFilterId) {
+    int state = Integer.parseInt(stateFips, 10);
+
+    StringBuilder sql =
+        new StringBuilder("SELECT COUNT(*) FROM app.voter_registration WHERE state_id = ?");
+    List<Object> params = new ArrayList<>();
+    params.add(state);
+
+    if (countyFips.isPresent()) {
+      sql.append(" AND region_id = ?");
+      params.add(countyFips.get());
+    }
+    sql.append(getFilterClauseForPartySelection(partySelectionFilterId));
+
+    Integer count = _jdbcTemplate.queryForObject(sql.toString(), Integer.class, params.toArray());
+    return count != null ? count : 0;
   }
 }

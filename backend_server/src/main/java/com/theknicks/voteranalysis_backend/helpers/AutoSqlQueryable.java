@@ -2,6 +2,7 @@ package com.theknicks.voteranalysis_backend.helpers;
 
 import com.theknicks.voteranalysis_backend.annotations.AutoSql;
 import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
+import com.theknicks.voteranalysis_backend.models.CollectionSortParamModel;
 import java.lang.reflect.*;
 import java.sql.ResultSet;
 import java.util.*;
@@ -241,10 +242,44 @@ public class AutoSqlQueryable<T> {
 
   // This is used for AutoSql that has views.
   public String QueryView() {
-    var result = new StringBuilder();
-    var selfClass = _class;
-    var autoSqlAnnotation = selfClass.getAnnotation(AutoSql.class);
+    var autoSqlAnnotation = _class.getAnnotation(AutoSql.class);
     return String.format("select * from %s ", autoSqlAnnotation.view());
+  }
+
+  public String QueryOrdering(Optional<CollectionSortParamModel> sortParams) {
+    if (sortParams.isEmpty()) {
+      return "";
+    }
+    var result = new StringBuilder();
+    var selectableFields = filterForAllQueryableFields(_class.getDeclaredFields(), false);
+
+    result.append("order by ");
+    for (var param : sortParams.get().fields()) {
+      if (param.sort() != null) {
+        Field coorespondingField = null;
+
+        for (var selectableField : selectableFields) {
+          var sqlName = getSqlName(selectableField);
+          if (sqlName.isEmpty()) {
+            continue;
+          }
+
+          if (selectableField.getName().equals(param.field())) {
+            coorespondingField = selectableField;
+            break;
+          }
+        }
+
+        if (coorespondingField != null) {
+          result.append(getSqlName(coorespondingField).get());
+          result.append(" ");
+          result.append(param.sort());
+        } else {
+          System.err.println("Unable to map field name: " + param.field() + " to an SQL column");
+        }
+      }
+    }
+    return result.toString();
   }
 
   /** This does some really slick stuff to automate the generation of the row mappers. */

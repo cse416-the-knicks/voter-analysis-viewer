@@ -8,6 +8,7 @@ import getVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance"
 import getAllVotingEquipmentByTypeMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentByManufacturerMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
+import getDetailedVoterRegistrationDataCountMutator from "../helpers/backendConnectorAxiosInstance";
 import getDetailedVoterRegistrationDataMutator from "../helpers/backendConnectorAxiosInstance";
 import getVoterRegistrationCountsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
 import getProvisionalBallotsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
@@ -183,9 +184,19 @@ export interface StateInformationModel {
   affiliation?: StateInformationModelAffiliation;
 }
 
+export type GetDetailedVoterRegistrationDataCountParams = {
+  state?: string;
+  county?: string;
+  party?: number;
+};
+
 export type GetDetailedVoterRegistrationDataParams = {
   state?: string;
   county?: string;
+  pageSize?: number;
+  pageIndex?: number;
+  party?: number;
+  sort?: string;
 };
 
 export type GetVoterRegistrationCountsByCountyParams = {
@@ -673,6 +684,13 @@ export const getAllVotingEquipment = (options?: SecondParameter<typeof getAllVot
   return getAllVotingEquipmentMutator<VotingEquipmentModel[]>({ url: `/votingequipment/`, method: "GET" }, options);
 };
 
+export const getDetailedVoterRegistrationDataCount = (
+  params?: GetDetailedVoterRegistrationDataCountParams,
+  options?: SecondParameter<typeof getDetailedVoterRegistrationDataCountMutator>
+) => {
+  return getDetailedVoterRegistrationDataCountMutator<number>({ url: `/voter-registration/count`, method: "GET", params }, options);
+};
+
 export const getDetailedVoterRegistrationData = (
   params?: GetDetailedVoterRegistrationDataParams,
   options?: SecondParameter<typeof getDetailedVoterRegistrationDataMutator>
@@ -806,6 +824,7 @@ export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof get
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>;
 export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>;
 export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>;
+export type GetDetailedVoterRegistrationDataCountResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationDataCount>>>;
 export type GetDetailedVoterRegistrationDataResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationData>>>;
 export type GetVoterRegistrationCountsByCountyResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCountsByCounty>>>;
 export type GetProvisionalBallotsByCountyResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallotsByCounty>>>;
