@@ -1,10 +1,10 @@
+import type { GridSortModel } from "@mui/x-data-grid";
+
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import StyledDataGrid from "../StyledDataGrid";
 
 import { Box, useTheme, Tabs, Tab } from "@mui/material";
-import { useState, useEffect } from "react";
-import type { GridColDef } from "@mui/x-data-grid";
-import type { VoterRegistrationDataModel } from "../../api/client";
+import { useState } from "react";
 
 import { getDetailedVoterRegistrationData, getDetailedVoterRegistrationDataCount } from "../../api/client";
 
@@ -32,13 +32,16 @@ function FullScreenDetailedVoterRegistrationTable({ pageSize, width, height }: F
   const [partyFilterId, setPartyFilterId] = useState(0);
 
   const rowDataProvider = {
-    getPage: async (pageSize: number, page: number) =>
+    getPage: async (pageSize: number, page: number, sortModel: GridSortModel) =>
       await getDetailedVoterRegistrationData({
         state: fipsCode!,
         county: countyCode,
         pageSize: pageSize,
         pageIndex: page,
         party: partyFilterId,
+	// Due to the way orval works, without more configuration
+	// we have to break our abstractions and send an encoded string :/
+	sort: JSON.stringify({ "fields": sortModel || [] }) 
       }),
     getTotalElements: async () =>
       await getDetailedVoterRegistrationDataCount({
