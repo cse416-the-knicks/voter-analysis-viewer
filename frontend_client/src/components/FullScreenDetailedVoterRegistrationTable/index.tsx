@@ -39,9 +39,9 @@ function FullScreenDetailedVoterRegistrationTable({ pageSize, width, height }: F
         pageSize: pageSize,
         pageIndex: page,
         party: partyFilterId,
-	// Due to the way orval works, without more configuration
-	// we have to break our abstractions and send an encoded string :/
-	sort: JSON.stringify({ "fields": sortModel || [] }) 
+        // Due to the way orval works, without more configuration
+        // we have to break our abstractions and send an encoded string :/
+        sort: JSON.stringify({ fields: sortModel || [] }),
       }),
     getTotalElements: async () =>
       await getDetailedVoterRegistrationDataCount({

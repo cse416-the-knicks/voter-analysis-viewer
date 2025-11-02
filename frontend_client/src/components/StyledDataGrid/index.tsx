@@ -110,8 +110,8 @@ function StyledDataGrid({
         getRowClassName={getRowClassNameFunction}
         paginationMode={isServerSide ? "server" : "client"}
         sortingMode={isServerSide ? "server" : "client"} // NOTE(jerry): filtering stuff is a bit more complicated cause it's so general purpose.
-	sortModel={sortModelState}
-	onSortModelChange={setSortModelState}
+        sortModel={sortModelState}
+        onSortModelChange={setSortModelState}
         paginationModel={paginationState}
         onPaginationModelChange={setPaginationState}
         pageSizeOptions={[pageSize]}

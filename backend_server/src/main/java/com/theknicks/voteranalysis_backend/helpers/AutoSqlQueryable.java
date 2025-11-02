@@ -252,7 +252,7 @@ public class AutoSqlQueryable<T> {
     }
 
     if (sortParams.get().fields().isEmpty()) {
-        return "";
+      return "";
     }
 
     var result = new StringBuilder();
