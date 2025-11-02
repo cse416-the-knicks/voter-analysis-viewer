@@ -50,8 +50,6 @@ public class VoterRegistrationController {
     CollectionSortParamModel sortParams = null;
     if (!encodedSortParams.isEmpty()) {
       var decodedSortParams = URLDecoder.decode(encodedSortParams, StandardCharsets.UTF_8);
-      _logger.info(encodedSortParams);
-      _logger.info(decodedSortParams);
       try {
         sortParams = _objectMapper.readValue(decodedSortParams, CollectionSortParamModel.class);
       } catch (JsonProcessingException jpe) {
