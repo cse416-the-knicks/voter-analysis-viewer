@@ -42,7 +42,7 @@ function WindowTitledDataGrid({
       maxWidth={maxWidth}
       maxHeight={maxHeight}
     >
-      <Paper sx={{ mt: 2, ml: "auto" }} elevation={9}>
+      <Paper sx={{ mt: 2 }} elevation={9}>
         <AppBar sx={{ position: "static" }} color="secondary">
           <Grid container justifyContent="space-between">
             <Grid size={11}>
@@ -58,8 +58,10 @@ function WindowTitledDataGrid({
           </Grid>
         </AppBar>
         <StyledDataGrid
-          width={maxWidth}
+          width={width}
+          height={height}
           maxWidth={maxWidth}
+          maxHeight={maxHeight}
           rows={rows}
           columns={columns}
           getRowId={getRowId}
