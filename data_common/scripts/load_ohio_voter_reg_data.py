@@ -47,7 +47,7 @@ for file in files:
     })
     # print('\n'.join(df.columns.tolist()))
 
-    df["region_id"] = (OHIO_FIPS_CODE + df["COUNTY_NUMBER"].str.zfill(3)).str.ljust(10, "0")
+    df["region_id"] = (OHIO_FIPS_CODE + (((df["COUNTY_NUMBER"].astype(int) - 1) * 2 + 1).astype(str).str.zfill(3))).str.ljust(10, "0")
 
     df = df.drop(columns=["COUNTY_NUMBER"])
 
