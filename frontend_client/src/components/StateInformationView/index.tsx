@@ -4,18 +4,9 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
-  VoterRegistrationDataModel,
 } from "../../api/client";
 
-import {
-  getProvisionalBallots,
-  getMailBallotRejections,
-  getVoterRegistrationCounts,
-  getPollbookDeletions,
-  getDetailedVoterRegistrationData,
-  getDetailedVoterRegistrationDataCount,
-  getVoterRegistrationCountsByCounty,
-} from "../../api/client";
+import { getProvisionalBallots, getMailBallotRejections, getVoterRegistrationCounts, getPollbookDeletions } from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
 
@@ -61,8 +52,10 @@ import {
   MAIL_BALLOT_REJECTION_COLUMNS,
   POLL_BOOK_DELETION_COLUMNS,
   PROVISIONAL_BALLOT_COLUMNS,
-  VOTER_REGISTRATION_INFO_COLUMNS,
 } from "./dataColumns";
+
+import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
+
 import { gradientMapNearest, type GradientMap } from "../../helpers/GradientMap";
 import digitsInNumber from "../../helpers/digitsInNumber";
 import GradientMapLegend from "../GradientMapLegend";
@@ -408,6 +401,14 @@ function StateInformationView() {
             width={maxWidthForMap}
             height={maxHeightForMap}
             fipsCode={fipsCode}
+            onFeatureClick={function (feature: GeoJSON.Feature, layer: L.Layer) {
+              const geounitFipsCode = feature.properties!.COUNTYFP;
+              const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
+
+              if (activeDataState === ID_SELECTION_VOTER_REGISTRATION || activeDataState === ID_SELECTION_ACTIVE_VOTERS) {
+                navigate(`/state/${fipsCode}/voter-table/${fullyPaddedFipsCode}`);
+              }
+            }}
           >
             {stateType !== DETAIL_STATE_TYPE_NONE && !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) && (
               <GradientMapLegend gradientMap={gradientMap} />
@@ -521,35 +522,8 @@ function StateInformationView() {
               }
             />
             <Route
-              path="voter-table"
-              element={
-                <StyledDataGrid
-                  rows={{
-                    getPage: async (pageSize, page) => await getDetailedVoterRegistrationData({ state: fipsCode!, pageSize: pageSize, pageIndex: page }),
-                    getTotalElements: async () => await getDetailedVoterRegistrationDataCount({ state: fipsCode! }),
-                  }}
-                  columns={VOTER_REGISTRATION_INFO_COLUMNS}
-                  width={bubbleChartWidth}
-                  height={bubbleChartHeight}
-                  pageSize={25}
-                  // NOTE(jerry):
-                  // While returning the monotonic ID would be best for an actual ID,
-                  // I don't really see any other reason to return it other than for this
-                  // exact thing, so I am OKAY with just using these following attributes
-                  // as a unique key.
-                  getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
-                  customCssRules={{
-                    ".republican-cell": {
-                      color: "red",
-                      fontWeight: "bolder",
-                    },
-                    ".democrat-cell": {
-                      color: "blue",
-                      fontWeight: "bolder",
-                    },
-                  }}
-                />
-              }
+              path="voter-table/:countyCode?"
+              element={<FullScreenDetailedVoterRegistrationTable pageSize={25} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
             />
           </Routes>
         </Box>
