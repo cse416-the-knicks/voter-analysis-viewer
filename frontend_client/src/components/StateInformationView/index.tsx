@@ -523,7 +523,7 @@ function StateInformationView() {
             />
             <Route
               path="voter-table/:countyCode?"
-              element={<FullScreenDetailedVoterRegistrationTable pageSize={25} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
+              element={<FullScreenDetailedVoterRegistrationTable pageSize={15} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
             />
           </Routes>
         </Box>

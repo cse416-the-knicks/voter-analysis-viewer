@@ -31,6 +31,34 @@ function FullScreenDetailedVoterRegistrationTable({ pageSize, width, height }: F
   const theme = useTheme();
   const [partyFilterId, setPartyFilterId] = useState(0);
 
+  const rowDataProvider = {
+    getPage: async (pageSize: number, page: number) =>
+      await getDetailedVoterRegistrationData({
+        state: fipsCode!,
+        county: countyCode,
+        pageSize: pageSize,
+        pageIndex: page,
+        party: partyFilterId,
+      }),
+    getTotalElements: async () =>
+      await getDetailedVoterRegistrationDataCount({
+        state: fipsCode!,
+        county: countyCode,
+        party: partyFilterId,
+      }),
+  };
+
+  const customCssRules = {
+    ".republican-cell": {
+      color: "red",
+      fontWeight: "bolder",
+    },
+    ".democrat-cell": {
+      color: "blue",
+      fontWeight: "bolder",
+    },
+  };
+
   if (countyCode != null) {
     // Having a county code means it was triggered from
     // the choropleth, so we need a way to X-out.
@@ -50,76 +78,32 @@ function FullScreenDetailedVoterRegistrationTable({ pageSize, width, height }: F
           <Tab label={"Republican"} {...a11yProps(2)} />
           <Tab label={"Unaffiliated"} {...a11yProps(3)} />
         </Tabs>
-        <WindowTitledDataGrid
-          title={"Voter Registration Data"}
-          rows={{
-            getPage: async (pageSize, page) =>
-              await getDetailedVoterRegistrationData({
-                state: fipsCode!,
-                county: countyCode,
-                pageSize: pageSize,
-                pageIndex: page,
-              }),
-            getTotalElements: async () =>
-              await getDetailedVoterRegistrationDataCount({
-                state: fipsCode!,
-                county: countyCode,
-              }),
-          }}
-          columns={VOTER_REGISTRATION_INFO_COLUMNS}
-          width={width}
-          height={height}
-          pageSize={pageSize}
-          onXout={function () {
-            navigate(`/state/${fipsCode!}/`);
-          }}
-          getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
-          customCssRules={{
-            ".republican-cell": {
-              color: "red",
-              fontWeight: "bolder",
-            },
-            ".democrat-cell": {
-              color: "blue",
-              fontWeight: "bolder",
-            },
-          }}
-        />
+        {countyCode != null ? (
+          <WindowTitledDataGrid
+            title={"Voter Registration Data"}
+            rows={rowDataProvider}
+            columns={VOTER_REGISTRATION_INFO_COLUMNS}
+            width={width}
+            height={height}
+            pageSize={pageSize}
+            onXout={function () {
+              navigate(`/state/${fipsCode!}/`);
+            }}
+            getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
+            customCssRules={customCssRules}
+          />
+        ) : (
+          <StyledDataGrid
+            rows={rowDataProvider}
+            columns={VOTER_REGISTRATION_INFO_COLUMNS}
+            width={width}
+            height={height}
+            pageSize={pageSize}
+            getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
+            customCssRules={customCssRules}
+          />
+        )}
       </Box>
-    );
-  } else {
-    return (
-      <StyledDataGrid
-        rows={{
-          getPage: async (pageSize, page) =>
-            await getDetailedVoterRegistrationData({
-              state: fipsCode!,
-              county: countyCode,
-              pageSize: pageSize,
-              pageIndex: page,
-            }),
-          getTotalElements: async () =>
-            await getDetailedVoterRegistrationDataCount({
-              state: fipsCode!,
-              county: countyCode,
-            }),
-        }}
-        columns={VOTER_REGISTRATION_INFO_COLUMNS}
-        width={width}
-        height={height}
-        pageSize={pageSize}
-        getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
-        customCssRules={{
-          ".republican-cell": {
-            color: "red",
-            fontWeight: "bolder",
-          },
-          ".democrat-cell": {
-            color: "blue",
-            fontWeight: "bolder",
-          },
-        }}
-      />
     );
   }
 }
