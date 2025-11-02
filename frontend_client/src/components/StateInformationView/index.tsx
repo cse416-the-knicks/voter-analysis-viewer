@@ -13,6 +13,7 @@ import {
   getVoterRegistrationCounts,
   getPollbookDeletions,
   getDetailedVoterRegistrationData,
+  getDetailedVoterRegistrationDataCount,
   getVoterRegistrationCountsByCounty,
 } from "../../api/client";
 
@@ -523,14 +524,13 @@ function StateInformationView() {
               path="voter-table"
               element={
                 <StyledDataGrid
-                  rows={async () => {
-                    return await getDetailedVoterRegistrationData({ state: fipsCode! });
-                  }}
+                  rows={{
+		    getPage: async (pageSize, page) => await getDetailedVoterRegistrationData({ state: fipsCode!, pageSize: pageSize, pageIndex: page }),
+		    getTotalElements: async () => await getDetailedVoterRegistrationDataCount({ state: fipsCode! })
+		  }}
                   columns={VOTER_REGISTRATION_INFO_COLUMNS}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
-		  // NOTE(jerry): Some best approximation
-		  // for elements to be present on screen.
 		  pageSize={25}
 		  // NOTE(jerry):
 		  // While returning the monotonic ID would be best for an actual ID,

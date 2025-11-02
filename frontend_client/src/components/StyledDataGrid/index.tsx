@@ -4,11 +4,13 @@ import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
 
 type getRowClassNameFn = (r: GridRowClassNameParams<GridValidRowModel>) => string;
-type getServerSidePageFn = (pageSize: number, pageIndex: number) => object[];
+type getServerSidePageFn = (pageSize: number, pageIndex: number) => Promise<object[]>;
+type getServerSideDataTotalElementsFn = () => Promise<number>;
 
 interface ServerSidePageDataProvider {
   // pageSize is filled out by the pageSize parameter
   getPage: getServerSidePageFn;
+  getTotalElements: getServerSideDataTotalElementsFn;
 };
 
 type RowMaker = readonly object[] | (() => Promise<object[]>) | ServerSidePageDataProvider;
@@ -42,12 +44,12 @@ function StyledDataGrid({
     return (customGetRowClassName && customGetRowClassName(r)) + " " + colorAsAlternatingRows(r);
   };
 
-  // TODO(jerry): handle loading states. I don't care
-  // enough about this to do it here though, I think it's fine to
-  // pop-in if I'm being honest...
   const [actualRows, setActualRows] = useState<readonly object[]>([]);
   const [isServerSide, setServerSideData] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const [paginationState, setPaginationState] = useState({ page:0, pageSize });
+  const [rowCount, setRowCount] = useState(0); 
 
   useEffect(
     function () {
@@ -55,39 +57,63 @@ function StyledDataGrid({
         (async function () {
           const actualData = await rows();
           setActualRows(actualData);
+	  setRowCount(actualData.length);
           setIsLoaded(true);
 	  setServerSideData(false);
         })();
       } else if (typeof rows === "object") {
-	// NOTE(jerry):
-	// lack of strong type checking ability at runtime
-	// means I'm practically guessing that it is the right type of object.
-	setServerSideData(true);
-	setIsLoaded(true);
-      } else {
-        setActualRows(rows);
-        setIsLoaded(true);
-	setServerSideData(false);
+	if ("getPage" in rows && "getTotalElements" in rows) {
+	  setServerSideData(true);
+	  setRowCount(0);
+	  setIsLoaded(false);
+	} else {
+	  setActualRows(rows);
+	  setRowCount(rows.length);
+	  setIsLoaded(true);
+	  setServerSideData(false);
+	}
       }
     },
     [rows]
   );
 
+  useEffect(
+    function () {
+      console.log("paginationState", paginationState);
+      if (isServerSide) {
+	(async function () {
+	  const dataProvider = rows as ServerSidePageDataProvider;
+
+	  setIsLoaded(false);
+	  // NOTE: this could be memoized, but I don't think there's a need
+	  // to do so.
+	  const totalElements = await dataProvider.getTotalElements();
+	  const currentPageDataSet = await dataProvider.getPage(
+	    paginationState.pageSize,
+	    paginationState.page
+	  );
+
+	  setActualRows(currentPageDataSet);
+	  setRowCount(totalElements);
+	  setIsLoaded(true);
+	})();
+      }
+    },
+    [rows, paginationState, isServerSide]
+  );
+
   return (
     <Box width={width} height={height} maxWidth={maxWidth} maxHeight={maxHeight}>
       <DataGrid
+	loading={!isLoaded}
         rows={actualRows}
+	rowCount={rowCount}
         columns={columns}
         getRowId={getRowId}
         getRowClassName={getRowClassNameFunction}
 	paginationMode={isServerSide ? "server" : "client"}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: pageSize,
-            },
-          },
-        }}
+	paginationModel={paginationState}
+	onPaginationModelChange={setPaginationState}
         pageSizeOptions={[pageSize]}
         sx={{
           "& .MuiDataGrid-columnHeaderTitle": {
