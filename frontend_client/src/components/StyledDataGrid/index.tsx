@@ -4,7 +4,14 @@ import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
 
 type getRowClassNameFn = (r: GridRowClassNameParams<GridValidRowModel>) => string;
-type RowMaker = readonly object[] | (() => Promise<object[]>);
+type getServerSidePageFn = (pageSize: number, pageIndex: number) => object[];
+
+interface ServerSidePageDataProvider {
+  // pageSize is filled out by the pageSize parameter
+  getPage: getServerSidePageFn;
+};
+
+type RowMaker = readonly object[] | (() => Promise<object[]>) | ServerSidePageDataProvider;
 interface StyledDataGridProperties {
   rows: RowMaker;
   columns: readonly GridColDef[];
@@ -39,6 +46,7 @@ function StyledDataGrid({
   // enough about this to do it here though, I think it's fine to
   // pop-in if I'm being honest...
   const [actualRows, setActualRows] = useState<readonly object[]>([]);
+  const [isServerSide, setServerSideData] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(
@@ -48,10 +56,18 @@ function StyledDataGrid({
           const actualData = await rows();
           setActualRows(actualData);
           setIsLoaded(true);
+	  setServerSideData(false);
         })();
+      } else if (typeof rows === "object") {
+	// NOTE(jerry):
+	// lack of strong type checking ability at runtime
+	// means I'm practically guessing that it is the right type of object.
+	setServerSideData(true);
+	setIsLoaded(true);
       } else {
         setActualRows(rows);
         setIsLoaded(true);
+	setServerSideData(false);
       }
     },
     [rows]
@@ -64,6 +80,7 @@ function StyledDataGrid({
         columns={columns}
         getRowId={getRowId}
         getRowClassName={getRowClassNameFunction}
+	paginationMode={isServerSide ? "server" : "client"}
         initialState={{
           pagination: {
             paginationModel: {
