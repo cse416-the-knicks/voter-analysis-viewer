@@ -538,6 +538,16 @@ function StateInformationView() {
 		  // exact thing, so I am OKAY with just using these following attributes
 		  // as a unique key.
 		  getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
+		  customCssRules={{
+		    ".republican-cell": {
+		      color: "red",
+		      fontWeight: "bolder",
+		    },
+		    ".democrat-cell": {
+		      color: "blue",
+		      fontWeight: "bolder",
+		    },
+		  }}
 		/>
 	      }
 	    />

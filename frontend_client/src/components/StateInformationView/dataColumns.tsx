@@ -9,6 +9,7 @@ import type { GridColDef } from "@mui/x-data-grid";
 import type { BarChartDataEntry } from "../DataDisplays/BarChart";
 
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
+import titleCaseString from '../../helpers/titleCaseString';
 
 const PROVISIONAL_BALLOT_COLUMNS: GridColDef<ProvisionalBallotStatisticsModel[]>[] = [
   {
@@ -45,12 +46,52 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
     ...GRID_CHECKBOX_SELECTION_COL_DEF,
     renderHeader: () => <></>, // This hides the "Select All" checkbox
   },
-  { field: "regionId", headerName: "RegionID", width: 120 },
-  { field: "firstName", headerName: "First Name", width: 120 },
-  { field: "middleName", headerName: "Middle Name", width: 200 },
-  { field: "lastName", headerName: "Last Name", width: 150 },
-  { field: "party", headerName: "Party", width: 150 },
-  { field: "status", headerName: "Status", width: 150 },
+  // { field: "regionId", headerName: "RegionID", width: 120 },
+  {
+    field: "firstName",
+    headerName: "First Name",
+    width: 120,
+    valueFormatter: titleCaseString,
+  },
+  {
+    field: "middleName",
+    headerName: "Middle Name",
+    width: 200,
+    valueFormatter: titleCaseString,
+  },
+  {
+    field: "lastName",
+    headerName: "Last Name",
+    width: 150,
+    valueFormatter: titleCaseString,
+  },
+  {
+    field: "partyAffiliation",
+    headerName: "Party",
+    width: 150,
+    cellClassName: (params) => {
+      if (params.value === 'R') {
+	return 'republican-cell';
+      } else if (params.value === 'D') {
+	return 'democrat-cell';
+      }
+      return '';
+    },
+    valueFormatter: (value) => {
+      switch (value) {
+	case "R": return "Republican";
+	case "D": return "Democrat";
+      }
+
+      return "N/A";
+    },
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    width: 150,
+    valueFormatter: titleCaseString,
+  },
 ];
 
 const POLL_BOOK_DELETION_COLUMNS: GridColDef<PollbookDeletionStatisticsModel[]>[] = [
