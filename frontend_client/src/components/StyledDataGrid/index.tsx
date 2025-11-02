@@ -11,7 +11,7 @@ interface ServerSidePageDataProvider {
   // pageSize is filled out by the pageSize parameter
   getPage: getServerSidePageFn;
   getTotalElements: getServerSideDataTotalElementsFn;
-};
+}
 
 type RowMaker = readonly object[] | (() => Promise<object[]>) | ServerSidePageDataProvider;
 interface StyledDataGridProperties {
@@ -37,7 +37,7 @@ function StyledDataGrid({
   height,
   maxWidth,
   maxHeight,
-  customCssRules
+  customCssRules,
 }: StyledDataGridProperties) {
   const getRowClassNameFunction: getRowClassNameFn = function (r) {
     const colorAsAlternatingRows: getRowClassNameFn = (r) => (r.indexRelativeToCurrentPage % 2 == 0 ? "oddRowStyle" : "");
@@ -48,8 +48,8 @@ function StyledDataGrid({
   const [isServerSide, setServerSideData] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const [paginationState, setPaginationState] = useState({ page:0, pageSize });
-  const [rowCount, setRowCount] = useState(0); 
+  const [paginationState, setPaginationState] = useState({ page: 0, pageSize });
+  const [rowCount, setRowCount] = useState(0);
 
   useEffect(
     function () {
@@ -57,21 +57,21 @@ function StyledDataGrid({
         (async function () {
           const actualData = await rows();
           setActualRows(actualData);
-	  setRowCount(actualData.length);
+          setRowCount(actualData.length);
           setIsLoaded(true);
-	  setServerSideData(false);
+          setServerSideData(false);
         })();
       } else if (typeof rows === "object") {
-	if ("getPage" in rows && "getTotalElements" in rows) {
-	  setServerSideData(true);
-	  setRowCount(0);
-	  setIsLoaded(false);
-	} else {
-	  setActualRows(rows);
-	  setRowCount(rows.length);
-	  setIsLoaded(true);
-	  setServerSideData(false);
-	}
+        if ("getPage" in rows && "getTotalElements" in rows) {
+          setServerSideData(true);
+          setRowCount(0);
+          setIsLoaded(false);
+        } else {
+          setActualRows(rows);
+          setRowCount(rows.length);
+          setIsLoaded(true);
+          setServerSideData(false);
+        }
       }
     },
     [rows]
@@ -81,22 +81,19 @@ function StyledDataGrid({
     function () {
       console.log("paginationState", paginationState);
       if (isServerSide) {
-	(async function () {
-	  const dataProvider = rows as ServerSidePageDataProvider;
+        (async function () {
+          const dataProvider = rows as ServerSidePageDataProvider;
 
-	  setIsLoaded(false);
-	  // NOTE: this could be memoized, but I don't think there's a need
-	  // to do so.
-	  const totalElements = await dataProvider.getTotalElements();
-	  const currentPageDataSet = await dataProvider.getPage(
-	    paginationState.pageSize,
-	    paginationState.page
-	  );
+          setIsLoaded(false);
+          // NOTE: this could be memoized, but I don't think there's a need
+          // to do so.
+          const totalElements = await dataProvider.getTotalElements();
+          const currentPageDataSet = await dataProvider.getPage(paginationState.pageSize, paginationState.page);
 
-	  setActualRows(currentPageDataSet);
-	  setRowCount(totalElements);
-	  setIsLoaded(true);
-	})();
+          setActualRows(currentPageDataSet);
+          setRowCount(totalElements);
+          setIsLoaded(true);
+        })();
       }
     },
     [rows, paginationState, isServerSide]
@@ -105,15 +102,15 @@ function StyledDataGrid({
   return (
     <Box width={width} height={height} maxWidth={maxWidth} maxHeight={maxHeight}>
       <DataGrid
-	loading={!isLoaded}
+        loading={!isLoaded}
         rows={actualRows}
-	rowCount={rowCount}
+        rowCount={rowCount}
         columns={columns}
         getRowId={getRowId}
         getRowClassName={getRowClassNameFunction}
-	paginationMode={isServerSide ? "server" : "client"}
-	paginationModel={paginationState}
-	onPaginationModelChange={setPaginationState}
+        paginationMode={isServerSide ? "server" : "client"}
+        paginationModel={paginationState}
+        onPaginationModelChange={setPaginationState}
         pageSizeOptions={[pageSize]}
         sx={{
           "& .MuiDataGrid-columnHeaderTitle": {
@@ -122,7 +119,7 @@ function StyledDataGrid({
           ".oddRowStyle": {
             backgroundColor: "hsl(225, 35%, 93%)",
           },
-	  ...customCssRules
+          ...customCssRules,
         }}
         disableRowSelectionOnClick
       />

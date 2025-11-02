@@ -525,57 +525,57 @@ function StateInformationView() {
               element={
                 <StyledDataGrid
                   rows={{
-		    getPage: async (pageSize, page) => await getDetailedVoterRegistrationData({ state: fipsCode!, pageSize: pageSize, pageIndex: page }),
-		    getTotalElements: async () => await getDetailedVoterRegistrationDataCount({ state: fipsCode! })
-		  }}
+                    getPage: async (pageSize, page) => await getDetailedVoterRegistrationData({ state: fipsCode!, pageSize: pageSize, pageIndex: page }),
+                    getTotalElements: async () => await getDetailedVoterRegistrationDataCount({ state: fipsCode! }),
+                  }}
                   columns={VOTER_REGISTRATION_INFO_COLUMNS}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
-		  pageSize={25}
-		  // NOTE(jerry):
-		  // While returning the monotonic ID would be best for an actual ID,
-		  // I don't really see any other reason to return it other than for this
-		  // exact thing, so I am OKAY with just using these following attributes
-		  // as a unique key.
-		  getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
-		  customCssRules={{
-		    ".republican-cell": {
-		      color: "red",
-		      fontWeight: "bolder",
-		    },
-		    ".democrat-cell": {
-		      color: "blue",
-		      fontWeight: "bolder",
-		    },
-		  }}
-		/>
-	      }
-	    />
-	  </Routes>
-	</Box>
+                  pageSize={25}
+                  // NOTE(jerry):
+                  // While returning the monotonic ID would be best for an actual ID,
+                  // I don't really see any other reason to return it other than for this
+                  // exact thing, so I am OKAY with just using these following attributes
+                  // as a unique key.
+                  getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
+                  customCssRules={{
+                    ".republican-cell": {
+                      color: "red",
+                      fontWeight: "bolder",
+                    },
+                    ".democrat-cell": {
+                      color: "blue",
+                      fontWeight: "bolder",
+                    },
+                  }}
+                />
+              }
+            />
+          </Routes>
+        </Box>
       </Grow>
       <Stack
-	spacing={0.2}
-	sx={{
-	  mt: boxMarginTop,
-	  ml: 0.5,
-	}}
+        spacing={0.2}
+        sx={{
+          mt: boxMarginTop,
+          ml: 0.5,
+        }}
       >
-	<StyledDataGrid
-	  rows={dataRows}
-	  columns={dataCols}
-	  width={maxWidthForTable}
-	  maxWidth={maxWidthForTable}
-	  height={maxHeightForTable}
-	  maxHeight={maxHeightForTable}
-	  pageSize={7}
-	  getRowId={(r) => r.id}
-	/>
-	<Box width={maxWidthForTable} height={500}>
-	  <Paper elevation={5}>
-	    <BarChart width={maxWidthForChart} height={maxHeightForChart} data={barData} title={barGraphTitle} xTitle={barGraphXTitle} />
-	  </Paper>
-	</Box>
+        <StyledDataGrid
+          rows={dataRows}
+          columns={dataCols}
+          width={maxWidthForTable}
+          maxWidth={maxWidthForTable}
+          height={maxHeightForTable}
+          maxHeight={maxHeightForTable}
+          pageSize={7}
+          getRowId={(r) => r.id}
+        />
+        <Box width={maxWidthForTable} height={500}>
+          <Paper elevation={5}>
+            <BarChart width={maxWidthForChart} height={maxHeightForChart} data={barData} title={barGraphTitle} xTitle={barGraphXTitle} />
+          </Paper>
+        </Box>
       </Stack>
     </div>
   );

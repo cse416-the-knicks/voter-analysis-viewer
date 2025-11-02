@@ -65,7 +65,7 @@ function WindowTitledDataGrid({
           getRowId={getRowId}
           pageSize={pageSize}
           customGetRowClassName={customGetRowClassName}
-	  customCssRules={customCssRules}
+          customCssRules={customCssRules}
         />
       </Paper>
     </Box>
