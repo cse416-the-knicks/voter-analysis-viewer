@@ -1,10 +1,10 @@
-import type { GridColDef, GridRowClassNameParams, GridRowIdGetter, GridValidRowModel } from "@mui/x-data-grid";
+import type { GridColDef, GridRowClassNameParams, GridRowIdGetter, GridValidRowModel, GridSortModel } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
 
 type getRowClassNameFn = (r: GridRowClassNameParams<GridValidRowModel>) => string;
-type getServerSidePageFn = (pageSize: number, pageIndex: number) => Promise<object[]>;
+type getServerSidePageFn = (pageSize: number, pageIndex: number, sortModel: GridSortModel) => Promise<object[]>;
 type getServerSideDataTotalElementsFn = () => Promise<number>;
 
 interface ServerSidePageDataProvider {
@@ -49,6 +49,7 @@ function StyledDataGrid({
   const [isLoaded, setIsLoaded] = useState(false);
 
   const [paginationState, setPaginationState] = useState({ page: 0, pageSize });
+  const [sortModelState, setSortModelState] = useState<GridSortModel>([]);
   const [rowCount, setRowCount] = useState(0);
 
   useEffect(
@@ -79,7 +80,6 @@ function StyledDataGrid({
 
   useEffect(
     function () {
-      console.log("paginationState", paginationState);
       if (isServerSide) {
         (async function () {
           const dataProvider = rows as ServerSidePageDataProvider;
@@ -109,6 +109,9 @@ function StyledDataGrid({
         getRowId={getRowId}
         getRowClassName={getRowClassNameFunction}
         paginationMode={isServerSide ? "server" : "client"}
+        sortingMode={isServerSide ? "server" : "client"} // NOTE(jerry): filtering stuff is a bit more complicated cause it's so general purpose.
+	sortModel={sortModelState}
+	onSortModelChange={setSortModelState}
         paginationModel={paginationState}
         onPaginationModelChange={setPaginationState}
         pageSizeOptions={[pageSize]}
