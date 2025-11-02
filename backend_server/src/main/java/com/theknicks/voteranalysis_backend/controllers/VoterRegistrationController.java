@@ -31,10 +31,12 @@ public class VoterRegistrationController {
   @GetMapping("/count")
   public int getDetailedVoterRegistrationDataCount(
       @RequestParam(name = "state", defaultValue = "") String stateFips,
-      @RequestParam(name = "county", defaultValue = "") String countyFips) {
+      @RequestParam(name = "county", defaultValue = "") String countyFips,
+      @RequestParam(name = "party", defaultValue = "0") int partySelectionFilterId) {
     // NOTE(jerry):
     // this end-point exists to help support pagination on the frontend.
-    return _service.getDetailedVoterRegistrationDataCount(stateFips, countyFips);
+    return _service.getDetailedVoterRegistrationDataCount(
+        stateFips, countyFips, partySelectionFilterId);
   }
 
   @GetMapping("/")
@@ -43,12 +45,11 @@ public class VoterRegistrationController {
       @RequestParam(name = "county", defaultValue = "") String countyFips,
       @RequestParam(name = "pageSize", defaultValue = "50") int pageSize,
       @RequestParam(name = "pageIndex", defaultValue = "0") int pageIndex,
+      @RequestParam(name = "party", defaultValue = "0") int partySelectionFilterId,
       @RequestParam(name = "sort", defaultValue = "") String encodedSortParams) {
     CollectionSortParamModel sortParams = null;
     if (!encodedSortParams.isEmpty()) {
       var decodedSortParams = URLDecoder.decode(encodedSortParams, StandardCharsets.UTF_8);
-      _logger.info(encodedSortParams);
-      _logger.info(decodedSortParams);
       try {
         sortParams = _objectMapper.readValue(decodedSortParams, CollectionSortParamModel.class);
       } catch (JsonProcessingException jpe) {
@@ -61,6 +62,7 @@ public class VoterRegistrationController {
         countyFips,
         pageSize,
         pageIndex,
-        (sortParams != null) ? Optional.of(sortParams) : Optional.empty());
+        (sortParams != null) ? Optional.of(sortParams) : Optional.empty(),
+        partySelectionFilterId);
   }
 }

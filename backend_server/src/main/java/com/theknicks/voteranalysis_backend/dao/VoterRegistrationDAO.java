@@ -17,12 +17,25 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     _jdbcTemplate = jdbcTemplate;
   }
 
+  private static String getFilterClauseForPartySelection(int partySelectionFilterId) {
+    switch (partySelectionFilterId) {
+      case 0:
+        return " ";
+      case 1:
+        return " AND party_affiliation = 'D'";
+      case 2:
+        return " AND party_affiliation = 'R'";
+    }
+    return " AND party_affiliation is NULL";
+  }
+
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationDataRows(
       String stateFips,
       Optional<String> countyFips,
       int pageSize,
       int pageIndex,
-      Optional<CollectionSortParamModel> sortingParams) {
+      Optional<CollectionSortParamModel> sortingParams,
+      int partySelectionFilterId) {
     var queryable = new VoterRegistrationDataModel.Queryable();
     var mapper = queryable.Mapper();
     var selectQuery = queryable.Query();
@@ -34,9 +47,10 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     params.add(Integer.parseInt(stateFips, 10));
 
     if (countyFips.isPresent()) {
-        sql.append(" AND region_id = ?");
-        params.add(countyFips.get());
+      sql.append(" AND region_id = ?");
+      params.add(countyFips.get());
     }
+    sql.append(getFilterClauseForPartySelection(partySelectionFilterId));
 
     sql.append(" ").append(queryable.QueryOrdering(sortingParams)).append(" LIMIT ? OFFSET ?");
 
@@ -46,7 +60,8 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     return _jdbcTemplate.query(sql.toString(), mapper, params.toArray());
   }
 
-  public int getDetailedVoterRegistrationDataCount(String stateFips, Optional<String> countyFips) {
+  public int getDetailedVoterRegistrationDataCount(
+      String stateFips, Optional<String> countyFips, int partySelectionFilterId) {
     int state = Integer.parseInt(stateFips, 10);
 
     StringBuilder sql =
@@ -55,9 +70,10 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     params.add(state);
 
     if (countyFips.isPresent()) {
-        sql.append(" AND region_id = ?");
-        params.add(countyFips.get());
+      sql.append(" AND region_id = ?");
+      params.add(countyFips.get());
     }
+    sql.append(getFilterClauseForPartySelection(partySelectionFilterId));
 
     Integer count = _jdbcTemplate.queryForObject(sql.toString(), Integer.class, params.toArray());
     return count != null ? count : 0;

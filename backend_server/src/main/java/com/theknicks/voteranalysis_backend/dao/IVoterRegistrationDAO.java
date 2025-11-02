@@ -15,14 +15,19 @@ public interface IVoterRegistrationDAO {
    *
    * @param stateFips - State code fips. This is required.
    * @param countyFips - County code fips. Can be left as empty / null
-   * @return A list of detailed voter registration data rows.
+   * @param pageSize - The size of a single page
+   * @param pageIndex - The page of data to return
+   * @param partySelectionFilterId - The filter flag for the data. [0 = ALL 1 = DEMOCRAT 2 =
+   *     REPUBLICAN 3+ = UNAFFILIATED]
+   * @return A list of detailed voter registration data rows based on pagination.
    */
   List<VoterRegistrationDataModel> getDetailedVoterRegistrationDataRows(
       String stateFips,
       Optional<String> countyFips,
       int pageSize,
       int pageIndex,
-      Optional<CollectionSortParamModel> sortingParams);
+      Optional<CollectionSortParamModel> sortingParams,
+      int partySelectionFilterId);
 
   /**
    * This access point is meant to count all the rows for detailed voter registration information of
@@ -30,7 +35,10 @@ public interface IVoterRegistrationDAO {
    *
    * @param stateFips - State code fips. This is required.
    * @param countyFips - County code fips. This is not required, can be left as empty / null
-   * @return
+   * @param partySelectionFilterId - The filter flag for the data. [0 = ALL 1 = DEMOCRAT 2 =
+   *     REPUBLICAN 3+ = UNAFFILIATED]
+   * @return the amount of rows given the filter parameters.
    */
-  int getDetailedVoterRegistrationDataCount(String stateFips, Optional<String> countyFips);
+  int getDetailedVoterRegistrationDataCount(
+      String stateFips, Optional<String> countyFips, int partySelectionFilterId);
 }

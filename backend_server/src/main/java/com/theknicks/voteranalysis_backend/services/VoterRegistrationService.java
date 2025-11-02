@@ -21,16 +21,19 @@ public class VoterRegistrationService {
       String countyFips,
       int pageSize,
       int pageIndex,
-      Optional<CollectionSortParamModel> sortParams) {
+      Optional<CollectionSortParamModel> sortParams,
+      int partySelectionFilterId) {
     Optional<String> countyFipsParam =
         countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
     return _dao.getDetailedVoterRegistrationDataRows(
-        stateFips, countyFipsParam, pageSize, pageIndex, sortParams);
+        stateFips, countyFipsParam, pageSize, pageIndex, sortParams, partySelectionFilterId);
   }
 
-  public int getDetailedVoterRegistrationDataCount(String stateFips, String countyFips) {
+  public int getDetailedVoterRegistrationDataCount(
+      String stateFips, String countyFips, int partySelectionFilterId) {
     Optional<String> countyFipsParam =
         countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
-    return _dao.getDetailedVoterRegistrationDataCount(stateFips, countyFipsParam);
+    return _dao.getDetailedVoterRegistrationDataCount(
+        stateFips, countyFipsParam, partySelectionFilterId);
   }
 }
