@@ -95,6 +95,7 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
       { value: "R", label: "Republican" },
       { value: "D", label: "Democrat" },
     ],
+    filterable: false,
   },
   {
     field: "status",
@@ -106,6 +107,7 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
       { value: "ACTIVE", label: "Active" },
       { value: "INACTIVE", label: "Inactive" },
     ],
+    filterable: false,
   },
 ];
 
