@@ -52,18 +52,21 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
     headerName: "First Name",
     width: 120,
     valueFormatter: titleCaseString,
+    filterable: false,
   },
   {
     field: "middleName",
     headerName: "Middle Name",
     width: 200,
     valueFormatter: titleCaseString,
+    filterable: false,
   },
   {
     field: "lastName",
     headerName: "Last Name",
     width: 150,
     valueFormatter: titleCaseString,
+    filterable: false,
   },
   {
     field: "partyAffiliation",
@@ -85,12 +88,22 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
 
       return "N/A";
     },
+    type: 'singleSelect',
+    valueOptions: [
+      { value: 'R', label: 'Republican' },
+      { value: 'D', label: 'Democrat' },
+    ],
   },
   {
     field: "status",
     headerName: "Status",
     width: 150,
     valueFormatter: titleCaseString,
+    type: 'singleSelect',
+    valueOptions: [
+      { value: 'ACTIVE', label: 'Active' },
+      { value: 'INACTIVE', label: 'Inactive' },
+    ],
   },
 ];
 
