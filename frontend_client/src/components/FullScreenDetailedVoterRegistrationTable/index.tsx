@@ -59,53 +59,49 @@ function FullScreenDetailedVoterRegistrationTable({ pageSize, width, height }: F
     },
   };
 
-  if (countyCode != null) {
-    // Having a county code means it was triggered from
-    // the choropleth, so we need a way to X-out.
-    return (
-      <Box width={width} p={0} m={0} sx={{ background: "white", borderBottom: 1, borderColor: "divider" }}>
-        <Tabs
-          value={partyFilterId}
-          onChange={function (_, x) {
-            setPartyFilterId(x);
+  return (
+    <Box width={width} p={0} m={0} sx={{ background: "white", borderBottom: 1, borderColor: "divider" }}>
+      <Tabs
+        value={partyFilterId}
+        onChange={function (_, x) {
+          setPartyFilterId(x);
+        }}
+        textColor="secondary"
+        indicatorColor="secondary"
+        variant="fullWidth"
+      >
+        <Tab label={"All"} {...a11yProps(0)} />
+        <Tab label={"Democrat"} {...a11yProps(1)} />
+        <Tab label={"Republican"} {...a11yProps(2)} />
+        <Tab label={"Unaffiliated"} {...a11yProps(3)} />
+      </Tabs>
+      {countyCode != null ? (
+        <WindowTitledDataGrid
+          title={"Voter Registration Data"}
+          rows={rowDataProvider}
+          columns={VOTER_REGISTRATION_INFO_COLUMNS}
+          width={width}
+          height={height}
+          pageSize={pageSize}
+          onXout={function () {
+            navigate(-1);
           }}
-          textColor="secondary"
-          indicatorColor="secondary"
-          variant="fullWidth"
-        >
-          <Tab label={"All"} {...a11yProps(0)} />
-          <Tab label={"Democrat"} {...a11yProps(1)} />
-          <Tab label={"Republican"} {...a11yProps(2)} />
-          <Tab label={"Unaffiliated"} {...a11yProps(3)} />
-        </Tabs>
-        {countyCode != null ? (
-          <WindowTitledDataGrid
-            title={"Voter Registration Data"}
-            rows={rowDataProvider}
-            columns={VOTER_REGISTRATION_INFO_COLUMNS}
-            width={width}
-            height={height}
-            pageSize={pageSize}
-            onXout={function () {
-              navigate(`/state/${fipsCode!}/`);
-            }}
-            getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
-            customCssRules={customCssRules}
-          />
-        ) : (
-          <StyledDataGrid
-            rows={rowDataProvider}
-            columns={VOTER_REGISTRATION_INFO_COLUMNS}
-            width={width}
-            height={height}
-            pageSize={pageSize}
-            getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
-            customCssRules={customCssRules}
-          />
-        )}
-      </Box>
-    );
-  }
+          getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
+          customCssRules={customCssRules}
+        />
+      ) : (
+        <StyledDataGrid
+          rows={rowDataProvider}
+          columns={VOTER_REGISTRATION_INFO_COLUMNS}
+          width={width}
+          height={height}
+          pageSize={pageSize}
+          getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
+          customCssRules={customCssRules}
+        />
+      )}
+    </Box>
+  );
 }
 
 export default FullScreenDetailedVoterRegistrationTable;
