@@ -187,6 +187,7 @@ export interface StateInformationModel {
 export type GetDetailedVoterRegistrationDataCountParams = {
   state?: string;
   county?: string;
+  party?: number;
 };
 
 export type GetDetailedVoterRegistrationDataParams = {
@@ -194,6 +195,8 @@ export type GetDetailedVoterRegistrationDataParams = {
   county?: string;
   pageSize?: number;
   pageIndex?: number;
+  party?: number;
+  sort?: string;
 };
 
 export type GetVoterRegistrationCountsByCountyParams = {
