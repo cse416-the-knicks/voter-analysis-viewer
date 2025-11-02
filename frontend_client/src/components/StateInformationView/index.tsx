@@ -70,11 +70,13 @@ import { dropBoxData, equipmentQualityData } from "../DataDisplays/PartyStatesMo
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
+import LineChart from "../DataDisplays/LineChart";
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
 const ID_SELECTION_POLLBOOK_DELETION = 2;
 const ID_SELECTION_MAIL_BALLOT_REJECTIONS = 3;
+const ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES = 10;
 
 const ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE = 4;
 const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
@@ -169,16 +171,24 @@ function StateInformationView() {
 
   const tryingToViewDetailedVoterRegistration = stateType === DETAIL_STATE_TYPE_VOTER_REGISTRATION && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-  const shouldOpenPopup = ["dropbox-chart", "rejected-ballots-chart", "voter-table"].some((x) => location.pathname.includes(x));
+  const shouldOpenPopup = ["dropbox-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates"].some((x) =>
+    location.pathname.includes(x)
+  );
 
   const dropDownSections = [...defaultDropDownSections];
   if (stateType == DETAIL_STATE_TYPE_VOTER_REGISTRATION) {
     dropDownSections.push({
       title: "Voter Registration",
       items: [
+        { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
         { id: ID_SELECTION_VOTER_REGISTRATION, iconComponent: <PersonIcon />, textContent: "Registration Data" },
         { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
       ],
+    });
+  } else {
+    dropDownSections.push({
+      title: "Voter Registration",
+      items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
     });
   }
 
@@ -260,6 +270,11 @@ function StateInformationView() {
               navigate(`/state/${fipsCode!}/`);
               // TODO(jerry): add the endpoint to
               // fill in the data from...
+            }
+            break;
+          case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
+            {
+              navigate(`/state/${fipsCode}/compare-voter-registration-rates/`);
             }
             break;
           case ID_SELECTION_REJECTED_BALLOTS:
@@ -457,6 +472,50 @@ function StateInformationView() {
                   xAxisLabel="Quality Level"
                   yAxisLabel="Rejected Ballots (%)"
                   useRegression
+                />
+              }
+            />
+            <Route
+              path="compare-voter-registration-rates"
+              element={
+                <LineChart
+                  data={async () => {
+                    const eavs2024Data = await getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: 2024 });
+                    const eavsYears = [
+                      2016,
+                      // 2018,
+                      2020,
+                      // 2022,
+                      2024,
+                    ];
+                    const eavsColors = ["red", "blue", "green", "magenta", "yellow"];
+                    const promises = eavsYears.map((year) => getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: year }));
+
+                    const completed = await Promise.all(promises);
+                    const pointSets = completed.map((data, index) => {
+                      // TODO(backend), this should be done on the server-side
+                      // so ideally the sorting doesn't happen here. I am personally A-OK with
+                      // this but I know Professor Kelly is not.
+                      data.sort((a, b) => {
+                        const equivalentA = eavs2024Data.find((x) => x.countyName === a?.countyName);
+                        const equivalentB = eavs2024Data.find((x) => x.countyName === b?.countyName);
+                        return (equivalentB?.total || 0) - (equivalentA?.total || 0);
+                      });
+                      const points = data.map((data1) => ({ x: data1.countyName!, y: data1.total! }));
+                      const obj = {
+                        points,
+                        label: eavsYears[index].toString(),
+                        color: eavsColors[index],
+                      };
+                      return obj;
+                    });
+                    return pointSets;
+                  }}
+                  width={bubbleChartWidth}
+                  height={bubbleChartHeight}
+                  title="Voter Registration By Year"
+                  xAxisLabel="EAVs Unit"
+                  yAxisLabel="Registered Voters"
                 />
               }
             />
