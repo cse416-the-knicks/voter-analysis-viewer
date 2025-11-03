@@ -1,3 +1,4 @@
+import re
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
@@ -14,10 +15,10 @@ database = os.getenv("DB_NAME")
 
 # Loading 2024 EAVS data
 data_path = "../raw/2024_EAVS_for_Public_Release_V1_xlsx.xlsx"
-df = pd.read_excel(data_path, dtype={"FIPSCode": str})
+df = pd.read_excel(data_path, dtype={"FIPSCode": str, "State_Abbr": str, "Jurisdiction_Name": str})
 
 # Columns to pull from the spreadsheet
-cols = ["FIPSCode", "State_Abbr",
+cols = ["FIPSCode", "State_Abbr", "Jurisdiction_Name",
         "A1a","A1b","A1c",
         "A12a","A12b","A12c","A12d","A12e","A12f","A12g","A12h","A12i","A12j","A12k",
         "C8a","C3a",
@@ -55,7 +56,7 @@ def to_int(val):
     except (ValueError, TypeError):
         return np.nan
 
-for c in cols[1:]:
+for c in cols[3:]:
     df[c] = df[c].apply(to_int)
 
 # Computing total absentee rejections
@@ -86,6 +87,7 @@ df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","
 # Mapping each code to the actual schema column names
 rename_map = {
     "FIPSCode": "region_id",
+    "Jurisdiction_Name": "Jurisdiction_Name",
     "A1a": "total_registered",
     "A1b": "active_registered",
     "A1c": "inactive_registered",
@@ -132,7 +134,7 @@ rename_map = {
     "C9p" : "mail_reject_not_eligible",
     "C9q" : "mail_reject_no_application",
     "mail_reject_other" : "mail_reject_other",
-    "state_id" : "state_id"
+    "state_id" : "state_id",
 }
 df = df.rename(columns=rename_map)
 
@@ -144,7 +146,37 @@ df = df[df["state_id"] != 69]
 df = df[df["state_id"] != 72]
 df = df[df["state_id"] != 78]
 
-print(df)
+def extract_name(jurisdiction, state_id):
+    if not isinstance(jurisdiction, str):
+        return np.nan
+    
+    # Special handling for Wisconsin: "TOWN|VILLAGE OF X - Y COUNTY" into "Town|Village of X (Y)"
+    if state_id == 55:
+        parts = jurisdiction.split(" - ")
+        if len(parts) == 2:
+            before, after = parts
+            # Extract just the county name portion before the word COUNTY
+            county_match = re.search(r"^(.*?)\s+COUNTY\b", after, flags=re.IGNORECASE)
+            county_name = county_match.group(1).strip().title() if county_match else after.strip().title()
+            return f"{before.strip().title()} ({county_name})"
+        else:
+            return jurisdiction.strip().title()
+    
+    # Extracting everything before "COUNTY"
+    match = re.search(r"^(.*?)\s+COUNTY\b", jurisdiction, flags=re.IGNORECASE)
+    if match:
+        return match.group(1).strip().title()
+    else:
+        return jurisdiction.strip().title()
+
+# Making geounit table
+df_geo = pd.DataFrame()
+df_geo["state_id"] = df["state_id"]
+df_geo["eavs_unit_name"] = df["Jurisdiction_Name"]
+df_geo["eavs_unit_code"] = df["region_id"]
+df_geo["name"] = df.apply(lambda row: extract_name(row["Jurisdiction_Name"], row["state_id"]), axis=1)
+
+df = df.drop(columns=["Jurisdiction_Name"])
 
 # Connecting to db
 engine = create_engine(
@@ -154,6 +186,13 @@ engine = create_engine(
 # Inserting into db
 df.to_sql(
     "eavs_data",
+    engine,
+    schema="app",
+    if_exists="append",
+    index=False
+)
+df_geo.to_sql(
+    "eavs_geounit",
     engine,
     schema="app",
     if_exists="append",
