@@ -10,7 +10,7 @@ CREATE TABLE app.eavs_geounit (
     eavs_unit_name   VARCHAR(100) NOT NULL,              -- raw name from EAVS codebook
     eavs_unit_code   VARCHAR(15)  NOT NULL,              -- raw code from EAVS codebook
 
-    unit_type        VARCHAR(20)  NOT NULL,              -- "County", "Town", etc
+    unit_type        VARCHAR(20),              -- "County", "Town", etc
 
     uses_fips        BOOLEAN NOT NULL DEFAULT TRUE,      -- true if code is FIPS-based
 
