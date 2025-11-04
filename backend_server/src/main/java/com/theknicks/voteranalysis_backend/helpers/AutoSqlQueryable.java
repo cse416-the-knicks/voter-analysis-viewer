@@ -25,7 +25,6 @@ public class AutoSqlQueryable<T> {
   private static class SqlQueryableInvocationHandler implements InvocationHandler {
     private final Class<?> _mappableClass;
     private boolean _isAggregateSumQuery = false;
-    private Object[] _contextArgs;
 
     public SqlQueryableInvocationHandler(Class<?> mappableClass) {
       _mappableClass = mappableClass;
@@ -33,10 +32,6 @@ public class AutoSqlQueryable<T> {
 
     public void setIsAggregateSumQuery(boolean v) {
       _isAggregateSumQuery = v;
-    }
-
-    public void setContextArgs(Object[] contextArgs) {
-      _contextArgs = contextArgs;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -265,11 +260,10 @@ public class AutoSqlQueryable<T> {
   }
 
   /** This does some really slick stuff to automate the generation of the row mappers. */
-  public RowMapper<T> Mapper(Object[] contextArgs, boolean isSumAggregate) {
+  public RowMapper<T> Mapper(boolean isSumAggregate) {
     var className = _class.getName();
     var invocationHandler = new SqlQueryableInvocationHandler(_class);
     invocationHandler.setIsAggregateSumQuery(isSumAggregate);
-    invocationHandler.setContextArgs(contextArgs);
     @SuppressWarnings("unchecked")
     var proxy =
         (RowMapper<T>)
@@ -278,12 +272,8 @@ public class AutoSqlQueryable<T> {
     return proxy;
   }
 
-  public RowMapper<T> Mapper(Object[] contextArgs) {
-    return Mapper(contextArgs, false);
-  }
-
   public RowMapper<T> Mapper() {
-    return Mapper(new Object[] {}, false);
+    return Mapper(false);
   }
 
   public static <T> AutoSqlQueryable<T> findQueryableNested(Class<T> T) {

@@ -74,7 +74,7 @@ public class StateDAO implements IStateDAO {
     assert queryable != null;
     return _jdbcTemplate.query(
         queryable.Query(aggregated) + " where substring(eavs_data.region_id, 1, 2) = ? and year = ?",
-        queryable.Mapper(new Object[] {_fipsCodeToCountyNameMap}, aggregated),
+        queryable.Mapper(aggregated),
         fipsCode,
         year);
   }
@@ -87,8 +87,8 @@ public class StateDAO implements IStateDAO {
     var queryResult =
         (List<T>)
             _jdbcTemplate.query(
-                queryable.Query(false) + " where region_id = ? and year = ?",
-                queryable.Mapper(new Object[] {_fipsCodeToCountyNameMap}, false),
+                queryable.Query(false) + " where eavs_data.region_id = ? and year = ?",
+                queryable.Mapper(false),
                 fullPaddedFipsCode,
                 year);
 
