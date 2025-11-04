@@ -73,7 +73,7 @@ public class StateDAO implements IStateDAO {
     var queryable = AutoSqlQueryable.findQueryableNested(type);
     assert queryable != null;
     return _jdbcTemplate.query(
-        queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ? and year = ?",
+        queryable.Query(aggregated) + " where substring(eavs_data.region_id, 1, 2) = ? and year = ?",
         queryable.Mapper(new Object[] {_fipsCodeToCountyNameMap}, aggregated),
         fipsCode,
         year);

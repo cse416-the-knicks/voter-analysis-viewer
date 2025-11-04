@@ -10,10 +10,14 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
  * <p>TODO(jerry): how to determine which was the leading party for the unit? Don't recall if we
  * have schema for this.
  */
-@AutoSql(collection = "app.eavs_data")
+@AutoSql(
+  collection = "app.eavs_data",
+  joining    = {"app.eavs_geounit"},
+  joinMethod = {"inner"},
+  joinOn     = {"app.eavs_geounit.eavs_unit_code = app.eavs_data.region_id"})
 public record BallotStatisticsModel(
-    @SqlColumnName(name = "region_id", omitFromAggregate = true) String fullRegionId,
-    String regionName,
+    @SqlColumnName(name = "eavs_data.region_id", omitFromAggregate = true) String fullRegionId,
+    @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String regionName,
     @SqlColumnName(name = "ballots_dropbox") int dropboxBallots,
     @SqlColumnName(name = "total_ballots_cast") int totalBallotsCast) {
   public static class Queryable extends AutoSqlQueryable<BallotStatisticsModel> {

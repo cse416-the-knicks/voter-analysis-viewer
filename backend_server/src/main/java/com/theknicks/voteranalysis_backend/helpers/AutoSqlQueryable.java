@@ -104,43 +104,15 @@ public class AutoSqlQueryable<T> {
         }
 
         /*
-         * NOTE(jerry):
-         * Check the collection we're in, and see if
-         * there's any collection dependent processing
-         *
          * FIXME(jerry):
-         * This is specifically because we have a field that can't
-         * be queried from the db so this is a little dirty here!!!
-         *
-         * SHOULD BE REMOVED WHEN COUNTY NAMES ARE QUERYABLE.
+         * Almost able to remove the bad code, just this
+         * last vestige.
          */
         var autoSqlAnnotation = (AutoSql) _mappableClass.getAnnotation(AutoSql.class);
         if (autoSqlAnnotation.collection().contains("eavs_data")) {
           if (_isAggregateSumQuery) {
             callingArguments.add(0, "0000000000");
             callingArguments.add(1, "Aggregated");
-          } else {
-            /*
-               for the eavs_data collection, I can't get the county name without
-               extra context info.
-            */
-            @SuppressWarnings("unchecked")
-            var fipsToCountyNameMap = (Dictionary<String, String>) _contextArgs[0];
-            var regionId = resultSet.getString("region_id");
-            var countyName = fipsToCountyNameMap.get(regionId);
-            if (countyName == null || countyName.isBlank()) {
-              countyName = "N/A";
-            }
-            /*
-               The eavs_data records have the form
-
-               0 String fullRegionId,
-               1 String countyName,
-               ...
-               ..
-               N ...
-            */
-            callingArguments.add(1, countyName);
           }
         }
 
@@ -210,6 +182,7 @@ public class AutoSqlQueryable<T> {
     result.append("select\n");
     // For records, which is the use-case this is everything.
     var fieldsToWrite = filterForAllQueryableFields(selfClass.getDeclaredFields(), asSumAggregate);
+    var joinClausesToAdd = autoSqlAnnotation.joining().length;
 
     for (int i = 0; i < fieldsToWrite.length; ++i) {
       var field = fieldsToWrite[i];
@@ -232,6 +205,15 @@ public class AutoSqlQueryable<T> {
 
     result.append("\nfrom ");
     result.append(autoSqlAnnotation.collection());
+    for (int i = 0; i < joinClausesToAdd; ++i) {
+      result.append(" ");
+      result.append(autoSqlAnnotation.joinMethod()[i]);
+      result.append(" join ");
+      result.append(autoSqlAnnotation.joining()[i]);
+      result.append(" on ");
+      result.append(autoSqlAnnotation.joinOn()[i]);
+      result.append("\n");
+    }
     result.append("\n");
     return result.toString();
   }
