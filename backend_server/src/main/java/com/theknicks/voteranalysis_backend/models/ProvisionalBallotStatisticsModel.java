@@ -5,10 +5,14 @@ import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 
 /** This is the data necessary to cover the Provisional Ballots GUI use-cases. */
-@AutoSql(collection = "app.eavs_data")
+@AutoSql(
+  collection = "app.eavs_data",
+  joining    = {"app.eavs_geounit"},
+  joinMethod = {"inner"},
+  joinOn     = {"app.eavs_geounit.eavs_unit_code = app.eavs_data.region_id"})
 public record ProvisionalBallotStatisticsModel(
-    @SqlColumnName(name = "region_id", omitFromAggregate = true) String fullRegionId,
-    String countyName,
+    @SqlColumnName(name = "eavs_data.region_id", omitFromAggregate = true) String fullRegionId,
+    @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String countyName,
     @SqlColumnName(name = "prov_cast") int totalBallotsCast,
     @SqlColumnName(name = "prov_reason_not_in_roll") int ballotReasonNotOnList,
     @SqlColumnName(name = "prov_reason_no_id") int ballotReasonNoIdAvailable,
