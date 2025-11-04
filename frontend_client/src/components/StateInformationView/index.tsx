@@ -482,9 +482,9 @@ function StateInformationView() {
                   data={async () => {
                     const eavs2024Data = await getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: 2024 });
                     const eavsYears = [
-                      2016,
+                      // 2016,
                       // 2018,
-                      2020,
+                      // 2020,
                       // 2022,
                       2024,
                     ];
@@ -496,6 +496,16 @@ function StateInformationView() {
                       // TODO(backend), this should be done on the server-side
                       // so ideally the sorting doesn't happen here. I am personally A-OK with
                       // this but I know Professor Kelly is not.
+
+		      // Filter out counties that seemingly dissolved by 2024.
+		      data.filter(
+			(x) => {
+			  if (eavs2024Data.find((a) => x.countyName === a.countyName)) {
+			    return true;
+			  }
+			  return false;
+			}
+		      );
                       data.sort((a, b) => {
                         const equivalentA = eavs2024Data.find((x) => x.countyName === a?.countyName);
                         const equivalentB = eavs2024Data.find((x) => x.countyName === b?.countyName);
