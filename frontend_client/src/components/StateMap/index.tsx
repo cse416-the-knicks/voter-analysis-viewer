@@ -10,6 +10,8 @@ interface MapFitsToBoundsInternalParameters {
   boundsToFit: L.LatLngBoundsExpression;
 }
 
+type StateMapOnFeatureClickHandler = (feature: GeoJSON.Feature, layer: L.Layer) => void;
+
 interface StateMapParameters {
   mapKey?: any;
   fipsCode?: string;
@@ -18,6 +20,7 @@ interface StateMapParameters {
   height: CssUnitValue;
   styleFunction: L.StyleFunction;
   children: React.ReactNode;
+  onFeatureClick?: StateMapOnFeatureClickHandler;
 }
 
 function MapFitToBoundsInternal({ boundsToFit }: MapFitsToBoundsInternalParameters) {
@@ -34,7 +37,7 @@ function MapFitToBoundsInternal({ boundsToFit }: MapFitsToBoundsInternalParamete
   return null;
 }
 
-function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, children }: StateMapParameters) {
+function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFeatureClick, children }: StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
   const [stateMapBounds, setStateMapBounds] = useState<L.LatLngBoundsExpression | null>();
@@ -67,6 +70,12 @@ function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, chil
       const { properties } = feature;
       if (properties!.NAMELSAD) {
         layer.bindTooltip(properties!.NAMELSAD);
+
+        if (onFeatureClick) {
+          layer.on("click", function () {
+            onFeatureClick(feature, layer);
+          });
+        }
       } else {
         // no tool, tip we just have the whole state
       }

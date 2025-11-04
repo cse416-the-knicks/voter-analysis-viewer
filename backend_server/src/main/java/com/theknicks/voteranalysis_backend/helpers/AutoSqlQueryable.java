@@ -250,6 +250,11 @@ public class AutoSqlQueryable<T> {
     if (sortParams.isEmpty()) {
       return "";
     }
+
+    if (sortParams.get().fields().isEmpty()) {
+      return "";
+    }
+
     var result = new StringBuilder();
     var selectableFields = filterForAllQueryableFields(_class.getDeclaredFields(), false);
 
