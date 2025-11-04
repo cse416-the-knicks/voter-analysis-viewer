@@ -145,14 +145,13 @@ public class StateController {
 
   @GetMapping("/{fipsCode}")
   public Optional<StateInformationModel> getStateInformationTableForState(
-    @PathVariable("fipsCode") String fipsCode
-  ) {
+      @PathVariable("fipsCode") String fipsCode) {
     /*
-      NOTE(jerry):
-      There's simply not that much data for the states to deal with so
-      I'm okay with just sifting through on the server-side to
-      do this.
-     */
+     NOTE(jerry):
+     There's simply not that much data for the states to deal with so
+     I'm okay with just sifting through on the server-side to
+     do this.
+    */
     var completeTable = getStateInformationTable();
     var retrievedResult = completeTable.get(fipsCode);
     if (retrievedResult == null) {
