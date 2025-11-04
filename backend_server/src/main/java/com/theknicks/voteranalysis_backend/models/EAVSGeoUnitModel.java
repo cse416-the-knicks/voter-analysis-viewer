@@ -5,10 +5,10 @@ import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 
 /**
- * This holds part of the data for a geounit's core information
- * as defined by app.eavs_geounit table.
+ * This holds part of the data for a geounit's core information as defined by app.eavs_geounit
+ * table.
  *
- * This is only really needed to show the names of everything
+ * <p>This is only really needed to show the names of everything
  */
 @AutoSql(collection = "app.eavs_geounit")
 public record EAVSGeoUnitModel(

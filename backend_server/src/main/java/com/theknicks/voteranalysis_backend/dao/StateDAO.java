@@ -68,7 +68,8 @@ public class StateDAO implements IStateDAO {
     var queryable = AutoSqlQueryable.findQueryableNested(type);
     assert queryable != null;
     return _jdbcTemplate.query(
-        queryable.Query(aggregated) + " where substring(eavs_data.region_id, 1, 2) = ? and year = ?",
+        queryable.Query(aggregated)
+            + " where substring(eavs_data.region_id, 1, 2) = ? and year = ?",
         queryable.Mapper(aggregated),
         fipsCode,
         year);
@@ -199,7 +200,11 @@ public class StateDAO implements IStateDAO {
           var centerXString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_X.ordinal());
           var centerYString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_Y.ordinal());
           var fullRegionId = fullPaddedFips(stateFips, countyFips);
-          String countyName = _jdbcTemplate.queryForObject("select name from app.eavs_geounit where eavs_unit_code = ?", String.class, new Object[] { fullRegionId });
+          String countyName =
+              _jdbcTemplate.queryForObject(
+                  "select name from app.eavs_geounit where eavs_unit_code = ?",
+                  String.class,
+                  new Object[] {fullRegionId});
           _geoUnitCentroidMap.put(
               fullRegionId,
               new GeoUnitCentroidModel(
