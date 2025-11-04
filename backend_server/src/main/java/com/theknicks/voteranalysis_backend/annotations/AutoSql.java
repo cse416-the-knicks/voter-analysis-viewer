@@ -12,4 +12,10 @@ public @interface AutoSql {
   public String collection() default "";
 
   public String view() default "";
+
+  public String[] joining() default {};
+
+  public String[] joinMethod() default {};
+
+  public String[] joinOn() default {};
 }

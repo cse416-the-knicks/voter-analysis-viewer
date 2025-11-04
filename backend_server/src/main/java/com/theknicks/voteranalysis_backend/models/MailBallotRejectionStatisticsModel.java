@@ -5,10 +5,14 @@ import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 
 /** This is all the data for mail ballot rejections (C9a->q) */
-@AutoSql(collection = "app.eavs_data")
+@AutoSql(
+    collection = "app.eavs_data",
+    joining = {"app.eavs_geounit"},
+    joinMethod = {"inner"},
+    joinOn = {"app.eavs_geounit.eavs_unit_code = app.eavs_data.region_id"})
 public record MailBallotRejectionStatisticsModel(
-    @SqlColumnName(name = "region_id", omitFromAggregate = true) String fullRegionId,
-    String countyName,
+    @SqlColumnName(name = "eavs_data.region_id", omitFromAggregate = true) String fullRegionId,
+    @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String countyName,
     @SqlColumnName(name = "mail_reject_total") int rejectTotal,
     @SqlColumnName(name = "mail_reject_late") int rejectLate,
     @SqlColumnName(name = "mail_reject_no_sig") int rejectNoSignature,

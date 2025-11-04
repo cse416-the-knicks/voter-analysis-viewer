@@ -33,12 +33,9 @@ enum CountyGeoUnitCsvRecordColumnId {
 public class StateDAO implements IStateDAO {
   private final Logger _logger = LoggerFactory.getLogger(StateDAO.class);
   private final String preprocessedGeospatialPath = "../data_common/geospatial_processed/";
-  private final Path _localFipsCodeMappingCsvDataPath =
-      Paths.get("../data_common/raw/US_FIPS_Codes.csv");
   private final Path _localCountyCentroidsCsvDataPath =
       Paths.get("../data_common/processed/county_centroids.csv");
 
-  private final Dictionary<String, String> _fipsCodeToCountyNameMap;
   // TODO(jerry): replace Dictionary with Map, apparently Map is the new thing,
   // and Dictionary is outdated.
   private final Map<String, GeoUnitCentroidModel> _geoUnitCentroidMap;
@@ -48,9 +45,7 @@ public class StateDAO implements IStateDAO {
     _logger.info("Creating Concrete StateDAO");
     _logger.info(preprocessedGeospatialPath);
     _jdbcTemplate = jdbcTemplate;
-    _fipsCodeToCountyNameMap = new Hashtable<>();
     _geoUnitCentroidMap = new HashMap<>();
-    populateFipsCodeToCountyNameMapTable();
     populateGeoUnitCentroidTable();
   }
 
@@ -73,8 +68,9 @@ public class StateDAO implements IStateDAO {
     var queryable = AutoSqlQueryable.findQueryableNested(type);
     assert queryable != null;
     return _jdbcTemplate.query(
-        queryable.Query(aggregated) + " where substring(region_id, 1, 2) = ? and year = ?",
-        queryable.Mapper(new Object[] {_fipsCodeToCountyNameMap}, aggregated),
+        queryable.Query(aggregated)
+            + " where substring(eavs_data.region_id, 1, 2) = ? and year = ?",
+        queryable.Mapper(aggregated),
         fipsCode,
         year);
   }
@@ -87,8 +83,8 @@ public class StateDAO implements IStateDAO {
     var queryResult =
         (List<T>)
             _jdbcTemplate.query(
-                queryable.Query(false) + " where region_id = ? and year = ?",
-                queryable.Mapper(new Object[] {_fipsCodeToCountyNameMap}, false),
+                queryable.Query(false) + " where eavs_data.region_id = ? and year = ?",
+                queryable.Mapper(false),
                 fullPaddedFipsCode,
                 year);
 
@@ -204,7 +200,11 @@ public class StateDAO implements IStateDAO {
           var centerXString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_X.ordinal());
           var centerYString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_Y.ordinal());
           var fullRegionId = fullPaddedFips(stateFips, countyFips);
-          var countyName = _fipsCodeToCountyNameMap.get(fullRegionId);
+          String countyName =
+              _jdbcTemplate.queryForObject(
+                  "select name from app.eavs_geounit where eavs_unit_code = ?",
+                  String.class,
+                  new Object[] {fullRegionId});
           _geoUnitCentroidMap.put(
               fullRegionId,
               new GeoUnitCentroidModel(
@@ -212,18 +212,6 @@ public class StateDAO implements IStateDAO {
                   countyName,
                   Float.parseFloat(centerXString),
                   Float.parseFloat(centerYString)));
-        });
-  }
-
-  private void populateFipsCodeToCountyNameMapTable() throws IOException {
-    CsvHelpers.Csv(
-        _localFipsCodeMappingCsvDataPath,
-        tokens -> {
-          var _stateName = tokens.get(StateCsvRecordColumnId.STATE_NAME.ordinal()); // skip
-          var countyName = tokens.get(StateCsvRecordColumnId.COUNTY_NAME.ordinal());
-          var stateFips = tokens.get(StateCsvRecordColumnId.STATE_FIPS.ordinal());
-          var countyFips = tokens.get(StateCsvRecordColumnId.COUNTY_FIPS.ordinal());
-          _fipsCodeToCountyNameMap.put(fullPaddedFips(stateFips, countyFips), countyName);
         });
   }
 }
