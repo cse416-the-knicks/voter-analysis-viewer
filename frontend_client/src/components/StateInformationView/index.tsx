@@ -246,15 +246,16 @@ function StateInformationView() {
             {
               navigate(`/state/${fipsCode!}/`);
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
+              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, {aggregate: v }))
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
               setBarGraphXTitle("Deletion Reasons");
               setDataRows(
-                data.map((x) => {
+                (await activeVoterPromises[1]).map((x) => {
                   return { id: x.fullRegionId, ...x };
                 })
               );
-              setDataColumns(POLL_BOOK_DELETION_COLUMNS);
+              setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
               high = Math.max(...data.map((x) => x.totalRemoved!));
             }
