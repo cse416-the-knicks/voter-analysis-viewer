@@ -204,9 +204,10 @@ function StateInformationView() {
                 })
               );
               setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
+	      console.log(PROVISIONAL_BALLOT_COLUMNS);
               setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
-              high = Math.max(...data.map((x) => x.totalBallotsCast!));
-	      setTotalDataCount(aggregatedData[0].totalBallotsCast!);
+              high = Math.max(...data.map((x) => x.totalProvisionalBallotsCast!));
+	      setTotalDataCount(aggregatedData[0].totalProvisionalBallotsCast!);
 	    }
 	    break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
@@ -324,7 +325,7 @@ function StateInformationView() {
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
       if (row) {
 	const dataEntry = (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
-	  (row as ProvisionalBallotStatisticsModel).totalProvisionalBallots! ||
+	  (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
 	  (row as PollbookDeletionStatisticsModel).totalRemoved! ||
 	  (row as VoterRegistrationStatisticsModel).active!;
 	const dataEntryTotal = (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||

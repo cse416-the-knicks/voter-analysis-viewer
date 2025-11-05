@@ -105,6 +105,7 @@ export interface VoterRegistrationStatisticsModel {
 export interface ProvisionalBallotStatisticsModel {
   fullRegionId?: string;
   countyName?: string;
+  totalProvisionalBallotsCast?: number;
   totalBallotsCast?: number;
   ballotReasonNotOnList?: number;
   ballotReasonNoIdAvailable?: number;
@@ -155,6 +156,7 @@ export interface MailBallotRejectionStatisticsModel {
   rejectNoApplication?: number;
   rejectOther?: number;
   totalBallotsCast?: number;
+  totalBallotsByMail?: number;
 }
 
 export interface BallotStatisticsModel {
