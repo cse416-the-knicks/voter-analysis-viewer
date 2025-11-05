@@ -52,7 +52,7 @@ function VoterComparisonOptInOptOutTableView() {
         comparisonRow("Inactive Registered", ...awaited.map((x) => x.inactiveRegistered)),
         comparisonRow("Total Registered", ...awaited.map((x) => x.totalRegistered)),
         comparisonRow("Total Ballots Cast", ...awaited.map((x) => x.totalBallotsCast)),
-        comparisonRow("Early Voting Total", ...awaited.map((x) => x.earlyVotingShareRate)),
+        comparisonRow("Early Voting Total", ...awaited.map((x) => x.earlyVotingTotal)),
         comparisonRow("Ballots By Mail", ...awaited.map((x) => x.ballotsByMail)),
         comparisonRow("Provisional Ballots", ...awaited.map((x) => x.totalProvisionalBallotsCast)),
         comparisonRow("Active Voter Rate %", ...awaited.map((x) => (x.activeVoterRate! * 100).toFixed(1) + "%")),
