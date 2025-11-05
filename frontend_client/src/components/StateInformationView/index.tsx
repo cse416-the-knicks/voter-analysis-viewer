@@ -24,13 +24,7 @@ import Stack from "@mui/material/Stack";
 
 import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab } from "@mui/material";
 
-import {
-  DETAIL_STATE_TYPE_DEMOCRAT,
-  DETAIL_STATE_TYPE_NONE,
-  DETAIL_STATE_TYPE_REPUBLICAN,
-  DETAIL_STATE_TYPE_VOTER_REGISTRATION,
-  getDetailStateType,
-} from "../FullBoundedUSMap/detailedStatesInfo";
+import { DETAIL_STATE_TYPE_NONE, DETAIL_STATE_TYPE_VOTER_REGISTRATION, getDetailStateType } from "../FullBoundedUSMap/detailedStatesInfo";
 
 import { useState, useEffect } from "react";
 
@@ -50,7 +44,6 @@ import {
   bargraphDataForPollBookDeletions,
   bargraphDataForProvisionalBallots,
   MAIL_BALLOT_REJECTION_COLUMNS,
-  POLL_BOOK_DELETION_COLUMNS,
   PROVISIONAL_BALLOT_COLUMNS,
 } from "./dataColumns";
 
@@ -136,7 +129,6 @@ function StateInformationView() {
   const theme = useTheme();
   const stateType = getDetailStateType(fipsCode!);
   const location = useLocation();
-  const isPartyState = stateType === DETAIL_STATE_TYPE_DEMOCRAT || stateType === DETAIL_STATE_TYPE_REPUBLICAN;
   const choroplethScaleFactor = 0.05;
 
   /* NOTE(jerry): size tuning parameters */
@@ -246,7 +238,7 @@ function StateInformationView() {
             {
               navigate(`/state/${fipsCode!}/`);
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
-              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, {aggregate: v }))
+              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
               setBarGraphXTitle("Deletion Reasons");
@@ -310,7 +302,7 @@ function StateInformationView() {
         setGradientMap(newGradientMap);
       })();
     },
-    [activeDataState]
+    [activeDataState, fipsCode, navigate]
   );
 
   useKeyDown("Escape", () => navigate("/"));
@@ -402,7 +394,7 @@ function StateInformationView() {
             width={maxWidthForMap}
             height={maxHeightForMap}
             fipsCode={fipsCode}
-            onFeatureClick={function (feature: GeoJSON.Feature, layer: L.Layer) {
+            onFeatureClick={function (feature: GeoJSON.Feature) {
               const geounitFipsCode = feature.properties!.COUNTYFP;
               const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
 
