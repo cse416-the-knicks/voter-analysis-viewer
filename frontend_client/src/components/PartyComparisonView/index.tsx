@@ -1,9 +1,9 @@
-import type { ViewStateYearSummaryModel, StateInformationModel, StateInformationModelAffiliation, StateInformationModelFelonyDisenfranchisement, StateInformationModelRegistrationMethod } from "../../api/client";
+import type { ViewStateYearSummaryModel, StateInformationModel } from "../../api/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useKeyDown from "../../hooks/useKeyDown";
 
-import { getStateInformationTableForState, getViewStateYearSummaryByStateForYear } from "../../api/client";
+import { getViewStateYearSummaryByStateForYear } from "../../api/client";
 
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { comparisonRow } from "../../helpers/comparisonRow";
@@ -19,7 +19,6 @@ function PartyComparisonView() {
   useEffect(function () {
     (async function () {
       const awaited = await Promise.all(["36", "40"].map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
-      const awaited1 = await Promise.all(["36", "40"].map((fips) => getStateInformationTableForState(fips)));
 
       setColumnRows([
         {

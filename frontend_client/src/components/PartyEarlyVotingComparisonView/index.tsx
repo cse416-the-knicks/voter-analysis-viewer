@@ -8,7 +8,6 @@ import { getViewStateYearSummaryByStateForYear } from "../../api/client";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { comparisonRow } from "../../helpers/comparisonRow";
 
-
 function PartyEarlyVotingComparisonTableView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<ViewStateYearSummaryModel[]>([]);
@@ -45,6 +44,8 @@ function PartyEarlyVotingComparisonTableView() {
         comparisonRow("Type", "Democrat", "Republican"),
         comparisonRow("Early Voting Total", ...awaited.map((x) => x.earlyVotingTotal)),
         comparisonRow("Ballots By Mail", ...awaited.map((x) => x.ballotsByMail)),
+        comparisonRow("Total Ballots Cast", ...awaited.map((x) => x.totalBallotsCast)),
+        comparisonRow("Provisional Ballots", ...awaited.map((x) => x.totalProvisionalBallotsCast)),
         comparisonRow("Early Voting Share %", ...awaited.map((x) => (x.earlyVotingShareRate! * 100).toFixed(1) + "%")),
         comparisonRow("Mail-in Ballot Share %", ...awaited.map((x) => (x.mailinBallotVotingShareRate! * 100).toFixed(1) + "%"))
       );

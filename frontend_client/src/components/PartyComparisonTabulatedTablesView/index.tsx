@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab } from "@mui/material";
+import { useState } from "react";
+import { Box, useTheme, Tabs, Tab } from "@mui/material";
 
 import PartyComparisonView from "../PartyComparisonView";
 import PartyEarlyVotingComparisonView from "../PartyEarlyVotingComparisonView";
+import PartyGeneralComparisonView from "../PartyGeneralComparisonView";
 
 function a11yProps(index: number) {
   return {
@@ -40,7 +41,7 @@ function PartyComparisonTabulatedTablesView() {
       {
 	(activeWidget === 2) ? <PartyComparisonView/> :
 	  (activeWidget === 1) ? <PartyEarlyVotingComparisonView/> :
-	    (activeWidget === 0) ? <></> : <></>
+	    (activeWidget === 0) ? <PartyGeneralComparisonView/> : <></>
       }
     </Box>
   );
