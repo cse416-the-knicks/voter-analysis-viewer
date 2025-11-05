@@ -15,19 +15,34 @@ function PartyComparisonTabulatedTablesView() {
   const theme = useTheme();
   const [activeWidget, setActiveWidget] = useState(0);
   return (
-    <Tabs
-      value={activeWidget}
-      onChange={function (_, x) {
-        setActiveWidget(x);
-      }}
-      textColor="secondary"
-      indicatorColor="secondary"
-      variant="fullWidth"
+    <Box
+      sx={
+	{
+	  position:"fixed",
+	  top:"0"
+	}
+      }
     >
-      <Tab label={"General Comparison"} {...a11yProps(0)} />
-      <Tab label={"Early Voting Comparison"} {...a11yProps(1)} />
-      <Tab label={"Registration / Turnout Comparison"} {...a11yProps(2)} />
-    </Tabs>
+	<Tabs
+	    value={activeWidget}
+	    onChange={function (_, x) {
+		setActiveWidget(x);
+	    }}
+	    textColor="secondary"
+	    indicatorColor="secondary"
+	    variant="fullWidth"
+	    sx={{background: theme.palette.background.paper}}
+	    >
+	    <Tab label={"General Comparison"} {...a11yProps(0)} />
+	    <Tab label={"Early Voting Comparison"} {...a11yProps(1)} />
+	    <Tab label={"Registration / Turnout Comparison"} {...a11yProps(2)} />
+	</Tabs>
+      {
+	(activeWidget === 2) ? <PartyComparisonView/> :
+	  (activeWidget === 1) ? <PartyEarlyVotingComparisonView/> :
+	    (activeWidget === 0) ? <></> : <></>
+      }
+    </Box>
   );
 }
 

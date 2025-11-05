@@ -47,15 +47,9 @@ function PartyComparisonView() {
         comparisonRow("Active Registered", ...awaited.map((x) => x.activeRegistered)),
         comparisonRow("Inactive Registered", ...awaited.map((x) => x.inactiveRegistered)),
         comparisonRow("Total Registered", ...awaited.map((x) => x.totalRegistered)),
-        comparisonRow("Total Ballots Cast", ...awaited.map((x) => x.totalBallotsCast)),
-        comparisonRow("Early Voting Total", ...awaited.map((x) => x.earlyVotingTotal)),
-        comparisonRow("Ballots By Mail", ...awaited.map((x) => x.ballotsByMail)),
-        comparisonRow("Provisional Ballots", ...awaited.map((x) => x.totalProvisionalBallotsCast)),
         comparisonRow("Active Voter Rate %", ...awaited.map((x) => (x.activeVoterRate! * 100).toFixed(1) + "%")),
         comparisonRow("Inactive Voter Rate %", ...awaited.map((x) => (x.inactiveVoterRate! * 100).toFixed(1) + "%")),
         comparisonRow("Turnout Rate %", ...awaited.map((x) => (x.turnOutRate! * 100).toFixed(1) + "%")),
-        comparisonRow("Early Voting Share %", ...awaited.map((x) => (x.earlyVotingShareRate! * 100).toFixed(1) + "%")),
-        comparisonRow("Mail-in Ballot Share %", ...awaited.map((x) => (x.mailinBallotVotingShareRate! * 100).toFixed(1) + "%"))
       );
 
       // @ts-expect-error, This is actually correctly an error
@@ -69,7 +63,7 @@ function PartyComparisonView() {
 
   return (
     <WindowTitledDataGrid
-      title={"Republican / Democrat Voting Comparisons"}
+      title={"Registration/Turnout Comparisons"}
       width={maxWidth}
       maxWidth={maxWidth}
       pageSize={13}
@@ -77,7 +71,7 @@ function PartyComparisonView() {
       columns={cols}
       onXout={() => navigate("/")}
       left={`calc(50vw - ${maxWidth / 2}px)`}
-      top={"0"}
+      top={"2.7em"}
     />
   );
 
