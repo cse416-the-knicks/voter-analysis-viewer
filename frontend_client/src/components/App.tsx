@@ -10,7 +10,7 @@ import DisplayVotingMachineSummaryView from "./DisplayVotingMachineSummaryView";
 import VoterComparisonOptInOptOutTableView from "./VoterComparisonOptInOutTableView";
 import FrontPage from "./FrontPage";
 import PartyComparisonView from "./PartyComparisonView";
-import EarlyVotingComparisonView from "./EarlyVotingComparisonView";
+import PartyEarlyVotingComparisonView from "./PartyEarlyVotingComparisonView";
 
 import { CssBaseline, useMediaQuery, Backdrop } from "@mui/material";
 
@@ -43,7 +43,7 @@ function App() {
     { matchPortion: "/display/voting-machine-summary", component: <DisplayVotingMachineSummaryView /> },
     { matchPortion: "/compare/optvote", component: <VoterComparisonOptInOptOutTableView /> },
     { matchPortion: "/compare/party-registration", component: <PartyComparisonView /> },
-    { matchPortion: "/compare/early-voting", component: <EarlyVotingComparisonView /> },
+    { matchPortion: "/compare/early-voting", component: <PartyEarlyVotingComparisonView /> },
     { matchPortion: "/state/:fipsCode/*", component: <StateInformationView /> },
   ];
 
