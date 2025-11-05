@@ -32,7 +32,8 @@ public record MailBallotRejectionStatisticsModel(
     @SqlColumnName(name = "mail_reject_not_eligible") int rejectNotEligible,
     @SqlColumnName(name = "mail_reject_no_application") int rejectNoApplication,
     @SqlColumnName(name = "mail_reject_other") int rejectOther,
-    @SqlColumnName(name = "total_ballots_cast") int totalBallotsCast) {
+    @SqlColumnName(name = "total_ballots_cast") int totalBallotsCast,
+    @SqlColumnName(name = "ballots_by_mail") int totalBallotsByMail) {
   public static class Queryable extends AutoSqlQueryable<MailBallotRejectionStatisticsModel> {
     public Queryable() {
       super(MailBallotRejectionStatisticsModel.class);

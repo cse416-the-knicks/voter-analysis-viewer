@@ -13,7 +13,8 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 public record ProvisionalBallotStatisticsModel(
     @SqlColumnName(name = "eavs_data.region_id", omitFromAggregate = true) String fullRegionId,
     @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String countyName,
-    @SqlColumnName(name = "prov_cast") int totalBallotsCast,
+    @SqlColumnName(name = "prov_cast") int totalProvisionalBallotsCast,
+    @SqlColumnName(name = "total_ballots_cast") int totalBallotsCast,
     @SqlColumnName(name = "prov_reason_not_in_roll") int ballotReasonNotOnList,
     @SqlColumnName(name = "prov_reason_no_id") int ballotReasonNoIdAvailable,
     @SqlColumnName(name = "prov_reason_not_eligibe_official") int ballotReasonChallengedByOfficial,
