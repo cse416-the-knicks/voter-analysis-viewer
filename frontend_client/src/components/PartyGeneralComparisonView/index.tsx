@@ -1,31 +1,44 @@
-import type { ViewStateYearSummaryModel, StateInformationModel, } from "../../api/client";
+import type { ViewStateYearSummaryModel, StateInformationModel } from "../../api/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useKeyDown from "../../hooks/useKeyDown";
 
-import { getStateInformationTableForState, getViewStateYearSummaryByStateForYear, StateInformationModelFelonyDisenfranchisement, StateInformationModelRegistrationMethod,  } from "../../api/client";
+import {
+  getStateInformationTableForState,
+  getViewStateYearSummaryByStateForYear,
+  StateInformationModelFelonyDisenfranchisement,
+  StateInformationModelRegistrationMethod,
+} from "../../api/client";
 
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { comparisonRow } from "../../helpers/comparisonRow";
 
-type PartyStateData = (ViewStateYearSummaryModel | StateInformationModel);
+type PartyStateData = ViewStateYearSummaryModel | StateInformationModel;
 
 function felonyDisenfranchisementReadableString(x: StateInformationModelFelonyDisenfranchisement) {
   switch (x) {
-    case StateInformationModelFelonyDisenfranchisement.UNKNOWN: return "Unknown";
-    case StateInformationModelFelonyDisenfranchisement.NO_DENIAL_OF_VOTING: return "No Disenfranchisement";
-    case StateInformationModelFelonyDisenfranchisement.RESTORATION_UPON_RELEASE_FROM_PRISON: return "Voting Restoration Upon Release";
-    case StateInformationModelFelonyDisenfranchisement.RESTORATION_AFTER_PAROLE_AND_PROBATION: return "Voting Restoration After Parole & Probation";
-    case StateInformationModelFelonyDisenfranchisement.ADDITIONAL_ACTION_FOR_RESTORATION: return "Voting Restoration After Addition Action";
+    case StateInformationModelFelonyDisenfranchisement.UNKNOWN:
+      return "Unknown";
+    case StateInformationModelFelonyDisenfranchisement.NO_DENIAL_OF_VOTING:
+      return "No Disenfranchisement";
+    case StateInformationModelFelonyDisenfranchisement.RESTORATION_UPON_RELEASE_FROM_PRISON:
+      return "Voting Restoration Upon Release";
+    case StateInformationModelFelonyDisenfranchisement.RESTORATION_AFTER_PAROLE_AND_PROBATION:
+      return "Voting Restoration After Parole & Probation";
+    case StateInformationModelFelonyDisenfranchisement.ADDITIONAL_ACTION_FOR_RESTORATION:
+      return "Voting Restoration After Addition Action";
   }
   return "Unknown";
 }
 
 function registrationMethodReadableString(x: StateInformationModelRegistrationMethod) {
   switch (x) {
-    case StateInformationModelRegistrationMethod.NONE: return 'None';
-    case StateInformationModelRegistrationMethod.OPT_IN: return 'Opt-In';
-    case StateInformationModelRegistrationMethod.OPT_OUT: return 'Opt-Out';
+    case StateInformationModelRegistrationMethod.NONE:
+      return "None";
+    case StateInformationModelRegistrationMethod.OPT_IN:
+      return "Opt-In";
+    case StateInformationModelRegistrationMethod.OPT_OUT:
+      return "Opt-Out";
   }
   return "Unknown";
 }
@@ -69,7 +82,7 @@ function PartyGeneralComparisonView() {
         comparisonRow("Registration Method", ...stateInfo.map((x) => registrationMethodReadableString(x.registrationMethod))),
         comparisonRow("Total Population", ...stateInfo.map((x) => x.populationTotal)),
         comparisonRow("Voting Age Population", ...stateInfo.map((x) => x.cvapTotal)),
-        comparisonRow("Total Registered", ...stateSummary.map((x) => x.totalRegistered)),
+        comparisonRow("Total Registered", ...stateSummary.map((x) => x.totalRegistered))
       );
 
       // @ts-expect-error, This is actually correctly an error
@@ -94,7 +107,6 @@ function PartyGeneralComparisonView() {
       top={"2.7em"}
     />
   );
-
 }
 
 export default PartyGeneralComparisonView;

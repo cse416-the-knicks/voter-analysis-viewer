@@ -72,7 +72,6 @@ function PartyEarlyVotingComparisonTableView() {
       top={"2.7em"}
     />
   );
-
 }
 
 export default PartyEarlyVotingComparisonTableView;

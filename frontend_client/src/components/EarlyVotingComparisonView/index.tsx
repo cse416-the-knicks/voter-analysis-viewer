@@ -8,7 +8,6 @@ import { getViewStateYearSummaryByStateForYear } from "../../api/client";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { comparisonRow } from "../../helpers/comparisonRow";
 
-
 function EarlyVotingComparisonTableView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<ViewStateYearSummaryModel[]>([]);
@@ -79,7 +78,6 @@ function EarlyVotingComparisonTableView() {
       top={"0"}
     />
   );
-
 }
 
 export default EarlyVotingComparisonTableView;

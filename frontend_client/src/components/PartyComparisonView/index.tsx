@@ -8,7 +8,7 @@ import { getViewStateYearSummaryByStateForYear } from "../../api/client";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { comparisonRow } from "../../helpers/comparisonRow";
 
-type PartyStateData = (ViewStateYearSummaryModel | StateInformationModel);
+type PartyStateData = ViewStateYearSummaryModel | StateInformationModel;
 function PartyComparisonView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<PartyStateData[]>([]);
@@ -48,7 +48,7 @@ function PartyComparisonView() {
         comparisonRow("Total Registered", ...awaited.map((x) => x.totalRegistered)),
         comparisonRow("Active Voter Rate %", ...awaited.map((x) => (x.activeVoterRate! * 100).toFixed(1) + "%")),
         comparisonRow("Inactive Voter Rate %", ...awaited.map((x) => (x.inactiveVoterRate! * 100).toFixed(1) + "%")),
-        comparisonRow("Turnout Rate %", ...awaited.map((x) => (x.turnOutRate! * 100).toFixed(1) + "%")),
+        comparisonRow("Turnout Rate %", ...awaited.map((x) => (x.turnOutRate! * 100).toFixed(1) + "%"))
       );
 
       // @ts-expect-error, This is actually correctly an error
@@ -73,7 +73,6 @@ function PartyComparisonView() {
       top={"2.7em"}
     />
   );
-
 }
 
 export default PartyComparisonView;
