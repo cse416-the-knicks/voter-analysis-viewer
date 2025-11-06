@@ -39,7 +39,3 @@ CREATE INDEX IF NOT EXISTS idx_device_model_type
 -- Filtering by certification
 CREATE INDEX IF NOT EXISTS idx_device_model_certification
     ON app.device_model (certification);
-
--- Year introduced can be useful for timeline queries
-CREATE INDEX IF NOT EXISTS idx_device_model_year
-    ON app.device_model (year_introduced);
