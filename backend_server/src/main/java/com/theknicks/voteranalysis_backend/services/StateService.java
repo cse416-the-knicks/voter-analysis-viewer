@@ -6,6 +6,7 @@ import com.theknicks.voteranalysis_backend.models.*;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.*;
 
 /**
@@ -28,59 +29,71 @@ public class StateService {
     return _dao.getGeometryBoundary(fipsCode);
   }
 
+  @Cacheable(cacheNames = "provisionalBallotsByCounty", key="{ #fipsCode, #year, #inAggregate }")
   public Optional<ProvisionalBallotStatisticsModel> getProvisionalBallotDataForCounty(
       String fipsCode, String countyCode, int year) {
     return _dao.getProvisionBallotRowByCounty(fipsCode, countyCode, year);
   }
 
+  @Cacheable(cacheNames = "provisionalBallots", key="{ #fipsCode, #countyCode, #year }")
   public List<ProvisionalBallotStatisticsModel> getProvisionalBallotData(
       String fipsCode, int year, boolean inAggregate) {
     return _dao.getProvisionBallotRows(fipsCode, year, inAggregate);
   }
 
+  @Cacheable(cacheNames = "voterRegistrationStatistics", key="{ #fipsCode, #year, #inAggregate }")
   public List<VoterRegistrationStatisticsModel> getVoterRegistrationData(
       String fipsCode, int year, boolean inAggregate) {
     return _dao.getVoterRegistrationRows(fipsCode, year, inAggregate);
   }
 
+  @Cacheable(cacheNames = "voterRegistrationStatisticsByCounty", key="{ #fipsCode, #countyCode, #year }")
   public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationDataForCounty(
       String fipsCode, String countyCode, int year) {
     return _dao.getVoterRegistrationRowByCounty(fipsCode, countyCode, year);
   }
 
+  @Cacheable(cacheNames = "pollBookDeletions", key="{ #fipsCode, #year, #inAggregate }")
   public List<PollbookDeletionStatisticsModel> getPollbookDeletionData(
       String fipsCode, int year, boolean inAggregate) {
     return _dao.getPollbookDeletionRows(fipsCode, year, inAggregate);
   }
 
+  @Cacheable(cacheNames = "pollBookDeletionsByCounty", key="{ #fipsCode, #countyCode, #year }")
   public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionDataForCounty(
       String fipsCode, String countyCode, int year) {
     return _dao.getPollbookDeletionRowByCounty(fipsCode, countyCode, year);
   }
 
+  @Cacheable(cacheNames = "mailBallotRejections", key="{ #fipsCode, #year, #inAggregate }")
   public List<MailBallotRejectionStatisticsModel> getMailBallotRejectionData(
       String fipsCode, int year, boolean inAggregate) {
     return _dao.getMailBallotRejectionRows(fipsCode, year, inAggregate);
   }
 
+  @Cacheable(cacheNames = "mailBallotRejectionsByCounty", key="{ #fipsCode, #countyCode, #year }")
   public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionDataForCounty(
       String fipsCode, String countyCode, int year) {
     return _dao.getMailBallotRejectionRowByCounty(fipsCode, countyCode, year);
   }
 
+  @Cacheable(cacheNames = "viewStateYearSummary", key="{ #fipsCode }")
   public List<ViewStateYearSummaryModel> getViewStateYearSummaryDataForState(String fipsCode) {
     return _dao.getStateYearSummaryRows(fipsCode);
   }
 
+  @Cacheable(cacheNames = "viewStateYearSummaryByCounty", key="{ #fipsCode, #year }")
   public Optional<ViewStateYearSummaryModel> getViewStateYearSummaryDataForStateByYear(
       String fipsCode, int year) {
     return _dao.getStateYearSummaryRowByYear(fipsCode, year);
   }
 
+  @Cacheable(cacheNames = "ballotStatistics", key="{ #fipsCode, #year }")
   public List<BallotStatisticsModel> getBallotStatistics(String fipsCode, int year) {
     return _dao.getBallotStatisticsRows(fipsCode, year);
   }
 
+  @Cacheable(cacheNames = "ballotStatisticsByCounty", key="{ #fipsCode, #year, #countyFipsCode }")
   public Optional<BallotStatisticsModel> getBallotStatisticsForCounty(
       String fipsCode, String countyFipsCode, int year) {
     return _dao.getBallotStatisticsRowByCounty(fipsCode, countyFipsCode, year);
@@ -90,6 +103,7 @@ public class StateService {
     return _dao.getGeoUnitCentroids(fipsCode);
   }
 
+  @Cacheable(cacheNames = "stateInformation")
   public Map<String, StateInformationModel> getStateInformationTable() {
     var stateInformation = _dao.getStateInformationDataRowModels();
     var result = new HashMap<String, StateInformationModel>();

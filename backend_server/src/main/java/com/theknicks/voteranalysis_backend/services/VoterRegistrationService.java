@@ -4,6 +4,7 @@ import com.theknicks.voteranalysis_backend.dao.IVoterRegistrationDAO;
 import com.theknicks.voteranalysis_backend.models.*;
 import java.util.*;
 import org.slf4j.*;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /** This service wraps around the IVoterRegistrationDAO. */
@@ -16,6 +17,9 @@ public class VoterRegistrationService {
     _dao = dao;
   }
 
+  @Cacheable(
+          cacheNames = "voterRegistration",
+          key = "{ #stateFips, #countyFips, #pageSize, #pageIndex, #partySelectionFilterId, #encodedSortParams }")
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationData(
       String stateFips,
       String countyFips,
@@ -29,6 +33,9 @@ public class VoterRegistrationService {
         stateFips, countyFipsParam, pageSize, pageIndex, sortParams, partySelectionFilterId);
   }
 
+  @Cacheable(
+          cacheNames = "voterRegistration",
+          key = "{ #stateFips, #countyFips, #partySelectionFilterId }")
   public int getDetailedVoterRegistrationDataCount(
       String stateFips, String countyFips, int partySelectionFilterId) {
     Optional<String> countyFipsParam =
