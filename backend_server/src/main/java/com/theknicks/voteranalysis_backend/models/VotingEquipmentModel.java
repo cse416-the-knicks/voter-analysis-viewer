@@ -16,7 +16,7 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 @AutoSql(collection = "app.device_model")
 public record VotingEquipmentModel(
   @SqlColumnName(name = "vendor") String manufacturer,
-    // No strong opinions, but this could be an enum.
+  // No strong opinions, but this could be an enum.
   @SqlColumnName(name = "device_type") String equipmentType,
   @SqlColumnName(name = "model_name") String modelName,
   @SqlColumnName(name = "is_discontinued") Optional<Boolean> discontinued,
@@ -40,4 +40,10 @@ public record VotingEquipmentModel(
 
   // DNE
   // @SqlColumnName(name = "security_description") Optional<String> securityRiskDescription
-) {}
+) {
+  public static class Queryable extends AutoSqlQueryable<VotingEquipmentModel> {
+    public Queryable() {
+      super(VotingEquipmentModel.class);
+    }
+  }
+}

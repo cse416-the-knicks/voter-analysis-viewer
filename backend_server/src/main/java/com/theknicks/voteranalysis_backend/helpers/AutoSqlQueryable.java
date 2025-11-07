@@ -105,8 +105,13 @@ public class AutoSqlQueryable<T> {
           return resultSet.getString(columnNumber);
         } else if ((type == Date.class)) {
           var newValue = resultSet.getDate(columnNumber);
+          if (newValue == null) {
+            return null;
+          }
           return new Date(newValue.getTime());
-        } else if ((type instanceof ParameterizedType)) {
+        } else if ((type == Boolean.class) || (type == boolean.class)) {
+          return resultSet.getBoolean(columnNumber);
+        }else if ((type instanceof ParameterizedType)) {
           var parameterizedTypes = ((ParameterizedType) type).getActualTypeArguments();
           if ((((ParameterizedType) type).getRawType() == Optional.class)) {
             var typeParameter = parameterizedTypes[0];
