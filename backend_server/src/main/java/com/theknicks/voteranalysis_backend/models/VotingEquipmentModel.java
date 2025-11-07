@@ -36,7 +36,7 @@ public record VotingEquipmentModel(
   // @SqlColumnName(name = "has_vvpat") Optional<Boolean> vvpat,
 
   // Mostly VVSG
-  @SqlColumnName(name = "certification") Optional<String> certificationLevel,
+  @SqlColumnName(name = "certification") Optional<String> certificationLevel
 
   // DNE
   // @SqlColumnName(name = "security_description") Optional<String> securityRiskDescription
