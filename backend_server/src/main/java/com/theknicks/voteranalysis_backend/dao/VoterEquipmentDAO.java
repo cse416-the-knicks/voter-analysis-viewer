@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class VoterEquipmentDAO implements IVoterEquipmentDAO {
-  private final Logger _logger = LoggerFactory.getLogger(VoterEquipmentLocalDiskDAO.class);
+  private final Logger _logger = LoggerFactory.getLogger(VoterEquipmentDAO.class);
 
   public VoterEquipmentDAO() throws IOException {
     _logger.info("Creating VoterEquipmentDAO - JDBC Persistence");
