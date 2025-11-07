@@ -1,34 +1,43 @@
 package com.theknicks.voteranalysis_backend.models;
 
 import java.util.Optional;
+import java.util.Date;
+
+import com.theknicks.voteranalysis_backend.annotations.AutoSql;
+import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
+import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 
 /**
  * Voting Equipment Model Response
  *
  * <p>For simplicity, this model is going to be almost directly in sync with the spreadsheet
  * columns.
- *
- * <p>NOTE(jerry): For the scope of this, I have no strong feelings about typing, and I think it's
- * basically fine to keep it all as strings.
- *
- * <p>NOTE/TODO(jerry): This should probably be auto-generated, I think we could auto generate it to
- * be honest.
- *
- * <p>I might do this in another PR.
  */
+@AutoSql(collection = "app.device_model")
 public record VotingEquipmentModel(
-    String manufacturer,
+  @SqlColumnName(name = "vendor") String manufacturer,
     // No strong opinions, but this could be an enum.
-    String equipmentType,
-    String modelName,
-    Optional<Boolean> discontinued,
-    // Could/Should be dates, can change later.
-    Optional<Integer> firstManufactured,
-    Optional<Integer> lastManufactured,
-    Optional<String> operatingSystem,
-    Optional<String> firmwareVersion,
-    // Voter Verified Paper Audit Trail
-    Optional<Boolean> vvpat,
-    // Mostly VVSG
-    Optional<String> certificationLevel,
-    Optional<String> securityRiskDescription) {}
+  @SqlColumnName(name = "device_type") String equipmentType,
+  @SqlColumnName(name = "model_name") String modelName,
+  @SqlColumnName(name = "is_discontinued") Optional<Boolean> discontinued,
+  // Could/Should be dates, can change later.
+  @SqlColumnName(name = "first_manufactured") Optional<Date> firstManufactured,
+
+  // DNE
+  // @SqlColumnName(name = "last_manufactured") Optional<Integer> lastManufactured,
+
+  @SqlColumnName(name = "underlying_os") Optional<String> operatingSystem,
+
+  // DNE
+  // @SqlColumnName(name = "firmware_version") Optional<String> firmwareVersion,
+
+  // Voter Verified Paper Audit Trail
+  // DNE
+  // @SqlColumnName(name = "has_vvpat") Optional<Boolean> vvpat,
+
+  // Mostly VVSG
+  @SqlColumnName(name = "certification") Optional<String> certificationLevel,
+
+  // DNE
+  // @SqlColumnName(name = "security_description") Optional<String> securityRiskDescription
+) {}
