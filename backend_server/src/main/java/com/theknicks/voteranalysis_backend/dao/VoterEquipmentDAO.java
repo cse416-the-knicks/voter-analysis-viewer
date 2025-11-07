@@ -32,7 +32,7 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
   public List<VotingEquipmentModel> getVotingEquipmentByType(String type) {
     var queryable = new VotingEquipmentModel.Queryable();
     return _jdbcTemplate.query(
-        queryable.Query(false) + " where equipmentType = ?", queryable.Mapper(false), type);
+        queryable.Query(false) + " where equipment_type = ?", queryable.Mapper(false), type);
   }
 
   @Override
