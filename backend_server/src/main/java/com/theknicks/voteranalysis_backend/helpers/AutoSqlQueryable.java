@@ -43,15 +43,15 @@ public class AutoSqlQueryable<T> {
 
         if (allConstructors.length != 1) {
           throw new IllegalArgumentException(
-                  "The mappable class is not a simple POJO (single constructor record");
+              "The mappable class is not a simple POJO (single constructor record");
         }
 
         var defaultConstructor = allConstructors[0];
         var resultSet = (ResultSet) args[0];
         var callingArguments = new ArrayList<Object>();
         var qualifyingFields =
-                AutoSqlQueryable.filterForAllQueryableFields(
-                        _mappableClass.getDeclaredFields(), _isAggregateSumQuery);
+            AutoSqlQueryable.filterForAllQueryableFields(
+                _mappableClass.getDeclaredFields(), _isAggregateSumQuery);
 
         // I'm praying these are in order!
         int columnNumber = 1;
@@ -62,11 +62,11 @@ public class AutoSqlQueryable<T> {
           } catch (Exception e) {
             var type = field.getType();
             System.err.format(
-                    "\tFaulted field \"%s\": %s to column %d (labelled \"%s\")\n",
-                    field.getName(),
-                    type.getName(),
-                    columnNumber,
-                    resultSetMetaData.getColumnLabel(columnNumber));
+                "\tFaulted field \"%s\": %s to column %d (labelled \"%s\")\n",
+                field.getName(),
+                type.getName(),
+                columnNumber,
+                resultSetMetaData.getColumnLabel(columnNumber));
             e.printStackTrace();
           }
           columnNumber++;
@@ -92,58 +92,56 @@ public class AutoSqlQueryable<T> {
     }
 
     private static Object visitType(ResultSet resultSet, Type type, int columnNumber)
-            throws SQLException, RuntimeException {
-        if ((type == int.class || type == Integer.class)) {
-          return resultSet.getInt(columnNumber);
-        } else if ((type == float.class || type == Float.class)) {
-          return resultSet.getFloat(columnNumber);
-        } else if ((type == long.class || type == Long.class)) {
-          return resultSet.getLong(columnNumber);
-        } else if ((type == double.class || type == Double.class)) {
-          return resultSet.getDouble(columnNumber);
-        } else if ((type == String.class)) {
-          return resultSet.getString(columnNumber);
-        } else if ((type == Date.class)) {
-          var newValue = resultSet.getDate(columnNumber);
-          if (newValue == null) {
-            return null;
-          }
-          return new Date(newValue.getTime());
-        } else if ((type == Boolean.class) || (type == boolean.class)) {
-          return resultSet.getBoolean(columnNumber);
-        }else if ((type instanceof ParameterizedType)) {
-          var parameterizedTypes = ((ParameterizedType) type).getActualTypeArguments();
-          if ((((ParameterizedType) type).getRawType() == Optional.class)) {
-            var typeParameter = parameterizedTypes[0];
-
-            // Careful recursion, since this is a little complicated.
-            if (typeParameter instanceof Class<?> innerClass) {
-              return Optional.ofNullable(visitType(resultSet, innerClass, columnNumber));
-            } else if (typeParameter instanceof ParameterizedType innerParamType) {
-              return Optional.ofNullable(visitType(resultSet, innerParamType, columnNumber));
-            }
-
-            System.out.println(
-                    String.format("Optional typename = %s\n", typeParameter.getTypeName())
-            );
-            return Optional.ofNullable(
-                    visitType(resultSet, typeParameter, columnNumber));
-          }
+        throws SQLException, RuntimeException {
+      if ((type == int.class || type == Integer.class)) {
+        return resultSet.getInt(columnNumber);
+      } else if ((type == float.class || type == Float.class)) {
+        return resultSet.getFloat(columnNumber);
+      } else if ((type == long.class || type == Long.class)) {
+        return resultSet.getLong(columnNumber);
+      } else if ((type == double.class || type == Double.class)) {
+        return resultSet.getDouble(columnNumber);
+      } else if ((type == String.class)) {
+        return resultSet.getString(columnNumber);
+      } else if ((type == Date.class)) {
+        var newValue = resultSet.getDate(columnNumber);
+        if (newValue == null) {
+          return null;
         }
+        return new Date(newValue.getTime());
+      } else if ((type == Boolean.class) || (type == boolean.class)) {
+        return resultSet.getBoolean(columnNumber);
+      } else if ((type instanceof ParameterizedType)) {
+        var parameterizedTypes = ((ParameterizedType) type).getActualTypeArguments();
+        if ((((ParameterizedType) type).getRawType() == Optional.class)) {
+          var typeParameter = parameterizedTypes[0];
 
-        throw new RuntimeException(
-                String.format(
-                        "The class type \"%s\" does not have a mapped function!", type.getTypeName()));
+          // Careful recursion, since this is a little complicated.
+          if (typeParameter instanceof Class<?> innerClass) {
+            return Optional.ofNullable(visitType(resultSet, innerClass, columnNumber));
+          } else if (typeParameter instanceof ParameterizedType innerParamType) {
+            return Optional.ofNullable(visitType(resultSet, innerParamType, columnNumber));
+          }
+
+          System.out.println(
+              String.format("Optional typename = %s\n", typeParameter.getTypeName()));
+          return Optional.ofNullable(visitType(resultSet, typeParameter, columnNumber));
+        }
       }
 
-      private static Object visitField(ResultSet resultSet, Field field, int columnNumber)
-              throws SQLException, RuntimeException {
-        // Useful if we are trying to figure things out from a generic
-        // type (which in this case, really just means optional.)
-        var type = field.getGenericType();
-        return visitType(resultSet, type, columnNumber);
-      }
+      throw new RuntimeException(
+          String.format(
+              "The class type \"%s\" does not have a mapped function!", type.getTypeName()));
     }
+
+    private static Object visitField(ResultSet resultSet, Field field, int columnNumber)
+        throws SQLException, RuntimeException {
+      // Useful if we are trying to figure things out from a generic
+      // type (which in this case, really just means optional.)
+      var type = field.getGenericType();
+      return visitType(resultSet, type, columnNumber);
+    }
+  }
 
   private final Class<T> _class;
 
