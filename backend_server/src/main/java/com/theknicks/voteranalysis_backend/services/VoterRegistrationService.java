@@ -18,8 +18,9 @@ public class VoterRegistrationService {
   }
 
   @Cacheable(
-          cacheNames = "voterRegistration",
-          key = "{ #stateFips, #countyFips, #pageSize, #pageIndex, #partySelectionFilterId, #encodedSortParams }")
+      cacheNames = "voterRegistration",
+      key =
+          "{ #stateFips, #countyFips, #pageSize, #pageIndex, #partySelectionFilterId, #encodedSortParams }")
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationData(
       String stateFips,
       String countyFips,
@@ -34,8 +35,8 @@ public class VoterRegistrationService {
   }
 
   @Cacheable(
-          cacheNames = "voterRegistration",
-          key = "{ #stateFips, #countyFips, #partySelectionFilterId }")
+      cacheNames = "voterRegistration",
+      key = "{ #stateFips, #countyFips, #partySelectionFilterId }")
   public int getDetailedVoterRegistrationDataCount(
       String stateFips, String countyFips, int partySelectionFilterId) {
     Optional<String> countyFipsParam =
