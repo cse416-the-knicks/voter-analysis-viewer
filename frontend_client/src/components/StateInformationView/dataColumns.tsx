@@ -17,7 +17,7 @@ const PROVISIONAL_BALLOT_COLUMNS: GridColDef<ProvisionalBallotStatisticsModel[]>
     renderHeader: () => <></>, // hides the "Select All" checkbox
   },
   { field: "countyName", headerName: "County", width: 120 },
-  { field: "totalBallotsCast", headerName: "Total Ballots Cast", type: "number", width: 170 },
+  { field: "totalProvisionalBallotsCast", headerName: "Total Provisional Ballots Cast", type: "number", width: 170 },
   { field: "ballotReasonNotOnList", headerName: "Not On List", type: "number", width: 150 },
   { field: "ballotReasonNoIdAvailable", headerName: "No ID", type: "number", width: 120 },
   { field: "ballotReasonChallengedByOfficial", headerName: "Challenged Official", type: "number", width: 190 },
@@ -135,6 +135,7 @@ const MAIL_BALLOT_REJECTION_COLUMNS: GridColDef<MailBallotRejectionStatisticsMod
   },
   { field: "countyName", headerName: "County", width: 120 },
   { field: "rejectTotal", headerName: "Total Rejections", type: "number", width: 150 },
+  { field: "totalBallotsByMail", headerName: "Total Mail Ballots", type: "number", width: 150 },
   { field: "rejectLate", headerName: "Late", type: "number", width: 100 },
   { field: "rejectNoSignature", headerName: "No Signature", type: "number", width: 150 },
   { field: "rejectNoWitnessSignature", headerName: "No Witness Signature", type: "number", width: 180 },
@@ -156,7 +157,7 @@ const MAIL_BALLOT_REJECTION_COLUMNS: GridColDef<MailBallotRejectionStatisticsMod
 
 function bargraphDataForProvisionalBallots(aggregatedStatistics: ProvisionalBallotStatisticsModel): BarChartDataEntry[] {
   return [
-    { category: "Total Ballots", value: aggregatedStatistics.totalBallotsCast || 0 },
+    { category: "Total Provisional Ballots", value: aggregatedStatistics.totalProvisionalBallotsCast || 0 },
     { category: "Not On List", value: aggregatedStatistics.ballotReasonNotOnList || 0 },
     { category: "No ID", value: aggregatedStatistics.ballotReasonNoIdAvailable || 0 },
     { category: "Challenged Official", value: aggregatedStatistics.ballotReasonChallengedByOfficial || 0 },
@@ -172,7 +173,8 @@ function bargraphDataForProvisionalBallots(aggregatedStatistics: ProvisionalBall
 
 function bargraphDataForMailBallotRejections(aggregatedStatistics: MailBallotRejectionStatisticsModel): BarChartDataEntry[] {
   return [
-    { category: "Total", value: aggregatedStatistics.rejectTotal || 0 },
+    { category: "Total Rejections", value: aggregatedStatistics.rejectTotal || 0 },
+    // { category: "Total Mail Ballots", value: aggregatedStatistics.totalBallotsByMail || 0 },
     { category: "Late", value: aggregatedStatistics.rejectLate || 0 },
     { category: "No Signature", value: aggregatedStatistics.rejectNoSignature || 0 },
     { category: "No Witness Signature", value: aggregatedStatistics.rejectNoWitnessSignature || 0 },

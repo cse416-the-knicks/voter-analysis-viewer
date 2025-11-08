@@ -50,7 +50,6 @@ import {
 import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
 
 import { gradientMapNearest, type GradientMap } from "../../helpers/GradientMap";
-import digitsInNumber from "../../helpers/digitsInNumber";
 import GradientMapLegend from "../GradientMapLegend";
 
 import { dropBoxData, equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
@@ -154,6 +153,7 @@ function StateInformationView() {
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
   const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
+  const [totalDataCount, setTotalDataCount] = useState(0);
 
   const tryingToViewDetailedVoterRegistration = stateType === DETAIL_STATE_TYPE_VOTER_REGISTRATION && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
@@ -196,8 +196,10 @@ function StateInformationView() {
                 })
               );
               setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
+              console.log(PROVISIONAL_BALLOT_COLUMNS);
               setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
-              high = Math.max(...data.map((x) => x.totalBallotsCast!));
+              high = Math.max(...data.map((x) => x.totalProvisionalBallotsCast!));
+              setTotalDataCount(aggregatedData[0].totalProvisionalBallotsCast!);
             }
             break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
@@ -215,6 +217,7 @@ function StateInformationView() {
               setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
               setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
               high = Math.max(...data.map((x) => x.rejectTotal!));
+              setTotalDataCount(aggregatedData[0].rejectTotal!);
             }
             break;
           case ID_SELECTION_ACTIVE_VOTERS:
@@ -232,6 +235,7 @@ function StateInformationView() {
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
               high = Math.max(...data.map((x) => x.total!));
+              setTotalDataCount(aggregatedData[0].total!);
             }
             break;
           case ID_SELECTION_POLLBOOK_DELETION:
@@ -250,6 +254,7 @@ function StateInformationView() {
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
               high = Math.max(...data.map((x) => x.totalRemoved!));
+              setTotalDataCount(aggregatedData[0].totalRemoved!);
             }
             break;
           case ID_SELECTION_VOTER_REGISTRATION:
@@ -286,16 +291,8 @@ function StateInformationView() {
             break;
         }
 
-        console.log(high);
-        high *= choroplethScaleFactor;
-        let binSize = Math.ceil(high / choroplethColorBuckets.length);
-        const snapGridInterval = Math.pow(10, digitsInNumber(binSize) - 1);
-        // Grid snapping + round up.
-        binSize = (binSize + snapGridInterval) / snapGridInterval;
-        binSize = Math.floor(binSize);
-        binSize *= snapGridInterval;
-        console.log(binSize, snapGridInterval, high);
         const newGradientMap: GradientMap = {};
+        const binSize = 10;
         for (let i = 0; i < choroplethColorBuckets.length; ++i) {
           newGradientMap[binSize * i] = choroplethColorBuckets[i];
         }
@@ -320,14 +317,20 @@ function StateInformationView() {
     if (stateType !== DETAIL_STATE_TYPE_NONE) {
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
       if (row) {
-        style.fillOpacity = 1.0;
-        style.fillColor = gradientMapNearest(
+        const dataEntry =
           (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
-            (row as ProvisionalBallotStatisticsModel).totalBallotsCast! ||
-            (row as PollbookDeletionStatisticsModel).totalRemoved! ||
-            (row as VoterRegistrationStatisticsModel).total!,
-          gradientMap
-        );
+          (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
+          (row as PollbookDeletionStatisticsModel).totalRemoved! ||
+          (row as VoterRegistrationStatisticsModel).active!;
+        const dataEntryTotal =
+          (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||
+          (row as ProvisionalBallotStatisticsModel).totalBallotsCast! || // TODO(jerry): needs total actual ballots vs total Provisional
+          (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
+          (row as VoterRegistrationStatisticsModel).total!;
+        const colorPoint = (dataEntry / dataEntryTotal) * 100;
+
+        style.fillOpacity = 1.0;
+        style.fillColor = gradientMapNearest(colorPoint, gradientMap);
       }
 
       if (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) {
