@@ -5,21 +5,14 @@ import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import com.theknicks.voteranalysis_backend.models.CollectionSortParamModel;
 import java.lang.reflect.*;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import org.springframework.jdbc.core.RowMapper;
 
 /*
  * NOTE(jerry):
- * I like metaprogramming, since I think it's interesting to write code that generates
- * code (or otherwise automates stuff.)
- *
- * Was quite inspired by the annotations portion of lecture, and might as well write some for once.
- *
- * This provides a relatively slick (at least as best as can be said in Java) way to
- * autogenerate SQL queries, and the appropriate JDBC RowMapper wrapper classes.
- *
- * It works through reflection and primarily because the code is so repetitive that it's
- * very easy to write code that makes the JRE do it for me.
+ * This is basically a hand-rolled ORM solution,
+ * which is quite simple to use, and less magic.
  */
 public class AutoSqlQueryable<T> {
   private static class SqlQueryableInvocationHandler implements InvocationHandler {
@@ -64,29 +57,10 @@ public class AutoSqlQueryable<T> {
         int columnNumber = 1;
         var resultSetMetaData = resultSet.getMetaData();
         for (var field : qualifyingFields) {
-          var type = field.getType();
           try {
-            if ((type == int.class || type == Integer.class)) {
-              var newValue = resultSet.getInt(columnNumber);
-              callingArguments.add(newValue);
-            } else if ((type == float.class || type == Float.class)) {
-              var newValue = resultSet.getFloat(columnNumber);
-              callingArguments.add(newValue);
-            } else if ((type == long.class || type == Long.class)) {
-              var newValue = resultSet.getLong(columnNumber);
-              callingArguments.add(newValue);
-            } else if ((type == double.class || type == Double.class)) {
-              var newValue = resultSet.getDouble(columnNumber);
-              callingArguments.add(newValue);
-            } else if ((type == String.class)) {
-              var newValue = resultSet.getString(columnNumber);
-              callingArguments.add(newValue);
-            } else {
-              throw new RuntimeException(
-                  String.format(
-                      "The class type \"%s\" does not have a mapped function!", type.getName()));
-            }
+            callingArguments.add(visitField(resultSet, field, columnNumber));
           } catch (Exception e) {
+            var type = field.getType();
             System.err.format(
                 "\tFaulted field \"%s\": %s to column %d (labelled \"%s\")\n",
                 field.getName(),
@@ -115,6 +89,57 @@ public class AutoSqlQueryable<T> {
       }
 
       return null;
+    }
+
+    private static Object visitType(ResultSet resultSet, Type type, int columnNumber)
+        throws SQLException, RuntimeException {
+      if ((type == int.class || type == Integer.class)) {
+        return resultSet.getInt(columnNumber);
+      } else if ((type == float.class || type == Float.class)) {
+        return resultSet.getFloat(columnNumber);
+      } else if ((type == long.class || type == Long.class)) {
+        return resultSet.getLong(columnNumber);
+      } else if ((type == double.class || type == Double.class)) {
+        return resultSet.getDouble(columnNumber);
+      } else if ((type == String.class)) {
+        return resultSet.getString(columnNumber);
+      } else if ((type == Date.class)) {
+        var newValue = resultSet.getDate(columnNumber);
+        if (newValue == null) {
+          return null;
+        }
+        return new Date(newValue.getTime());
+      } else if ((type == Boolean.class) || (type == boolean.class)) {
+        return resultSet.getBoolean(columnNumber);
+      } else if ((type instanceof ParameterizedType)) {
+        var parameterizedTypes = ((ParameterizedType) type).getActualTypeArguments();
+        if ((((ParameterizedType) type).getRawType() == Optional.class)) {
+          var typeParameter = parameterizedTypes[0];
+
+          // Careful recursion, since this is a little complicated.
+          if (typeParameter instanceof Class<?> innerClass) {
+            return Optional.ofNullable(visitType(resultSet, innerClass, columnNumber));
+          } else if (typeParameter instanceof ParameterizedType innerParamType) {
+            return Optional.ofNullable(visitType(resultSet, innerParamType, columnNumber));
+          }
+
+          System.out.println(
+              String.format("Optional typename = %s\n", typeParameter.getTypeName()));
+          return Optional.ofNullable(visitType(resultSet, typeParameter, columnNumber));
+        }
+      }
+
+      throw new RuntimeException(
+          String.format(
+              "The class type \"%s\" does not have a mapped function!", type.getTypeName()));
+    }
+
+    private static Object visitField(ResultSet resultSet, Field field, int columnNumber)
+        throws SQLException, RuntimeException {
+      // Useful if we are trying to figure things out from a generic
+      // type (which in this case, really just means optional.)
+      var type = field.getGenericType();
+      return visitType(resultSet, type, columnNumber);
     }
   }
 
