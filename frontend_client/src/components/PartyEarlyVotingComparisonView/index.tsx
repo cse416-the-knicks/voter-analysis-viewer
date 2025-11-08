@@ -1,4 +1,4 @@
-import type { ViewStateYearSummaryModel, StateInformationModel } from "../../api/client";
+import type { ViewStateYearSummaryModel } from "../../api/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useKeyDown from "../../hooks/useKeyDown";
@@ -8,10 +8,9 @@ import { getViewStateYearSummaryByStateForYear } from "../../api/client";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { comparisonRow } from "../../helpers/comparisonRow";
 
-type PartyStateData = ViewStateYearSummaryModel | StateInformationModel;
-function PartyComparisonView() {
+function PartyEarlyVotingComparisonTableView() {
   const navigate = useNavigate();
-  const [rows, setDataRows] = useState<PartyStateData[]>([]);
+  const [rows, setDataRows] = useState<ViewStateYearSummaryModel[]>([]);
   const [cols, setColumnRows] = useState<any>([]);
   const maxWidth = 770;
 
@@ -43,12 +42,12 @@ function PartyComparisonView() {
       const transposedRows = [];
       transposedRows.push(
         comparisonRow("Type", "Democrat", "Republican"),
-        comparisonRow("Active Registered", ...awaited.map((x) => x.activeRegistered)),
-        comparisonRow("Inactive Registered", ...awaited.map((x) => x.inactiveRegistered)),
-        comparisonRow("Total Registered", ...awaited.map((x) => x.totalRegistered)),
-        comparisonRow("Active Voter Rate %", ...awaited.map((x) => (x.activeVoterRate! * 100).toFixed(1) + "%")),
-        comparisonRow("Inactive Voter Rate %", ...awaited.map((x) => (x.inactiveVoterRate! * 100).toFixed(1) + "%")),
-        comparisonRow("Turnout Rate %", ...awaited.map((x) => (x.turnOutRate! * 100).toFixed(1) + "%"))
+        comparisonRow("Early Voting Total", ...awaited.map((x) => x.earlyVotingTotal)),
+        comparisonRow("Ballots By Mail", ...awaited.map((x) => x.ballotsByMail)),
+        comparisonRow("Total Ballots Cast", ...awaited.map((x) => x.totalBallotsCast)),
+        comparisonRow("Provisional Ballots", ...awaited.map((x) => x.totalProvisionalBallotsCast)),
+        comparisonRow("Early Voting Share %", ...awaited.map((x) => (x.earlyVotingShareRate! * 100).toFixed(1) + "%")),
+        comparisonRow("Mail-in Ballot Share %", ...awaited.map((x) => (x.mailinBallotVotingShareRate! * 100).toFixed(1) + "%"))
       );
 
       // @ts-expect-error, This is actually correctly an error
@@ -62,7 +61,7 @@ function PartyComparisonView() {
 
   return (
     <WindowTitledDataGrid
-      title={"Registration/Turnout Comparisons"}
+      title={"Early Voting Comparisons"}
       width={maxWidth}
       maxWidth={maxWidth}
       pageSize={13}
@@ -75,4 +74,4 @@ function PartyComparisonView() {
   );
 }
 
-export default PartyComparisonView;
+export default PartyEarlyVotingComparisonTableView;

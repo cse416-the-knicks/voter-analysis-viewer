@@ -10,6 +10,7 @@ import getAllVotingEquipmentByManufacturerMutator from "../helpers/backendConnec
 import getAllVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
 import getDetailedVoterRegistrationDataCountMutator from "../helpers/backendConnectorAxiosInstance";
 import getDetailedVoterRegistrationDataMutator from "../helpers/backendConnectorAxiosInstance";
+import getStateInformationTableForStateMutator from "../helpers/backendConnectorAxiosInstance";
 import getVoterRegistrationCountsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
 import getProvisionalBallotsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
 import getPollbookDeletionsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
@@ -46,6 +47,46 @@ export interface VoterRegistrationDataModel {
   lastName?: string;
   partyAffiliation?: string;
   status?: string;
+}
+
+export type StateInformationModelRegistrationMethod = (typeof StateInformationModelRegistrationMethod)[keyof typeof StateInformationModelRegistrationMethod];
+
+export const StateInformationModelRegistrationMethod = {
+  NONE: "NONE",
+  OPT_IN: "OPT_IN",
+  OPT_OUT: "OPT_OUT",
+  COUNT: "COUNT",
+} as const;
+
+export type StateInformationModelFelonyDisenfranchisement =
+  (typeof StateInformationModelFelonyDisenfranchisement)[keyof typeof StateInformationModelFelonyDisenfranchisement];
+
+export const StateInformationModelFelonyDisenfranchisement = {
+  UNKNOWN: "UNKNOWN",
+  NO_DENIAL_OF_VOTING: "NO_DENIAL_OF_VOTING",
+  RESTORATION_UPON_RELEASE_FROM_PRISON: "RESTORATION_UPON_RELEASE_FROM_PRISON",
+  RESTORATION_AFTER_PAROLE_AND_PROBATION: "RESTORATION_AFTER_PAROLE_AND_PROBATION",
+  ADDITIONAL_ACTION_FOR_RESTORATION: "ADDITIONAL_ACTION_FOR_RESTORATION",
+  COUNT: "COUNT",
+} as const;
+
+export type StateInformationModelAffiliation = (typeof StateInformationModelAffiliation)[keyof typeof StateInformationModelAffiliation];
+
+export const StateInformationModelAffiliation = {
+  UNAFFILIATED: "UNAFFILIATED",
+  DEMOCRAT: "DEMOCRAT",
+  REPUBLICAN: "REPUBLICAN",
+  COUNT: "COUNT",
+} as const;
+
+export interface StateInformationModel {
+  fipsCode?: string;
+  name?: string;
+  registrationMethod?: StateInformationModelRegistrationMethod;
+  felonyDisenfranchisement?: StateInformationModelFelonyDisenfranchisement;
+  populationTotal?: number;
+  cvapTotal?: number;
+  affiliation?: StateInformationModelAffiliation;
 }
 
 export interface VoterRegistrationStatisticsModel {
@@ -142,46 +183,6 @@ export interface GeoUnitCentroidModel {
   countyName?: string;
   centerX?: number;
   centerY?: number;
-}
-
-export type StateInformationModelRegistrationMethod = (typeof StateInformationModelRegistrationMethod)[keyof typeof StateInformationModelRegistrationMethod];
-
-export const StateInformationModelRegistrationMethod = {
-  NONE: "NONE",
-  OPT_IN: "OPT_IN",
-  OPT_OUT: "OPT_OUT",
-  COUNT: "COUNT",
-} as const;
-
-export type StateInformationModelFelonyDisenfranchisement =
-  (typeof StateInformationModelFelonyDisenfranchisement)[keyof typeof StateInformationModelFelonyDisenfranchisement];
-
-export const StateInformationModelFelonyDisenfranchisement = {
-  UNKNOWN: "UNKNOWN",
-  NO_DENIAL_OF_VOTING: "NO_DENIAL_OF_VOTING",
-  RESTORATION_UPON_RELEASE_FROM_PRISON: "RESTORATION_UPON_RELEASE_FROM_PRISON",
-  RESTORATION_AFTER_PAROLE_AND_PROBATION: "RESTORATION_AFTER_PAROLE_AND_PROBATION",
-  ADDITIONAL_ACTION_FOR_RESTORATION: "ADDITIONAL_ACTION_FOR_RESTORATION",
-  COUNT: "COUNT",
-} as const;
-
-export type StateInformationModelAffiliation = (typeof StateInformationModelAffiliation)[keyof typeof StateInformationModelAffiliation];
-
-export const StateInformationModelAffiliation = {
-  UNAFFILIATED: "UNAFFILIATED",
-  DEMOCRAT: "DEMOCRAT",
-  REPUBLICAN: "REPUBLICAN",
-  COUNT: "COUNT",
-} as const;
-
-export interface StateInformationModel {
-  fipsCode?: string;
-  name?: string;
-  registrationMethod?: StateInformationModelRegistrationMethod;
-  felonyDisenfranchisement?: StateInformationModelFelonyDisenfranchisement;
-  populationTotal?: number;
-  cvapTotal?: number;
-  affiliation?: StateInformationModelAffiliation;
 }
 
 export type GetDetailedVoterRegistrationDataCountParams = {
@@ -698,6 +699,10 @@ export const getDetailedVoterRegistrationData = (
   return getDetailedVoterRegistrationDataMutator<VoterRegistrationDataModel[]>({ url: `/voter-registration/`, method: "GET", params }, options);
 };
 
+export const getStateInformationTableForState = (fipsCode: string, options?: SecondParameter<typeof getStateInformationTableForStateMutator>) => {
+  return getStateInformationTableForStateMutator<StateInformationModel>({ url: `/state/${fipsCode}`, method: "GET" }, options);
+};
+
 export const getVoterRegistrationCountsByCounty = (
   fipsCode: string,
   countyFipsCode: string,
@@ -826,6 +831,7 @@ export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<Retu
 export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>;
 export type GetDetailedVoterRegistrationDataCountResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationDataCount>>>;
 export type GetDetailedVoterRegistrationDataResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationData>>>;
+export type GetStateInformationTableForStateResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTableForState>>>;
 export type GetVoterRegistrationCountsByCountyResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCountsByCounty>>>;
 export type GetProvisionalBallotsByCountyResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallotsByCounty>>>;
 export type GetPollbookDeletionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletionsByCounty>>>;

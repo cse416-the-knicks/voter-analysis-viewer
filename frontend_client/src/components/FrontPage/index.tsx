@@ -35,13 +35,13 @@ function FrontPageDrawer({ setNotImplementedYet }: FrontPageDrawerProperties) {
       <List dense>
         <ListItem>
           {" "}
-          <ListItemText primary={"Compare Voting"} />{" "}
+          <ListItemText primary={"State Comparisons"} />{" "}
         </ListItem>
         <ListItem>
           {" "}
-          <ListItemButton onClick={() => navigate("/compare/early-voting")}>
+          <ListItemButton onClick={() => navigate("/compare/party-states")}>
             {" "}
-            <ListItemText primary={"Bipartisan Early Voting"} />{" "}
+            <ListItemText primary={"Party States"} />{" "}
           </ListItemButton>{" "}
         </ListItem>
         <ListItem>
@@ -49,13 +49,6 @@ function FrontPageDrawer({ setNotImplementedYet }: FrontPageDrawerProperties) {
           <ListItemButton onClick={() => navigate("/compare/optvote")}>
             {" "}
             <ListItemText primary={"Opt-In, Opt-Out Voting"} />{" "}
-          </ListItemButton>{" "}
-        </ListItem>
-        <ListItem>
-          {" "}
-          <ListItemButton onClick={() => navigate("/compare/party-registration")}>
-            {" "}
-            <ListItemText primary={"Bipartisan Voter Registration"} />{" "}
           </ListItemButton>{" "}
         </ListItem>
         <Divider />
