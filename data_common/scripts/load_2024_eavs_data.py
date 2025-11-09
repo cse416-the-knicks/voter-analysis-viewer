@@ -1,3 +1,4 @@
+import re
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
@@ -14,14 +15,16 @@ database = os.getenv("DB_NAME")
 
 # Loading 2024 EAVS data
 data_path = "../raw/2024_EAVS_for_Public_Release_V1_xlsx.xlsx"
-df = pd.read_excel(data_path, dtype={"FIPSCode": str})
+df = pd.read_excel(data_path, dtype={"FIPSCode": str, "State_Abbr": str, "Jurisdiction_Name": str})
 
 # Columns to pull from the spreadsheet
-cols = ["FIPSCode", "State_Abbr",
+cols = ["FIPSCode", "State_Abbr", "Jurisdiction_Name",
         "A1a","A1b","A1c",
         "A12a","A12b","A12c","A12d","A12e","A12f","A12g","A12h","A12i","A12j","A12k",
         "C8a","C3a",
+        "F1b","F1f",
         "E1a","E2a","E2b","E2c","E2d","E2e","E2f","E2g","E2h","E2i","E2j","E2k","E2l",
+        "B24a","B18a",
         "C9a","C9b","C9c","C9d","C9e","C9f","C9g","C9h","C9i","C9j","C9k","C9l","C9m","C9n","C9o","C9p","C9q",
         "C9r","C9s","C9t"]
 df = df[cols]
@@ -46,7 +49,6 @@ def pad_wi_code(code):
 # Wisconsin handled separately with custom prefix logic
 df.loc[is_wi, "FIPSCode"] = df.loc[is_wi, "FIPSCode"].apply(pad_wi_code)
 
-
 # Numeric conversion
 def to_int(val):
     try:
@@ -54,8 +56,11 @@ def to_int(val):
     except (ValueError, TypeError):
         return np.nan
 
-for c in cols[1:]:
+for c in cols[3:]:
     df[c] = df[c].apply(to_int)
+
+# Computing total absentee rejections
+df["mail_reject_total"] = df[["C9a","B24a"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute removed_other as A12i + A12j + A12k (skipping NaN)
 df["removed_other"] = df[["A12i","A12j","A12k"]].sum(axis=1, skipna=True, min_count=1)
@@ -66,6 +71,9 @@ df["prov_other"] = df[["E2j","E2k","E2l"]].sum(axis=1, skipna=True, min_count=1)
 # Compute mail_reject_other as C9r + C9s + C9t (skipping NaN)
 df["mail_reject_other"] = df[["C9r","C9s","C9t"]].sum(axis=1, skipna=True, min_count=1)
 
+# Computing total_ballots_cast as the sum of absentee, early, eday, and provisional
+df["total_ballots_cast"] = df[["C8a","B18a","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
+
 df["year"] = 2024
 
 df["state_id"] = df["FIPSCode"].str[:2].astype(int)
@@ -74,11 +82,12 @@ df["state_id"] = df["FIPSCode"].str[:2].astype(int)
 df.drop(df[df["State_Abbr"] == "AS"].index, inplace=True)
 
 # Dropping the unused other columns before writing
-df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr"])
+df = df.drop(columns=["A12i","A12j","A12k","E2j","E2k","E2l","C9r","C9s","C9t","State_Abbr","B24a","B18a","C9a"])
 
 # Mapping each code to the actual schema column names
 rename_map = {
     "FIPSCode": "region_id",
+    "Jurisdiction_Name": "Jurisdiction_Name",
     "A1a": "total_registered",
     "A1b": "active_registered",
     "A1c": "inactive_registered",
@@ -93,6 +102,9 @@ rename_map = {
     "removed_other" : "removed_other",
     "C8a" : "ballots_by_mail",
     "C3a" : "ballots_dropbox",
+    "total_ballots_cast": "total_ballots_cast",
+    "F1b": "ballots_in_person_eday",
+    "F1f": "early_voting_total",
     "E1a": "prov_cast",
     "E2a": "prov_reason_not_in_roll",
     "E2b": "prov_reason_no_id",
@@ -104,7 +116,7 @@ rename_map = {
     "E2h": "prov_reason_hours_extended",
     "E2i": "prov_reason_same_day_reg",
     "prov_other": "prov_other",
-    "C9a" : "mail_reject_total",
+    "mail_reject_total" : "mail_reject_total",
     "C9b" : "mail_reject_late",
     "C9c" : "mail_reject_no_sig",
     "C9d" : "mail_reject_no_witness_sig",
@@ -122,7 +134,7 @@ rename_map = {
     "C9p" : "mail_reject_not_eligible",
     "C9q" : "mail_reject_no_application",
     "mail_reject_other" : "mail_reject_other",
-    "state_id" : "state_id"
+    "state_id" : "state_id",
 }
 df = df.rename(columns=rename_map)
 
@@ -134,7 +146,37 @@ df = df[df["state_id"] != 69]
 df = df[df["state_id"] != 72]
 df = df[df["state_id"] != 78]
 
-print(df)
+def extract_name(jurisdiction, state_id):
+    if not isinstance(jurisdiction, str):
+        return np.nan
+    
+    # Special handling for Wisconsin: "TOWN|VILLAGE OF X - Y COUNTY" into "Town|Village of X (Y)"
+    if state_id == 55:
+        parts = jurisdiction.split(" - ")
+        if len(parts) == 2:
+            before, after = parts
+            # Extract just the county name portion before the word COUNTY
+            county_match = re.search(r"^(.*?)\s+COUNTY\b", after, flags=re.IGNORECASE)
+            county_name = county_match.group(1).strip().title() if county_match else after.strip().title()
+            return f"{before.strip().title()} ({county_name})"
+        else:
+            return jurisdiction.strip().title()
+    
+    # Extracting everything before "COUNTY"
+    match = re.search(r"^(.*?)\s+COUNTY\b", jurisdiction, flags=re.IGNORECASE)
+    if match:
+        return match.group(1).strip().title()
+    else:
+        return jurisdiction.strip().title()
+
+# Making geounit table
+df_geo = pd.DataFrame()
+df_geo["state_id"] = df["state_id"]
+df_geo["eavs_unit_name"] = df["Jurisdiction_Name"]
+df_geo["eavs_unit_code"] = df["region_id"]
+df_geo["name"] = df.apply(lambda row: extract_name(row["Jurisdiction_Name"], row["state_id"]), axis=1)
+
+df = df.drop(columns=["Jurisdiction_Name"])
 
 # Connecting to db
 engine = create_engine(
@@ -149,5 +191,12 @@ df.to_sql(
     if_exists="append",
     index=False
 )
+df_geo.to_sql(
+    "eavs_geounit",
+    engine,
+    schema="app",
+    if_exists="append",
+    index=False
+)
 
-print("Finished inserting preliminary eavs data into the database")
+print("Finished inserting 2024 eavs data into the database")

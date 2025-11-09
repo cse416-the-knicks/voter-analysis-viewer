@@ -1,0 +1,178 @@
+raw_text,device_type_hint,device_model_id
+Advantage (Sequoia),DRE no VVPAT,71
+ImageCast X/ICX DRE (Dominion),DRE no VVPAT,21
+ExpressTouch (ES&S),DRE no VVPAT,35
+Verity Touch DRE (Hart),DRE no VVPAT,52
+eSlate (Hart),DRE no VVPAT,51
+iVotronic (ES&S),DRE no VVPAT,36
+EXPRESS TOUCH ES&S,DRE with VVPAT,35
+EXPRESS VOTE,DRE with VVPAT,27
+EXPRESS VOTE ESS,DRE with VVPAT,27
+ES&S EXPRESSVOTE KIOSK,DRE with VVPAT,27
+DS 200 EXPRESS VOTE,DRE with VVPAT,38
+ES&S EXPRESSVOTE XL,DRE with VVPAT,28
+HART-VERITY SCANNER,DRE with VVPAT,53
+DIEBOLD TSX,DRE with VVPAT,66
+AccuVote-TSX (Premier),DRE with VVPAT,66
+MICROVOTE EMS 4.41 VOTING SYSTEM,DRE with VVPAT,
+VERITY VOTING 2.5,DRE with VVPAT,
+VERITY DUO,DRE with VVPAT,47
+VERITY SCAN,DRE with VVPAT,53
+ESS,DRE with VVPAT,
+DS-200,DRE with VVPAT,38
+CLEAR BALLOT CAST UNIT,DRE with VVPAT,7
+CLEAR BALLOT ACCESS UNIT,DRE with VVPAT,4
+EXPRESS VOTE TABULATOR V2.1,DRE with VVPAT,28
+MICROVOTE INFINITY VP-1 WITH VVPAT,DRE with VVPAT,61
+ImageCast Precinct with Integrated BMD (Dominion),Ballot Marking Device,18
+ExpressVote (ES&S),Ballot Marking Device,27
+DOMINION IMAGECAST X/V5.17.17.1,Ballot Marking Device,19
+OpenElect FVT (Unisyn),Ballot Marking Device,82
+DS200,Ballot Marking Device,38
+ImageCast X/ICX BMD (Dominion),Ballot Marking Device,19
+ImageCast Evolution/ICE (Dominion),Ballot Marking Device,23
+Verity Touch Writer (Hart),Ballot Marking Device,48
+VSAP Ballot Marking Device (Los Angeles County),Ballot Marking Device,75
+AVALUE TECHNOLOGY INC SLD-21V-237-B1R,Ballot Marking Device,
+ImageCast X/Samsung Galaxy Tab Pro (Dominion),Ballot Marking Device,19
+ClearAccess (Clear Ballot),Ballot Marking Device,4
+Inspire Ballot Marking System (IVS),Ballot Marking Device,56
+DS 200 TABULATOR,Ballot Marking Device,38
+EXPRESSVOTES AND AUTOMARKS,Ballot Marking Device,26
+OpenElect OVI (Unisyn),Ballot Marking Device,83
+AutoMARK (ES&S),Ballot Marking Device,26
+HART VERACITY,Ballot Marking Device,
+HART INTERCIVIC VERITY 2.7,Ballot Marking Device,
+UNISYN FREEDOM VOTE TABLET,Ballot Marking Device,82
+DIEBOLD TOUCHSCREEN,Ballot Marking Device,
+GBS TSX,Ballot Marking Device,
+DS200 ES&S,Ballot Marking Device,38
+HART INTERCIVIC 2.5,Ballot Marking Device,
+HART INTERCIVIC VERITY 2.5,Ballot Marking Device,
+HART VERITY 2.5,Ballot Marking Device,
+HART INTERCIVIC,Ballot Marking Device,
+DUO STANDALONE,Ballot Marking Device,47
+HART-VERITY DUO,Ballot Marking Device,47
+HARP VERITY,Ballot Marking Device,
+HART INTERCIVIC VERITY DUO,Ballot Marking Device,47
+VERITY DUO STANDALONE,Ballot Marking Device,47
+DUO STAND ALONE,Ballot Marking Device,47
+DUO STAND ALONE (HART),Ballot Marking Device,47
+OmniBallot Tablet (Democracy Live),Ballot Marking Device,15
+VOTING WORKS,Ballot Marking Device,
+ExpressVoteXL (ES&S),Ballot Marking Device,28
+ClearMark (Clear Ballot),Ballot Marking Device,5
+UNISYN FREEDOM VOTE 8033-9200,Ballot Marking Device,82
+EXPRESS VOTE BALLOT MARKING KIOSKS USED FOR ADA VOTING.,Ballot Marking Device,27
+HART VERITY DUO,Ballot Marking Device,47
+HART DUOS VEERITY 2.5,Ballot Marking Device,47
+VERITY TOUCH DUO,Ballot Marking Device,47
+VERITY DUO GO,Ballot Marking Device,
+VERITY DUO (HART),Ballot Marking Device,47
+"HART VERITY DUO (BALLOT MARKERS), CONTROLLERS, SCANNERS",Ballot Marking Device,47
+VERITY CONTROLLER (HART),Ballot Marking Device,
+HART VERITY DUO VERSION 2.5,Ballot Marking Device,47
+HART VERITY DUO STANDALONE WITH ACCESS,Ballot Marking Device,47
+HART DUO,Ballot Marking Device,47
+ImageCast Precint2/ICP2,Scanner,22
+ImageCast Central/ICC (Dominion),Scanner,20
+DS450 (ES&S),Scanner,29
+DS850 (ES&S),Scanner,31
+DS200 (ES&S),Scanner,38
+DS950 (ES&S),Scanner,32
+DOMINION IMAGECAST PRINCINCT2/V5.17.17.1,Scanner,22
+DOMINION ICC CANNON DR-G1130/V5.17.17.1 COTS,Scanner,20
+DOMINION ICC INTERSCAN HIPRO 821/V5.17.17.1 COTS,Scanner,20
+DS300 (ES&S),Scanner,39
+OpenElect Voting Central Scan/OVCS (Unisyn),Scanner,85
+ExpressVote Tabulator (ES&S),Scanner,27
+Verity Scan (Hart),Scanner,53
+Verity Central (Hart),Scanner,50
+IBML (Los Angeles County),Scanner,
+INTERSCAN HIPRO SCANNER WITH DEMOCACY SUITE 5.10A,Scanner,
+ClearCount (Clear Ballot),Scanner,6
+AccuVote-OS (Premier),Scanner,67
+ImageCast Precinct/ICP (Dominion),Scanner,22
+OpenElect Voting Optical Scan/OVO (Unisyn),Scanner,87
+UNISYN ACCUVOTE,Scanner,67
+M100 (ES&S),Scanner,40
+DIEBOLD OPTICAL SCAN,Scanner,67
+GBS OS,Scanner,
+Chatsworth ACP (MicroVotes),Scanner,63
+OpenElect Freedom Vote Scan (Unisyn),Scanner,86
+eScan (Hart),Scanner,54
+CANON DR-G2140,Scanner,
+CANON DR-G2141,Scanner,
+CANON DR-G2142,Scanner,
+CANON DR-G2143,Scanner,
+CANON DR-G2144,Scanner,
+CANON DR-G2145,Scanner,
+CANON DR-G2146,Scanner,
+CANON DR-G2147,Scanner,
+CANON DR-G2148,Scanner,
+CANON DR-G2149,Scanner,
+CANON DR-G2150,Scanner,
+CANON DR-G2151,Scanner,
+CANON DR-G2152,Scanner,
+CANON DR-G2153,Scanner,
+CANON DR-G2154,Scanner,
+CANON DR-G2155,Scanner,
+CANON DR-G2156,Scanner,
+CANON DR-G2157,Scanner,
+CANON DR-G2158,Scanner,
+CANON DR-G2159,Scanner,
+CANON DR-G2160,Scanner,
+CANON DR-G2161,Scanner,
+CANON DR-G2162,Scanner,
+CANON DR-G2163,Scanner,
+CANON DR-G2164,Scanner,
+CANON DR-G2165,Scanner,
+CANON DR-G2166,Scanner,
+CANON DR-G2167,Scanner,
+CANON DR-G2168,Scanner,
+CANON DR-G2169,Scanner,
+CANON DR-G2170,Scanner,
+CANON DR-G2171,Scanner,
+CANON DR-G2172,Scanner,
+CANON DR-G2173,Scanner,
+CANON DR-G2174,Scanner,
+CANON DR-G2175,Scanner,
+CANON DR-G2176,Scanner,
+CANON DR-G2177,Scanner,
+CANON DR-G2178,Scanner,
+CANON DR-G2179,Scanner,
+CANON DR-G2180,Scanner,
+CANON DR-G2181,Scanner,
+CANON DR-G2182,Scanner,
+CANON DR-G2183,Scanner,
+CANON DR-G2184,Scanner,
+CANON DR-G2185,Scanner,
+CANON DR-G2186,Scanner,
+CANON DR-G2187,Scanner,
+CANON DR-G2188,Scanner,
+CANON DR-G2189,Scanner,
+CANON DR-G2190,Scanner,
+CANON DR-G2191,Scanner,
+CANON DR-G2192,Scanner,
+CANON DR-G2193,Scanner,
+CANON DR-G2194,Scanner,
+CANON DR-G2195,Scanner,
+CANON DR-G2196,Scanner,
+CANON DR-G2197,Scanner,
+CANON DR-G2198,Scanner,
+CANON DR-G2199,Scanner,
+CANON DR-G2200,Scanner,
+CANON DR-G2201,Scanner,
+CANON DR-G2202,Scanner,
+CANON DR-G2203,Scanner,
+INTERSCAN HI-PRO 8X1,Scanner,
+VOTINGWORKS VXSUITE 3.1.2,Scanner,
+"ACCUVOTE/A,B,C,D-1.96.13, DOMINION",Scanner,67
+ClearCast (Clear Ballot),Scanner,7
+UNISYN OPENELECT VOTING OPTICAL,Scanner,87
+UNISYN FREEDOM VOTE SCANNER,Scanner,86
+FUJITSU SCANNERS CENTRAL COUNTY FI-7900,Scanner,
+BallotNow (Hart),Scanner,49
+M650 (ES&S),Scanner,96
+KODAK I620,Scanner,
+KODAK I260,Scanner,

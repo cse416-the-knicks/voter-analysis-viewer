@@ -1,110 +1,77 @@
-import { useNavigate } from 'react-router';
-import useKeyDown from '../../hooks/useKeyDown';
-import WindowTitledDataGrid from '../WindowTitledDataGrid';
-import {  Stack } from '@mui/material';
+import type { ViewStateYearSummaryModel, StateInformationModel } from "../../api/client";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import useKeyDown from "../../hooks/useKeyDown";
 
-// All data below is mock data
-const columns = [
-  { 
-    field: 'category', 
-    headerName: 'Category', 
-    width: 300 ,
-  },
-  {
-    field: 'repState',
-    headerName: 'Oklahoma',
-    width: 250,
-  },
-  {
-    field: 'demState',
-    headerName: 'New York',
-    width: 250,
-  }
-];
+import { getViewStateYearSummaryByStateForYear } from "../../api/client";
 
-const rows = [
-  {
-    id: 1,
-    category: "Total Voting-Age Population",
-    repState: "22,350,000",
-    demState: "15,750,000",
-  },
-  {
-    id: 2,
-    category: "Registered Voters",
-    repState: "17,500,000",
-    demState: "13,800,000",
-  },
-  {
-    id: 3,
-    category: "Registration Rate (VAP)",
-    repState: "78.3%",
-    demState: "87.6%",
-  },
-  {
-    id: 4,
-    category: "Ballots Cast",
-    repState: "11,400,000",
-    demState: "10,200,000",
-  },
-  {
-    id: 5,
-    category: "Turnout Rate (Registered Voters)",
-    repState: "65.1%",
-    demState: "73.9%",
-  },
-  {
-    id: 6,
-    category: "Turnout Rate (VAP)",
-    repState: "51.0%",
-    demState: "64.8%",
-  },
-  {
-    id: 7,
-    category: "Mail Ballots Submitted",
-    repState: "1,950,000",
-    demState: "3,650,000",
-  },
-  {
-    id: 8,
-    category: "Mail Ballot Submission Rate",
-    repState: "17.1%",
-    demState: "35.8%",
-  },
-  {
-    id: 9,
-    category: "Provisional Ballots Counted",
-    repState: "45,000",
-    demState: "72,000",
-  },
-  {
-    id: 10,
-    category: "Same-Day Registration Use",
-    repState: "Not Permitted",
-    demState: "Permitted",
-  },
-];
+import WindowTitledDataGrid from "../WindowTitledDataGrid";
+import { comparisonRow } from "../../helpers/comparisonRow";
 
+type PartyStateData = ViewStateYearSummaryModel | StateInformationModel;
 function PartyComparisonView() {
   const navigate = useNavigate();
-  const maxWidth = 850; // pixels
+  const [rows, setDataRows] = useState<PartyStateData[]>([]);
+  const [cols, setColumnRows] = useState<any>([]);
+  const maxWidth = 770;
 
   useKeyDown("Escape", () => navigate("/"));
+  useEffect(function () {
+    (async function () {
+      const awaited = await Promise.all(["36", "40"].map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
+
+      setColumnRows([
+        {
+          field: "metricName",
+          headerName: "Metric",
+          type: "string",
+          width: 200,
+        },
+        {
+          field: "a",
+          headerName: awaited[0].stateName,
+          type: "number",
+          width: 160,
+        },
+        {
+          field: "b",
+          headerName: awaited[1].stateName,
+          type: "number",
+          width: 160,
+        },
+      ]);
+      const transposedRows = [];
+      transposedRows.push(
+        comparisonRow("Type", "Democrat", "Republican"),
+        comparisonRow("Active Registered", ...awaited.map((x) => x.activeRegistered)),
+        comparisonRow("Inactive Registered", ...awaited.map((x) => x.inactiveRegistered)),
+        comparisonRow("Total Registered", ...awaited.map((x) => x.totalRegistered)),
+        comparisonRow("Active Voter Rate %", ...awaited.map((x) => (x.activeVoterRate! * 100).toFixed(1) + "%")),
+        comparisonRow("Inactive Voter Rate %", ...awaited.map((x) => (x.inactiveVoterRate! * 100).toFixed(1) + "%")),
+        comparisonRow("Turnout Rate %", ...awaited.map((x) => (x.turnOutRate! * 100).toFixed(1) + "%"))
+      );
+
+      // @ts-expect-error, This is actually correctly an error
+      // because the right fix is that we should be using a union type,
+      // although this code was hacked together.
+      //
+      // TODO(frontend): proper type annotation.
+      setDataRows(transposedRows);
+    })();
+  }, []);
 
   return (
-    <Stack>
-      <WindowTitledDataGrid
-        title={"Democratic vs Republican Voter Registration Rates"}
-        onXout={() => navigate("/")}
-        width={maxWidth}
-        maxWidth={maxWidth}
-        rows={rows}
-        columns={columns}
-        pageSize={10}
-	left={`calc(50vw - ${maxWidth/2}px)`}
-	top={'0'}
-      />
-    </Stack>
+    <WindowTitledDataGrid
+      title={"Registration/Turnout Comparisons"}
+      width={maxWidth}
+      maxWidth={maxWidth}
+      pageSize={13}
+      rows={rows}
+      columns={cols}
+      onXout={() => navigate("/")}
+      left={`calc(50vw - ${maxWidth / 2}px)`}
+      top={"2.7em"}
+    />
   );
 }
 

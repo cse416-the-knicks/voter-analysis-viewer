@@ -4,18 +4,18 @@
 CREATE TABLE app.device_model (
     device_model_id SERIAL PRIMARY KEY,          -- unique model key
 
-    vendor          VARCHAR(50) NOT NULL,        -- manufacturer
+    vendor          VARCHAR(50),        -- manufacturer
     model_name      VARCHAR(50) NOT NULL,        -- model identifier
 
-    device_type     VARCHAR(20) NOT NULL,        -- category
+    device_type     VARCHAR(50) NOT NULL,        -- category
     description     TEXT,                        -- short description
 
-    year_introduced SMALLINT,                    -- year introduced
+    first_manufactured DATE,                    -- year introduced
 
-    certification   VARCHAR(20),                 -- VVSG certification version
-    underlying_os   VARCHAR(30),                 -- operating system
+    certification   VARCHAR(50),                 -- VVSG certification version
+    underlying_os   VARCHAR(50),                 -- operating system
 
-    scan_rate       SMALLINT,                    -- ballots per unit time
+    scan_rate       VARCHAR(50),                    -- ballots per unit time
     error_rate      DECIMAL(4,3),                -- observed error rate
     reliability     DECIMAL(3,1),                -- reliability score
     quality_score   DECIMAL(3,2),                -- quality measure
@@ -39,7 +39,3 @@ CREATE INDEX IF NOT EXISTS idx_device_model_type
 -- Filtering by certification
 CREATE INDEX IF NOT EXISTS idx_device_model_certification
     ON app.device_model (certification);
-
--- Year introduced can be useful for timeline queries
-CREATE INDEX IF NOT EXISTS idx_device_model_year
-    ON app.device_model (year_introduced);

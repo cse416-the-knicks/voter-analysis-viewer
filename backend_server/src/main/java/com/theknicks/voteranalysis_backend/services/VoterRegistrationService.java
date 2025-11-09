@@ -1,32 +1,47 @@
 package com.theknicks.voteranalysis_backend.services;
 
-import com.theknicks.voteranalysis_backend.models.*;
 import com.theknicks.voteranalysis_backend.dao.IVoterRegistrationDAO;
-import org.springframework.stereotype.Service;
-import org.slf4j.*;
+import com.theknicks.voteranalysis_backend.models.*;
 import java.util.*;
+import org.slf4j.*;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
-/**
- * This service wraps around the IVoterRegistrationDAO.
- */
+/** This service wraps around the IVoterRegistrationDAO. */
 @Service
 public class VoterRegistrationService {
-    private final Logger _logger = LoggerFactory.getLogger(VoterRegistrationService.class);
-    private final IVoterRegistrationDAO _dao;
+  private final Logger _logger = LoggerFactory.getLogger(VoterRegistrationService.class);
+  private final IVoterRegistrationDAO _dao;
 
-    public VoterRegistrationService(IVoterRegistrationDAO dao) {
-        _dao = dao;
-    }
+  public VoterRegistrationService(IVoterRegistrationDAO dao) {
+    _dao = dao;
+  }
 
-    public List<VoterRegistrationDataModel> getDetailedVoterRegistrationData(
-            String stateFips,
-            String countyFips
-    ) {
-        Optional<String> stateFipsParam = stateFips.isEmpty() ? Optional.empty() : Optional.of(stateFips);
-        Optional<String> countyFipsParam = countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
-        return _dao.getDetailedVoterRegistrationDataRows(
-                stateFipsParam,
-                countyFipsParam
-        );
-    }
+  @Cacheable(
+      cacheNames = "voterRegistration",
+      key =
+          "{ #stateFips, #countyFips, #pageSize, #pageIndex, #partySelectionFilterId, #encodedSortParams }")
+  public List<VoterRegistrationDataModel> getDetailedVoterRegistrationData(
+      String stateFips,
+      String countyFips,
+      int pageSize,
+      int pageIndex,
+      Optional<CollectionSortParamModel> sortParams,
+      int partySelectionFilterId) {
+    Optional<String> countyFipsParam =
+        countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
+    return _dao.getDetailedVoterRegistrationDataRows(
+        stateFips, countyFipsParam, pageSize, pageIndex, sortParams, partySelectionFilterId);
+  }
+
+  @Cacheable(
+      cacheNames = "voterRegistration",
+      key = "{ #stateFips, #countyFips, #partySelectionFilterId }")
+  public int getDetailedVoterRegistrationDataCount(
+      String stateFips, String countyFips, int partySelectionFilterId) {
+    Optional<String> countyFipsParam =
+        countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
+    return _dao.getDetailedVoterRegistrationDataCount(
+        stateFips, countyFipsParam, partySelectionFilterId);
+  }
 }

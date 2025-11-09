@@ -1,55 +1,33 @@
-import {
-  Box,
-  Paper,
-  AppBar,
-  Typography,
-  Button,
-  Grid,
-} from '@mui/material';
+import { Box, Paper, AppBar, Typography, Button, Grid } from "@mui/material";
 
-import type {
-  GridRowClassNameParams, 
-  GridRowIdGetter, 
-  GridValidRowModel,
-  GridColDef,
-} from '@mui/x-data-grid';
+import type { StyledDataGridProperties } from "../StyledDataGrid";
 
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import StyledDataGrid from '../StyledDataGrid';
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import StyledDataGrid from "../StyledDataGrid";
 
-type getRowClassNameFn = (r: GridRowClassNameParams<GridValidRowModel>) => string;
-interface WindowTitledDataGridProperties {
+interface WindowTitledDataGridProperties extends StyledDataGridProperties {
   title: string;
-  rows: readonly any[];
-  columns: readonly GridColDef[];
-  getRowId?: GridRowIdGetter;
-  pageSize: number;
   left?: string;
   top?: string;
-  customGetRowClassName?: getRowClassNameFn;
   onXout?: () => void;
-  width?: number | string;
-  height?: number | string;
-  maxWidth?: number | string;
-  maxHeight?: number | string;
-};
+}
 
-function WindowTitledDataGrid(
-  {
-    title,
-    rows,
-    columns,
-    getRowId,
-    pageSize,
-    left,
-    top,
-    customGetRowClassName,
-    width,
-    height,
-    maxWidth,
-    maxHeight,
-    onXout
-  }: WindowTitledDataGridProperties) {
+function WindowTitledDataGrid({
+  title,
+  rows,
+  columns,
+  getRowId,
+  pageSize,
+  left,
+  top,
+  customGetRowClassName,
+  customCssRules,
+  width,
+  height,
+  maxWidth,
+  maxHeight,
+  onXout,
+}: WindowTitledDataGridProperties) {
   return (
     <Box
       sx={{
@@ -57,43 +35,44 @@ function WindowTitledDataGrid(
         display: "flex",
         left: left,
         top: top,
-        zIndex: 1200
+        zIndex: 1200,
       }}
       width={width}
       height={height}
       maxWidth={maxWidth}
-      maxHeight={maxHeight}>
-      <Paper
-        sx={{ mt: 2, ml: 'auto' }}
-        elevation={9}>
+      maxHeight={maxHeight}
+    >
+      <Paper sx={{ mt: 2 }} elevation={9}>
         <AppBar sx={{ position: "static" }} color="secondary">
           <Grid container justifyContent="space-between">
             <Grid size={11}>
-              <Typography variant="h5" align="center">{title}</Typography>
+              <Typography variant="h5" align="center">
+                {title}
+              </Typography>
             </Grid>
             <Grid>
-              <Button onClick={onXout} variant='text' sx={{ color: "white" }}>
+              <Button onClick={onXout} variant="text" sx={{ color: "white" }}>
                 <HighlightOffIcon />
               </Button>
             </Grid>
           </Grid>
         </AppBar>
         <StyledDataGrid
-          width={maxWidth}
+          width={width}
+          height={height}
           maxWidth={maxWidth}
+          maxHeight={maxHeight}
           rows={rows}
           columns={columns}
-          // @ts-ignore
           getRowId={getRowId}
           pageSize={pageSize}
           customGetRowClassName={customGetRowClassName}
+          customCssRules={customCssRules}
         />
       </Paper>
     </Box>
   );
 }
 
-export type {
-  WindowTitledDataGridProperties
-};
+export type { WindowTitledDataGridProperties };
 export default WindowTitledDataGrid;
