@@ -1,0 +1,49 @@
+---
+  config:
+    layout: elk
+    look: neo
+    theme: neutral
+---
+
+sequenceDiagram
+    autonumber
+
+    title: GUI-3 - Provisional ballot bar chart (required)
+    actor User
+    box Frontend
+        participant LandingPage as LandingPage#58;DOMNode
+        participant Chart as Chart#58;DOMNode
+
+        participant Axios as #58;Axios
+    end
+
+    box Backend
+        participant Controller as #58;Controller
+        participant Service as #58;Service
+        participant DB as #58;DB
+    end
+
+    User->>LandingPage: Click State
+
+    activate LandingPage
+    LandingPage->>Chart: Render
+    activate Chart
+
+    Chart->>Axios: getProvisionalBallots(fipsCode, 2024, true)
+    activate Axios
+
+    Axios->>Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=true
+
+    Controller->>Service: getProvsionalBallots(fipsCode, year=2024, aggregate=true)
+
+    Service->>DB: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
+
+    DB->>Service: List<ProvisionalBallotStatisticsModel>
+
+    Service->>Controller: List<ProvisionalBallotStatisticsModel>
+
+    Controller->>Axios: HTTP 200
+
+    Axios->>Chart: List<ProvisionalBallotStatisticsModel>
+    Chart->>LandingPage: Done
+  
