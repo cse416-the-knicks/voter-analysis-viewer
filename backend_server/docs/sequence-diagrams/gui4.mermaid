@@ -1,0 +1,63 @@
+---
+  config:
+    layout: elk
+    look: neo
+    theme: neutral
+---
+
+sequenceDiagram
+    autonumber
+
+    title: GUI-4 - Provisional ballot table (required)
+    actor User
+    box Frontend
+        participant LandingPage as LandingPage#58;DOMNode
+        participant Table as Table#58;DOMNode
+
+        participant Axios as #58;Axios
+    end
+
+    box Backend
+        participant Controller as #58;Controller
+        participant Service as #58;Service
+        participant DB as #58;Repository
+    end
+
+    note right of DB: IStateDAO in codebase
+
+    User->>LandingPage: Click State
+    note left of LandingPage: Visits /state/{fipsCode}
+
+    activate LandingPage
+    activate Controller
+    LandingPage->>Table: Render
+    activate Table
+
+    Table->>Axios: getProvisionalBallots(fipsCode, 2024, false)
+    note left of Axios: We use Orval to generate typesafe request wrappers.
+    activate Axios
+
+    Axios->>Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=false
+    note left of Controller: For simplicity, we are omitting the Servelet + Jackson Serialization<br/>step, the full-flow of events is shown in the diagram for GUI-2: Display State
+    activate Service
+    activate DB
+    Controller->>Service: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
+
+    Service->>DB: query(ProvisionalBallotStatisticsModel.Query(), aggregate=false)
+    note left of DB: Calls into our custom ORM solution, performing row mapping<br/>(simplified, full-flow in GUI-2: Display State)
+    DB->>Service: List<ProvisionalBallotStatisticsModel>
+    Service->>Controller: List<ProvisionalBallotStatisticsModel>
+    deactivate Service
+    deactivate DB
+    note left of Controller: Would be serialized into a JSON string.
+    note left of Controller: Important to note, the data is not paginated. The amount of data<br/>is not high enough to necessitate pagination logic for the server.
+
+    Controller->>Axios: HTTP 200 OK: JSONString
+    deactivate Axios
+
+    Axios->>Table: List<ProvisionalBallotStatisticsModel>
+    note right of Table: Rendered with the help of mui-datagrid, handles pagination
+    Table->>LandingPage: Done
+    deactivate Table
+    deactivate Controller
+    deactivate LandingPage
