@@ -34,7 +34,7 @@ sequenceDiagram
 
     Axios->>Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=true
 
-    Controller->>Service: getProvsionalBallots(fipsCode, year=2024, aggregate=true)
+    Controller->>Service: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
 
     Service->>DB: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
 
