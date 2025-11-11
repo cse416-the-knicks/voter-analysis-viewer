@@ -20,7 +20,7 @@ sequenceDiagram
     box Backend
         participant Controller as #58;Controller
         participant Service as #58;Service
-        participant DB as #58;DB
+        participant Repository as #58;Repository
     end
 
     User->>LandingPage: Click State
@@ -31,19 +31,32 @@ sequenceDiagram
 
     Chart->>Axios: getProvisionalBallots(fipsCode, 2024, true)
     activate Axios
+    note right of Axios: JSON string serialized into JS string
+    note left of Axios: Call to Axios wrapped by client api library OpenAPI
 
     Axios->>Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=true
+    activate Controller
+    note over Controller: Becomes a JSON string from Jackson
 
     Controller->>Service: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
+    activate Service
 
-    Service->>DB: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
+    Service->>Repository: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
+    activate Repository
+    note right of Repository: Called DAO in codebase
 
-    DB->>Service: List<ProvisionalBallotStatisticsModel>
-
+    Repository->>Service: List<ProvisionalBallotStatisticsModel>
+    deactivate Repository
     Service->>Controller: List<ProvisionalBallotStatisticsModel>
-
+    deactivate Service
     Controller->>Axios: HTTP 200
+    deactivate Controller
 
     Axios->>Chart: List<ProvisionalBallotStatisticsModel>
+    deactivate Axios
     Chart->>LandingPage: Done
+    deactivate Chart
+
+    LandingPage->>User: Display
+    deactivate LandingPage
   
