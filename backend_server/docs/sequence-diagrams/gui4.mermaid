@@ -38,12 +38,15 @@ sequenceDiagram
     activate Axios
 
     Axios->>Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=false
+    Axios->>Controller: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
+    note left of Controller: year=2024, is a default query parameter.
+    
     note left of Controller: For simplicity, we are omitting the Servelet + Jackson Serialization<br/>step, the full-flow of events is shown in the diagram for GUI-2: Display State
     activate Service
     activate DB
     Controller->>Service: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
 
-    Service->>DB: query(ProvisionalBallotStatisticsModel.Query(), aggregate=false)
+    Service->>DB: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
     note left of DB: Calls into our custom ORM solution, performing row mapping<br/>(simplified, full-flow in GUI-2: Display State)
     DB->>Service: List<ProvisionalBallotStatisticsModel>
     Service->>Controller: List<ProvisionalBallotStatisticsModel>
