@@ -1,62 +1,44 @@
 ---
-  config:
-    layout: elk
-    look: neo
-    theme: neutral
+config:
+  layout: elk
+  look: neo
+  theme: neutral
 ---
-
 sequenceDiagram
-    autonumber
-
-    title: GUI-3 - Provisional ballot bar chart (required)
-    actor User
-    box Frontend
-        participant LandingPage as LandingPage#58;DOMNode
-        participant Chart as Chart#58;DOMNode
-
-        participant Axios as #58;Axios
-    end
-
-    box Backend
-        participant Controller as #58;Controller
-        participant Service as #58;Service
-        participant Repository as #58;Repository
-    end
-
-    User->>LandingPage: Click State
-
-    activate LandingPage
-    LandingPage->>Chart: Render
-    activate Chart
-
-    Chart->>Axios: getProvisionalBallots(fipsCode, 2024, true)
-    activate Axios
-    note right of Axios: JSON string serialized into JS string
-    note left of Axios: Call to Axios wrapped by client api library OpenAPI
-
-    Axios->>Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=true
-    activate Controller
-    note over Controller: Becomes a JSON string from Jackson
-
-    Controller->>Service: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
-    activate Service
-
-    Service->>Repository: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
-    activate Repository
-    note right of Repository: Called DAO in codebase
-
-    Repository->>Service: List<ProvisionalBallotStatisticsModel>
-    deactivate Repository
-    Service->>Controller: List<ProvisionalBallotStatisticsModel>
-    deactivate Service
-    Controller->>Axios: HTTP 200
-    deactivate Controller
-
-    Axios->>Chart: List<ProvisionalBallotStatisticsModel>
-    deactivate Axios
-    Chart->>LandingPage: Done
-    deactivate Chart
-
-    LandingPage->>User: Display
-    deactivate LandingPage
-  
+  actor User as User
+  participant LandingPage as LandingPageﬂ°°58¶ßDOMNode
+  participant Chart as Chartﬂ°°58¶ßDOMNode
+  participant Axios as ﬂ°°58¶ßAxios
+  participant Controller as ﬂ°°58¶ßController
+  participant Service as ﬂ°°58¶ßService
+  participant Repository as ﬂ°°58¶ßRepository
+  autonumber
+  Note right of Repository: IStateDAO in codebase
+  User ->>+ LandingPage: Click State
+  Note right of User: Visits state/{fipsCode}
+  LandingPage ->>+ Chart: Render
+  Note right of Chart: Orval used to generate typesafe request wrappers
+  Chart ->>+ Axios: getProvisionalBallots(fipsCode, 2024, true)
+  Axios ->> Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=true
+  Axios ->>+ Controller: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
+  Note left of Controller: year=2024, is a default query parameter
+  Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  Controller ->>+ Service: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
+  Service ->>+ Repository: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+  Repository ->>- Service: List<ProvisionalBallotStatisticsModel>
+  Service ->>- Controller: List<ProvisionalBallotStatisticsModel>
+  Note left of Controller: Serialized into a JSON string
+  Controller ->>- Axios: HTTP 200 OK: JSONString
+  Axios ->>- Chart: List<ProvisionalBallotStatisticsModel>
+  Chart ->>- LandingPage: Done
+  box hsl(0, 0%, 98.9215686275%) Frontend
+  participant LandingPage
+  participant Chart
+  participant Axios
+  end
+  box hsl(0, 0%, 98.9215686275%) Backend
+  participant Controller
+  participant Service
+  participant Repository
+  end
