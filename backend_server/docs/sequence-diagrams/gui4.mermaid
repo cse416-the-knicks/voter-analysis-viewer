@@ -34,32 +34,32 @@ sequenceDiagram
     activate Table
 
     Table->>Axios: getProvisionalBallots(fipsCode, 2024, false)
-    note left of Axios: We use Orval to generate typesafe request wrappers.
+    note left of Axios: We use Orval to generate typesafe request wrappers
     activate Axios
 
     Axios->>Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=false
     Axios->>Controller: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
-    note left of Controller: year=2024, is a default query parameter.
+    note left of Controller: year=2024, is a default query parameter
     
-    note left of Controller: For simplicity, we are omitting the Servelet + Jackson Serialization<br/>step, the full-flow of events is shown in the diagram for GUI-2: Display State
+    note left of Controller: For simplicity, we are omitting the Servlet + Jackson Serialization<br/>step, the full-flow of events is shown in the diagram for GUI-2: Display State.
     activate Service
     activate DB
     Controller->>Service: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
 
     Service->>DB: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
-    note left of DB: Calls into our custom ORM solution, performing row mapping<br/>(simplified, full-flow in GUI-2: Display State)
+    note left of DB: Calls into our custom ORM solution, performing row mapping<br/>(simplified, full-flow in GUI-2: Display State).
     DB->>Service: List<ProvisionalBallotStatisticsModel>
     Service->>Controller: List<ProvisionalBallotStatisticsModel>
     deactivate Service
     deactivate DB
-    note left of Controller: Would be serialized into a JSON string.
-    note left of Controller: Important to note, the data is not paginated. The amount of data<br/>is not high enough to necessitate pagination logic for the server.
+    note left of Controller: Would be serialized into a JSON string
+    note left of Controller: Important to note, the data is not paginated. The amount of data<br/>is not high enough to necessitate pagination logic for the server
 
     Controller->>Axios: HTTP 200 OK: JSONString
     deactivate Axios
 
     Axios->>Table: List<ProvisionalBallotStatisticsModel>
-    note right of Table: Rendered with the help of mui-datagrid, handles pagination
+    note right of Table: Rendered with the help of mui-datagrid, handles pagination.
     Table->>LandingPage: Done
     deactivate Table
     deactivate Controller
