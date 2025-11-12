@@ -27,7 +27,7 @@ sequenceDiagram
         participant SController as #58;Controller
         participant SService as #58;Service
         participant Database as #58;Repository
-        participant ResultSet as #58;ResultSet
+        participant RowMapper as #58;RowMapper
         participant ORM as #58;JDBCTemplate
     end
 
@@ -82,14 +82,18 @@ sequenceDiagram
     Database->>ORM: query(ProvisionalBallotStatisticsModel.Query(), aggregate=false)
     Database->>ORM: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
 
-    ORM->>ResultSet: :RowSet
-    ORM->>ResultSet: :RowSet
+    activate RowMapper
+    ORM->>RowMapper: resultSet: ResultSet
+    ORM->>RowMapper: resultSet: ResultSet
     deactivate ORM
 
-    activate ResultSet
-    Database->>ResultSet: mapRow()
-    Database->>ResultSet: mapRow()
-    deactivate ResultSet
+    loop on each data row of queries
+    Database->>RowMapper: mapRow(resultSet)
+    end
+    loop on each data row of queries
+    Database->>RowMapper: mapRow(resultSet)
+    end
+    deactivate RowMapper
 
     Database->>SService: :List<ProvisionalBallotStatisticsModel>
     Database->>SService: :ProvisionalBallotStatisticsModel
