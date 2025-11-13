@@ -1,0 +1,68 @@
+import pandas as pd
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+import os
+
+# Loading the .env and its values
+load_dotenv()
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")
+database = os.getenv("DB_NAME")
+
+RESULTS_PATH = "../raw/5591_table.csv"
+GEOUNIT_PATH = "../processed/2024_eavs_geounit.csv"
+
+df = pd.read_csv(RESULTS_PATH, dtype={
+    "County": str,
+    "Total Votes": int,
+    "Democratic": int,
+    "Republican": int
+})
+geounit = pd.read_csv(GEOUNIT_PATH, dtype=str)
+
+# Removing every state except for New York since some counties may have same names across different states
+geounit = geounit[geounit["state_id"] == "36"]
+
+# Mapping dict for quick lookup of county name to FIPS code
+county_dict = dict(zip(geounit["name"], geounit["eavs_unit_code"]))
+
+df["County"] = df["County"].str.strip()
+
+# Calculating the Republican/Democratic vote split
+for _, row in df.iterrows():
+    print(f"County: {row['County']}")
+    print(f"    Republican Vote Percentage: {row['Republican'] / row['Total Votes'] * 100 if row['Total Votes'] > 0 else 0:.2f}%")
+    print(f"    Democratic Vote Percentage: {row['Democratic'] / row['Total Votes'] * 100 if row['Total Votes'] > 0 else 0:.2f}%")
+
+df["other_votes"] = df["Total Votes"] - (df["Republican"] + df["Democratic"])
+
+rename_map = {
+    "County": "region_id",
+    "Republican": "rep_votes",
+    "Democratic": "dem_votes",
+    "other_votes": "other_votes"
+}
+df = df[[c for c in rename_map if c in df.columns]]
+df = df.rename(columns=rename_map)
+
+df["year"] = "2024"
+df["region_id"] = df["region_id"].map(county_dict)
+df["state_id"] = 36
+
+# Connecting to db
+engine = create_engine(
+    f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
+)
+
+# Inserting into db
+df.to_sql(
+    "election_results",
+    engine,
+    schema="app",
+    if_exists="append",
+    index=False
+)
+
+print("Finished inserting 2024 New York election results data into the database")
