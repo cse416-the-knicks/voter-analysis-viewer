@@ -5,47 +5,47 @@ config:
   theme: neutral
 ---
 sequenceDiagram
-  actor User as User
-  participant SplashPage as SplashPageﬂ°°58¶ßDOMNode
-  participant FrontPageDrawer as FrontPageDrawerﬂ°°58¶ßDOMNode
-  participant PartyStatesTable as PartyStatesTableﬂ°°58¶ßDOMNode
-  participant Axios as ﬂ°°58¶ßAxios
-  participant Controller as ﬂ°°58¶ßController
-  participant Service as ﬂ°°58¶ßService
-  participant Repository as ﬂ°°58¶ßRepository
   autonumber
+  title: GUI-15 - Compare Republican and Democratic states (required)
+
+  actor User as User
+
+  box Frontend
+  participant landingPage as landingPage#58;DOMNode
+  participant PartyStatesTable as PartyStatesTable#58;DOMNode
+  participant Axios
+  end
+  
+  box Backend
+  participant Controller
+  participant Service
+  participant Repository
+  end
+
   Note right of Repository: IStateDAO in codebase
-  User ->> SplashPage: Loads application
-  SplashPage ->>+ FrontPageDrawer: Render
-  Note right of FrontPageDrawer: Visits /compare/party-states
-  FrontPageDrawer ->>+ PartyStatesTable: Render
+
+  Note right of User: Visits /compare/party-states
+  User ->> landingPage: Click menu item `Party States`
+  landingPage ->>+ PartyStatesTable: Render
+
   Note left of Axios: Orval used to generate typesafe request wrappers 
   PartyStatesTable ->> Axios: getViewStateYearSummaryByStateForYear(fipsCode, 2024)
-  Note left of Axios: User chooses between General Comparison, Early Voting Comparison,<br> or Registration/Turnout Comparison views
+  Note left of Axios: User chooses between the General Comparison, Early Voting Comparison,<br> or Registration/Turnout Comparison views
+  
   Note left of Controller: The fips codes used are for Oklahoma and New York
   Axios ->> Controller: GET /state/${fipsCode}/year-summary/${year}
   Axios ->>+ Controller: getViewStateYearSummaryByStateForYear(fipsCode, year=2024)
   Note left of Controller: year=2024, is a default query parameter
   Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   Controller ->>+ Service: getViewStateYearSummaryByStateForYear(fipsCode, year=2024)
+  
   Service ->>+ Repository: getViewStateYearSummaryByStateForYear(fipsCode, year=2024)
   Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
-  Repository ->>- Service: List<ViewStateYearSummaryModel>
-  Service ->>- Controller: List<ViewStateYearSummaryModel>
+  Repository -->>- Service: List<ViewStateYearSummaryModel>
+  Service -->>- Controller: List<ViewStateYearSummaryModel>
   Note left of Controller: Serialized into a JSON string
-  Note left of Axios: Shows either the PartyComparisonView, PartyEarlyVotingComparisonView,<br> or PartyGeneralComparisonView components
-  Controller ->>- Axios: HTTP 200 OK: JSONString
-  Axios ->> PartyStatesTable: List<ViewStateYearSummaryModel>
-  PartyStatesTable ->> FrontPageDrawer: Done
-  FrontPageDrawer ->> SplashPage: Done
-  box hsl(0, 0%, 98.9215686275%) Frontend
-  participant SplashPage
-  participant FrontPageDrawer
-  participant PartyStatesTable
-  participant Axios
-  end
-  box hsl(0, 0%, 98.9215686275%) Backend
-  participant Controller
-  participant Service
-  participant Repository
-  end
+
+  Controller -->>- Axios: HTTP 200 OK: JSONString
+  Axios -->> PartyStatesTable: List<ViewStateYearSummaryModel>
+  Note right of PartyStatesTable: Table is a mui-datagrid containing the server response object
+  Note left of Axios: Shows a table of either the PartyComparisonView, PartyEarlyVotingComparisonView,<br> or PartyGeneralComparisonView components
