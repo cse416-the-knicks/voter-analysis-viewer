@@ -1,0 +1,27 @@
+graph TD
+    Start( )
+    style Start stroke:#000,stroke-width:2px,fill:#000,color:#fff;
+    End( )
+    style End fill:#fff,stroke:#000,stroke-width:2px;
+    fork1@{shape: fork}
+    join1@{shape: join}
+
+    %% Activity Flow
+    Start --> fork1
+
+    %% Branch 1: Database Preparation
+    fork1 --> A[Load DB Configuration]
+    A -- "[DB Credentials]" --> E[Establish DB Connection]
+    
+    %% Branch 2: Geospatial Data Processing
+    fork1 --> B[Load State Boundary GeoJSON]
+    B -- "[Raw Boundary Data]" --> C[Calculate Geographical Centers]
+    C -- "[Raw Boundary Data, Centroid Data]" --> D[Process and Format State Data]
+
+    %% Join branches
+    D -- "[Formatted Records]" --> join1
+    E -- "[DB Engine]" --> join1
+
+    %% Final step
+    join1 --> F[Write Processed Data to Database]
+    F --> End
