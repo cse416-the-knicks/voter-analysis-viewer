@@ -11,8 +11,8 @@ sequenceDiagram
   actor User as User
 
   box Frontend
-    participant LandingPage as LandingPage#58;DOMNode
-    participant Chart as Chart#58;DOMNode
+    participant landingPage as landingPage#58;DOMNode
+    participant chart as chart#58;DOMNode
 
     participant Axios as #58;Axios
   end
@@ -26,13 +26,14 @@ sequenceDiagram
   Note right of Repository: IStateDAO in codebase
 
   Note right of User: Visits state/{fipsCode}
-  User ->>+ LandingPage: Click State
-  activate LandingPage
+  activate landingPage
+  User ->>+ landingPage: Click State
 
-  LandingPage ->>+ Chart: Render
+  activate chart
+  landingPage ->>+ chart: Render
 
-  Note right of Chart: Orval used to generate typesafe request wrappers
-  Chart ->>+ Axios: getProvisionalBallots(fipsCode, 2024, true)
+  Note right of chart: Orval used to generate typesafe request wrappers
+  chart ->>+ Axios: getProvisionalBallots(fipsCode, 2024, true)
 
   Axios ->> Controller: GET /state/{fipsCode}/provisional_ballots?aggregate=true
   Axios ->>+ Controller: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
@@ -41,18 +42,19 @@ sequenceDiagram
   Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   
   Controller ->>+ Service: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
-  Service ->>+ Repository: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
+  Service ->>+ Repository: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
   
   Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
-  Repository ->>- Service: List<ProvisionalBallotStatisticsModel>
+  Repository -->>- Service: List<ProvisionalBallotStatisticsModel>
   
-  Service ->>- Controller: List<ProvisionalBallotStatisticsModel>
+  Service -->>- Controller: List<ProvisionalBallotStatisticsModel>
 
   Note left of Controller: Serialized into a JSON string
-  Controller ->>- Axios: HTTP 200 OK: JSONString
+  Controller -->>- Axios: HTTP 200 OK: JSONString
 
-  Axios ->>- Chart: List<ProvisionalBallotStatisticsModel>
+  Axios -->>- chart: List<ProvisionalBallotStatisticsModel>
+  Note left of chart: Bar chart data set from server response object<br>and dynamically sized using D3
+  deactivate chart
 
-  Chart ->>- LandingPage: Done
-  deactivate LandingPage
+  deactivate landingPage
   
