@@ -1,0 +1,48 @@
+graph TD
+    Start( )
+    style Start stroke:#000,stroke-width:2px,fill:#000,color:#fff;
+    End( )
+    style End fill:#fff,stroke:#000,stroke-width:2px;
+    fork1@{shape: fork}
+    join1@{shape: join}
+    fork2@{shape: fork}
+    join2@{shape: join}
+
+    %% Flow
+    Start --> fork1
+
+    %% Branch 1: Database Preparation
+    fork1 --> A[Load DB Configuration]
+    A -- "[DB Credentials]" --> B[Establish DB Connection]
+    
+    %% Branch 2: Main Data Processing
+    fork1 --> C[Load Voter Registration Files]
+    C -- "[Raw Voter Data]" --> D[Check for Missing Zip Codes]
+    
+    %% Data Completeness Check
+    D --> E{"Decision [Zip Missing?]"}
+    E -- "[Yes]" --> F[Query Geocoding API for Zip]
+    F -- "[Zip Code]" --> G[Re-integrate Data]
+    E -- "[No]" --> G
+    
+    %% Main processing steps
+    G --> H[Determine EAVS Region ID]
+    H -- "[Data w/ Region ID]" --> I[Normalize Party Affiliation]
+    
+    %% Fork for printing summary data as in prepro 7 and putting data in db
+    I -- "[Processed Voter Data]" --> fork2
+
+    %% Use Case 7: Generate Summary Report
+    fork2 --> J[Calculate Registration Summary]
+    J -- "[Summary Stats]" --> K[Generate Summary Report]
+    
+    %% Writing data to db
+    B -- "[DB Engine]" --> join1
+    fork2 --> join1
+    
+    join1 --> L[Write Voter Records to Database]
+
+    %% Final join
+    K --> join2
+    L --> join2
+    join2 --> End
