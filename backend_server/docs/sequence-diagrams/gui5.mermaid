@@ -48,16 +48,16 @@ sequenceDiagram
 
     Service->>DB: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
     note left of DB: Calls into our custom ORM solution, performing row mapping<br/>(simplified, full-flow in GUI-2: Display State).
-    DB->>Service: List<ProvisionalBallotStatisticsModel>
-    Service->>Controller: List<ProvisionalBallotStatisticsModel>
+    DB-->>Service: List<ProvisionalBallotStatisticsModel>
+    Service-->>Controller: List<ProvisionalBallotStatisticsModel>
     deactivate Service
     deactivate DB
     note left of Controller: Would be serialized into a JSON string
 
-    Controller->>Axios: HTTP 200 OK: JSONString
+    Controller-->>Axios: HTTP 200 OK: JSONString
     deactivate Axios
 
-    Axios->>Map: List<ProvisionalBallotStatisticsModel>
+    Axios-->>Map: List<ProvisionalBallotStatisticsModel>
     note left of Map: Using Styling function to color map based off<br/>ratio calculated from return values.
     deactivate Map
     deactivate Controller
