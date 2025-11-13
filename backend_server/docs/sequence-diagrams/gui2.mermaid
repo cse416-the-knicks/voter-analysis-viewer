@@ -35,7 +35,7 @@ sequenceDiagram
 
     Note right of Database: IStateDAO in codebase
     Note right of Database: This part is shown because we are using a hand-rolled ORM<br/>primarily as a learning experience.
-    Note right of SController: Except for getBoundaryGeometry, SpringBoot is set to cache<br/>all method calls here at the Service Layer.
+    Note right of SController: Except for getBoundaryGeometry, SpringBoot is set to cache<br/>all method calls here at the Service Layer. There is also no difference<br/>detailed states or general EAVS states for the geometry api call.
     User->>LandingPage: Click State
 
     activate Servlet
@@ -83,59 +83,55 @@ sequenceDiagram
     Database->>ORM: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
 
     activate RowMapper
-    ORM->>RowMapper: resultSet: ResultSet
-    ORM->>RowMapper: resultSet: ResultSet
+    ORM-->>RowMapper: resultSet: ResultSet
+    ORM-->>RowMapper: resultSet: ResultSet
     deactivate ORM
 
     loop on each data row of queries
-    Database->>RowMapper: mapRow(resultSet)
+    Database-->>RowMapper: mapRow(resultSet)
     end
     loop on each data row of queries
-    Database->>RowMapper: mapRow(resultSet)
+    Database-->>RowMapper: mapRow(resultSet)
     end
     deactivate RowMapper
 
-    Database->>SService: :List<ProvisionalBallotStatisticsModel>
-    Database->>SService: :ProvisionalBallotStatisticsModel
-    Database->>SService: :GeoJSON
+    Database-->>SService: :List<ProvisionalBallotStatisticsModel>
+    Database-->>SService: :ProvisionalBallotStatisticsModel
+    Database-->>SService: :GeoJSON
 
-    SService->>SController: :List<ProvisionalBallotStatisticsModel>
-    SService->>SController: :ProvisionalBallotStatisticsModel
-    SService->>SController: :GeoJSON
+    SService-->>SController: :List<ProvisionalBallotStatisticsModel>
+    SService-->>SController: :ProvisionalBallotStatisticsModel
+    SService-->>SController: :GeoJSON
 
     deactivate Database
     deactivate SService
 
     note left of SController: We don't *really* return GeoJSON as a type,<br/>it's an ObjectNode from Jackson however we<br/>clearly document that it is as expected GeoJSON.
-    SController->>OM: stateBoundaries: GeoJSON
-    SController->>OM: List<ProvisionalBallotStatisticsModel>
-    SController->>OM: ProvisionalBallotStatisticsModel
+    SController-->>OM: stateBoundaries: GeoJSON
+    SController-->>OM: List<ProvisionalBallotStatisticsModel>
+    SController-->>OM: ProvisionalBallotStatisticsModel
 
-    OM->>Servlet: JSONString (for GeoJSON)
-    OM->>Servlet: JSONString (for List<ProvisionalBallotStatisticsModel>)
-    OM->>Servlet: JSONString (for ProvisionalBallotStatisticsModel)
+    OM-->>Servlet: JSONString (for GeoJSON)
+    OM-->>Servlet: JSONString (for List<ProvisionalBallotStatisticsModel>)
+    OM-->>Servlet: JSONString (for ProvisionalBallotStatisticsModel)
 
-    Servlet->>Axios: HTTPResponse (200 OK)
-    Servlet->>Axios: HTTPResponse (200 OK)
-    Servlet->>Axios: HTTPResponse (200 OK)
+    Servlet-->>Axios: HTTPResponse (200 OK)
+    Servlet-->>Axios: HTTPResponse (200 OK)
+    Servlet-->>Axios: HTTPResponse (200 OK)
     deactivate OM
     deactivate SController
     deactivate Servlet
 
     note right of Axios: The Servlet responds with a JSON string, which we allow Axios / Browser<br/>to reparse into an Object, which we coerce into our known type definitions.
 
-    Axios->>Map: stateBoundaries: GeoJSON
-    Axios->>Table: List<ProvisionalBallotStatisticsModel>
-    Axios->>Chart: ProvisionalBallotStatisticsModel
+    Axios-->>Map: stateBoundaries: GeoJSON
+    Axios-->>Table: List<ProvisionalBallotStatisticsModel>
+    Axios-->>Chart: ProvisionalBallotStatisticsModel
     deactivate Axios
 
     Note over Map,LandingPage: Using LeafletJS the Map will<br/>auto-zoom/center on the<br/>specific boundary geometry.
-    Map-->>LandingPage: Done
     deactivate Map
-    Table-->>LandingPage: Done
     deactivate Table
-    Chart-->>LandingPage: Done
     deactivate Chart
 
-    LandingPage-->>User: Display
     deactivate LandingPage
