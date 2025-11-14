@@ -160,6 +160,20 @@ public interface IStateDAO {
   Optional<ViewStateYearSummaryModel> getStateYearSummaryRowByYear(String fipsCode, int year);
 
   /**
+   * This access point is meant to return the election results for a federal election year.
+   *
+   * This currently means only 2024.
+   *
+   * @param fipsCode - A string for the fipsCode of the state.
+   * @param year - An integer for the year we want to query. Only specified for 2024, here for endpoint uniformity.
+   * @param aggregated - A boolean asking whether to aggregate the result, will return a list of one
+   *     in that case.
+   * @return a list of getStateElectionResultsSummaryModels, or a single model containing the
+   *     aggregate for the state.
+   */
+  List<ElectionResultsSummaryModel> getStateElectionResultsSummaryRows(String fipsCode, int year, boolean aggregated);
+
+  /**
    * This access point is meant to return the centroids for all the significant GeoUnits of a state.
    *
    * @param fipsCode - A string for the fipsCode of the state.

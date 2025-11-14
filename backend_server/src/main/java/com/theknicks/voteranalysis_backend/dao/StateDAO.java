@@ -145,8 +145,7 @@ public class StateDAO implements IStateDAO {
   }
 
   public List<ViewStateYearSummaryModel> getStateYearSummaryRows(String fipsCode) {
-    var queryable = AutoSqlQueryable.findQueryableNested(ViewStateYearSummaryModel.class);
-    assert queryable != null;
+    var queryable = new ViewStateYearSummaryModel.Queryable();
     return _jdbcTemplate.query(
         queryable.Query() + " where state_id = ?",
         queryable.Mapper(),
@@ -155,14 +154,22 @@ public class StateDAO implements IStateDAO {
 
   public Optional<ViewStateYearSummaryModel> getStateYearSummaryRowByYear(
       String fipsCode, int year) {
-    var queryable = AutoSqlQueryable.findQueryableNested(ViewStateYearSummaryModel.class);
-    assert queryable != null;
+    var queryable = new ViewStateYearSummaryModel.Queryable();
     return ListHelpers.getFirst(
         _jdbcTemplate.query(
             queryable.Query() + " where state_id = ? and year = ?",
             queryable.Mapper(),
             Integer.parseInt(fipsCode, 10),
             year));
+  }
+
+  public List<ElectionResultsSummaryModel> getStateElectionResultsSummaryRows(String fipsCode, int year, boolean aggregated) {
+    var queryable = new ElectionResultsSummaryModel.Queryable();
+    return _jdbcTemplate.query(
+            queryable.Query(aggregated) + " where election_results.state_id = ? and year = ?",
+            queryable.Mapper(aggregated),
+            Integer.parseInt(fipsCode, 10),
+            year);
   }
 
   public Map<String, GeoUnitCentroidModel> getGeoUnitCentroids(String fipsCode) {

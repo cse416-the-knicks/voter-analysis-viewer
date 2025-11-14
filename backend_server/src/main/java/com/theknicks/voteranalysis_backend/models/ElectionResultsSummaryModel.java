@@ -11,9 +11,9 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
         collection = "election_results",
         joining = "app.eavs_geounit",
         joinMethod = {"inner"},
-        joinOn = {"app.eavs_geounit.eavs_unit_code = app.eavs_data.region_id"})
+        joinOn = {"app.eavs_geounit.eavs_unit_code = app.election_results.region_id"})
 public record ElectionResultsSummaryModel(
-        @SqlColumnName(name = "eavs_data.region_id", omitFromAggregate = true) String fullRegionId,
+        @SqlColumnName(name = "election_results.region_id", omitFromAggregate = true) String fullRegionId,
         @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String regionName,
         @SqlColumnName(name = "rep_votes") int republicanVotes,
         @SqlColumnName(name = "dem_votes") int democratVotes,
