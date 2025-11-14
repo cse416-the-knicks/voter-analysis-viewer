@@ -34,26 +34,26 @@ sequenceDiagram
   landingPage ->>+ chart: Render
 
   Note right of chart: Orval used to generate typesafe request wrappers
-  chart ->>+ Axios: getDropboxBallots(fipsCode, countyFipsCode, 2024)
+  chart ->>+ Axios: getElectionResultsSummary(fipsCode, year=2024)
 
-  Axios ->> Controller: GET /state/{fipsCode}/{countyFipsCode}/dropbox-ballots
-  Axios ->>+ Controller: getDropboxBallots(fipsCode, countyFipsCode, 2024)
+  Axios ->> Controller: GET /state/${fipsCode}/election-year-results/${year}
+  Axios ->>+ Controller: getElectionResultsSummary(fipsCode, year=2024)
 
   Note left of Controller: year=2024, is a default query parameter
   Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   
-  Controller ->>+ Service: getDropboxBallots(fipsCode, countyFipsCode, 2024)
-  Service ->>+ Repository: getDropboxBallots(fipsCode, countyFipsCode, 2024)
+  Controller ->>+ Service: getElectionResultsSummary(fipsCode, year=2024)
+  Service ->>+ Repository: getElectionResultsSummary(fipsCode, year=2024)
   
   Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
-  Repository -->>- Service: List<BallotStatisticsModel>
+  Repository -->>- Service: List<ElectionResultsSummaryModel>
   
-  Service -->>- Controller: List<BallotStatisticsModel>
+  Service -->>- Controller: List<ElectionResultsSummaryModel>
 
   Note left of Controller: Serialized into a JSON string
   Controller -->>- Axios: HTTP 200 OK: JSONString
 
-  Axios -->>- chart: List<BallotStatisticsModel>
+  Axios -->>- chart: List<ElectionResultsSummaryModel>
   Note left of chart: Bubble chart data set from server response object<br>and dynamically sized using D3
   deactivate chart
 
