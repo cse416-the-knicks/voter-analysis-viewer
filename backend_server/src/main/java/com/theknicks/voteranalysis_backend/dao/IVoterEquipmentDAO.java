@@ -2,7 +2,6 @@ package com.theknicks.voteranalysis_backend.dao;
 
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
-
 import java.util.*;
 
 /** Voter Equipment Data Access Object Layer */

@@ -2,9 +2,8 @@ package com.theknicks.voteranalysis_backend.services;
 
 import com.theknicks.voteranalysis_backend.dao.IVoterEquipmentDAO;
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
-import java.util.*;
-
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.*;

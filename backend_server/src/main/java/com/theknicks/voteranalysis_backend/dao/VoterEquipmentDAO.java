@@ -4,11 +4,11 @@ import static com.theknicks.voteranalysis_backend.helpers.CsvHelpers.*;
 
 import com.theknicks.voteranalysis_backend.helpers.*;
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
+import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsEntryModel;
+import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-
-import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,18 +46,19 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
 
   @Override
   public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode) {
-    var queryable = new VotingEquipmentUsageStatisticsModel.Queryable();
+    var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
+    List<VotingEquipmentUsageStatisticsEntryModel> entries;
     if (fipsCode.isEmpty()) {
-      return _jdbcTemplate.query(
-              queryable.Query(),
-              queryable.Mapper()
-      );
+      entries = _jdbcTemplate.query(queryable.Query(), queryable.Mapper());
+    } else {
+      entries =
+          _jdbcTemplate.query(
+              queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
+              queryable.Mapper(),
+              Integer.parseInt(fipsCode, 10));
     }
-    return _jdbcTemplate.query(
-            queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
-            queryable.Mapper(),
-            Integer.parseInt(fipsCode, 10)
-    );
+
+    return VotingEquipmentUsageStatisticsModel.fromDataRows(entries);
   }
 
   @Override

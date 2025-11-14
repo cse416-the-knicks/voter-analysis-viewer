@@ -1,30 +1,82 @@
 package com.theknicks.voteranalysis_backend.models;
 
-import com.theknicks.voteranalysis_backend.annotations.AutoSql;
-import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
-import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /*
-    This holds the overall usage statistics of a voting equipment model
-    category. (This is intended to be the participant of a list.)
-
-    It is useful for GUI-12. and GUI-14.
- */
-@AutoSql(
-        collection = "equipment_usage",
-        joining = {"device_model", "eavs_geounit"},
-        joinMethod = {"inner", "inner"},
-        joinOn = {"equipment_usage.device_model_id = device_model.device_model_id", "equipment_usage.region_id = eavs_geounit.eavs_unit_code"},
-        groupBy = {"device_type"}
-)
+   This is similar to VotingEquipmentUsageStatisticsEntryModel but is
+   formatted in such a way that it is suitable for tabulation (and state
+   analysis.)
+*/
 public record VotingEquipmentUsageStatisticsModel(
-        @SqlColumnName(name="device_type") String deviceType,
-        @SqlColumnName(name="count(distinct equipment_usage.region_id)") int uniqueModels,
-        @SqlColumnName(name="sum(quantity)") int totalDevices
-) {
-    public static class Queryable extends AutoSqlQueryable<VotingEquipmentUsageStatisticsModel> {
-        public Queryable() {
-            super(VotingEquipmentUsageStatisticsModel.class);
+    String stateName,
+    int stateId,
+    int dreNoVvpatTotal,
+    int dreVvpatTotal,
+    int bmdTotal,
+    int scannerTotal) {
+  public static List<VotingEquipmentUsageStatisticsModel> fromDataRows(
+      List<VotingEquipmentUsageStatisticsEntryModel> rows) {
+    var statisticsRows = new ArrayList<VotingEquipmentUsageStatisticsModel>();
+    var dataByStates =
+        rows.stream()
+            .collect(Collectors.groupingBy(VotingEquipmentUsageStatisticsEntryModel::stateId));
+
+    // Classification sorting...
+    for (var state : dataByStates.keySet()) {
+      var dataRowsPerState = dataByStates.get(state);
+      var hasVvpat = false;
+      var dreCount = 0;
+      var dreVvpatCount = 0;
+      var bmdCount = 0;
+      var scannerCount = 0;
+      var stateName = "";
+
+      for (var entry : dataRowsPerState) {
+        if (stateName.isEmpty()) {
+          stateName = entry.stateName();
         }
+
+        assert entry.deviceType() != null;
+        if (entry.certification() != null && entry.certification().contains("VVPAT")
+            || entry.deviceType().contains("VVPAT")) {
+          hasVvpat = true;
+        }
+
+        int deviceCount = entry.totalDevices();
+        switch (entry.deviceType()) {
+          case "DRE Dial":
+          case "DRE with VVPAT":
+          case "DRE Touchscreen":
+          case "DRE Push Button":
+            if (hasVvpat) {
+              dreVvpatCount += deviceCount;
+            } else {
+              dreCount += deviceCount;
+            }
+            break;
+          case "Hybrid Optical Scanner/BMD":
+            // NOTE(jerry): intentional fall-through.
+            bmdCount += deviceCount;
+          case "Batch-Fed Optical Scanner":
+          case "Scanner":
+          case "Hand-Fed Optical Scanner":
+          case "Batch-Fed Optical Scan Tabulator":
+            scannerCount += deviceCount;
+            break;
+          case "BMD/Tabulator":
+          case "BMD":
+          case "Ballot Marking Device":
+            bmdCount += deviceCount;
+            break;
+        }
+      }
+      statisticsRows.add(
+          new VotingEquipmentUsageStatisticsModel(
+              stateName, state, dreCount, dreVvpatCount, bmdCount, scannerCount));
     }
+
+    return statisticsRows;
+  }
 }
