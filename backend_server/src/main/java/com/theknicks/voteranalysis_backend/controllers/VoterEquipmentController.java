@@ -48,10 +48,12 @@ public class VoterEquipmentController {
     return _service.getVotingEquipment(manufacturer, model);
   }
 
-  @GetMapping("/{fipsCode}")
+  @GetMapping("/usages/")
   public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
-          @PathVariable("fipsCode") String fipsCode
+          @RequestParam(value = "regionId", defaultValue = "") String fipsCode,
+          @RequestParam(value = "year", defaultValue = "2024") int year
   ) {
+    _logger.info("FUCK");
     return _service.getVotingEquipmentUsage(fipsCode);
   }
 }

@@ -191,6 +191,14 @@ public class AutoSqlQueryable<T> {
   // Happens to be fine for numeric data, might need to evolve as I think
   // more about this
   public String Query(boolean asSumAggregate) {
+    return QueryWhere(new String[] {}, asSumAggregate);
+  }
+
+  public String QueryWhere(String[] whereClauses) {
+    return QueryWhere(whereClauses, false);
+  }
+
+  public String QueryWhere(String[] whereClauses, boolean asSumAggregate) {
     var result = new StringBuilder();
     var selfClass = _class;
     var autoSqlAnnotation = selfClass.getAnnotation(AutoSql.class);
@@ -236,7 +244,11 @@ public class AutoSqlQueryable<T> {
       result.append("\n");
     }
 
-    // where can go here.
+    for (var clause : whereClauses) {
+      result.append("where ");
+      result.append(clause);
+      result.append("\n");
+    }
 
     if (groupByClausesToAdd > 0) {
       result.append("group by\n");

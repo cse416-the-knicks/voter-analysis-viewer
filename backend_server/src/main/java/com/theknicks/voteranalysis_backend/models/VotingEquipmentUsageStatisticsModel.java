@@ -12,9 +12,9 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
  */
 @AutoSql(
         collection = "equipment_usage",
-        joining = {"device_model"},
-        joinMethod = {"inner"},
-        joinOn = {"equipment_usage.device_model_id = device_model.device_model_id"},
+        joining = {"device_model", "eavs_geounit"},
+        joinMethod = {"inner", "inner"},
+        joinOn = {"equipment_usage.device_model_id = device_model.device_model_id", "equipment_usage.region_id = eavs_geounit.eavs_unit_code"},
         groupBy = {"device_type"}
 )
 public record VotingEquipmentUsageStatisticsModel(

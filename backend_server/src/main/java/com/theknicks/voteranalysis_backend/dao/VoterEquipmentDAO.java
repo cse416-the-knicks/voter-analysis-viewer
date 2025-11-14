@@ -47,10 +47,16 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
   @Override
   public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode) {
     var queryable = new VotingEquipmentUsageStatisticsModel.Queryable();
+    if (fipsCode.isEmpty()) {
+      return _jdbcTemplate.query(
+              queryable.Query(),
+              queryable.Mapper()
+      );
+    }
     return _jdbcTemplate.query(
-            queryable.Query(),
-            queryable.Mapper()
-//            fipsCode
+            queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
+            queryable.Mapper(),
+            Integer.parseInt(fipsCode, 10)
     );
   }
 
