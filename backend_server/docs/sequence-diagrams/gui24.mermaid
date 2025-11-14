@@ -1,0 +1,61 @@
+---
+config:
+  layout: elk
+  look: neo
+  theme: neutral
+---
+sequenceDiagram
+  autonumber
+
+  title: GUI-24 - Drop box voting bubble chart (required)
+  actor User as User
+
+  box Frontend
+    participant landingPage as landingPage#58;DOMNode
+    participant chart as chart#58;DOMNode
+
+    participant Axios as #58;Axios
+  end
+
+  box Backend
+    participant Controller as #58;Controller
+    participant Service as #58;Service
+    participant Repository as #58;Repository
+  end
+  
+  Note right of Repository: IStateDAO in codebase
+
+  Note right of User: Visits state/{fipsCode}
+  activate landingPage
+  User ->>+ landingPage: Click State
+  Note right of User: This use case only applies to our party<br>states of Oklahoma and New York
+
+  activate chart
+  landingPage ->>+ chart: Render
+
+  Note right of chart: Orval used to generate typesafe request wrappers
+  chart ->>+ Axios: getDropboxBallots(fipsCode, countyFipsCode, 2024)
+
+  Axios ->> Controller: GET /state/{fipsCode}/{countyFipsCode}/dropbox-ballots
+  Axios ->>+ Controller: getDropboxBallots(fipsCode, countyFipsCode, 2024)
+
+  Note left of Controller: year=2024, is a default query parameter
+  Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  
+  Controller ->>+ Service: getDropboxBallots(fipsCode, countyFipsCode, 2024)
+  Service ->>+ Repository: getDropboxBallots(fipsCode, countyFipsCode, 2024)
+  
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+  Repository -->>- Service: List<BallotStatisticsModel>
+  
+  Service -->>- Controller: List<BallotStatisticsModel>
+
+  Note left of Controller: Serialized into a JSON string
+  Controller -->>- Axios: HTTP 200 OK: JSONString
+
+  Axios -->>- chart: List<BallotStatisticsModel>
+  Note left of chart: Bubble chart data set from server response object<br>and dynamically sized using D3
+  deactivate chart
+
+  deactivate landingPage
+  
