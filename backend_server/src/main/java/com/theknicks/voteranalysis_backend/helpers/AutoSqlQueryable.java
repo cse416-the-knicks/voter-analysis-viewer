@@ -203,6 +203,7 @@ public class AutoSqlQueryable<T> {
     // For records, which is the use-case this is everything.
     var fieldsToWrite = filterForAllQueryableFields(selfClass.getDeclaredFields(), asSumAggregate);
     var joinClausesToAdd = autoSqlAnnotation.joining().length;
+    var groupByClausesToAdd = autoSqlAnnotation.groupBy().length;
 
     for (int i = 0; i < fieldsToWrite.length; ++i) {
       var field = fieldsToWrite[i];
@@ -233,6 +234,20 @@ public class AutoSqlQueryable<T> {
       result.append(" on ");
       result.append(autoSqlAnnotation.joinOn()[i]);
       result.append("\n");
+    }
+
+    // where can go here.
+
+    if (groupByClausesToAdd > 0) {
+      result.append("group by\n");
+      for (int i = 0; i < groupByClausesToAdd; ++i) {
+        result.append(autoSqlAnnotation.groupBy()[i]);
+        if (i + 1 >= groupByClausesToAdd) {
+          // omit
+        } else {
+          result.append(",\n");
+        }
+      }
     }
     result.append("\n");
     return result.toString();

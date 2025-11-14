@@ -1,6 +1,8 @@
 package com.theknicks.voteranalysis_backend.dao;
 
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
+import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
+
 import java.util.*;
 
 /** Voter Equipment Data Access Object Layer */
@@ -17,6 +19,8 @@ public interface IVoterEquipmentDAO {
   List<VotingEquipmentModel> getVotingEquipmentByType(String type);
 
   List<VotingEquipmentModel> getVotingEquipmentByManufacturer(String manufacturer);
+
+  List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode);
 
   /**
    * Get the information of a particular voting equipment machine by a manufacturer, and model

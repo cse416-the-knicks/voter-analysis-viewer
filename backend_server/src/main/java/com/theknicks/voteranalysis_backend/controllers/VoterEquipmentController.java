@@ -1,6 +1,7 @@
 package com.theknicks.voteranalysis_backend.controllers;
 
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
+import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
 import com.theknicks.voteranalysis_backend.services.VoterEquipmentService;
 import java.util.*;
 import org.slf4j.Logger;
@@ -45,5 +46,12 @@ public class VoterEquipmentController {
   public Optional<VotingEquipmentModel> getVotingEquipment(
       @PathVariable("manufacturer") String manufacturer, @PathVariable("model") String model) {
     return _service.getVotingEquipment(manufacturer, model);
+  }
+
+  @GetMapping("/{fipsCode}")
+  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
+          @PathVariable("fipsCode") String fipsCode
+  ) {
+    return _service.getVotingEquipmentUsage(fipsCode);
   }
 }
