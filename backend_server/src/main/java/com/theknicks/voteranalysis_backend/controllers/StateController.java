@@ -140,9 +140,9 @@ public class StateController {
 
   @GetMapping("/{fipsCode}/election-year-results/{year}")
   public List<ElectionResultsSummaryModel> getElectionResultsSummary(
-          @PathVariable("fipsCode") String fipsCode,
-          @PathVariable("year") int year,
-          @RequestParam(name="aggregate", defaultValue = "false") boolean inAggregate) {
+      @PathVariable("fipsCode") String fipsCode,
+      @PathVariable("year") int year,
+      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
     return _service.getElectionResultsSummaryDataForState(fipsCode, year, inAggregate);
   }
 

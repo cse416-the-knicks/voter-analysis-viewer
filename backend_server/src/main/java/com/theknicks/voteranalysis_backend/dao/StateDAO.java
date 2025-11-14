@@ -163,13 +163,14 @@ public class StateDAO implements IStateDAO {
             year));
   }
 
-  public List<ElectionResultsSummaryModel> getStateElectionResultsSummaryRows(String fipsCode, int year, boolean aggregated) {
+  public List<ElectionResultsSummaryModel> getStateElectionResultsSummaryRows(
+      String fipsCode, int year, boolean aggregated) {
     var queryable = new ElectionResultsSummaryModel.Queryable();
     return _jdbcTemplate.query(
-            queryable.Query(aggregated) + " where election_results.state_id = ? and year = ?",
-            queryable.Mapper(aggregated),
-            Integer.parseInt(fipsCode, 10),
-            year);
+        queryable.Query(aggregated) + " where election_results.state_id = ? and year = ?",
+        queryable.Mapper(aggregated),
+        Integer.parseInt(fipsCode, 10),
+        year);
   }
 
   public Map<String, GeoUnitCentroidModel> getGeoUnitCentroids(String fipsCode) {
