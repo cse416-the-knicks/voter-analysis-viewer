@@ -8,7 +8,7 @@ df = pd.read_excel(EAVS_PATH, dtype=str).fillna("")
 groups = {
     "DRE no VVPAT": ("F3a", ["F3b_1", "F3b_2", "F3b_3"]),
     "DRE with VVPAT": ("F4a", ["F4b_1", "F4b_2", "F4b_3"]),
-    "Ballot Marking Device": ("F5a", ["F5b_1", "F5b_2", "F5b_3"]),
+    "BMD": ("F5a", ["F5b_1", "F5b_2", "F5b_3"]),
     "Scanner": ("F6a", ["F6b_1", "F6b_2", "F6b_3"]),
 }
 

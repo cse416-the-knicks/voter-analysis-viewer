@@ -16,44 +16,44 @@ DemTech,Electronic Poll Book,ePollTAB,,,,,,,,,,,,
 Democracy Live,BMD,OmniBallot Tablet,,,,,,,,,,,,
 Democracy Live,Internet Voting,OmniBallot Online,,,,,,,,,,,,
 Democracy Live,Remote Ballot Marking,Secure Select,,,,,,,,,,,,
-Dominion,BMD,ImageCast Precinct BMD,,,,,,,,,,,,
-Dominion,BMD,ImageCast X,,,,,,,,,,,,
-Dominion,Batch-Fed Optical Scanner,ImageCast Central,,,,,,,,,,,,
-Dominion,DRE Touchscreen,ImageCast X as DRE,,,,,,,,,,,,
-Dominion,Hand-Fed Optical Scanner,ImageCast Precinct,,,,,,,,,,,,
-Dominion,Hybrid Optical Scanner/BMD,ImageCast Evolution,,,,,,,,,,,,
-Dominion,Hybrid Optical Scanner/DRE,ImageCast Precinct ATI,,,,,,,,,,,,
-Dominion,Remote Ballot Marking,ImageCast Remote,,,,,,,,,,,,
-ES&S,BMD,AutoMARK,,,,,,,,,,,,
-ES&S,BMD,ExpressVote,3/20/2014,,,EVS 6.5.0.0,,,,,VVSG 1.0 (2005),,,
-ES&S,BMD/Tabulator,ExpressVote XL,,,,EVS 6.5.0.0,,,,,VVSG 1.0 (2005),,,
-ES&S,Batch-Fed Optical Scanner,DS450,6/3/2016,,,EVS 6.5.0.0,,72 ballots/minute,,,VVSG 1.0 (2005),,,FALSE
-ES&S,Batch-Fed Optical Scanner,DS650,,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scanner,DS850,,,,EVS 6.5.0.0,,,,,VVSG 1.0 (2005),,,
-ES&S,Batch-Fed Optical Scanner,DS950,,,,EVS 6.5.0.0,,,,,VVSG 1.0 (2005),,,
-ES&S,Batch-Fed Optical Scanner,Model 150,,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scanner,Model 550,,,,,,,,,,,,
-ES&S,DRE Touchscreen,ExpressTouch,,,,,,,,,,,,
-ES&S,DRE Touchscreen,iVotronic,,,,,,,,,,,,
-ES&S,Electronic Poll Book,ExpressPoll,,,,,,,,,,,,
-ES&S,Hand-Fed Optical Scanner,DS200,,,,EVS 6.5.0.0,,,,,VVSG 1.0 (2005),,,
-ES&S,Hand-Fed Optical Scanner,DS300,,,,EVS 6.5.0.0,,,,,VVSG 1.0 (2005),,,
-ES&S,Hand-Fed Optical Scanner,Model 100,,,,,,,,,,,,
-ES&S/Unisyn,BMD,InkaVote Plus,,,,,,,,,,,,
-ES&S/Unisyn,Hand-Fed Optical Scanner,InkaVote,,,,,,,,,,,,
+_,BMD,ImageCast Precinct BMD,,,,,,,,,,,,
+Dominion,BMD,ImageCast X,2/27/2008,2018,uClinux (embedded Linux),5.17.13.1,4 to 6 hours,N/A (BMD only- no scanning),FALSE,Single-sheet thermal ballot printing, VVSG 1.0 (2005),"CISA ICS-VU-21-002; risks from removable media, outdated OS, and local access.",,FALSE
+Dominion,Batch-Fed Optical Scanner,ImageCast Central,12/15/2009,2024,Windows 10 Enterprise LTSC,5.17.13.1,N/A – Desktop system (requires AC power),Up to 120 ppm,FALSE,Up to 500 sheets,VVSG 1.0 (2005),Windows and media-based risks; mitigated by physical and procedural controls,,FALSE
+Dominion,DRE Touchscreen,ImageCast X as DRE,2/6/2018,2020,Android 5.1,5.5.3.0002,4–6 hours on internal battery,N/A ,TRUE,"Thermal roll (~150–200 ft, supports hundreds of voters)",VVSG 1.0 (2005),"Android vulnerabilities, USB access, higher risk due to digital vote storage (DRE)",,TRUE
+Dominion,Hand-Fed Optical Scanner,ImageCast Precinct,12/15/2009,2019,uClinux (embedded Linux),4.14.37,2–4 hours (internal backup battery),4–6 ballots per minute,FALSE,"2,000–3,000 ballots",VVSG 1.0 (2005),"USB/media access, physical port exposure, limited firmware security",,TRUE
+Dominion,Hybrid Optical Scanner/BMD,ImageCast Evolution,3/1/2016,2024,uClinux (embedded Linux),5.17.13.1,2–4 hours (internal battery backup),12–15 ballots per minute,FALSE,"3,000 ballots",VVSG 1.0 (2005),"Removable media exposure, port access, embedded OS limitations",,FALSE
+Dominion,Hybrid Optical Scanner/DRE,ImageCast Precinct ATI,12/15/2009,2019,uClinux (embedded Linux),4.14.37,2–4 hours (via ICP internal battery),4–6 ballots per minute,FALSE,"2,000–3,000 ballots",VVSG 1.0 (2005),"USB port access, removable media, embedded OS limitations",,TRUE
+Dominion,Remote Ballot Marking,ImageCast Remote,5/9/2014,2024,Web-based (server OS varies; client-side OS-agnostic),N/A,N/A (software-only),N/A (marks ballots; no scanning),FALSE,N/A (user-printed; no hardware),VVSG 1.0 (2005),"lient-side malware, online access risk, reliance on print-and-mail return",,FALSE
+ES&S,BMD,AutoMARK,2/2/2006,2018,Windows CE 5.0,1.0.14,2–4 hours,N/A,FALSE,1 ballot at a time (no internal storage),VVSG 1.0 (2005),"Removable media risks, legacy OS, lacks modern protections",,TRUE
+ES&S,BMD,ExpressVote,3/20/2014,2024,Windows Embedded Standard 7,2.4.4.0,2–4 hours,N/A,FALSE,1 ballot at a time,VVSG 1.0 (2005),"Removable media, barcode ballot risk, touchscreen manipulation potential",,FALSE
+ES&S,BMD/Tabulator,ExpressVote XL,6/2/2018,2024,Windows Embedded Standard 7,2.4.4.0,2–4 hours,8–10 ballots per minute,FALSE,"500–1,000 ballots",VVSG 1.0 (2005),"Barcode ballot concerns, removable media, complex touchscreen + tabulator integration",,FALSE
+ES&S,Batch-Fed Optical Scanner,DS450,6/3/2016,2024,Windows Embedded Standard 7,3.0.1.0,N/A,72 ballots/minute,FALSE,~300 ballots,VVSG 1.0 (2005),"Removable media, networked configuration risk, dependency on physical chain of custody",,FALSE
+ES&S,Batch-Fed Optical Scanner,DS650,6/21/2010,2018,Windows XP Embedded,2.1.0.0,N/A,300 ballots per minute,FALSE,"1,000 ballots",VVSG 1.0 (2005),"Legacy OS (Windows XP), removable media, and lack of modern encryption or secure boot",,TRUE
+ES&S,Batch-Fed Optical Scanner,DS850,8/31/2012,2024,Windows 10 IoT Enterprise,3.0.1.0,N/A,300 ballots per minute,FALSE,"1,000 ballots",VVSG 1.0 (2005),"Removable media, physical access ports, and scanner calibration drift",,FALSE
+ES&S,Batch-Fed Optical Scanner,DS950,1/31/2024,2024,Windows 10 IoT Enterprise,3.0.1.0,N/A ,300 ballots per minute,FALSE,"1,000 ballots",VVSG 1.0 (2005),Standard removable media and calibration risks; improved security over DS850,,FALSE
+ES&S,Batch-Fed Optical Scanner,Model 150,1996,2005,Proprietary embedded OS,Not standardized,N/A,300 ballots per minute,FALSE,"1,000 ballots",Pre-VVSG / State Certification Only,"Unencrypted firmware, physical port access, no audit trails, legacy hardware",,TRUE
+ES&S,Batch-Fed Optical Scanner,Model 550,1997,2007,Proprietary firmware on embedded controller,Custom / not standardized,N/A,200 ballots per minute,FALSE,800 ballots,State Certified Only / Pre-VVSG,"No encryption, legacy firmware, no audit logging, vulnerable to tampering",,TRUE
+ES&S,DRE Touchscreen,ExpressTouch,10/12/2022,2024,Proprietary firmware on embedded controller,1.0.0.0,2-4 hours,N/A,TRUE,VVPAT paper roll varies,VVSG 1.0(2005),"Barcode-based VVPAT, removable media, and touchscreen vulnerabilities",,FALSE
+ES&S,DRE Touchscreen,iVotronic,8/1/2001,2013,Proprietary ES&S real-time OS,9.1.6,4-6 hours,N/A,FALSE,None,2002 Voting System Standards,"No VVPAT, outdated firmware, removable memory cards, physical access vulnerabilities",,TRUE
+ES&S,Electronic Poll Book,ExpressPoll,3/1/2005,2024,Windows 10 IoT Enterprise,Not standardized,6-10 hours,N/A,FALSE,N/A ,State-certified only,"vulnerable to physical access, unencrypted data transfer, and wireless sync risks if not properly secured and sealed",,FALSE
+ES&S,Hand-Fed Optical Scanner,DS200,7/14/2009,2024,Windows 10 IoT Enterprise,5.2.28.0,2-4 hours,20-30 ballots per minute,FALSE,"2,000 ballots",VVSG 1.0 (2005),"tampering via removable media, physical access, and firmware replacement without proper seals and chain-of-custody enforcement",,FALSE
+ES&S,Hand-Fed Optical Scanner,DS300,8/28/2015,2024,Windows 10 IoT Enterprise,3.0.1.0,4 hours,20-30 ballots per minute,FALSE,2.000 ballots,VVSG 1.0 (2005),"Exposed to risks from removable media, physical access, and misconfigured software if chain-of-custody and lockdown procedures are not enforced",,FALSE
+ES&S,Hand-Fed Optical Scanner,Model 100,1/11/2002,2015,Proprietary firmware-based system,5.2.4,2–4 hours,7-10 ballots per minute,FALSE,300-500 ballots,2002 Voting System Standards (VSS),"Lacks encryption, uses removable memory cards (PCMCIA), and is vulnerable to tampering if physical access is not tightly controlled",,TRUE
+ES&S/Unisyn,BMD,InkaVote Plus,12/12/2005,2018,Firmware-based system,Not standardized,Not battery optimized,N/A,FALSE,N/A,State-certified only (California),"Limited digital components, but physical tampering and misalignment could affect ballot marking accuracy, especially for voters with disabilities.",,TRUE
+ES&S/Unisyn,Hand-Fed Optical Scanner,InkaVote,11/4/2003,2018,Proprietary firmware-based system,Not standardized,2-4 hours,7-10 ballots per minute,FALSE,300–500 ballots,California State Certified Only,"Relied on physical security and chain of custody, but lacked encryption, secure boot, or modern tamper detection common in newer systems",,TRUE
 Enhanced Voting,Remote Ballot Marking,Enhanced Ballot,,,,,,,,,,,,
 Enhanced Voting,Remote Ballot Marking,MyBallot,,,,,,,,,,,,
 Five Cedars Group,BMD,Alternate Format Ballot,,,,,,,,,,,,
 Hand Count,Hand Count,Hand Counted Paper Ballots,,,,,,,,,,,,
-Hart InterCivic,BMD,Verity Duo,,,,,,,,,,,,
-Hart InterCivic,BMD,Verity Touch Writer,,,,,,,,,,,,
-Hart InterCivic,Batch-Fed Optical Scanner,Ballot Now,,,,,,,,,,,,
-Hart InterCivic,Batch-Fed Optical Scanner,Verity Central,,,,,,,,,,,,
-Hart InterCivic,DRE Dial,eSlate,,,,,,,,,,,,
-Hart InterCivic,DRE Touchscreen,Verity Touch,,,,,,,,,,,,
-Hart InterCivic,Hand-Fed Optical Scanner,Verity Scan,,,,,,,,,,,,
-Hart InterCivic,Hand-Fed Optical Scanner,eScan,,,,,,,,,,,,
-Hart InterCivic,Hybrid Optical Scanner/DRE,eScan A/T,,,,,,,,,,,,
+Hart InterCivic,BMD,Verity Duo,12/11/2015,2024,Secure Linux-based OS,Not standardized,4 hours,N/A,TRUE,100-200 ballots,EAC VVSG 1.0 (2005),"Relies on secure boot, digital signatures, and physical locks, but paper output must be accurately verified by voters to detect misconfigured ballot definitions",,FALSE
+Hart InterCivic,BMD,Verity Touch Writer,12/11/2015,2024,Custom secure Linux-based OS,Not standardized,4-6 hours,N/A,TRUE,100-200 ballots,EAC VVSG 1.0 (2005),"While cryptographically secure and isolated from networks, it relies on accurate ballot programming and voter review of the printed ballot to ensure integrity",,FALSE
+Hart InterCivic,Batch-Fed Optical Scanner,Ballot Now,6/20/2005,2016,Windows XP Professional,Not standardized,N/A,50-70 ballots per minute,FALSE,100-200 ballots,2002 VSS,"Relied on general-purpose PCs and commercial scanners, posing risks from OS vulnerabilities, USB access, and lack of secure boot without strict chain-of-custody protocols",,TRUE
+Hart InterCivic,Batch-Fed Optical Scanner,Verity Central,12/11/2015,2024,Secure Linux-based OS,Not standardized,N/A,300 ballots per minute,FALSE,250–500 ballots,EAC VVSG 1.0 (2005),"Operates on locked-down commercial PCs, so risks stem from physical access to USB ports, improper sealing, or misconfigured Windows environments.",,FALSE
+Hart InterCivic,DRE Dial,eSlate,3/7/2022,2016,Embedded real-time OS,Not standardized,4-6 hours,N/A,FALSE,N/A,2002 VSS,"Relies on external Judge’s Booth Controller (JBC), and without VVPAT, poses auditability and transparency challenges despite physical lock and access protections",,TRUE
+Hart InterCivic,DRE Touchscreen,Verity Touch,12/11/2015,2024,Secure Linux-based OS,Not standardized,4-6 hours,N/A,TRUE,N/A,EAC VVSG 1.0 (2005),"Lacks a physical paper trail, creating transparency and auditability concerns despite use of cryptographic protections and secure firmware",,FALSE
+Hart InterCivic,Hand-Fed Optical Scanner,Verity Scan,12/11/2015,2024,Secure Linux-based OS,Not standardized,4-6 hours,20-30 ballots per minute,FALSE,1000-2000 ballots,EAC VVSG 1.0 (2005),"Vulnerable to physical tampering and removable media misuse if not properly sealed, logged, and guarded during setup, transport, and operation",,FALSE
+Hart InterCivic,Hand-Fed Optical Scanner,eScan,3/7/2005,2013,Proprietary Embedded Linux,Not standardized,4-6 hours,10-15 ballots,FALSE,1000-2000 ballots,2002 VSS,"Risk from physical access to ports and storage devices, and lacks modern encryption or authentication safeguards unless mitigated by tight physical controls",,TRUE
+Hart InterCivic,Hybrid Optical Scanner/DRE,eScan A/T,4/1/2008,2015,Embedded Linux OS,Not standardized,4-6 hours,20-25 ballots per minute,FALSE,1000 ballots,2002 VSS,"Relies on USB drives and local ports, with risk of unauthorized access or ballot image tampering if physical and digital security protocols are not strictly followed",,TRUE
 IVS,BMD,Inspire Ballot Marking Device,,,,,,,,,,,,
 In-House,Electronic Poll Book,In-House Electronic Poll Books,,,,,,,,,,,,
 In-House,Internet Voting,In-House Internet Voting Systems,,,,,,,,,,,,
@@ -94,4 +94,6 @@ Votem,Internet Voting,CastIron Voting Platform,,,,,,,,,,,,
 VotingWorks,BMD,VxMark,,,,,,,,,,,,
 VotingWorks,Batch-Fed Optical Scanner,VxCentralScan,,,,,,,,,,,,
 VotingWorks,Hand-Fed Optical Scanner,VxScan,,,,,,,,,,,,
-ES&S,Batch-Fed Optical Scan Tabulator,Model 650,,,,,,,,,,,,
+ES&S,"Batch-Fed Optical Scan Tabulator
+","Model 650
+",,,,,,,,,,,,
