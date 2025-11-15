@@ -33,19 +33,19 @@ sequenceDiagram
     activate ViewPage
 
     ViewPage->>Axios: getAllVotingEquipment()
-    note left of Axios: We use Orval to generate typesafe request wrappers
+    note left of Axios: We use Orval to generate typesafe request wrappers.
     activate Axios
 
     Axios->>Controller: GET /votingequipment/
     Axios->>Controller: getAllVotingEquipment()
     
-    note left of Controller: For simplicity, we are omitting the Servlet + Jackson Serialization<br/>step, the full-flow of events is shown in the diagram for GUI-2: Display State.
+    note left of Controller: For simplicity, we are omitting the Servlet + Jackson Serialization<br/>step, the full-flow of events is shown in the diagram for GUI-2: Display State
     activate Service
     activate DB
     Controller->>Service: getAllVotingEquipment()
 
     Service->>DB: getAllVotingEquipment()
-    note left of DB: Calls into our custom ORM solution, performing row mapping<br/>(simplified, full-flow in GUI-2: Display State).
+    note left of DB: Calls into our custom ORM solution, performing row mapping<br/>(simplified, full-flow in GUI-2: Display State)
     DB-->>Service: List<VotingEquipmentModel>
     Service-->>Controller: List<VotingEquipmentModel>
     deactivate Service
