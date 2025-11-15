@@ -2,6 +2,7 @@ package com.theknicks.voteranalysis_backend.services;
 
 import com.theknicks.voteranalysis_backend.dao.IVoterEquipmentDAO;
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
+import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,10 @@ public class VoterEquipmentService {
 
   public List<VotingEquipmentModel> getAllVotingEquipmentByManufacturer(String manufacturer) {
     return _dao.getVotingEquipmentByManufacturer(manufacturer);
+  }
+
+  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode) {
+    return _dao.getVotingEquipmentUsage(fipsCode);
   }
 
   public List<VotingEquipmentModel> getAllVotingEquipmentByType(String type) {
