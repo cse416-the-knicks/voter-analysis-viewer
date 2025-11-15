@@ -20,6 +20,10 @@ public record BallotStatisticsModel(
     @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String regionName,
     @SqlColumnName(name = "ballots_dropbox") int dropboxBallots,
     @SqlColumnName(name = "total_ballots_cast") int totalBallotsCast) {
+  public BallotStatisticsModel(int dropboxBallots, int totalBallotsCast) {
+    this("0000000000", "Aggregated", dropboxBallots, totalBallotsCast);
+  }
+
   public static class Queryable extends AutoSqlQueryable<BallotStatisticsModel> {
     public Queryable() {
       super(BallotStatisticsModel.class);

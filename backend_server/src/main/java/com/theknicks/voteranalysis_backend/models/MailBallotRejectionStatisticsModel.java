@@ -34,6 +34,52 @@ public record MailBallotRejectionStatisticsModel(
     @SqlColumnName(name = "mail_reject_other") int rejectOther,
     @SqlColumnName(name = "total_ballots_cast") int totalBallotsCast,
     @SqlColumnName(name = "ballots_by_mail") int totalBallotsByMail) {
+  public MailBallotRejectionStatisticsModel(
+      int rejectTotal,
+      int rejectLate,
+      int rejectNoSignature,
+      int rejectNoWitnessSignature,
+      int rejectSignatureMismatch,
+      int rejectUnofficialEnv,
+      int rejectBallotMissing,
+      int rejectNoSecrecyEnvironment,
+      int rejectMultipleInEnvironment,
+      int rejectUnsealedEnvironment,
+      int rejectNoPostMark,
+      int rejectNoAddress,
+      int rejectVoterDeceased,
+      int rejectDuplicateVote,
+      int rejectMissingDocumentation,
+      int rejectNotEligible,
+      int rejectNoApplication,
+      int rejectOther,
+      int totalBallotsCast,
+      int totalBallotsByMail) {
+    this(
+        "0000000000",
+        "Aggregated",
+        rejectTotal,
+        rejectLate,
+        rejectNoSignature,
+        rejectNoWitnessSignature,
+        rejectSignatureMismatch,
+        rejectUnofficialEnv,
+        rejectBallotMissing,
+        rejectNoSecrecyEnvironment,
+        rejectMultipleInEnvironment,
+        rejectUnsealedEnvironment,
+        rejectNoPostMark,
+        rejectNoAddress,
+        rejectVoterDeceased,
+        rejectDuplicateVote,
+        rejectMissingDocumentation,
+        rejectNotEligible,
+        rejectNoApplication,
+        rejectOther,
+        totalBallotsCast,
+        totalBallotsByMail);
+  }
+
   public static class Queryable extends AutoSqlQueryable<MailBallotRejectionStatisticsModel> {
     public Queryable() {
       super(MailBallotRejectionStatisticsModel.class);

@@ -24,6 +24,7 @@ import getProvisionalBallotsMutator from "../helpers/backendConnectorAxiosInstan
 import getPollbookDeletionsMutator from "../helpers/backendConnectorAxiosInstance";
 import getMailBallotRejectionsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateGeometryMutator from "../helpers/backendConnectorAxiosInstance";
+import getElectionResultsSummaryMutator from "../helpers/backendConnectorAxiosInstance";
 import getCountyGeoUnitCentroidsMutator from "../helpers/backendConnectorAxiosInstance";
 import getBallotStatisticsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateInformationTableMutator from "../helpers/backendConnectorAxiosInstance";
@@ -186,6 +187,15 @@ export interface ViewStateYearSummaryModel {
   mailinBallotVotingShareRate?: number;
 }
 
+export interface ElectionResultsSummaryModel {
+  fullRegionId?: string;
+  regionName?: string;
+  republicanVotes?: number;
+  democratVotes?: number;
+  otherVotes?: number;
+  totalVotes?: number;
+}
+
 export interface GeoUnitCentroidModel {
   fullRegionId?: string;
   countyName?: string;
@@ -250,6 +260,10 @@ export type GetPollbookDeletionsParams = {
 
 export type GetMailBallotRejectionsParams = {
   year?: number;
+  aggregate?: boolean;
+};
+
+export type GetElectionResultsSummaryParams = {
   aggregate?: boolean;
 };
 
@@ -830,6 +844,18 @@ export const getStateGeometry = (fipsCode: string, options?: SecondParameter<typ
   return getStateGeometryMutator<GeoJsonObject>({ url: `/state/${fipsCode}/geometry`, method: "GET" }, options);
 };
 
+export const getElectionResultsSummary = (
+  fipsCode: string,
+  year: number,
+  params?: GetElectionResultsSummaryParams,
+  options?: SecondParameter<typeof getElectionResultsSummaryMutator>
+) => {
+  return getElectionResultsSummaryMutator<ElectionResultsSummaryModel[]>(
+    { url: `/state/${fipsCode}/election-year-results/${year}`, method: "GET", params },
+    options
+  );
+};
+
 export const getCountyGeoUnitCentroids = (fipsCode: string, options?: SecondParameter<typeof getCountyGeoUnitCentroidsMutator>) => {
   return getCountyGeoUnitCentroidsMutator<GetCountyGeoUnitCentroids200>({ url: `/state/${fipsCode}/centroids`, method: "GET" }, options);
 };
@@ -862,6 +888,7 @@ export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof 
 export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletions>>>;
 export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>;
 export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>;
+export type GetElectionResultsSummaryResult = NonNullable<Awaited<ReturnType<typeof getElectionResultsSummary>>>;
 export type GetCountyGeoUnitCentroidsResult = NonNullable<Awaited<ReturnType<typeof getCountyGeoUnitCentroids>>>;
 export type GetBallotStatisticsResult = NonNullable<Awaited<ReturnType<typeof getBallotStatistics>>>;
 export type GetStateInformationTableResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTable>>>;
