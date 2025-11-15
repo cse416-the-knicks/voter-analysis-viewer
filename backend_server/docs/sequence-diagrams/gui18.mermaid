@@ -1,0 +1,67 @@
+---
+config:
+  layout: elk
+  look: neo
+  theme: neutral
+---
+sequenceDiagram
+  autonumber
+
+  title: GUI-18 - Display voter registration bubble chart (preferred)
+  actor User as User
+
+  box Frontend
+    participant landingPage as landingPage#58;DOMNode
+    participant dropDown as dropDown#58;DOMNode
+    participant stateMap as stateMap#58;DOMNode
+    participant Axios as #58;Axios
+  end
+
+  box Backend
+    participant Controller as #58;Controller
+    participant Service as #58;Service
+    participant Repository as #58;Repository
+  end
+  
+  Note right of Repository: IStateDAO in codebase
+
+  Note right of User: Visits state/{fipsCode}
+  activate landingPage
+  User ->>+ landingPage: Click State
+
+  activate dropDown
+  landingPage ->>+ dropDown: Render
+  User ->> dropDown: Select 'Voter Registration' option
+  Note left of dropDown: Specifically, the 'Registration Data' tab is clicked
+
+  activate stateMap
+  Note left of stateMap: The 'Bubblechart Overlay' tab is clicked
+  dropDown ->> stateMap: Render
+
+  Note right of stateMap: Orval used to generate typesafe request wrappers
+  stateMap ->>+ Axios: getCountyGeoUnitCentroids(fipsCode)
+
+  Axios ->> Controller: GET /state/${fipsCode}/centroids
+  Axios ->>+ Controller: getCountyGeoUnitCentroids(fipsCode)
+
+  %% Note left of Controller: year=2024, is a default query parameter
+  Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  
+  Controller ->>+ Service: getCountyGeoUnitCentroids(fipsCode)
+  Service ->>+ Repository: getCountyGeoUnitCentroids(fipsCode)
+  
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+  Repository -->>- Service: Map<string, GeoUnitCentroidModel>
+  
+  Service -->>- Controller: Map<string, GeoUnitCentroidModel>
+
+  Note left of Controller: Serialized into a JSON string
+  Controller -->>- Axios: HTTP 200 OK: JSONString
+
+  Axios -->>- stateMap: Map<string, GeoUnitCentroidModel>
+  Note left of Axios: Each bubble location is set from the server response<br>dictionary, and each bubble is styled using Leaflet
+  deactivate stateMap
+  deactivate dropDown
+
+  deactivate landingPage
+  
