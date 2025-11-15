@@ -1,0 +1,28 @@
+graph TD
+    Start( )
+    style Start stroke:#000,stroke-width:2px,fill:#000,color:#fff;
+    End( )
+    style End fill:#fff,stroke:#000,stroke-width:2px;
+    fork1@{shape: fork}
+    join1@{shape: join}
+
+    %% Activity Flow
+    Start --> fork1
+
+    %% Branch 1: Database Preparation
+    fork1 --> A[Load DB Configuration]
+    A -- "[DB Credentials]" --> E[Establish DB Connection]
+    
+    %% Branch 2: Geospatial Data Processing
+    fork1 --> B[Load State Boundary GeoJSON into GeoDataFrame]
+    B -- "[state_boundaries_gdf:GeoDataFrame]" --> C[Calculate and Store Geographical Centers and Boundaries as JSON Formatted Strings]
+    C -- "[boundary_geojson:str]" --> D[Process and Format State Data into DataFrame]
+    C -- "[centroid_geojson:str]" --> D[Process and Format State Data into DataFrame]
+
+    %% Join branches
+    D -- "[state_boundaries_df]" --> join1
+    E -- "[DB Engine]" --> join1
+
+    %% Final step
+    join1 --> F[Write Processed Data DataFrame to Database]
+    F --> End
