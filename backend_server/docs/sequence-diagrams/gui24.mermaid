@@ -40,7 +40,7 @@ sequenceDiagram
   Axios ->>+ Controller: getElectionResultsSummary(fipsCode, year=2024)
 
   Note left of Controller: year=2024, is a default query parameter
-  Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   
   Controller ->>+ Service: getElectionResultsSummary(fipsCode, year=2024)
   Service ->>+ Repository: getElectionResultsSummary(fipsCode, year=2024)
