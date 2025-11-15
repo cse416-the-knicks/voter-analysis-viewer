@@ -1,48 +1,57 @@
 graph TD
     Start( )
-    style Start stroke:#000,stroke-width:2px,fill:#000,color:#fff;
+    style Start fill:#000,stroke:#000,stroke-width:2px,width:20px,height:20px,shape:circle
     End( )
-    style End fill:#fff,stroke:#000,stroke-width:2px;
+    style End fill:#fff,stroke:#000,stroke-width:2px,width:25px,height:25px,shape:doublecircle
     fork1@{shape: fork}
     join1@{shape: join}
     fork2@{shape: fork}
     join2@{shape: join}
 
     %% Flow
-    Start --> fork1
+    
+    %% API Process to create the inferred CSV
+    Start --> A[Load Original Voter Registration CSV]
+    A -- "[ohio_reg_voter.csv]" --> B[Process Addresses via Validation API]
+    B -- "[inferred_addresses.csv]" --> C[Save Inferred Address CSV]
+    
+    %% Main script logic
+    C --> fork1
 
     %% Branch 1: Database Preparation
-    fork1 --> A[Load DB Configuration]
-    A -- "[DB Credentials]" --> B[Establish DB Connection]
+    fork1 --> D[Load DB Configuration from .env]
+    D -- "[DB Connection String]" --> E[Establish DB Connection]
     
     %% Branch 2: Main Data Processing
-    fork1 --> C[Load Voter Registration Files]
-    C -- "[Raw Voter Data]" --> D[Check for Missing Zip Codes]
+    fork1 --> F[Load Original & Inferred CSVs into DataFrames]
     
-    %% Data Completeness Check
-    D --> E{"Decision [Zip Missing?]"}
-    E -- "[Yes]" --> F[Query Geocoding API for Zip]
-    F -- "[Zip Code]" --> G[Re-integrate Data]
-    E -- "[No]" --> G
+    %% Deciding to keep or reject address
+    F -- "[voter_df:DataFrame]" --> G{"Decision [Inferred State == 'OH'?]"}
+    F -- "[inferred_df:DataFrame]" --> G{"Decision [Inferred State == 'OH'?]"}
+    G -- "No" --> H[Set Address to 'INVALID ADDRESS']
+    G -- "Yes" --> I[Keep Original Address]
+    
+    %% Rejoin flow: Both paths continue to EAVS determination
+    H -- "[voter_df:DataFrame]" --> J[Determine and Store EAVS Region ID]
+    I -- "[voter_df:DataFrame]" --> J[Determine and Store EAVS Region ID]
     
     %% Main processing steps
-    G --> H[Determine EAVS Region ID]
-    H -- "[Data w/ Region ID]" --> I[Normalize Party Affiliation]
+    J -- "[voter_df:DataFrame]" --> K[Normalize Party Affiliation]
     
-    %% Fork for printing summary data as in prepro 7 and putting data in db
-    I -- "[Processed Voter Data]" --> fork2
+    %% Fork for printing summary data and putting data in db
+    K -- "[voter_df:DataFrame]" --> fork2
 
     %% Use Case 7: Generate Summary Report
-    fork2 --> J[Calculate Registration Summary]
-    J -- "[Summary Stats]" --> K[Generate Summary Report]
+    fork2 --> L[Calculate Registration Summary Data]
+    L -- "[summary_data:dict]" --> M[Print Summary Report]
     
     %% Writing data to db
-    B -- "[DB Engine]" --> join1
+    E -- "[DB Engine]" --> join1
     fork2 --> join1
     
-    join1 --> L[Write Voter Records to Database]
+    join1 --> N[Write Voter Records to Database]
 
     %% Final join
-    K --> join2
-    L --> join2
+    M --> join2
+    N --> join2
     join2 --> End
