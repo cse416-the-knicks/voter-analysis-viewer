@@ -1,0 +1,60 @@
+---
+config:
+  layout: elk
+  look: neo
+  theme: neutral
+---
+sequenceDiagram
+  autonumber
+
+  title: GUI-20 - Display 2024 EAVS voting regions when the state is selected (required)
+
+  actor User as User
+
+  box Frontend
+    participant landingPage as landingPage#58;DOMNode
+    participant stateMap as stateMap#58;DOMNode
+    participant Axios as #58;Axios
+  end
+
+  box Backend
+    participant Controller as #58;Controller
+    participant Service as #58;Service
+    participant Repository as #58;Repository
+  end
+  
+  Note right of Repository: IStateDAO in codebase
+
+  activate landingPage
+  User ->>+ landingPage: Click State
+  Note right of User: Visits state/{fipsCode}
+
+  activate stateMap
+  landingPage ->>+ stateMap: Render
+
+  Note right of stateMap: Orval used to generate typesafe request wrappers
+  stateMap ->>+ Axios: getStateGeometry(fipsCode)
+
+  Axios ->> Controller: GET /state/${fipsCode}/geometry
+  Axios ->>+ Controller: getStateGeometry(fipsCode)
+
+  Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  
+  Controller ->>+ Service: getStateGeometry(fipsCode)
+  Service ->>+ Repository: getStateGeometry(fipsCode)
+  
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+  Repository -->>- Service: :GeoJsonObject
+  
+  Service -->>- Controller: :GeoJsonObject
+
+  Note left of Controller: Serialized into a JSON string
+  Controller -->>- Axios: HTTP 200 OK: JSONString
+
+  Axios -->>- stateMap: :GeoJsonObject
+  Note left of stateMap: The fipsCode is used to check if the state is a detailed<br> state. If it is, the state counties are shown.
+  Note left of stateMap: The stateMap is sized appropriately using MUI components.<br>Leaflet is used for centering and the zoom level.
+  deactivate stateMap
+
+  deactivate landingPage
+  
