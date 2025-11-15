@@ -27,10 +27,10 @@ sequenceDiagram
 
   Note right of User: Visits state/{fipsCode}
   activate landingPage
-  User ->>+ landingPage: Click State
+  User ->> landingPage: Click State
 
   activate dropDown
-  landingPage ->>+ dropDown: Render
+  landingPage ->> dropDown: Render
   User ->> dropDown: Select 'Voter Registration' option
   Note left of dropDown: Specifically, the 'Registration Data' tab is clicked
 
@@ -39,40 +39,47 @@ sequenceDiagram
   dropDown ->> stateMap: Render
 
   Note right of stateMap: Orval used to generate typesafe request wrappers
-  stateMap ->>+ Axios: getCountyGeoUnitCentroids(fipsCode)
-  stateMap ->>+ Axios: getVoterRegistrationCounts(fipsCode)
+  activate Axios
+  stateMap ->> Axios: getCountyGeoUnitCentroids(fipsCode)
+  stateMap ->> Axios: getVoterRegistrationCounts(fipsCode)
 
+  activate Controller
   Axios ->> Controller: GET /state/${fipsCode}/centroids
-  Axios ->>+ Controller: getCountyGeoUnitCentroids(fipsCode)
-  Axios ->>+ Controller: GET /state/${fipsCode}/voter-registration-count
-  Axios ->>+ Controller: getVoterRegistrationCounts(fipsCode)
+  Axios ->> Controller: getCountyGeoUnitCentroids(fipsCode)
+  Axios ->> Controller: GET /state/${fipsCode}/voter-registration-count
+  Axios ->> Controller: getVoterRegistrationCounts(fipsCode)
 
-  %% Note left of Controller: year=2024, is a default query parameter
   Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   
-  Controller ->>+ Service: getCountyGeoUnitCentroids(fipsCode)
-  Controller ->>+ Service: getVoterRegistrationCounts(fipsCode)
-  Service ->>+ Repository: getCountyGeoUnitCentroids(fipsCode)
-  Service ->>+ Repository: getVoterRegistrationCounts(fipsCode)
+  activate Service
+  Controller ->> Service: getCountyGeoUnitCentroids(fipsCode)
+  Controller ->> Service: getVoterRegistrationCounts(fipsCode)
+
+  activate Repository
+  Service ->> Repository: getCountyGeoUnitCentroids(fipsCode)
+  Service ->> Repository: getVoterRegistrationCounts(fipsCode)
   
   Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
-  Repository -->>- Service: Map<string, GeoUnitCentroidModel>
-  Repository -->>- Service: List<VoterRegistrationStatisticsModel>
+  Repository -->> Service: Map<string, GeoUnitCentroidModel>
+  Repository -->> Service: List<VoterRegistrationStatisticsModel>
+  deactivate Repository
   
-  Service -->>- Controller: Map<string, GeoUnitCentroidModel>
-  Service -->>- Controller: List<VoterRegistrationStatisticsModel>
+  Service -->> Controller: Map<string, GeoUnitCentroidModel>
+  Service -->> Controller: List<VoterRegistrationStatisticsModel>
+  deactivate Service
 
   Note left of Controller: Serialized into a JSON string
-  Controller -->>- Axios: HTTP 200 OK: JSONString
-  Controller -->>- Axios: HTTP 200 OK: JSONString
+  Controller -->> Axios: HTTP 200 OK: JSONString
+  Controller -->> Axios: HTTP 200 OK: JSONString
+  deactivate Controller
 
-  Axios -->>- stateMap: Map<string, GeoUnitCentroidModel>
-  Axios -->>- stateMap: List<VoterRegistrationStatisticsModel>
+  Axios -->> stateMap: Map<string, GeoUnitCentroidModel>
+  Axios -->> stateMap: List<VoterRegistrationStatisticsModel>
+  deactivate Axios
+  deactivate stateMap
   Note left of Axios: Each bubble location is set from the server response<br>dictionary, and each bubble is styled using Leaflet
   Note left of Axios: The political party with the most registered voters is determined from the<br>server response object, and each bubble's color is set accordingly
-
-  deactivate stateMap
+  
   deactivate dropDown
-
   deactivate landingPage
   
