@@ -38,7 +38,7 @@ sequenceDiagram
   Axios ->> Controller: GET /state/${fipsCode}/geometry
   Axios ->>+ Controller: getStateGeometry(fipsCode)
 
-  Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   
   Controller ->>+ Service: getStateGeometry(fipsCode)
   Service ->>+ Repository: getStateGeometry(fipsCode)
