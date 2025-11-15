@@ -39,7 +39,7 @@ sequenceDiagram
 
     par Asynchronous Network Requests
         Chart->>Axios: getVotingEquipmentUsages(fipsCode, 2024)
-        Chart->>Axios: getVotingEquipmentUsages(fipsCode, 2022)
+        Chart->>Axios: getVotingEquipmentUsages(fipsCode, 2020)
         Chart->>Axios: getVotingEquipmentUsages(fipsCode, 2016)
     note left of Axios: We use Orval to generate typesafe request wrappers
     activate Axios
@@ -47,8 +47,8 @@ sequenceDiagram
     Axios->>Controller: GET /votingequipment/usages/?regionId={fipsCode}&year=2024
     Axios->>Controller: getVotingEquipmentUsages(fipsCode, year=2024)
 
-    Axios->>Controller: GET /votingequipment/usages/?regionId={fipsCode}&year=2022
-    Axios->>Controller: getVotingEquipmentUsages(fipsCode, year=2022)
+    Axios->>Controller: GET /votingequipment/usages/?regionId={fipsCode}&year=2020
+    Axios->>Controller: getVotingEquipmentUsages(fipsCode, year=2020)
 
     Axios->>Controller: GET /votingequipment/usages/?regionId={fipsCode}&year=2016
     Axios->>Controller: getVotingEquipmentUsages(fipsCode, year=2016)
