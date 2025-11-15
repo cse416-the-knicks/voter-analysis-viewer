@@ -18,4 +18,6 @@ public @interface AutoSql {
   public String[] joinMethod() default {};
 
   public String[] joinOn() default {};
+
+  public String[] groupBy() default {};
 }

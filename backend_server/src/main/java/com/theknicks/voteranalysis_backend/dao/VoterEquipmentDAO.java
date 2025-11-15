@@ -4,6 +4,8 @@ import static com.theknicks.voteranalysis_backend.helpers.CsvHelpers.*;
 
 import com.theknicks.voteranalysis_backend.helpers.*;
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
+import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsEntryModel;
+import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,23 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     var queryable = new VotingEquipmentModel.Queryable();
     return _jdbcTemplate.query(
         queryable.Query(false) + " where manufacturer = ?", queryable.Mapper(false), manufacturer);
+  }
+
+  @Override
+  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode) {
+    var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
+    List<VotingEquipmentUsageStatisticsEntryModel> entries;
+    if (fipsCode.isEmpty()) {
+      entries = _jdbcTemplate.query(queryable.Query(), queryable.Mapper());
+    } else {
+      entries =
+          _jdbcTemplate.query(
+              queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
+              queryable.Mapper(),
+              Integer.parseInt(fipsCode, 10));
+    }
+
+    return VotingEquipmentUsageStatisticsModel.fromDataRows(entries);
   }
 
   @Override

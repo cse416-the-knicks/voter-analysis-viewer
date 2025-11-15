@@ -1,6 +1,7 @@
 package com.theknicks.voteranalysis_backend.controllers;
 
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
+import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
 import com.theknicks.voteranalysis_backend.services.VoterEquipmentService;
 import java.util.*;
 import org.slf4j.Logger;
@@ -45,5 +46,13 @@ public class VoterEquipmentController {
   public Optional<VotingEquipmentModel> getVotingEquipment(
       @PathVariable("manufacturer") String manufacturer, @PathVariable("model") String model) {
     return _service.getVotingEquipment(manufacturer, model);
+  }
+
+  @GetMapping("/usages/")
+  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
+      @RequestParam(value = "regionId", defaultValue = "") String fipsCode,
+      @RequestParam(value = "year", defaultValue = "2024") int year) {
+    _logger.info("FUCK");
+    return _service.getVotingEquipmentUsage(fipsCode);
   }
 }
