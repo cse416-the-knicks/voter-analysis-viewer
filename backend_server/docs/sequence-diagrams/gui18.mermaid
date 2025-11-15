@@ -1,0 +1,85 @@
+---
+config:
+  layout: elk
+  look: neo
+  theme: neutral
+---
+sequenceDiagram
+  autonumber
+
+  title: GUI-18 - Display voter registration bubble chart (preferred)
+  actor User as User
+
+  box Frontend
+    participant landingPage as landingPage#58;DOMNode
+    participant dropDown as dropDown#58;DOMNode
+    participant stateMap as stateMap#58;DOMNode
+    participant Axios as #58;Axios
+  end
+
+  box Backend
+    participant Controller as #58;Controller
+    participant Service as #58;Service
+    participant Repository as #58;Repository
+  end
+  
+  Note right of Repository: IStateDAO in codebase
+
+  Note right of User: Visits state/{fipsCode}
+  activate landingPage
+  User ->> landingPage: Click State
+
+  activate dropDown
+  landingPage ->> dropDown: Render
+  User ->> dropDown: Select 'Voter Registration' option
+  Note left of dropDown: Specifically, the 'Registration Data' tab is clicked
+
+  activate stateMap
+  Note left of stateMap: The 'Bubblechart Overlay' tab is clicked
+  dropDown ->> stateMap: Render
+
+  Note right of stateMap: Orval used to generate typesafe request wrappers
+  activate Axios
+  stateMap ->> Axios: getCountyGeoUnitCentroids(fipsCode)
+  stateMap ->> Axios: getVoterRegistrationCounts(fipsCode)
+
+  activate Controller
+  Axios ->> Controller: GET /state/${fipsCode}/centroids
+  Axios ->> Controller: getCountyGeoUnitCentroids(fipsCode)
+  Axios ->> Controller: GET /state/${fipsCode}/voter-registration-count
+  Axios ->> Controller: getVoterRegistrationCounts(fipsCode)
+
+  Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  
+  activate Service
+  Controller ->> Service: getCountyGeoUnitCentroids(fipsCode)
+  Controller ->> Service: getVoterRegistrationCounts(fipsCode)
+
+  activate Repository
+  Service ->> Repository: getCountyGeoUnitCentroids(fipsCode)
+  Service ->> Repository: getVoterRegistrationCounts(fipsCode)
+  
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+  Repository -->> Service: Map<string, GeoUnitCentroidModel>
+  Repository -->> Service: List<VoterRegistrationStatisticsModel>
+  deactivate Repository
+  
+  Service -->> Controller: Map<string, GeoUnitCentroidModel>
+  Service -->> Controller: List<VoterRegistrationStatisticsModel>
+  deactivate Service
+
+  Note left of Controller: Serialized into a JSON string
+  Controller -->> Axios: HTTP 200 OK: JSONString
+  Controller -->> Axios: HTTP 200 OK: JSONString
+  deactivate Controller
+
+  Axios -->> stateMap: Map<string, GeoUnitCentroidModel>
+  Axios -->> stateMap: List<VoterRegistrationStatisticsModel>
+  deactivate Axios
+  deactivate stateMap
+  Note left of Axios: Each bubble location is set from the server response<br>dictionary, and each bubble is styled using Leaflet
+  Note left of Axios: The political party with the most registered voters is determined from the<br>server response object, and each bubble's color is set accordingly
+  
+  deactivate dropDown
+  deactivate landingPage
+  
