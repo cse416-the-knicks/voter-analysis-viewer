@@ -1,0 +1,57 @@
+---
+config:
+  layout: elk
+  look: neo
+  theme: neutral
+---
+sequenceDiagram
+  autonumber
+  title: GUI-15 - Compare Republican and Democratic states (required)
+
+  actor User as User
+
+  box Frontend
+  participant landingPage as landingPage#58;DOMNode
+  participant PartyStatesTable as PartyStatesTable#58;DOMNode
+  participant Axios as #58;Axios
+  end
+  
+  box Backend
+  participant Controller as #58;Controller
+  participant Service as #58;Service
+  participant Repository as #58;Repository
+  end
+
+  Note right of Repository: IStateDAO in codebase
+
+  Note right of User: Visits /compare/party-states
+  activate landingPage
+  User ->> landingPage: Click menu item `Party States`
+  landingPage ->>+ PartyStatesTable: Render
+  activate PartyStatesTable
+
+  activate Axios
+  Note left of Axios: Orval used to generate typesafe request wrappers 
+  PartyStatesTable ->> Axios: getViewStateYearSummaryByStateForYear(fipsCode, 2024)
+  Note left of Axios: User chooses between the General Comparison, Early Voting Comparison,<br> or Registration/Turnout Comparison views
+  
+  Note left of Controller: The fips codes used are for Oklahoma and New York
+  Axios ->> Controller: GET /state/${fipsCode}/year-summary/${year}
+  Axios ->>+ Controller: getViewStateYearSummaryByStateForYear(fipsCode, year=2024)
+  Note left of Controller: year=2024, is a default query parameter
+  Note left of Controller: The Servelet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  Controller ->>+ Service: getViewStateYearSummaryByStateForYear(fipsCode, year=2024)
+  
+  Service ->>+ Repository: getViewStateYearSummaryByStateForYear(fipsCode, year=2024)
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+  Repository -->>- Service: List<ViewStateYearSummaryModel>
+  Service -->>- Controller: List<ViewStateYearSummaryModel>
+  Note left of Controller: Serialized into a JSON string
+
+  Controller -->>- Axios: HTTP 200 OK: JSONString
+  Axios -->> PartyStatesTable: List<ViewStateYearSummaryModel>
+  deactivate Axios
+  Note right of PartyStatesTable: Table is a mui-datagrid containing the server response object
+  deactivate PartyStatesTable
+  Note left of Axios: Shows a table of either the PartyComparisonView, PartyEarlyVotingComparisonView,<br> or PartyGeneralComparisonView components
+  deactivate landingPage
