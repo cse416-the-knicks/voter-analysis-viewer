@@ -14,23 +14,23 @@ graph TD
     A -- "[DB Credentials]" --> B[Establish DB Connection]
     
     %% Branch 2: Data Processing
-    fork1 --> C[Load Election Results Data]
+    fork1 --> C[Load Election Results Data into DataFrame]
     
     %% Aggregation check
-    C -- "[Raw Results]" --> D{"Decision [Data at EAVS level?]"}
+    C -- "[elec_results_df:DataFrame]" --> D{"Decision [Data at EAVS level?]"}
     D -- "[No]" --> E[Aggregate precinct data to EAVS level]
-    E -- "[Aggregated Results]" --> F[Load EAVS Geounit Data]
+    E -- "[agg_elec_results_df:DataFrame]" --> F[Load EAVS Geounit Data into DataFrame]
     D -- "[Yes]" --> F
     
     %% Main processing steps
-    F -- "[Geounit Data, Processed Results]" --> G[Create EAVS Lookup Map]
-    G -- "[Lookup Map, Processed Results]" --> H[Map Results to EAVS Geounit Codes]
-    H -- "[Mapped Data]" --> I[Calculate R/D Vote Split]
-    I -- "[Split Data]" --> J[Format Data for Database]
+    F -- "[geounit_df:DataFrame]" --> G[Create EAVS Lookup Map]
+    G -- "[lookup_map:dict]" --> H[Map Counties in Results DataFrame to EAVS Geounit Codes]
+    H -- "[mapped_elec_results_df:DataFrame]" --> I[Calculate and Print R/D Vote Split Information]
+    I --> J[Format Data for Database]
     
     %% Join branches
     B -- "[DB Engine]" --> join1
-    J -- "[Formatted Results]" --> join1
+    J -- "[formatted_elec_results_df:DataFrame]" --> join1
 
     %% Final Step
     join1 --> K[Write Election Results to Database]
