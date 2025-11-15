@@ -107,17 +107,15 @@ sequenceDiagram
     deactivate SService
 
     note left of SController: We don't *really* return GeoJSON as a type,<br/>it's an ObjectNode from Jackson however we<br/>clearly document that it is as expected GeoJSON.
-    SController-->>OM: stateBoundaries: GeoJSON
-    SController-->>OM: provisionalBallots: List<ProvisionalBallotStatisticsModel>
-    SController-->>OM: provisionalBallotsAggregate: ProvisionalBallotStatisticsModel
+    SController-->>Servlet: stateBoundaries: GeoJSON
+    SController-->>Servlet: provisionalBallots: List<ProvisionalBallotStatisticsModel>
+    SController-->>Servlet: provisionalBallotsAggregate: ProvisionalBallotStatisticsModel
 
-    Servlet->>Servlet: writeValueAsString(stateBoundaries)
+    Servlet->>OM: writeValueAsString(stateBoundaries)
+    Servlet->>OM: writeValueAsString(provisionalBallots)
+    Servlet->>OM: writeValueAsString(provisionalBallotsAggregate)
     OM-->>Servlet: JSONString (for GeoJSON)
-    
-    Servlet->>Servlet: writeValueAsString(provisionalBallots)
     OM-->>Servlet: JSONString (for List<ProvisionalBallotStatisticsModel>)
-    
-    Servlet->>Servlet: writeValueAsString(provisionalBallotsAggregate)
     OM-->>Servlet: JSONString (for ProvisionalBallotStatisticsModel)
 
     Servlet-->>Axios: HTTPResponse (200 OK)
