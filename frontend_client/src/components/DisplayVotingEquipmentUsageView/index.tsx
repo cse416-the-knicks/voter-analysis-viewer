@@ -6,7 +6,6 @@ import { useNavigate } from "react-router";
 import useKeyDown from "../../hooks/useKeyDown";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { getVotingEquipmentUsage } from "../../api/client";
-import useMediaQuery from "@mui/material/useMediaQuery";
 
 const columns: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
   {
