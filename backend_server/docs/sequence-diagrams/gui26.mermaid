@@ -61,12 +61,12 @@ sequenceDiagram
   Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
   Repository -->> Service: List<VotingEquipmentModel>
   Repository -->> Service: BallotStatisticsModel
-  Repository -->>- Service: Map<PartyAffiliation, number[]>
+  Repository -->>- Service: Map<string, number[]>
   note left of Repository: Regression information is represented as a map where the key represents<br>the party and the value is a list of coefficients of the regression line
   
   Service -->> Controller: List<VotingEquipmentModel>
   Service -->> Controller: BallotStatisticsModel
-  Service -->>- Controller: Map<PartyAffiliation, number[]>
+  Service -->>- Controller: Map<string, number[]>
 
   Note left of Controller: Serialized into a JSON string
   Controller -->> Axios: HTTP 200 OK: JSONString
@@ -74,7 +74,7 @@ sequenceDiagram
   Controller -->>- Axios: HTTP 200 OK: JSONString
   Axios -->> chart: List<VotingEquipmentModel>
   Axios -->> chart: BallotStatisticsModel
-  Axios -->>- chart: Map<PartyAffiliation, number[]>
+  Axios -->>- chart: Map<string, number[]>
   deactivate chart
 
   Note left of Axios: Each bubble's data is calculated from the server<br>response object and plotted using D3
