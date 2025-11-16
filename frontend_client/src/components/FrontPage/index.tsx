@@ -58,9 +58,9 @@ function FrontPageDrawer({ setNotImplementedYet }: FrontPageDrawerProperties) {
         </ListItem>
         <ListItem>
           {" "}
-          <ListItemButton onClick={() => setNotImplementedYet(true)}>
+          <ListItemButton onClick={() => navigate("/display/state-voting-equipment-usage")}>
             {" "}
-            <ListItemText primary={"Voting Equipment"} />{" "}
+            <ListItemText primary={"State Voting Equipment"} />{" "}
           </ListItemButton>{" "}
         </ListItem>
         <ListItem>
