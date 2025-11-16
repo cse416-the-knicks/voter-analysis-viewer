@@ -1,69 +1,49 @@
 import type { GridColDef } from "@mui/x-data-grid";
-import type { VotingEquipmentModel } from "../../api/client";
+import type { VotingEquipmentUsageStatisticsModel } from "../../api/client";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useKeyDown from "../../hooks/useKeyDown";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
-import { getAllVotingEquipment } from "../../api/client";
+import { getVotingEquipmentUsage } from "../../api/client";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import styles from "./DisplayVotingMachineSummaryView.module.css";
-
-const columns: GridColDef<VotingEquipmentModel[]>[] = [
+const columns: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
   {
-    field: "manufacturer",
-    headerName: "Manufacturer",
+    field: "stateName",
+    headerName: "State",
     width: 190,
   },
   {
-    field: "equipmentType",
-    headerName: "Type",
-    width: 250,
-  },
-  {
-    field: "modelName",
-    headerName: "Name",
+    field: "dreNoVvpatTotal",
+    headerName: "DRE (No VVPAT)",
     width: 150,
   },
   {
-    field: "firstManufactured",
-    headerName: "First Manufactured",
+    field: "dreVvpatTotal",
+    headerName: "DRE (VVPAT)",
     width: 150,
   },
   {
-    field: "lastManufactured",
-    headerName: "Last Manufactured",
+    field: "bmdTotal",
+    headerName: "BMD Total",
     width: 150,
   },
   {
-    field: "discontinued",
-    headerName: "Discontinued",
-    type: "boolean",
-    width: 160,
-  },
-  {
-    field: "operatingSystem",
-    headerName: "Operating System",
-    width: 160,
-  },
-  {
-    field: "vvpat",
-    headerName: "VVPAT?",
-    type: "boolean",
-    width: 100,
+    field: "scannerTotal",
+    headerName: "Scanner Total",
+    width: 150,
   },
 ];
 
 function DisplayVotingMachineSummaryView() {
   const navigate = useNavigate();
-  const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
-  const useLargerMaxWidth = useMediaQuery("(min-width:1600px)");
-  const maxWidth = useLargerMaxWidth ? 1400 : 1000; // pixels
+  const [rows, setDataRows] = useState<VotingEquipmentUsageStatisticsModel[]>([]);
+  const maxWidth = 800; // pixels
 
   useEffect(function () {
     (async function () {
-      const equipmentList = await getAllVotingEquipment();
+      const equipmentList = await getVotingEquipmentUsage();
       setDataRows(equipmentList);
     })();
   }, []);
@@ -72,15 +52,14 @@ function DisplayVotingMachineSummaryView() {
 
   return (
     <WindowTitledDataGrid
-      title={"Voting Equipment Table Summary"}
+      title={"State Voting Equipment Usage Summary"}
       onXout={() => navigate("/")}
       width={maxWidth}
       maxWidth={maxWidth}
       rows={rows}
       columns={columns}
-      getRowId={(x) => x.modelName}
+      getRowId={(x) => x.stateId}
       pageSize={12}
-      customGetRowClassName={(r) => (rows.find((x) => x.modelName === r.id)?.discontinued ? styles.discontinuedRow : "")}
       left={`calc(50vw - ${maxWidth / 2}px)`}
       top={"0"}
     />
