@@ -37,12 +37,12 @@ sequenceDiagram
   dropDown ->> chart: Render
 
   Note left of Axios: Orval used to generate typesafe request wrappers
-  chart ->>+ Axios: getEquipmentQuality()
+  chart ->>+ Axios: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   chart ->> Axios: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
   chart ->> Axios: getRegressionCoefficients()
 
-  Axios ->>+ Controller: GET /votingequipment/
-  Axios ->> Controller: getEquipmentQuality()
+  Axios ->>+ Controller: GET /state/${fipsCode}/${countyFipsCode}/votingequipment
+  Axios ->> Controller: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   Axios ->> Controller: GET /state/${fipsCode}/${countyFipsCode}/ballot-statistics
   Axios ->> Controller: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
   Axios ->> Controller: GET /regression-calculation/
@@ -50,15 +50,16 @@ sequenceDiagram
 
   Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   
-  Controller ->>+ Service: getEquipmentQuality()
+  Controller ->>+ Service: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   Controller ->> Service: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
   Controller ->> Service: getRegressionCoefficients()
 
-  Service ->>+ Repository: getEquipmentQuality()
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+
+  Service ->>+ Repository: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   Service ->> Repository: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
   Service ->> Repository: getRegressionCoefficients()
   
-  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
   Repository -->> Service: List<VotingEquipmentModel>
   Repository -->> Service: BallotStatisticsModel
   Repository -->>- Service: Map<string, number[]>
