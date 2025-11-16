@@ -159,6 +159,42 @@ namespace Models {
         +status: string
         +Queryable() AutoSqlQueryable~~
     }
+    class CollectionSortParamFieldModel {
+        +field: string
+        +sort: string
+    }
+    class CollectionSortParamModel {
+        +fields: CollectionSortParamFieldModel[]
+    }
+    class ElectionResultsSummaryModel {
+        <<SqlQueryable(collection="app.election_results")>>
+        +fullRegionId: string,
+        +regionName: string,
+        +republicanVotes: int,
+        +democratVotes: int,
+        +otherVotes: int,
+        +totalVotes: int
+        +Queryable() AutoSqlQueryable~~
+    }
+    class VotingEquipmentUsageStatisticsEntryModel {
+        <<SqlQueryable(collection="app.equipment_usage")>>
+        +stateName: string,
+        +stateId: int,
+        +deviceType: string,
+        +certification: string,
+        +uniqueModels: string,
+        +totalDevices: int,
+    }
+    class VotingEquipmentUsageStatisticsModel {
+        +stateName: string,
+        +stateId: int,
+        +dreNoVvpatTotal: int,
+        +dreVvpatTotal: int,
+        +bmdTotal: int,
+        +scannerTotal: int,
+
+        +fromDataRows(rows: VotingEquipmentUsageStatisticsEntryModel[])
+    }
     class GeoJSON {
         refer to official GeoJSON documentation for schema.
     }
@@ -168,7 +204,7 @@ namespace Controllers {
     class StateController {
         <<RequestMapping("/state")>>
         +GET /$fipsCode/geometry(fipsCode: string) GeoJSON?
-        +GET /$fipsCode/centroids(fipsCode: string) Dictionary~String, GeoUnitCentroidModel~
+        +GET /$fipsCode/centroids(fipsCode: string) Dictionary~string, GeoUnitCentroidModel~
 
         +GET /$fipsCode/provisional-ballots(fipsCode: string, year: int, aggregate: boolean) ProvisionalBallotStatisticsModel[]
         +GET /$fipsCode/$countyFipsCode/provisional-ballots(fipsCode: string, countyFipsCode: string, year: int, aggregate: boolean) ProvisionalBallotStatisticsModel?
@@ -185,6 +221,8 @@ namespace Controllers {
         +GET /$fipsCode/ballot-statistics(fipsCode: string, year: int, aggregate: boolean) BallotStatisticsModel[]
         +GET /$fipsCode/$countyFipsCode/ballot-statistics(fipsCode: string, year: int) BallotStatisticsModel?
 
+        +GET /$fipsCode/election-year-results/$year(fipsCode: string, year: int, inAggregate: bolean) ElectionResultsSummaryModel[]
+
         +GET /$fipsCode/year-summary(fipsCode: string) ViewStateYearSummaryModel[]
         +GET /$fipsCode/year-summary/$year(fipsCode: string, year: int) ViewStateYearSummaryModel?
     }
@@ -192,13 +230,14 @@ namespace Controllers {
     class VoterRegistrationController {
         <<RequestMapping("/voter-registration")>>
 
-        +GET /(stateFips: string, countyFips: string) VoterRegistrationDataModel[]
+        +GET /(stateFips: string, countyFips: string, pageSize: int, pageIndex: int, party: partySelectionFilterId, encodedSortParams: string) VoterRegistrationDataModel[]
+        +GET /count(stateFips: string, countyFips: string, partySelectionFilterId: int) int
     }
 
     class VoterEquipmentController {
         <<RequestMapping("/votingequipment")>>
         +GET /by-manufacturer/$manufacturer(manufacturer: string) VotingEquipmentModel[]
-        +GET /by-type/$type(type: String) VotingEquipmentModel[]
+        +GET /by-type/$type(type: string) VotingEquipmentModel[]
         +GET /$manufacturer/$model(manufacturer: string, model: string) VotingEquipmentModel?
     }
 }
@@ -206,6 +245,7 @@ namespace Controllers {
 namespace Services {
     class StateService {
         <<Service>>
+        /* All methods are cached except for getBoundaryGeometry, which is too large in my opinion to cache. */
         - dao: IStateDAO;
         + getBoundaryGeometry(fipsCode: string) GeoJSON?;
 
@@ -230,6 +270,8 @@ namespace Services {
         + getViewStateYearSummaryDataByYear(fipsCode: string, year: int) ViewStateYearSummaryModel?;
         + getViewStateYearSummaryData(fipsCode: string) ViewStateYearSummaryModel[];
 
+        + getElectionResultsSummaryDataForState(fipsCode: string, year: int, aggregated: boolean) ElectionResultsSummaryModel[]
+
         + getCountyGeoUnitCentroids(fipsCode: string) Dictionary~string, GeoUnitCentroidModel~;
         + getStateInformationTable() Dictionary~string, StateInformationModel~;
     }
@@ -241,23 +283,28 @@ namespace Services {
         +getAllVotingEquipmentByManufacturer(manufacturer: string) VotingEquipmentModel[];
         +getAllVotingEquipmentByType(type: string) VotingEquipmentModel[];
         +getVotingEquipment(manufacturer: string, model: string) VotingEquipmentModel?;
+        +getVotingEquipmentUsage(fipsCode: string) VotingEquipmentUsageStatisticsModel
     }
 
     class VoterRegistrationService {
         <<Service>>
         - dao: IVoterRegistrationDAO;
-        + getDetailedVoterRegistrationData(stateFips: string, countyFips: string) VoterRegistrationDataModel[]
+        + getDetailedVoterRegistrationData(stateFips: string, countyFips: string?, pageSize: int, pageIndex: int, sortingParams: CollectionSortParamModel?, partySelectionFilterId: int) VoterRegistrationDataModel[]
+        + getDetailedVoterRegistrationDataCount(stateFips: string, countyFips: string?, partySelectionFilterId: int) int
     }
 }
 
 namespace DataAccessObject {
     class IVoterRegistrationDAO {
-        +getDetailedVoterRegistrationDataRows(stateFips: string?, countyFips: string?) VoterRegistrationDataModel[]
+        +getDetailedVoterRegistrationDataRows(stateFips: string, countyFips: string?, pageSize: int, pageIndex: int, sortingParams: CollectionSortParamModel?, partySelectionFilterId: int) VoterRegistrationDataModel[]
+        +getDetailedVoterRegistrationDataCount(stateFips: string, countyFips: string?, partySelectionFilterId: int)
     }
 
     class VoterRegistrationDAO {
         -logger: Logger
         -jdbcTemplate: JdbcTemplate
+
+        -getFilterClauseForPartySelection(partySelectionFilterId: int) string
     }
 
     class IVoterEquipmentDAO {
@@ -265,20 +312,13 @@ namespace DataAccessObject {
         +getAllVotingEquipment() VotingEquipmentModel[]
         +getVotingEquipmentByType(type: string) VotingEquipmentModel[]
         +getVotingEquipmentByManufacturer(manufacturer: string) VotingEquipmentModel[]
-
+        +getVotingEquipmentUsage(fipsCode: string) VotingEquipmentUsageStatisticsModel[]
         +getVotingEquipmentModel(manufacturer: string, model: string) VotingEquipmentModel?
     }
-    class VoterEquipmentLocalDiskDAO {
-        -localCsvDataPath: Path
+
+    class VoterEquipmentDAO {
         -logger: Logger
-        -equipmentList: VotingEquipmentModel[]
-        -inMemoryDAO: VoterEquipmentInMemoryDAO
-
-        -populateInternalList() void
-    }
-
-    class VoterEquipmentInMemoryDAO {
-        -equipmentList: VotingEquipmentModel[]
+        -jdbcTemplate: JdbcTemplate
     }
 
     class IStateDAO {
@@ -288,11 +328,11 @@ namespace DataAccessObject {
         +getProvisionBallotRows(fipsCode: string, year: int, aggregate: boolean) ProvisionalBallotStatisticsModel[]
         +getProvisionBallotRowByCounty(fipsCode: string, countyCode: string, year: int) ProvisionalBallotStatisticsModel?
 
-        +getVoterRegistrationRows(fipsCode: String, year: int, aggregate: boolean) VoterRegistrationStatisticsModel[]
-        +getVoterRegistrationRowByCounty(fipsCode: String, year: int) VoterRegistrationStatisticsModel?
+        +getVoterRegistrationRows(fipsCode: string, year: int, aggregate: boolean) VoterRegistrationStatisticsModel[]
+        +getVoterRegistrationRowByCounty(fipsCode: string, year: int) VoterRegistrationStatisticsModel?
         
-        +getPollbookDeletionRows(fipsCode: String, year: int, aggregate: boolean) PollbookDeletionStatisticsModel[]
-        +getPollbookDeletionRowByCounty(fipsCode: String, year: int) PollbookDeletionStatisticsModel?
+        +getPollbookDeletionRows(fipsCode: string, year: int, aggregate: boolean) PollbookDeletionStatisticsModel[]
+        +getPollbookDeletionRowByCounty(fipsCode: string, year: int) PollbookDeletionStatisticsModel?
 
         +getMailBallotRejectionRows(fipsCode: string, year: int, aggregate: boolean) MailBallotRejectionStatisticsModel[]
         +getMailBallotRejectionRowByCounty(fipsCode: string, year: int) MailBallotRejectionStatisticsModel?
@@ -303,22 +343,21 @@ namespace DataAccessObject {
         +getStateYearSummaryRows(fipsCode: string) ViewStateYearSummaryModel[]
         +getStateYearSummaryRowByYear(fipsCode: string, year: int) ViewStateYearSummaryModel?
 
-        +getGeoUnitCentroids(fipsCode: string) Dictionary~FipsCode, GeoUnitCentroidModel~
+        +getStateElectionResults(fipsCode: string, year: int, aggregated: boolean) ElectionResultsSummaryModel;
         +getStateInformationDataRowModels() StateInformationDataRowModel[]
+
+        +getGeoUnitCentroids(fipsCode: string) Dictionary~FipsCode, GeoUnitCentroidModel~
     }
 
     class StateDAO {
         -logger: Logger
         -preprocessedGeospatialPath: Path
-        -localFipsCodeMappingCsvDataPath: Path
         -localCountyCentroidsCsvDataPath: Path
-        -fipsCodeToCountyNameMap: Dictionary~String, String~
-        -geoUnitCentroidMap: Dictionary~String, GeoUnitCentroidModel~
+        -geoUnitCentroidMap: Dictionary~string, GeoUnitCentroidModel~
         -jdbcTemplate: JdbcTemplate
 
         -getStateDataRows(type: Class~T~, fipsCode:string, year:int, aggregated:boolean) List~T~
         -populateGeoUnitCentroidTable()
-        -populateFipsCodeToCountyNameMapTable()
     }
 }
 namespace Helpers {
@@ -326,8 +365,19 @@ namespace Helpers {
         +Mapper() RowMapper~T~
         +QueryView() string
         +Query(asSumAggregate: boolean) string
+        +QueryOrdering(sortParams: CollectionSortParamModel?)
+    }
+
+    class SqlQueryableInvocationHandler {
+        -visitField(resultSet: ResultSet, field: Field, columnNumber: int) Object
+        -visitType(resultSet: ResultSet, type: Type, columnNumber: int) Object
+        -firstMatchingArityConstructor(constructors: Constructor[], targetArity: int) Constructor
+        +invoke(proxy: Object, method: Method, args: Object[]) Object
     }
 }
+
+AutoSqlQueryable "1" *-- "1" SqlQueryableInvocationHandler : contains
+note for SqlQueryableInvocationHandler "Internal class used to map rows<br/>on JDBC ResultSets"
 namespace Enums {
     class FelonyDisenfranchisement {
         <<enum>>
@@ -352,11 +402,11 @@ namespace Enums {
 
 %% relationships
 VoterRegistrationDAO <|-- IVoterRegistrationDAO : Implements
-VoterEquipmentLocalDiskDAO <|-- IVoterEquipmentDAO : Implements
-VoterEquipmentInMemoryDAO <|-- IVoterEquipmentDAO : Implements
-VoterEquipmentLocalDiskDAO <-- VoterEquipmentInMemoryDAO : Has
+VoterEquipmentDAO <|-- IVoterEquipmentDAO : Implements
 StateDAO <|-- IStateDAO : Implements
 
+CollectionSortParamFieldModel <-- CollectionSortParamModel : Has
+AutoSqlQueryable <-- ElectionResultsSummaryModel : Has
 AutoSqlQueryable <-- ProvisionalBallotStatisticsModel : Has
 AutoSqlQueryable <-- VoterRegistrationStatisticsModel : Has
 AutoSqlQueryable <-- PollbookDeletionStatisticsModel : Has
