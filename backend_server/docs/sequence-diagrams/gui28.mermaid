@@ -1,0 +1,86 @@
+---
+config:
+  layout: elk
+  look: neo
+  theme: neutral
+---
+sequenceDiagram
+  autonumber
+
+  title: GUI-28 - Ecological Inference analysis of voting equipment (required)
+  actor User as User
+
+  box Frontend
+    participant landingPage as landingPage#58;DOMNode
+    participant dropDown as dropDown#58;DOMNode
+    participant chart as chart#58;DOMNode
+    participant Axios as #58;Axios
+  end
+
+  box Backend
+    participant Controller as #58;Controller
+    participant Service as #58;Service
+    participant Repository as #58;Repository
+  end
+  
+  Note right of Repository: IStateDAO in codebase
+
+  Note right of User: Visits state/{fipsCode}
+  activate landingPage
+  User ->>+ landingPage: Click State
+
+  activate dropDown
+  landingPage ->> dropDown: Render
+  User ->> dropDown: Select 'Ecological Inference' option
+  Note left of dropDown: Specifically, the 'EI Equipment' tab is clicked
+
+  dropDown ->>+ chart: Render
+
+  Note left of Axios: Orval used to generate typesafe request wrappers
+  chart ->>+ Axios: getEquipmentQuality()
+  chart ->> Axios: getDemographicStatistics(fipsCode)
+  chart ->> Axios: getCurveCoefficients()
+
+  Axios ->>+ Controller: GET /votingequipment/
+  Axios ->> Controller: getEquipmentQuality()
+  Axios ->> Controller: GET /state/${fipsCode}/demographic-statistics
+  Axios ->> Controller: getDemographicStatistics(fipsCode)
+  Axios ->> Controller: GET /coefficient-calculation/
+  Axios ->> Controller: getCurveCoefficients()
+
+  Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  
+  Controller ->>+ Service: getEquipmentQuality()
+  Controller ->> Service: getDemographicStatistics(fipsCode)
+  Controller ->> Service: getCurveCoefficients()
+
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+
+  Service ->>+ Repository: getEquipmentQuality()
+  Service ->> Repository: getDemographicStatistics(fipsCode)
+  Service ->> Repository: getCurveCoefficients()
+  
+  Repository -->> Service: List<VotingEquipmentModel>
+  Repository -->> Service: DemographicStatisticsModel
+  Repository -->>- Service: Map<string[], number[]>
+  note left of Repository: Regression information is represented as a map where the key represents a list of<br>demographic group(s) and the value is a list of coefficients of the probability curve
+  
+  Service -->> Controller: List<VotingEquipmentModel>
+  Service -->> Controller: DemographicStatisticsModel
+  Service -->>- Controller: Map<string[], number[]>
+
+  Note left of Controller: Serialized into a JSON string
+  Controller -->> Axios: HTTP 200 OK: JSONString
+  Controller -->> Axios: HTTP 200 OK: JSONString
+  Controller -->>- Axios: HTTP 200 OK: JSONString
+  Axios -->> chart: List<VotingEquipmentModel>
+  Axios -->> chart: DemographicStatisticsModel
+  Axios -->>- chart: Map<string[], number[]>
+  deactivate chart
+
+  Note left of Axios: Each bubble's data is calculated from the server<br>response object and plotted using D3
+  Note left of Axios: The probability curve is drawn using D3 based on the<br>coefficients in the server response object.<br>We use a quadratic probability curve.
+  
+  deactivate dropDown
+  deactivate landingPage
+  
