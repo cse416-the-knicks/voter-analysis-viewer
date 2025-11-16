@@ -24,7 +24,7 @@ map_dict = dict(zip(mapping["raw_text"], mapping["device_model_id"]))
 groups = {
     "DRE no VVPAT": ("F3a", ["F3b_1", "F3b_2", "F3b_3"], ["F3c_1", "F3c_2", "F3c_3"]),
     "DRE with VVPAT": ("F4a", ["F4b_1", "F4b_2", "F4b_3"], ["F4c_1", "F4c_2", "F4c_3"]),
-    "BMD": ("F5a", ["F5b_1", "F5b_2", "F5b_3"], ["F5c_1", "F5c_2", "F5c_3"]),
+    "Ballot Marking Device": ("F5a", ["F5b_1", "F5b_2", "F5b_3"], ["F5c_1", "F5c_2", "F5c_3"]),
     "Scanner": ("F6a", ["F6b_1", "F6b_2", "F6b_3"], ["F6c_1", "F6c_2", "F6c_3"]),
 }
 

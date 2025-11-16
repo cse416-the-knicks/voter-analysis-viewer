@@ -24,56 +24,56 @@ CLEAR BALLOT CAST UNIT,DRE with VVPAT,7
 CLEAR BALLOT ACCESS UNIT,DRE with VVPAT,4
 EXPRESS VOTE TABULATOR V2.1,DRE with VVPAT,28
 MICROVOTE INFINITY VP-1 WITH VVPAT,DRE with VVPAT,61
-ImageCast Precinct with Integrated BMD (Dominion),BMD,18
-ExpressVote (ES&S),BMD,27
-DOMINION IMAGECAST X/V5.17.17.1,BMD,19
-OpenElect FVT (Unisyn),BMD,82
-DS200,BMD,38
-ImageCast X/ICX BMD (Dominion),BMD,19
-ImageCast Evolution/ICE (Dominion),BMD,23
-Verity Touch Writer (Hart),BMD,48
-VSAP Ballot Marking Device (Los Angeles County),BMD,75
-AVALUE TECHNOLOGY INC SLD-21V-237-B1R,BMD,100.0
-ImageCast X/Samsung Galaxy Tab Pro (Dominion),BMD,19
-ClearAccess (Clear Ballot),BMD,4
-Inspire Ballot Marking System (IVS),BMD,56
-DS 200 TABULATOR,BMD,38
-EXPRESSVOTES AND AUTOMARKS,BMD,26
-OpenElect OVI (Unisyn),BMD,83
-AutoMARK (ES&S),BMD,26
-HART VERACITY,BMD,101.0
-HART INTERCIVIC VERITY 2.7,BMD,102.0
-UNISYN FREEDOM VOTE TABLET,BMD,82
-DIEBOLD TOUCHSCREEN,BMD,103.0
-GBS TSX,BMD,104.0
-DS200 ES&S,BMD,38
-HART INTERCIVIC 2.5,BMD,105.0
-HART INTERCIVIC VERITY 2.5,BMD,106.0
-HART VERITY 2.5,BMD,107.0
-HART INTERCIVIC,BMD,108.0
-DUO STANDALONE,BMD,47
-HART-VERITY DUO,BMD,47
-HARP VERITY,BMD,109.0
-HART INTERCIVIC VERITY DUO,BMD,47
-VERITY DUO STANDALONE,BMD,47
-DUO STAND ALONE,BMD,47
-DUO STAND ALONE (HART),BMD,47
-OmniBallot Tablet (Democracy Live),BMD,15
-VOTING WORKS,BMD,110.0
-ExpressVoteXL (ES&S),BMD,28
-ClearMark (Clear Ballot),BMD,5
-UNISYN FREEDOM VOTE 8033-9200,BMD,82
-EXPRESS VOTE BALLOT MARKING KIOSKS USED FOR ADA VOTING.,BMD,27
-HART VERITY DUO,BMD,47
-HART DUOS VEERITY 2.5,BMD,47
-VERITY TOUCH DUO,BMD,47
-VERITY DUO GO,BMD,111.0
-VERITY DUO (HART),BMD,47
-"HART VERITY DUO (BALLOT MARKERS), CONTROLLERS, SCANNERS",BMD,47
-VERITY CONTROLLER (HART),BMD,112.0
-HART VERITY DUO VERSION 2.5,BMD,47
-HART VERITY DUO STANDALONE WITH ACCESS,BMD,47
-HART DUO,BMD,47
+ImageCast Precinct with Integrated BMD (Dominion),Ballot Marking Device,18
+ExpressVote (ES&S),Ballot Marking Device,27
+DOMINION IMAGECAST X/V5.17.17.1,Ballot Marking Device,19
+OpenElect FVT (Unisyn),Ballot Marking Device,82
+DS200,Ballot Marking Device,38
+ImageCast X/ICX BMD (Dominion),Ballot Marking Device,19
+ImageCast Evolution/ICE (Dominion),Ballot Marking Device,23
+Verity Touch Writer (Hart),Ballot Marking Device,48
+VSAP Ballot Marking Device (Los Angeles County),Ballot Marking Device,75
+AVALUE TECHNOLOGY INC SLD-21V-237-B1R,Ballot Marking Device,100.0
+ImageCast X/Samsung Galaxy Tab Pro (Dominion),Ballot Marking Device,19
+ClearAccess (Clear Ballot),Ballot Marking Device,4
+Inspire Ballot Marking System (IVS),Ballot Marking Device,56
+DS 200 TABULATOR,Ballot Marking Device,38
+EXPRESSVOTES AND AUTOMARKS,Ballot Marking Device,26
+OpenElect OVI (Unisyn),Ballot Marking Device,83
+AutoMARK (ES&S),Ballot Marking Device,26
+HART VERACITY,Ballot Marking Device,101.0
+HART INTERCIVIC VERITY 2.7,Ballot Marking Device,102.0
+UNISYN FREEDOM VOTE TABLET,Ballot Marking Device,82
+DIEBOLD TOUCHSCREEN,Ballot Marking Device,103.0
+GBS TSX,Ballot Marking Device,104.0
+DS200 ES&S,Ballot Marking Device,38
+HART INTERCIVIC 2.5,Ballot Marking Device,105.0
+HART INTERCIVIC VERITY 2.5,Ballot Marking Device,106.0
+HART VERITY 2.5,Ballot Marking Device,107.0
+HART INTERCIVIC,Ballot Marking Device,108.0
+DUO STANDALONE,Ballot Marking Device,47
+HART-VERITY DUO,Ballot Marking Device,47
+HARP VERITY,Ballot Marking Device,109.0
+HART INTERCIVIC VERITY DUO,Ballot Marking Device,47
+VERITY DUO STANDALONE,Ballot Marking Device,47
+DUO STAND ALONE,Ballot Marking Device,47
+DUO STAND ALONE (HART),Ballot Marking Device,47
+OmniBallot Tablet (Democracy Live),Ballot Marking Device,15
+VOTING WORKS,Ballot Marking Device,110.0
+ExpressVoteXL (ES&S),Ballot Marking Device,28
+ClearMark (Clear Ballot),Ballot Marking Device,5
+UNISYN FREEDOM VOTE 8033-9200,Ballot Marking Device,82
+EXPRESS VOTE BALLOT MARKING KIOSKS USED FOR ADA VOTING.,Ballot Marking Device,27
+HART VERITY DUO,Ballot Marking Device,47
+HART DUOS VEERITY 2.5,Ballot Marking Device,47
+VERITY TOUCH DUO,Ballot Marking Device,47
+VERITY DUO GO,Ballot Marking Device,111.0
+VERITY DUO (HART),Ballot Marking Device,47
+"HART VERITY DUO (BALLOT MARKERS), CONTROLLERS, SCANNERS",Ballot Marking Device,47
+VERITY CONTROLLER (HART),Ballot Marking Device,112.0
+HART VERITY DUO VERSION 2.5,Ballot Marking Device,47
+HART VERITY DUO STANDALONE WITH ACCESS,Ballot Marking Device,47
+HART DUO,Ballot Marking Device,47
 ImageCast Precint2/ICP2,Scanner,22
 ImageCast Central/ICC (Dominion),Scanner,20
 DS450 (ES&S),Scanner,29
