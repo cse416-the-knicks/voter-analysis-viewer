@@ -61,6 +61,7 @@ function DisplayVotingMachineSummaryView() {
       pageSize={12}
       left={`calc(50vw - ${maxWidth / 2}px)`}
       top={"0"}
+      onRowDoubleClick={(params, event, details) => {}}
     />
   );
 }
