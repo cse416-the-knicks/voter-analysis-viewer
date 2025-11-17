@@ -46,7 +46,7 @@ sequenceDiagram
   Axios ->> Controller: getElectionResultsSummary(fipsCode, year=2024)
   Axios ->> Controller: GET /state/${fipsCode}/${countyFipsCode}/demographic-statistics
   Axios ->> Controller: getDemographicStatisticsByCounty(fipsCode, countyFipsCode)
-  Axios ->> Controller: GET /state/regression-coefficients
+  Axios ->> Controller: POST /state/regression-coefficients
   Axios ->> Controller: getCurveCoefficients()
 
   Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
@@ -59,11 +59,9 @@ sequenceDiagram
 
   Service ->>+ Repository: getElectionResultsSummary(fipsCode, year=2024)
   Service ->> Repository: getDemographicStatisticsByCounty(fipsCode, countyFipsCode)
-  Service ->> Repository: getCurveCoefficients()
   
   Repository -->> Service: List<ElectionResultsSummaryModel>
-  Repository -->> Service: DemographicStatisticsModel
-  Repository -->>- Service: List<Double>
+  Repository -->>- Service: DemographicStatisticsModel
   
   Service -->> Controller: List<ElectionResultsSummaryModel>
   Service -->> Controller: DemographicStatisticsModel
