@@ -13,7 +13,7 @@ sequenceDiagram
   box Frontend
     participant landingPage as landingPage#58;DOMNode
     participant dropDown as dropDown#58;DOMNode
-        participant chart as chart#58;DOMNode
+    participant chart as chart#58;DOMNode
     participant Axios as #58;Axios
   end
 
@@ -23,7 +23,7 @@ sequenceDiagram
     participant Repository as #58;Repository
   end
   
-  Note right of Repository: IStateDAO in codebase
+  Note right of Repository: IVoterEquipmentDAO in codebase
 
   Note right of User: Visits state/{fipsCode}
   activate landingPage
@@ -45,7 +45,7 @@ sequenceDiagram
   Axios ->> Controller: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   Axios ->> Controller: GET /state/${fipsCode}/${countyFipsCode}/ballot-statistics
   Axios ->> Controller: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
-  Axios ->> Controller: GET /state/regression-coefficients
+  Axios ->> Controller: POST /state/regression-coefficients
   Axios ->> Controller: getCurveCoefficients()
 
   Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
@@ -58,11 +58,9 @@ sequenceDiagram
 
   Service ->>+ Repository: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   Service ->> Repository: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
-  Service ->> Repository: getCurveCoefficients()
   
   Repository -->> Service: VotingEquipmentQualityResponseModel
-  Repository -->> Service: BallotStatisticsModel
-  Repository -->>- Service: List<Double>
+  Repository -->>- Service: BallotStatisticsModel
   
   Service -->> Controller: VotingEquipmentQualityResponseModel
   Service -->> Controller: BallotStatisticsModel
