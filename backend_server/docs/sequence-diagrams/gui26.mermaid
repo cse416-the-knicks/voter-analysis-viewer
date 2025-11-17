@@ -39,43 +39,42 @@ sequenceDiagram
   Note left of Axios: Orval used to generate typesafe request wrappers
   chart ->>+ Axios: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   chart ->> Axios: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
-  chart ->> Axios: getRegressionCoefficients()
+  chart ->> Axios: getCurveCoefficients()
 
   Axios ->>+ Controller: GET /state/${fipsCode}/${countyFipsCode}/votingequipment
   Axios ->> Controller: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   Axios ->> Controller: GET /state/${fipsCode}/${countyFipsCode}/ballot-statistics
   Axios ->> Controller: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
-  Axios ->> Controller: GET /regression-calculation/
-  Axios ->> Controller: getRegressionCoefficients()
+  Axios ->> Controller: GET /state/regression-coefficients
+  Axios ->> Controller: getCurveCoefficients()
 
   Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   
   Controller ->>+ Service: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   Controller ->> Service: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
-  Controller ->> Service: getRegressionCoefficients()
+  Controller ->> Service: getCurveCoefficients()
 
   Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
 
   Service ->>+ Repository: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
   Service ->> Repository: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
-  Service ->> Repository: getRegressionCoefficients()
+  Service ->> Repository: getCurveCoefficients()
   
-  Repository -->> Service: List<VotingEquipmentModel>
+  Repository -->> Service: VotingEquipmentQualityResponseModel
   Repository -->> Service: BallotStatisticsModel
-  Repository -->>- Service: Map<string, number[]>
-  note left of Repository: Regression information is represented as a map where the key represents<br>the party and the value is a list of coefficients of the regression line
+  Repository -->>- Service: List<Double>
   
-  Service -->> Controller: List<VotingEquipmentModel>
+  Service -->> Controller: VotingEquipmentQualityResponseModel
   Service -->> Controller: BallotStatisticsModel
-  Service -->>- Controller: Map<string, number[]>
+  Service -->>- Controller: List<Double>
 
   Note left of Controller: Serialized into a JSON string
   Controller -->> Axios: HTTP 200 OK: JSONString
   Controller -->> Axios: HTTP 200 OK: JSONString
   Controller -->>- Axios: HTTP 200 OK: JSONString
-  Axios -->> chart: List<VotingEquipmentModel>
+  Axios -->> chart: VotingEquipmentQualityResponseModel
   Axios -->> chart: BallotStatisticsModel
-  Axios -->>- chart: Map<string, number[]>
+  Axios -->>- chart: List<Double>
   deactivate chart
 
   Note left of Axios: Each bubble's data is calculated from the server<br>response object and plotted using D3
