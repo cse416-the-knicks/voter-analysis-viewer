@@ -23,7 +23,7 @@ sequenceDiagram
     participant Repository as #58;Repository
   end
   
-  Note right of Repository: IStateDAO in codebase
+  Note right of Repository: IVoterEquipmentDAO in codebase
 
   Note right of User: Visits state/{fipsCode}
   activate landingPage
@@ -37,12 +37,12 @@ sequenceDiagram
   dropDown ->>+ chart: Render
 
   Note left of Axios: Orval used to generate typesafe request wrappers
-  chart ->>+ Axios: getEquipmentQuality()
+  chart ->>+ Axios: getEquipmentQuality(fipsCode)
   chart ->> Axios: getDemographicStatistics(fipsCode)
   chart ->> Axios: getCurveCoefficients()
 
-  Axios ->>+ Controller: GET /state/votingequipment
-  Axios ->> Controller: getEquipmentQuality()
+  Axios ->>+ Controller: GET /state/${fipsCode}/votingequipment
+  Axios ->> Controller: getEquipmentQuality(fipsCode)
   Axios ->> Controller: GET /state/${fipsCode}/demographic-statistics
   Axios ->> Controller: getDemographicStatistics(fipsCode)
   Axios ->> Controller: POST /state/regression-coefficients
@@ -50,13 +50,13 @@ sequenceDiagram
 
   Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
   
-  Controller ->>+ Service: getEquipmentQuality()
+  Controller ->>+ Service: getEquipmentQuality(fipsCode)
   Controller ->> Service: getDemographicStatistics(fipsCode)
   Controller ->> Service: getCurveCoefficients()
 
   Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
 
-  Service ->>+ Repository: getEquipmentQuality()
+  Service ->>+ Repository: getEquipmentQuality(fipsCode)
   Service ->> Repository: getDemographicStatistics(fipsCode)
   
   Repository -->> Service: VotingEquipmentQualityResponseModel

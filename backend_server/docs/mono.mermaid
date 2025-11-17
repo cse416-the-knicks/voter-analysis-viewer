@@ -210,6 +210,14 @@ namespace Controllers {
 
         +GET /$fipsCode/cvap-demographic(fipsCode: string, aggregate: boolean) DemographicStatisticsModel[]
         +POST /regression-coefficients(dataPoints: Point[]) number[] // This method is a POST so that a body can be received.
+
+        +GET /$fipsCode/$countyFipsCode/votingequipment
+        +GET /$fipsCode/$countyFipsCode/ballot-statistics
+
+        +GET /$fipsCode/$countyFipsCode/demographic-statistics
+        +GET /$fipsCode/votingequipment
+
+        +GET /$fipsCode/demographic-statistics
     }
 
     class VoterRegistrationController {
@@ -258,6 +266,13 @@ namespace Services {
         + getCvapDemographicStatistics(fipsCode: string, aggregate: boolean) DemographicStatisticsModel[]
 
         + getCurveCoefficients(dataPoints: Point[]) number[];
+        + getEquipmentQualityByCounty(fipsCode: string, countyFipsCode: string)
+
+        + getBallotStatisticsByCounty(fipsCode: string, countyFipsCode: string)
+        + getDemographicStatisticsByCounty(fipsCode: string, countyFipsCode: string)
+
+        + getEquipmentQuality(fipsCode: string)
+        + getDemographicStatistics(fipsCode: string)
     }
 
     class VoterEquipmentService {
