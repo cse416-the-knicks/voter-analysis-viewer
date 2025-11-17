@@ -1,0 +1,85 @@
+---
+config:
+  layout: elk
+  look: neo
+  theme: neutral
+---
+sequenceDiagram
+  autonumber
+
+  title: GUI-26 - Bubble chart regression line (preferred)
+  actor User as User
+
+  box Frontend
+    participant landingPage as landingPage#58;DOMNode
+    participant dropDown as dropDown#58;DOMNode
+        participant chart as chart#58;DOMNode
+    participant Axios as #58;Axios
+  end
+
+  box Backend
+    participant Controller as #58;Controller
+    participant Service as #58;Service
+    participant Repository as #58;Repository
+  end
+  
+  Note right of Repository: IStateDAO in codebase
+
+  Note right of User: Visits state/{fipsCode}
+  activate landingPage
+  User ->>+ landingPage: Click State
+
+  activate dropDown
+  landingPage ->> dropDown: Render
+  User ->> dropDown: Click 'Rejected Ballots' tab
+
+  activate chart
+  dropDown ->> chart: Render
+
+  Note left of Axios: Orval used to generate typesafe request wrappers
+  chart ->>+ Axios: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
+  chart ->> Axios: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
+  chart ->> Axios: getCurveCoefficients()
+
+  Axios ->>+ Controller: GET /state/${fipsCode}/${countyFipsCode}/votingequipment
+  Axios ->> Controller: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
+  Axios ->> Controller: GET /state/${fipsCode}/${countyFipsCode}/ballot-statistics
+  Axios ->> Controller: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
+  Axios ->> Controller: GET /state/regression-coefficients
+  Axios ->> Controller: getCurveCoefficients()
+
+  Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
+  
+  Controller ->>+ Service: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
+  Controller ->> Service: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
+  Controller ->> Service: getCurveCoefficients()
+
+  Note left of Repository: Calls into our custom ORM solution, performing row mapping <br> (simplified, full-flow in GUI-2: Display State)
+
+  Service ->>+ Repository: getEquipmentQualityByCounty(fipsCode, countyFipsCode)
+  Service ->> Repository: getBallotStatisticsByCounty(fipsCode, countyFipsCode)
+  Service ->> Repository: getCurveCoefficients()
+  
+  Repository -->> Service: VotingEquipmentQualityResponseModel
+  Repository -->> Service: BallotStatisticsModel
+  Repository -->>- Service: List<Double>
+  
+  Service -->> Controller: VotingEquipmentQualityResponseModel
+  Service -->> Controller: BallotStatisticsModel
+  Service -->>- Controller: List<Double>
+
+  Note left of Controller: Serialized into a JSON string
+  Controller -->> Axios: HTTP 200 OK: JSONString
+  Controller -->> Axios: HTTP 200 OK: JSONString
+  Controller -->>- Axios: HTTP 200 OK: JSONString
+  Axios -->> chart: VotingEquipmentQualityResponseModel
+  Axios -->> chart: BallotStatisticsModel
+  Axios -->>- chart: List<Double>
+  deactivate chart
+
+  Note left of Axios: Each bubble's data is calculated from the server<br>response object and plotted using D3
+  Note left of Axios: The non-linear regression line is drawn using D3<br>based on the coefficients in the server response object.<br>We use a quadratic regression model.
+  
+  deactivate dropDown
+  deactivate landingPage
+  
