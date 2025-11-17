@@ -41,11 +41,11 @@ sequenceDiagram
   chart ->> Axios: getDemographicStatistics(fipsCode)
   chart ->> Axios: getCurveCoefficients()
 
-  Axios ->>+ Controller: GET /votingequipment/
+  Axios ->>+ Controller: GET /state/votingequipment
   Axios ->> Controller: getEquipmentQuality()
   Axios ->> Controller: GET /state/${fipsCode}/demographic-statistics
   Axios ->> Controller: getDemographicStatistics(fipsCode)
-  Axios ->> Controller: GET /coefficient-calculation/
+  Axios ->> Controller: GET /state/regression-coefficients
   Axios ->> Controller: getCurveCoefficients()
 
   Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
@@ -60,22 +60,21 @@ sequenceDiagram
   Service ->> Repository: getDemographicStatistics(fipsCode)
   Service ->> Repository: getCurveCoefficients()
   
-  Repository -->> Service: List<VotingEquipmentModel>
+  Repository -->> Service: VotingEquipmentQualityResponseModel
   Repository -->> Service: DemographicStatisticsModel
-  Repository -->>- Service: Map<string[], number[]>
-  note left of Repository: Regression information is represented as a map where the key represents a list of<br>demographic group(s) and the value is a list of coefficients of the probability curve
+  Repository -->>- Service: List<Double>
   
-  Service -->> Controller: List<VotingEquipmentModel>
+  Service -->> Controller: VotingEquipmentQualityResponseModel
   Service -->> Controller: DemographicStatisticsModel
-  Service -->>- Controller: Map<string[], number[]>
+  Service -->>- Controller: List<Double>
 
   Note left of Controller: Serialized into a JSON string
   Controller -->> Axios: HTTP 200 OK: JSONString
   Controller -->> Axios: HTTP 200 OK: JSONString
   Controller -->>- Axios: HTTP 200 OK: JSONString
-  Axios -->> chart: List<VotingEquipmentModel>
+  Axios -->> chart: VotingEquipmentQualityResponseModel
   Axios -->> chart: DemographicStatisticsModel
-  Axios -->>- chart: Map<string[], number[]>
+  Axios -->>- chart: List<Double>
   deactivate chart
 
   Note left of Axios: Each bubble's data is calculated from the server<br>response object and plotted using D3
