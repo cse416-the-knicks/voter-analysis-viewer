@@ -46,7 +46,7 @@ sequenceDiagram
   Axios ->> Controller: getElectionResultsSummary(fipsCode, year=2024)
   Axios ->> Controller: GET /state/${fipsCode}/${countyFipsCode}/demographic-statistics
   Axios ->> Controller: getDemographicStatisticsByCounty(fipsCode, countyFipsCode)
-  Axios ->> Controller: GET /coefficient-calculation/
+  Axios ->> Controller: POST /state/regression-coefficients
   Axios ->> Controller: getCurveCoefficients()
 
   Note left of Controller: The Servlet + Jackson Serialization step is omitted for simplicity. <br> The full event flow is in our diagram for GUI-2: Display State
@@ -59,16 +59,13 @@ sequenceDiagram
 
   Service ->>+ Repository: getElectionResultsSummary(fipsCode, year=2024)
   Service ->> Repository: getDemographicStatisticsByCounty(fipsCode, countyFipsCode)
-  Service ->> Repository: getCurveCoefficients()
   
   Repository -->> Service: List<ElectionResultsSummaryModel>
-  Repository -->> Service: DemographicStatisticsModel
-  Repository -->>- Service: Map<string[], number[]>
-  note left of Repository: Regression information is represented as a map where the key is a list of demographic<br>group(s) and the value is a list of coefficients of the regression line
+  Repository -->>- Service: DemographicStatisticsModel
   
   Service -->> Controller: List<ElectionResultsSummaryModel>
   Service -->> Controller: DemographicStatisticsModel
-  Service -->>- Controller: Map<string[], number[]>
+  Service -->>- Controller: List<Double>
 
   Note left of Controller: Serialized into a JSON string
   Controller -->> Axios: HTTP 200 OK: JSONString
@@ -76,7 +73,7 @@ sequenceDiagram
   Controller -->>- Axios: HTTP 200 OK: JSONString
   Axios -->> chart: List<ElectionResultsSummaryModel>
   Axios -->> chart: DemographicStatisticsModel
-  Axios -->>- chart: Map<string[], number[]>
+  Axios -->>- chart: List<Double>
   deactivate chart
 
   Note left of Axios: Each bubble's data is calculated from the server<br>response object and plotted using D3
