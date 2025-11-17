@@ -1,0 +1,62 @@
+graph TD
+    Start( )
+    style Start fill:#000,stroke:#000,stroke-width:2px,width:20px,height:20px,shape:circle
+    End( )
+    style End fill:#fff,stroke:#000,stroke-width:2px,width:25px,height:25px,shape:doublecircle
+
+    fork1@{shape: fork}
+    join1@{shape: join}
+    fork2@{shape: fork}
+    join2@{shape: join}
+
+    %% Flow
+    
+    %% API Process to create the inferred CSV
+    Start --> A[Load Original Voter Registration CSV]
+    A -- "[ohio_reg_voter.csv]" --> B[Process Addresses via Validation API]
+    B -- "[inferred_addresses.csv]" --> C[Save Inferred Address CSV]
+    
+    %% Main script logic
+    C --> fork1
+
+    %% Branch 1: Database Preparation
+    fork1 --> D[Load DB Configuration from .env]
+    D -- "[DB Connection String]" --> E[Establish DB Connection]
+    
+    %% Branch 2: Main Data Processing
+    fork1 --> F[Load Original & Inferred CSVs into DataFrames]
+    
+    %% Verification of inferred address completeness/consistency
+    F -- "[voter_df:DataFrame]" --> G{"Decision: Is inferred<br/>address complete<br/>& consistent?"}
+    F -- "[inferred_df:DataFrame]" --> G{"Decision: Is inferred address valid (all fields present & consistent)?"}
+
+    %% No branch: incomplete / inconsistent address
+    G -- "No" --> H[Flag address as INCOMPLETE and log issue]
+
+    %% Yes branch: good inferred address
+    G -- "Yes" --> I[Accept inferred address and merge into voter_df]
+    
+    %% Rejoin flow: both paths continue to EAVS determination
+    H -- "[voter_df:DataFrame]" --> J[Determine and Store EAVS Region ID]
+    I -- "[voter_df:DataFrame]" --> J[Determine and Store EAVS Region ID]
+    
+    %% Main processing steps
+    J -- "[voter_df:DataFrame]" --> K[Normalize Party Affiliation]
+    
+    %% Fork for printing summary data and writing to DB
+    K -- "[voter_df:DataFrame]" --> fork2
+
+    %% Use Case 7: Generate Summary Report
+    fork2 --> L[Calculate Registration Summary Data]
+    L -- "[summary_data:dict]" --> M[Print Summary Report]
+    
+    %% Writing data to DB
+    E -- "[DB Engine]" --> join1
+    fork2 --> join1
+    
+    join1 --> N[Write Voter Records to Database]
+
+    %% Final join
+    M --> join2
+    N --> join2
+    join2 --> End

@@ -1,0 +1,62 @@
+---
+  config:
+    layout: elk
+    look: neo
+    theme: neutral
+---
+sequenceDiagram
+    autonumber
+
+    title: GUI13- Display of US voting equipment summary (required)
+    actor User
+    box Frontend
+        participant LandingPage as landingPage#58;DOMNode
+        participant ViewPage as displayVotingMachineSummaryView#58;DOMNode
+
+        participant Axios as #58;Axios
+    end
+
+    box Backend
+        participant Controller as #58;Controller
+        participant Service as #58;Service
+        participant DB as #58;Repository
+    end
+
+    note right of DB: IVoterEquipmentDAO in codebase
+
+    User->>LandingPage: Click menu item `Voting Equipment Summary`
+    note left of LandingPage: Visits /display/voting-machine-summary
+
+    activate LandingPage
+    activate Controller
+    LandingPage->>ViewPage: Render
+    activate ViewPage
+
+    ViewPage->>Axios: getAllVotingEquipment()
+    note left of Axios: We use Orval to generate typesafe request wrappers.
+    activate Axios
+
+    Axios->>Controller: GET /votingequipment/
+    Axios->>Controller: getAllVotingEquipment()
+    
+    note left of Controller: For simplicity, we are omitting the Servlet + Jackson Serialization<br/>step, the full-flow of events is shown in the diagram for GUI-2: Display State
+    activate Service
+    activate DB
+    Controller->>Service: getAllVotingEquipment()
+
+    Service->>DB: getAllVotingEquipment()
+    note left of DB: Calls into our custom ORM solution, performing row mapping<br/>(simplified, full-flow in GUI-2: Display State)
+    DB-->>Service: List<VotingEquipmentModel>
+    Service-->>Controller: List<VotingEquipmentModel>
+    deactivate Service
+    deactivate DB
+    note left of Controller: Would be serialized into a JSON string
+
+    Controller-->>Axios: HTTP 200 OK: JSONString
+    deactivate Axios
+
+    Axios-->>ViewPage: List<VotingEquipmentModel>
+    note right of ViewPage: Table is a mui-datagrid filled with server response object
+    deactivate ViewPage
+    deactivate Controller
+    deactivate LandingPage

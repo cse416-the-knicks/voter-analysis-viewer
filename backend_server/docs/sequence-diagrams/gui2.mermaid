@@ -1,0 +1,140 @@
+---
+  config:
+    layout: elk
+    look: neo
+    theme: neutral
+---
+%% NOTE(jerry):
+%% I think PlantUML might suck a little less at this, but
+%% consistency is more important than convenience at times like this!
+sequenceDiagram
+    autonumber
+
+    title: GUI-2 - Display State (required)
+    actor User
+    box Frontend
+        participant LandingPage as landingPage#58;DOMNode
+        participant Map as map#58;DOMNode
+        participant Table as table#58;DOMNode
+        participant Chart as chart#58;DOMNode
+
+        participant Axios as #58;Axios
+    end
+
+    box Backend
+        participant Servlet as #58;HttpServlet
+        participant OM as #58;ObjectMapper
+        participant SController as #58;Controller
+        participant SService as #58;Service
+        participant Database as #58;Repository
+        participant RowMapper as #58;RowMapper
+        participant ORM as #58;JDBCTemplate
+    end
+
+    Note right of Servlet: We are using SpringBoot, which receives<br/>the requests and forwards it to our controllers.
+
+    Note right of Database: IStateDAO in codebase
+    Note right of Database: This part is shown because we are using a hand-rolled ORM<br/>primarily as a learning experience.
+    Note right of SController: Except for getBoundaryGeometry, SpringBoot is set to cache<br/>all method calls here at the Service Layer. There is also no difference<br/>detailed states or general EAVS states for the geometry api call.
+    User->>LandingPage: Click State
+
+    activate Servlet
+    activate OM
+    activate SController
+
+    activate LandingPage
+    LandingPage->>Map: Render
+    activate Map
+    LandingPage->>Table: Render
+    activate Table
+    LandingPage->>Chart: Render
+    activate Chart
+
+    par Asynchronous Network Requests
+        note left of Axios: Client api library wraps calls to Axios <br/> and is generated based a JSON specification<br/>of the backend in the form of an OpenAPI spec.
+
+        Map->>Axios: getStateGeometry(fipsCode)
+        Table->>Axios: getProvisionalBallots(fipsCode, 2024, false)
+        Chart->>Axios: getProvisionalBallots(fipsCode, 2024, true)
+
+        activate Axios
+        Axios->>Servlet: GET /state/{fipsCode}/geometry
+        Axios->>Servlet: GET /state/{fipsCode}/provisional_ballots?aggregate=false
+        Axios->>Servlet: GET /state/{fipsCode}/provisional_ballots?aggregate=true
+    end
+    
+    Servlet->>SController: getStateBoundaries(fipsCode)
+    Servlet->>SController: getProvisionalBallots(fipsCode, year=2024, aggregate=false)
+    Servlet->>SController: getProvisionalBallots(fipsCode, year=2024, aggregate=true)
+
+    activate SService
+    SController->>SService: getBoundaryGeometry(fipsCode)
+    SController->>SService: getProvisionalBallotData(fipsCode, year=2024, aggregate=false)
+    SController->>SService: getProvisionalBallotData(fipsCode, year=2024, aggregate=true)
+    activate Database
+
+    SService->>Database: getBoundaryGeometry(fipsCode)
+    note right of Database: GeoJSON is a direct file system access
+    SService->>Database: getProvisionalBallotData(fipsCode, year=2024, aggregate=false)
+    SService->>Database: getProvisionalBallotData(fipsCode, year=2024, aggregate=true)
+    
+    activate ORM
+    Database->>ORM: query(ProvisionalBallotStatisticsModel.Query(), aggregate=false)
+    Database->>ORM: query(ProvisionalBallotStatisticsModel.Query(), aggregate=true)
+
+    activate RowMapper
+    ORM-->>RowMapper: resultSet: ResultSet
+    ORM-->>RowMapper: resultSet: ResultSet
+    deactivate ORM
+
+    loop on each data row of queries
+    Database-->>RowMapper: mapRow(resultSet)
+    end
+    loop on each data row of queries
+    Database-->>RowMapper: mapRow(resultSet)
+    end
+    deactivate RowMapper
+
+    Database-->>SService: :List<ProvisionalBallotStatisticsModel>
+    Database-->>SService: :ProvisionalBallotStatisticsModel
+    Database-->>SService: :GeoJSON
+
+    SService-->>SController: :List<ProvisionalBallotStatisticsModel>
+    SService-->>SController: :ProvisionalBallotStatisticsModel
+    SService-->>SController: :GeoJSON
+
+    deactivate Database
+    deactivate SService
+
+    note left of SController: We don't *really* return GeoJSON as a type,<br/>it's an ObjectNode from Jackson however we<br/>clearly document that it is as expected GeoJSON.
+    SController-->>Servlet: stateBoundaries: GeoJSON
+    SController-->>Servlet: provisionalBallots: List<ProvisionalBallotStatisticsModel>
+    SController-->>Servlet: provisionalBallotsAggregate: ProvisionalBallotStatisticsModel
+
+    Servlet->>OM: writeValueAsString(stateBoundaries)
+    Servlet->>OM: writeValueAsString(provisionalBallots)
+    Servlet->>OM: writeValueAsString(provisionalBallotsAggregate)
+    OM-->>Servlet: JSONString (for GeoJSON)
+    OM-->>Servlet: JSONString (for List<ProvisionalBallotStatisticsModel>)
+    OM-->>Servlet: JSONString (for ProvisionalBallotStatisticsModel)
+
+    Servlet-->>Axios: HTTPResponse (200 OK)
+    Servlet-->>Axios: HTTPResponse (200 OK)
+    Servlet-->>Axios: HTTPResponse (200 OK)
+    deactivate OM
+    deactivate SController
+    deactivate Servlet
+
+    note right of Axios: The Servlet responds with a JSON string, which we allow Axios / Browser<br/>to reparse into an Object, which we coerce into our known type definitions.
+
+    Axios-->>Map: stateBoundaries: GeoJSON
+    Axios-->>Table: List<ProvisionalBallotStatisticsModel>
+    Axios-->>Chart: ProvisionalBallotStatisticsModel
+    deactivate Axios
+
+    Note over Map,LandingPage: Using LeafletJS the Map will<br/>auto-zoom/center on the<br/>specific boundary geometry.
+    deactivate Map
+    deactivate Table
+    deactivate Chart
+
+    deactivate LandingPage

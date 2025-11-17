@@ -138,6 +138,14 @@ public class StateController {
     return _service.getViewStateYearSummaryDataForStateByYear(fipsCode, year);
   }
 
+  @GetMapping("/{fipsCode}/election-year-results/{year}")
+  public List<ElectionResultsSummaryModel> getElectionResultsSummary(
+      @PathVariable("fipsCode") String fipsCode,
+      @PathVariable("year") int year,
+      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
+    return _service.getElectionResultsSummaryDataForState(fipsCode, year, inAggregate);
+  }
+
   @GetMapping("/")
   public Map<String, StateInformationModel> getStateInformationTable() {
     return _service.getStateInformationTable();

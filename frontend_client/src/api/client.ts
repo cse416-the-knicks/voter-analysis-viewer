@@ -5,6 +5,7 @@
  * OpenAPI spec version: v0
  */
 import getVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
+import getVotingEquipmentUsageMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentByTypeMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentByManufacturerMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
@@ -23,6 +24,7 @@ import getProvisionalBallotsMutator from "../helpers/backendConnectorAxiosInstan
 import getPollbookDeletionsMutator from "../helpers/backendConnectorAxiosInstance";
 import getMailBallotRejectionsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateGeometryMutator from "../helpers/backendConnectorAxiosInstance";
+import getElectionResultsSummaryMutator from "../helpers/backendConnectorAxiosInstance";
 import getCountyGeoUnitCentroidsMutator from "../helpers/backendConnectorAxiosInstance";
 import getBallotStatisticsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateInformationTableMutator from "../helpers/backendConnectorAxiosInstance";
@@ -31,13 +33,18 @@ export interface VotingEquipmentModel {
   equipmentType?: string;
   modelName?: string;
   discontinued?: boolean;
-  firstManufactured?: number;
-  lastManufactured?: number;
+  firstManufactured?: string;
   operatingSystem?: string;
-  firmwareVersion?: string;
-  vvpat?: boolean;
   certificationLevel?: string;
-  securityRiskDescription?: string;
+}
+
+export interface VotingEquipmentUsageStatisticsModel {
+  stateName?: string;
+  stateId?: number;
+  dreNoVvpatTotal?: number;
+  dreVvpatTotal?: number;
+  bmdTotal?: number;
+  scannerTotal?: number;
 }
 
 export interface VoterRegistrationDataModel {
@@ -180,12 +187,26 @@ export interface ViewStateYearSummaryModel {
   mailinBallotVotingShareRate?: number;
 }
 
+export interface ElectionResultsSummaryModel {
+  fullRegionId?: string;
+  regionName?: string;
+  republicanVotes?: number;
+  democratVotes?: number;
+  otherVotes?: number;
+  totalVotes?: number;
+}
+
 export interface GeoUnitCentroidModel {
   fullRegionId?: string;
   countyName?: string;
   centerX?: number;
   centerY?: number;
 }
+
+export type GetVotingEquipmentUsageParams = {
+  regionId?: string;
+  year?: number;
+};
 
 export type GetDetailedVoterRegistrationDataCountParams = {
   state?: string;
@@ -239,6 +260,10 @@ export type GetPollbookDeletionsParams = {
 
 export type GetMailBallotRejectionsParams = {
   year?: number;
+  aggregate?: boolean;
+};
+
+export type GetElectionResultsSummaryParams = {
   aggregate?: boolean;
 };
 
@@ -672,6 +697,10 @@ export const getVotingEquipment = (manufacturer: string, model: string, options?
   return getVotingEquipmentMutator<VotingEquipmentModel>({ url: `/votingequipment/${manufacturer}/${model}`, method: "GET" }, options);
 };
 
+export const getVotingEquipmentUsage = (params?: GetVotingEquipmentUsageParams, options?: SecondParameter<typeof getVotingEquipmentUsageMutator>) => {
+  return getVotingEquipmentUsageMutator<VotingEquipmentUsageStatisticsModel[]>({ url: `/votingequipment/usages/`, method: "GET", params }, options);
+};
+
 export const getAllVotingEquipmentByType = (type: string, options?: SecondParameter<typeof getAllVotingEquipmentByTypeMutator>) => {
   return getAllVotingEquipmentByTypeMutator<VotingEquipmentModel[]>({ url: `/votingequipment/by-type/${type}`, method: "GET" }, options);
 };
@@ -815,6 +844,18 @@ export const getStateGeometry = (fipsCode: string, options?: SecondParameter<typ
   return getStateGeometryMutator<GeoJsonObject>({ url: `/state/${fipsCode}/geometry`, method: "GET" }, options);
 };
 
+export const getElectionResultsSummary = (
+  fipsCode: string,
+  year: number,
+  params?: GetElectionResultsSummaryParams,
+  options?: SecondParameter<typeof getElectionResultsSummaryMutator>
+) => {
+  return getElectionResultsSummaryMutator<ElectionResultsSummaryModel[]>(
+    { url: `/state/${fipsCode}/election-year-results/${year}`, method: "GET", params },
+    options
+  );
+};
+
 export const getCountyGeoUnitCentroids = (fipsCode: string, options?: SecondParameter<typeof getCountyGeoUnitCentroidsMutator>) => {
   return getCountyGeoUnitCentroidsMutator<GetCountyGeoUnitCentroids200>({ url: `/state/${fipsCode}/centroids`, method: "GET" }, options);
 };
@@ -828,6 +869,7 @@ export const getStateInformationTable = (options?: SecondParameter<typeof getSta
 };
 
 export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipment>>>;
+export type GetVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipmentUsage>>>;
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>;
 export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>;
 export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>;
@@ -846,6 +888,7 @@ export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof 
 export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletions>>>;
 export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>;
 export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>;
+export type GetElectionResultsSummaryResult = NonNullable<Awaited<ReturnType<typeof getElectionResultsSummary>>>;
 export type GetCountyGeoUnitCentroidsResult = NonNullable<Awaited<ReturnType<typeof getCountyGeoUnitCentroids>>>;
 export type GetBallotStatisticsResult = NonNullable<Awaited<ReturnType<typeof getBallotStatistics>>>;
 export type GetStateInformationTableResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTable>>>;

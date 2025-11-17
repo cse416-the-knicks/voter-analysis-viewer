@@ -27,8 +27,17 @@ public class AutoSqlQueryable<T> {
       _isAggregateSumQuery = v;
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    private static Constructor<?> firstMatchingArityConstructor(
+        Constructor<?>[] constructors, int targetArity) {
+      for (var constructor : constructors) {
+        if (constructor.getParameterCount() == targetArity) {
+          return constructor;
+        }
+      }
+      return null;
+    }
 
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
       /*
        * two args:
        * ResultSet,
@@ -41,21 +50,20 @@ public class AutoSqlQueryable<T> {
           throw new IllegalArgumentException("mapRow only has two arguments.");
         }
 
-        if (allConstructors.length != 1) {
-          throw new IllegalArgumentException(
-              "The mappable class is not a simple POJO (single constructor record");
-        }
-
-        var defaultConstructor = allConstructors[0];
         var resultSet = (ResultSet) args[0];
+        var resultSetMetaData = resultSet.getMetaData();
+        var constructor =
+            firstMatchingArityConstructor(allConstructors, resultSetMetaData.getColumnCount());
         var callingArguments = new ArrayList<Object>();
         var qualifyingFields =
             AutoSqlQueryable.filterForAllQueryableFields(
                 _mappableClass.getDeclaredFields(), _isAggregateSumQuery);
-
-        // I'm praying these are in order!
         int columnNumber = 1;
-        var resultSetMetaData = resultSet.getMetaData();
+
+        if (constructor == null) {
+          throw new RuntimeException("No valid constructor found (none matching column count.)");
+        }
+
         for (var field : qualifyingFields) {
           try {
             callingArguments.add(visitField(resultSet, field, columnNumber));
@@ -72,20 +80,7 @@ public class AutoSqlQueryable<T> {
           columnNumber++;
         }
 
-        /*
-         * FIXME(jerry):
-         * Almost able to remove the bad code, just this
-         * last vestige.
-         */
-        var autoSqlAnnotation = (AutoSql) _mappableClass.getAnnotation(AutoSql.class);
-        if (autoSqlAnnotation.collection().contains("eavs_data")) {
-          if (_isAggregateSumQuery) {
-            callingArguments.add(0, "0000000000");
-            callingArguments.add(1, "Aggregated");
-          }
-        }
-
-        return defaultConstructor.newInstance(callingArguments.toArray());
+        return constructor.newInstance(callingArguments.toArray());
       }
 
       return null;
@@ -191,6 +186,14 @@ public class AutoSqlQueryable<T> {
   // Happens to be fine for numeric data, might need to evolve as I think
   // more about this
   public String Query(boolean asSumAggregate) {
+    return QueryWhere(new String[] {}, asSumAggregate);
+  }
+
+  public String QueryWhere(String[] whereClauses) {
+    return QueryWhere(whereClauses, false);
+  }
+
+  public String QueryWhere(String[] whereClauses, boolean asSumAggregate) {
     var result = new StringBuilder();
     var selfClass = _class;
     var autoSqlAnnotation = selfClass.getAnnotation(AutoSql.class);
@@ -203,6 +206,7 @@ public class AutoSqlQueryable<T> {
     // For records, which is the use-case this is everything.
     var fieldsToWrite = filterForAllQueryableFields(selfClass.getDeclaredFields(), asSumAggregate);
     var joinClausesToAdd = autoSqlAnnotation.joining().length;
+    var groupByClausesToAdd = autoSqlAnnotation.groupBy().length;
 
     for (int i = 0; i < fieldsToWrite.length; ++i) {
       var field = fieldsToWrite[i];
@@ -233,6 +237,24 @@ public class AutoSqlQueryable<T> {
       result.append(" on ");
       result.append(autoSqlAnnotation.joinOn()[i]);
       result.append("\n");
+    }
+
+    for (var clause : whereClauses) {
+      result.append("where ");
+      result.append(clause);
+      result.append("\n");
+    }
+
+    if (groupByClausesToAdd > 0) {
+      result.append("group by\n");
+      for (int i = 0; i < groupByClausesToAdd; ++i) {
+        result.append(autoSqlAnnotation.groupBy()[i]);
+        if (i + 1 >= groupByClausesToAdd) {
+          // omit
+        } else {
+          result.append(",\n");
+        }
+      }
     }
     result.append("\n");
     return result.toString();

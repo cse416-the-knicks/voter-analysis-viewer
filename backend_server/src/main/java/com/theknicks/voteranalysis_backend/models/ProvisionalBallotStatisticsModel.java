@@ -25,6 +25,36 @@ public record ProvisionalBallotStatisticsModel(
     @SqlColumnName(name = "prov_reason_hours_extended") int ballotReasonExtendedVotingHours,
     @SqlColumnName(name = "prov_reason_same_day_reg") int ballotReasonSameDayRegistration,
     @SqlColumnName(name = "prov_other") int ballotReasonOther) {
+  public ProvisionalBallotStatisticsModel(
+      int totalProvisionalBallotsCast,
+      int totalBallotsCast,
+      int ballotReasonNotOnList,
+      int ballotReasonNoIdAvailable,
+      int ballotReasonChallengedByOfficial,
+      int ballotReasonChallengedByOther,
+      int ballotReasonWrongPrecinct,
+      int ballotReasonNotUpdatedAddress,
+      int ballotReasonDidNotSurrender,
+      int ballotReasonExtendedVotingHours,
+      int ballotReasonSameDayRegistration,
+      int ballotReasonOther) {
+    this(
+        "0000000000",
+        "Aggregated",
+        totalProvisionalBallotsCast,
+        totalBallotsCast,
+        ballotReasonNotOnList,
+        ballotReasonNoIdAvailable,
+        ballotReasonChallengedByOfficial,
+        ballotReasonChallengedByOther,
+        ballotReasonWrongPrecinct,
+        ballotReasonNotUpdatedAddress,
+        ballotReasonDidNotSurrender,
+        ballotReasonExtendedVotingHours,
+        ballotReasonSameDayRegistration,
+        ballotReasonOther);
+  }
+
   public static class Queryable extends AutoSqlQueryable<ProvisionalBallotStatisticsModel> {
     public Queryable() {
       super(ProvisionalBallotStatisticsModel.class);

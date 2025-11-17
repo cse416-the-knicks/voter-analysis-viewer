@@ -159,6 +159,26 @@ namespace Models {
         +status: string
         +Queryable() AutoSqlQueryable~~
     }
+    class Point {
+        +x: Double
+        +y: Double
+    }
+    class DemographicStatisticsModel {
+        <<SqlQueryable(view="app.voter_registration")>>
+        +fullRegionId: string
+        +regionName: string
+        +africanAmericanTotal: int
+        +asianOrPacificIslanderTotal: int
+        +hispanicTotal: int
+        +whiteTotal: int
+        +Queryable() AutoSqlQueryable~~
+    }
+    class VotingEquipmentQualityResponseModel {
+        +ageQualityScore: Double
+        +securityQualityScore: Double
+        +certificationQualityScore: Double
+        +totalQuality: Double
+    }
     class GeoJSON {
         refer to official GeoJSON documentation for schema.
     }
@@ -187,6 +207,9 @@ namespace Controllers {
 
         +GET /$fipsCode/year-summary(fipsCode: string) ViewStateYearSummaryModel[]
         +GET /$fipsCode/year-summary/$year(fipsCode: string, year: int) ViewStateYearSummaryModel?
+
+        +GET /$fipsCode/cvap-demographic(fipsCode: string, aggregate: boolean) DemographicStatisticsModel[]
+        +POST /regression-coefficients(dataPoints: Point[]) number[] // This method is a POST so that a body can be received.
     }
 
     class VoterRegistrationController {
@@ -232,6 +255,9 @@ namespace Services {
 
         + getCountyGeoUnitCentroids(fipsCode: string) Dictionary~string, GeoUnitCentroidModel~;
         + getStateInformationTable() Dictionary~string, StateInformationModel~;
+        + getCvapDemographicStatistics(fipsCode: string, aggregate: boolean) DemographicStatisticsModel[]
+
+        + getCurveCoefficients(dataPoints: Point[]) number[];
     }
 
     class VoterEquipmentService {
@@ -303,6 +329,7 @@ namespace DataAccessObject {
         +getStateYearSummaryRows(fipsCode: string) ViewStateYearSummaryModel[]
         +getStateYearSummaryRowByYear(fipsCode: string, year: int) ViewStateYearSummaryModel?
 
+        +getCvapDemographicStatistics(fipsCode: string, aggregate: boolean) DemographicStatisticsModel[]
         +getGeoUnitCentroids(fipsCode: string) Dictionary~FipsCode, GeoUnitCentroidModel~
         +getStateInformationDataRowModels() StateInformationDataRowModel[]
     }
@@ -365,6 +392,7 @@ AutoSqlQueryable <-- BallotStatisticsModel : Has
 AutoSqlQueryable <-- ViewStateYearSummaryModel : Has
 AutoSqlQueryable <-- StateInformationDataRowModel : Has
 AutoSqlQueryable <-- VoterRegistrationDataModel : Has
+AutoSqlQueryable <-- DemographicStatisticsModel : Has
 
 StateInformationModel <-- StateInformationDataRowModel : ConvertedInto
 
