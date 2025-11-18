@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.theknicks.voteranalysis_backend.dao.IStateDAO;
 import com.theknicks.voteranalysis_backend.models.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -112,29 +115,29 @@ public class StateService {
   }
 
   public List<Double> getRegressionCoefficients(
-    @RequestBody RegressionDataParameterModel dataPoints
+    RegressionDataParameterModel dataPoints
   ) {
     List<WeightedObservedPoint> points = new ArrayList<>();
 
-    assert dataPoints.pointsCount == dataPoints.xs.size() : "Point Xs does not match the pointsCount data.";
-    assert dataPoints.pointsCount == dataPoints.ys.size() : "Point Ys does not match the pointsCount data.";
+    assert dataPoints.pointsCount() == dataPoints.xs().size() : "Point Xs does not match the pointsCount data.";
+    assert dataPoints.pointsCount() == dataPoints.ys().size() : "Point Ys does not match the pointsCount data.";
 
     // Initial coefficients, this is for a quadratic curve.
-    var fitter = PolynomialCurveFitter.create().withStartPoint(
+    var fitter = PolynomialCurveFitter.create(2).withStartPoint(
       new double[] {
         0.0, 0.0, 0.0
       }
     );
 
-    for (int i = 0; i < dataPoints.pointsCount; ++i) {
+    for (int i = 0; i < dataPoints.pointsCount(); ++i) {
       // For the regression, all points are equally weighted.
       var newPoint = new WeightedObservedPoint(
-        1.0, dataPoints.xs.get(i), dataPoints.ys.get(i));
+        1.0, dataPoints.xs().get(i), dataPoints.ys().get(i));
       points.add(newPoint);
     }
 
     var bestFitCoefficients = fitter.fit(points);
-    return Arrays.asList(bestFitCoefficients);
+    return DoubleStream.of(bestFitCoefficients).boxed().toList();
   }
 
   public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(String fipsCode) {
