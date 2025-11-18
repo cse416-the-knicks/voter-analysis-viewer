@@ -118,16 +118,12 @@ public class StateService {
     RegressionDataParameterModel dataPoints
   ) {
     List<WeightedObservedPoint> points = new ArrayList<>();
-
+    _logger.info("Received " + dataPoints.pointsCount() + " points.");
     assert dataPoints.pointsCount() == dataPoints.xs().size() : "Point Xs does not match the pointsCount data.";
     assert dataPoints.pointsCount() == dataPoints.ys().size() : "Point Ys does not match the pointsCount data.";
 
     // Initial coefficients, this is for a quadratic curve.
-    var fitter = PolynomialCurveFitter.create(2).withStartPoint(
-      new double[] {
-        0.0, 0.0, 0.0
-      }
-    );
+    var fitter = PolynomialCurveFitter.create(2);
 
     for (int i = 0; i < dataPoints.pointsCount(); ++i) {
       // For the regression, all points are equally weighted.
