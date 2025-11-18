@@ -27,6 +27,7 @@ function WindowTitledDataGrid({
   maxWidth,
   maxHeight,
   onXout,
+  onRowDoubleClick,
 }: WindowTitledDataGridProperties) {
   return (
     <Box
@@ -68,6 +69,7 @@ function WindowTitledDataGrid({
           pageSize={pageSize}
           customGetRowClassName={customGetRowClassName}
           customCssRules={customCssRules}
+          onRowDoubleClick={onRowDoubleClick}
         />
       </Paper>
     </Box>

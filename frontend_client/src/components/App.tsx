@@ -7,6 +7,7 @@ import NotFoundPage from "./NotFoundPage";
 
 import StateInformationView from "./StateInformationView";
 import DisplayVotingMachineSummaryView from "./DisplayVotingMachineSummaryView";
+import DisplayVotingEquipmentUsageView from "./DisplayVotingEquipmentUsageView";
 import VoterComparisonOptInOptOutTableView from "./VoterComparisonOptInOutTableView";
 import FrontPage from "./FrontPage";
 import PartyComparisonTabulatedTablesView from "./PartyComparisonTabulatedTablesView";
@@ -40,6 +41,7 @@ function App() {
   const showBlocker = location.pathname !== "/";
   const overlayPaths: DisplayPathOverlay[] = [
     { matchPortion: "/display/voting-machine-summary", component: <DisplayVotingMachineSummaryView /> },
+    { matchPortion: "/display/state-voting-equipment-usage", component: <DisplayVotingEquipmentUsageView /> },
     { matchPortion: "/compare/optvote", component: <VoterComparisonOptInOptOutTableView /> },
     { matchPortion: "/compare/party-states", component: <PartyComparisonTabulatedTablesView /> },
     { matchPortion: "/state/:fipsCode/*", component: <StateInformationView /> },
