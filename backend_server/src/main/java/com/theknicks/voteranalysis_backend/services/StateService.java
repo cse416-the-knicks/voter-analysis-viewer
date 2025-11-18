@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.*;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
 
 /**
  * State Service layer,
@@ -107,6 +109,32 @@ public class StateService {
   public Optional<BallotStatisticsModel> getBallotStatisticsForCounty(
       String fipsCode, String countyFipsCode, int year) {
     return _dao.getBallotStatisticsRowByCounty(fipsCode, countyFipsCode, year);
+  }
+
+  public List<Double> getRegressionCoefficients(
+    @RequestBody RegressionDataParameterModel dataPoints
+  ) {
+    List<WeightedObservedPoint> points = new ArrayList<>();
+
+    assert dataPoints.pointsCount == dataPoints.xs.size() : "Point Xs does not match the pointsCount data.";
+    assert dataPoints.pointsCount == dataPoints.ys.size() : "Point Ys does not match the pointsCount data.";
+
+    // Initial coefficients, this is for a quadratic curve.
+    var fitter = PolynomialCurveFitter.create().withStartPoint(
+      new double[] {
+        0.0, 0.0, 0.0
+      }
+    );
+
+    for (int i = 0; i < dataPoints.pointsCount; ++i) {
+      // For the regression, all points are equally weighted.
+      var newPoint = new WeightedObservedPoint(
+        1.0, dataPoints.xs.get(i), dataPoints.ys.get(i));
+      points.add(newPoint);
+    }
+
+    var bestFitCoefficients = fitter.fit(points);
+    return Arrays.asList(bestFitCoefficients);
   }
 
   public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(String fipsCode) {
