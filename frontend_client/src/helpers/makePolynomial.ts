@@ -19,7 +19,7 @@ type PolynomialFunction = (x: number) => number;
 */
 function makePolynomial(coefficients: number[]): PolynomialFunction {
   function f(x: number) {
-    const maxDegree = (coefficients.length-1);
+    const maxDegree = coefficients.length - 1;
     let result = 0;
     for (let degree = maxDegree; degree >= 0; --degree) {
       result += coefficients[degree] * Math.pow(x, degree);
@@ -30,6 +30,4 @@ function makePolynomial(coefficients: number[]): PolynomialFunction {
 }
 
 export default makePolynomial;
-export type {
-  PolynomialFunction
-};
+export type { PolynomialFunction };
