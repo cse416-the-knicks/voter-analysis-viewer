@@ -4,15 +4,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.theknicks.voteranalysis_backend.dao.IStateDAO;
 import com.theknicks.voteranalysis_backend.models.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
-
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.*;
-import org.apache.commons.math3.fitting.PolynomialCurveFitter;
-import org.apache.commons.math3.fitting.WeightedObservedPoint;
 
 /**
  * State Service layer,
@@ -115,25 +113,37 @@ public class StateService {
   }
 
   public List<Double> getRegressionCoefficients(
-    RegressionDataParameterModel dataPoints
-  ) {
+      RegressionDataParameterModel dataPoints, int degree) {
     List<WeightedObservedPoint> points = new ArrayList<>();
     _logger.info("Received " + dataPoints.pointsCount() + " points.");
-    assert dataPoints.pointsCount() == dataPoints.xs().size() : "Point Xs does not match the pointsCount data.";
-    assert dataPoints.pointsCount() == dataPoints.ys().size() : "Point Ys does not match the pointsCount data.";
+    assert dataPoints.pointsCount() == dataPoints.xs().size()
+        : "Point Xs does not match the pointsCount data.";
+    assert dataPoints.pointsCount() == dataPoints.ys().size()
+        : "Point Ys does not match the pointsCount data.";
 
-    // Initial coefficients, this is for a quadratic curve.
-    var fitter = PolynomialCurveFitter.create(2);
+    var fitter = PolynomialCurveFitter.create(degree);
+    var xs = dataPoints.xs();
+    var ys = dataPoints.ys();
 
     for (int i = 0; i < dataPoints.pointsCount(); ++i) {
       // For the regression, all points are equally weighted.
-      var newPoint = new WeightedObservedPoint(
-        1.0, dataPoints.xs().get(i), dataPoints.ys().get(i));
+      var newPoint = new WeightedObservedPoint(1.0, xs.get(i), ys.get(i));
       points.add(newPoint);
     }
 
     var bestFitCoefficients = fitter.fit(points);
-    return DoubleStream.of(bestFitCoefficients).boxed().toList();
+    var coefficientList = DoubleStream.of(bestFitCoefficients).boxed().toList();
+
+    /*
+      NOTE(jerry): coefficients are returned in
+      lowest exponent to highest by default by fitter.fit,
+      however I think this is not intuitive (arguably I shouldn't assume),
+
+      I'll reverse the coefficients. Should be paired with an appropriate
+      helper function anyway.
+    */
+    Collections.reverse(coefficientList);
+    return coefficientList;
   }
 
   public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(String fipsCode) {

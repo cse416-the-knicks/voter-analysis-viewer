@@ -153,9 +153,9 @@ public class StateController {
 
   @PostMapping("/regression-coefficients")
   public List<Double> getRegressionCoefficients(
-    @RequestBody RegressionDataParameterModel dataPoints
-  ) {
-    return _service.getRegressionCoefficients(dataPoints);
+      @RequestBody RegressionDataParameterModel dataPoints,
+      @RequestParam(name = "degree", defaultValue = "2") int degree) {
+    return _service.getRegressionCoefficients(dataPoints, degree);
   }
 
   @GetMapping("/{fipsCode}")
