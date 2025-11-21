@@ -16,7 +16,6 @@ OHIO_FIPS_CODE = "39"
 # Loading Ohio Voter Registration data
 files = ["SWVF_1_22.csv", "SWVF_23_44.csv", "SWVF_45_66.csv", "SWVF_67_88.csv"]
 cols = [
-    # "SOS_VOTERID",
     "COUNTY_NUMBER",
     "LAST_NAME",
     "FIRST_NAME",
@@ -29,11 +28,15 @@ cols = [
     "RESIDENTIAL_ZIP",
 ]
 
+total_voters = 0
+republican_voters = 0
+democratic_voters = 0
+unaffiliated_voters = 0
+
 for file in files:
     print(f"=========Processing file: {file}=========")
     data_path = f"../raw/ohio_voter_files/{file}"
     df = pd.read_csv(data_path, usecols=cols, encoding="cp1252", dtype={
-        # "SOS_VOTERID": str,
         "COUNTY_NUMBER": str,
         "LAST_NAME": str,
         "FIRST_NAME": str,
@@ -45,14 +48,20 @@ for file in files:
         "RESIDENTIAL_CITY": str,
         "RESIDENTIAL_ZIPCODE": str,
     })
-    # print('\n'.join(df.columns.tolist()))
 
     df["region_id"] = (OHIO_FIPS_CODE + (((df["COUNTY_NUMBER"].astype(int) - 1) * 2 + 1).astype(str).str.zfill(3))).str.ljust(10, "0")
 
     df = df.drop(columns=["COUNTY_NUMBER"])
 
+    # Normalize PARTY_AFFILIATION to uppercase and replace NaN with empty string
+    df["PARTY_AFFILIATION"] = df["PARTY_AFFILIATION"].fillna("").str.upper().str.strip()
+
+    total_voters += len(df)
+
+    republican_voters += (df["PARTY_AFFILIATION"].str.upper() == "R").sum()
+    democratic_voters += (df["PARTY_AFFILIATION"].str.upper() == "D").sum()
+
     rename_map = {
-        # "SOS_VOTERID": "voter_id",
         "LAST_NAME": "last_name",
         "FIRST_NAME": "first_name",
         "MIDDLE_NAME": "middle_name",
@@ -80,5 +89,16 @@ for file in files:
         if_exists="append",
         index=False
     )
+
+affiliated_voters = republican_voters + democratic_voters
+unaffiliated_voters = total_voters - affiliated_voters
+
+print("\n============== Ohio Voter Registration Summary ==============")
+print(f"Total registered voters:                {total_voters:,d}")
+print(f"Voters with designated political party: {affiliated_voters:,d}")
+print(f"Republican voters (R):                  {republican_voters:,d}")
+print(f"Democratic voters (D):                  {democratic_voters:,d}")
+print(f"Unaffiliated / Other voters:            {unaffiliated_voters:,d}")
+print("=============================================================")
 
 print("Finished inserting Ohio voter registration data")
