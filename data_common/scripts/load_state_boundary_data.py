@@ -33,7 +33,6 @@ for idx, row in gdf.iterrows():
         continue
 
     region_id = fips.ljust(10, "0")
-    state_name = FIPS_TO_STATES_MAP.get(fips, "Unknown")
 
     # Turning the centroid into a Point coordinate
     centroid_geom = centroids.iloc[idx]
@@ -48,7 +47,6 @@ for idx, row in gdf.iterrows():
     records.append({
         "region_id": region_id,
         "state_id": int(fips),
-        "name": state_name,
         "geom_boundary": boundary_geojson,
         "geom_center": centroid_geojson
     })

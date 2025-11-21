@@ -8,10 +8,8 @@ CREATE TABLE app.region_boundary (
                                                      -- left‑padded 2‑digit FIPS for whole states
     state_id      INT NOT NULL
                    REFERENCES app.states(state_id),  -- parent state
-    name          VARCHAR(100) NOT NULL,             -- human‑readable name (state or locality)
     geom_boundary TEXT NOT NULL,                     -- GeoJSON MULTIPOLYGON stored as text
     geom_center   TEXT,                              -- GeoJSON POINT (centre of the feature)                            
-    CONSTRAINT uq_region_boundary_state_name UNIQUE (state_id, name)
 );
 
 -- ================

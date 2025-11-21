@@ -66,7 +66,8 @@ pip install -r requirements.txt
 pip install openpyxl # ???
 
 python3 load_prelim_states_data.py
-python3 load_boundary_data.py
+python3 load_state_boundary_data.py
+python3 load_county_boundary_data.py
 python3 load_2024_eavs_data.py
 python3 load_2022_eavs_data.py
 python3 load_2020_eavs_data.py
