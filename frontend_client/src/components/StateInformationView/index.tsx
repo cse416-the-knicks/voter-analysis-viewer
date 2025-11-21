@@ -247,8 +247,8 @@ function StateInformationView() {
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
               setBarGraphXTitle("Deletion Reasons");
               setDataRows(
-                (await activeVoterPromises[1]).map((x) => {
-                  return { id: x.fullRegionId, ...x };
+                (await activeVoterPromises[1]).map((x, i) => {
+                  return { id: x.fullRegionId, ...x, ...data[i] };
                 })
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
@@ -317,6 +317,7 @@ function StateInformationView() {
     if (stateType !== DETAIL_STATE_TYPE_NONE) {
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
       if (row) {
+        console.log(row);
         const dataEntry =
           (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
           (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||

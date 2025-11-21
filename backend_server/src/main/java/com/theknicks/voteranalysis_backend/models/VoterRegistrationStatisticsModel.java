@@ -16,6 +16,10 @@ public record VoterRegistrationStatisticsModel(
     @SqlColumnName(name = "total_registered") int total,
     @SqlColumnName(name = "active_registered") int active,
     @SqlColumnName(name = "inactive_registered") int inactive) {
+  public VoterRegistrationStatisticsModel(int total, int active, int inactive) {
+    this("0000000000", "Aggregated", total, active, inactive);
+  }
+
   public static class Queryable extends AutoSqlQueryable<VoterRegistrationStatisticsModel> {
     public Queryable() {
       super(VoterRegistrationStatisticsModel.class);
