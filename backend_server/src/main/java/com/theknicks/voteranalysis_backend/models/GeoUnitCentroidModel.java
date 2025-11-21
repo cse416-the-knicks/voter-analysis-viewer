@@ -7,4 +7,13 @@ package com.theknicks.voteranalysis_backend.models;
  * <p>NOTE(jerry): just like the GeoJson data it is read from a file.
  */
 public record GeoUnitCentroidModel(
-    String fullRegionId, String countyName, float centerX, float centerY) {}
+    String fullRegionId, String countyName, float centerX, float centerY) {
+    public static GeoUnitCentroidModel fromDataRow(GeoUnitCentroidDataRowModel dataRow) {
+        var jsonGeoPointData = dataRow.geomCenterJson();
+        return new GeoUnitCentroidModel(
+                dataRow.regionId(),
+                dataRow.name(),
+                1, 1
+        );
+    }
+}

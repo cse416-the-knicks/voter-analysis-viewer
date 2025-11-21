@@ -180,6 +180,15 @@ public class StateDAO implements IStateDAO {
       fipsCode = "0" + fipsCode;
     }
 
+    // state_id is an integer in the schema definition.
+    var fipsCodeAsInteger = Integer.parseInt(fipsCode, 10);
+    var queryable = new GeoUnitCentroidDataRowModel.Queryable();
+    var queryString = queryable.QueryWhere(new String[] {"region_boundary.state_id = ?"});
+    var queryMapper = queryable.Mapper();
+    var queryResult = _jdbcTemplate.query(queryString, queryMapper, fipsCodeAsInteger);
+
+    queryResult.stream().map(GeoUnitCentroidModel::fromDataRow).col
+
     for (var key : _geoUnitCentroidMap.keySet()) {
       if (key.startsWith(fipsCode)) {
         result.put(key, _geoUnitCentroidMap.get(key));
