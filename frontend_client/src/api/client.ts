@@ -6,6 +6,7 @@
  */
 import getRegressionCoefficientsMutator from "../helpers/backendConnectorAxiosInstance";
 import getVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
+import getDetailedVotingEquipmentUsageMutator from "../helpers/backendConnectorAxiosInstance";
 import getVotingEquipmentUsageMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentByTypeMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentByManufacturerMutator from "../helpers/backendConnectorAxiosInstance";
@@ -49,6 +50,8 @@ export interface VotingEquipmentModel {
 export interface VotingEquipmentUsageStatisticsModel {
   stateName?: string;
   stateId?: number;
+  fullRegionId?: string;
+  countyName?: string;
   dreNoVvpatTotal?: number;
   dreVvpatTotal?: number;
   bmdTotal?: number;
@@ -225,8 +228,12 @@ export type GetRegressionCoefficientsParams = {
   degree?: number;
 };
 
+export type GetDetailedVotingEquipmentUsageParams = {
+  year?: number;
+  aggregate?: boolean;
+};
+
 export type GetVotingEquipmentUsageParams = {
-  regionId?: string;
   year?: number;
 };
 
@@ -734,6 +741,17 @@ export const getVotingEquipment = (manufacturer: string, model: string, options?
   return getVotingEquipmentMutator<VotingEquipmentModel>({ url: `/votingequipment/${manufacturer}/${model}`, method: "GET" }, options);
 };
 
+export const getDetailedVotingEquipmentUsage = (
+  fipsCode: string,
+  params?: GetDetailedVotingEquipmentUsageParams,
+  options?: SecondParameter<typeof getDetailedVotingEquipmentUsageMutator>
+) => {
+  return getDetailedVotingEquipmentUsageMutator<VotingEquipmentUsageStatisticsModel[]>(
+    { url: `/votingequipment/usages/${fipsCode}`, method: "GET", params },
+    options
+  );
+};
+
 export const getVotingEquipmentUsage = (params?: GetVotingEquipmentUsageParams, options?: SecondParameter<typeof getVotingEquipmentUsageMutator>) => {
   return getVotingEquipmentUsageMutator<VotingEquipmentUsageStatisticsModel[]>({ url: `/votingequipment/usages/`, method: "GET", params }, options);
 };
@@ -918,6 +936,7 @@ export const getStateInformationTable = (options?: SecondParameter<typeof getSta
 
 export type GetRegressionCoefficientsResult = NonNullable<Awaited<ReturnType<typeof getRegressionCoefficients>>>;
 export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipment>>>;
+export type GetDetailedVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getDetailedVotingEquipmentUsage>>>;
 export type GetVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipmentUsage>>>;
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>;
 export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>;
