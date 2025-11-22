@@ -5,6 +5,7 @@ import type {
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
   VoterRegistrationHistoryGraphDataModel,
+  VoterAffiliationStatisticsModel,
 } from "../../api/client";
 
 import {
@@ -52,8 +53,10 @@ import {
   bargraphDataForMailBallotRejections,
   bargraphDataForPollBookDeletions,
   bargraphDataForProvisionalBallots,
+  bargraphDataForVoterAffiliations,
   MAIL_BALLOT_REJECTION_COLUMNS,
   PROVISIONAL_BALLOT_COLUMNS,
+  VOTER_AFFILIATION_COLUMNS,
 } from "./dataColumns";
 
 import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
@@ -234,7 +237,6 @@ function StateInformationView() {
   useEffect(
     function () {
       (async function () {
-        let high: number = 0;
         switch (activeDataState) {
           case ID_SELECTION_PROVISIONAL_BALLOT:
             {
@@ -249,7 +251,6 @@ function StateInformationView() {
               );
               setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
               setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
-              high = Math.max(...data.map((x) => x.totalProvisionalBallotsCast!));
               setTotalDataCount(aggregatedData[0].totalProvisionalBallotsCast!);
             }
             break;
@@ -266,7 +267,6 @@ function StateInformationView() {
               );
               setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
               setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
-              high = Math.max(...data.map((x) => x.rejectTotal!));
               setTotalDataCount(aggregatedData[0].rejectTotal!);
             }
             break;
@@ -283,12 +283,23 @@ function StateInformationView() {
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
-              high = Math.max(...data.map((x) => x.total!));
               setTotalDataCount(aggregatedData[0].total!);
             }
             break;
           case ID_SELECTION_VOTER_REGISTRATION:
             {
+              const promises = [true, false].map((v) => getVoterAffiliations(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Affiliation Count`);
+              setBarGraphXTitle("Voter Party");
+              setDataRows(
+                data.map((x) => {
+                  return { id: x.fullRegionId, ...x };
+                })
+              );
+              setDataColumns(VOTER_AFFILIATION_COLUMNS);
+              setBarData(bargraphDataForVoterAffiliations(aggregatedData[0]));
+              setTotalDataCount(aggregatedData[0].registeredVotersTotal!);
               // TODO: finish this for GUI17 completion.
             }
             break;
@@ -306,7 +317,6 @@ function StateInformationView() {
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
-              high = Math.max(...data.map((x) => x.totalRemoved!));
               setTotalDataCount(aggregatedData[0].totalRemoved!);
             }
             break;
@@ -347,12 +357,14 @@ function StateInformationView() {
           (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
           (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
           (row as PollbookDeletionStatisticsModel).totalRemoved! ||
-          (row as VoterRegistrationStatisticsModel).active!;
+          (row as VoterRegistrationStatisticsModel).active! ||
+          (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
         const dataEntryTotal =
           (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||
           (row as ProvisionalBallotStatisticsModel).totalBallotsCast! || // TODO(jerry): needs total actual ballots vs total Provisional
           (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
-          (row as VoterRegistrationStatisticsModel).total!;
+          (row as VoterRegistrationStatisticsModel).total! ||
+          (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
         const colorPoint = (dataEntry / dataEntryTotal) * 100;
 
         style.fillOpacity = 1.0;
