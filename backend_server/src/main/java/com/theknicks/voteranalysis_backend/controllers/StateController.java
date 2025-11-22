@@ -151,6 +151,13 @@ public class StateController {
     return _service.getStateInformationTable();
   }
 
+  @PostMapping("/regression-coefficients")
+  public List<Double> getRegressionCoefficients(
+      @RequestBody RegressionDataParameterModel dataPoints,
+      @RequestParam(name = "degree", defaultValue = "2") int degree) {
+    return _service.getRegressionCoefficients(dataPoints, degree);
+  }
+
   @GetMapping("/{fipsCode}")
   public Optional<StateInformationModel> getStateInformationTableForState(
       @PathVariable("fipsCode") String fipsCode) {
