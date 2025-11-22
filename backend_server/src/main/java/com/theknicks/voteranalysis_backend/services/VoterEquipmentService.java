@@ -36,6 +36,11 @@ public class VoterEquipmentService {
     return _dao.getVotingEquipmentUsage(fipsCode);
   }
 
+  public List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(
+      String fipsCode, boolean inAggregate) {
+    return _dao.getDetailedVotingEquipmentUsage(fipsCode, inAggregate);
+  }
+
   public List<VotingEquipmentModel> getAllVotingEquipmentByType(String type) {
     return _dao.getVotingEquipmentByType(type);
   }

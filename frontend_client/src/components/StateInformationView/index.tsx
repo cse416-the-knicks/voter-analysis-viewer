@@ -14,6 +14,7 @@ import {
   getPollbookDeletions,
   getDetailedVoterRegistrationDataCount,
   getVoterRegistrationHistory,
+  getVotingEquipmentUsage,
 } from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
@@ -291,6 +292,10 @@ function StateInformationView() {
               // TODO: finish this for GUI17 completion.
             }
             break;
+	  case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
+	    {
+	      const promises = [true, false].map((v) => getVotingEquipmentUsage({}))
+	    } break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));

@@ -62,6 +62,18 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
   }
 
   @Override
+  public List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(
+      String fipsCode, boolean inAggregate) {
+    var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
+    var entries =
+        _jdbcTemplate.query(
+            queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
+            queryable.Mapper(),
+            Integer.parseInt(fipsCode, 10));
+    return VotingEquipmentUsageStatisticsModel.fromDataRowsPerCounty(entries);
+  }
+
+  @Override
   public Optional<VotingEquipmentModel> getVotingEquipmentModel(String manufacturer, String model) {
     var queryable = new VotingEquipmentModel.Queryable();
     return Optional.ofNullable(
