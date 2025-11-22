@@ -6,7 +6,7 @@ import type {
   MailBallotRejectionStatisticsModel,
 } from "../../api/client";
 
-import { getProvisionalBallots, getMailBallotRejections, getVoterRegistrationCounts, getPollbookDeletions } from "../../api/client";
+import { getProvisionalBallots, getMailBallotRejections, getVoterRegistrationCounts, getPollbookDeletions, getDetailedVoterRegistrationDataCount } from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
 
@@ -272,19 +272,7 @@ function StateInformationView() {
             break;
           case ID_SELECTION_VOTER_REGISTRATION:
             {
-                const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-                const [aggregatedData, data] = await Promise.all(promises);
-                setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
-                setBarGraphXTitle("Voter Categories");
-                setDataRows(
-                  data.map((x) => {
-                    return { id: x.fullRegionId, ...x };
-                  })
-                );
-                setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
-                setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
-                high = Math.max(...data.map((x) => x.total!));
-                setTotalDataCount(aggregatedData[0].total!);
+              // TODO: finish this for GUI17 completion.
             }
             break;
           case ID_SELECTION_POLLBOOK_DELETION:
