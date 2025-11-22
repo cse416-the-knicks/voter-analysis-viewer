@@ -207,6 +207,7 @@ public class AutoSqlQueryable<T> {
     var fieldsToWrite = filterForAllQueryableFields(selfClass.getDeclaredFields(), asSumAggregate);
     var joinClausesToAdd = autoSqlAnnotation.joining().length;
     var groupByClausesToAdd = autoSqlAnnotation.groupBy().length;
+    var whereClausesToAdd = whereClauses.length;
 
     for (int i = 0; i < fieldsToWrite.length; ++i) {
       var field = fieldsToWrite[i];
@@ -239,10 +240,18 @@ public class AutoSqlQueryable<T> {
       result.append("\n");
     }
 
-    for (var clause : whereClauses) {
+    if (whereClausesToAdd > 0) {
       result.append("where ");
-      result.append(clause);
-      result.append("\n");
+      for (int i = 0; i < whereClausesToAdd; ++i) {
+        var clause = whereClauses[i];
+        result.append(clause);
+        if (i + 1 >= whereClausesToAdd) {
+          // omit
+        } else {
+          result.append(" and");
+        }
+        result.append("\n");
+      }
     }
 
     if (groupByClausesToAdd > 0) {
