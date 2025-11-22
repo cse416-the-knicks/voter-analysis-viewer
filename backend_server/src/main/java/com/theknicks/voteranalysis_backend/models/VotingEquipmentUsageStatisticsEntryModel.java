@@ -33,7 +33,7 @@ public record VotingEquipmentUsageStatisticsEntryModel(
     @SqlColumnName(name = "states.name") String stateName,
     @SqlColumnName(name = "eavs_geounit.state_id") int stateId,
     @SqlColumnName(name = "eavs_geounit.eavs_unit_code") String fullRegionId,
-    @SqlColumnName(name = "eavs_geounit.eavs_unit_name") String countyName,
+    @SqlColumnName(name = "eavs_geounit.name") String countyName,
     @SqlColumnName(name = "device_type") String deviceType,
     @SqlColumnName(name = "certification") String certification,
     // NOTE(jerry):

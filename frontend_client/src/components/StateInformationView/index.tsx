@@ -14,7 +14,7 @@ import {
   getPollbookDeletions,
   getDetailedVoterRegistrationDataCount,
   getVoterRegistrationHistory,
-  getVotingEquipmentUsage,
+  getDetailedVotingEquipmentUsage,
 } from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
@@ -54,6 +54,8 @@ import {
   bargraphDataForProvisionalBallots,
   MAIL_BALLOT_REJECTION_COLUMNS,
   PROVISIONAL_BALLOT_COLUMNS,
+  VOTING_EQUIPMENT_COLUMNS,
+  bargraphDataForVotingEquipmentUsages,
 } from "./dataColumns";
 
 import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
@@ -97,8 +99,8 @@ const defaultDropDownSections = [
   {
     title: "Voting Equipment",
     items: [
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Type" },
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Type" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Age" },
     ],
   },
 ];
@@ -131,6 +133,7 @@ function a11yProps(index: number) {
 }
 
 function getUrlForModeId(id: number, fipsCode: string) {
+  console.log(id);
   switch (id) {
     case ID_SELECTION_PROVISIONAL_BALLOT:
       return `/state/${fipsCode}/provisional-ballots`;
@@ -150,6 +153,8 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/dropbox-chart/`;
     case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE:
       return `/state/${fipsCode}/voter-table/`;
+    case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
+      return `/state/${fipsCode}/equipment-by-type/`;
   }
   return "?";
 }
@@ -171,6 +176,8 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_DROP_BOX_VOTING;
   } else if (pathname.includes("/voter-table/")) {
     return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
+  } else if (pathname.includes("/equipment-by-type/")) {
+    return ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE;
   }
   return -1;
 }
@@ -294,7 +301,17 @@ function StateInformationView() {
             break;
           case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
             {
-              const promises = [true, false].map((v) => getVotingEquipmentUsage({}));
+              const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voting Equipment Type Count`);
+              setBarGraphXTitle("Equipment Type");
+              setDataRows(
+                data.map((x) => {
+                  return { id: x.fullRegionId, ...x };
+                })
+              );
+              setDataColumns(VOTING_EQUIPMENT_COLUMNS);
+              setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
             }
             break;
           case ID_SELECTION_POLLBOOK_DELETION:
