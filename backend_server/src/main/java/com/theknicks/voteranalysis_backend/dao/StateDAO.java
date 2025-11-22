@@ -108,8 +108,8 @@ public class StateDAO implements IStateDAO {
         democraticTotal += item.democraticTotal();
         republicanTotal += item.republicanTotal();
         unaffiliatedTotal += item.unaffiliatedTotal();
-        totalRegisteredVoters += item.totalRegisteredVoters();
-        totalActiveRegisteredVoters += item.totalActiveRegisteredVoters();
+        totalRegisteredVoters += item.registeredVotersTotal();
+        totalActiveRegisteredVoters += item.activeRegisteredVotersTotal();
       }
 
       return Collections.singletonList(
