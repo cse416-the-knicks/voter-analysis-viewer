@@ -34,10 +34,10 @@ import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab } from "@mu
 
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
-  DETAIL_STATE_TYPE_NONE,
   DETAIL_STATE_TYPE_REPUBLICAN,
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
   getDetailStateType,
+  isDetailState,
   type DetailStateType,
 } from "../FullBoundedUSMap/detailedStatesInfo";
 
@@ -165,15 +165,20 @@ const voterRegistrationStateDropDownSections = [
   },
 ];
 
-function pickDropdownType(stateType: DetailStateType) {
-  switch (stateType) {
-    case DETAIL_STATE_TYPE_DEMOCRAT:
-    case DETAIL_STATE_TYPE_REPUBLICAN:
-      return partyStateDropDownSections;
-    case DETAIL_STATE_TYPE_VOTER_REGISTRATION:
-      return voterRegistrationStateDropDownSections;
+function pickDropdownType(stateType: DetailStateType[]) {
+  const partyState = stateType.some((x) => x === DETAIL_STATE_TYPE_REPUBLICAN || x === DETAIL_STATE_TYPE_DEMOCRAT);
+  const voterRegistrationState = stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION);
+  const result = [...defaultDropDownSections];
+  if (partyState || voterRegistrationState) {
+    if (partyState) {
+      result[0] = partyStateDropDownSections[0];
+    }
+    if (voterRegistrationState) {
+      result[2] = voterRegistrationStateDropDownSections[2];
+    }
+    return result;
   }
-  return defaultDropDownSections;
+  return result;
 }
 
 const choroplethColorBuckets = [
@@ -281,7 +286,8 @@ function StateInformationView() {
   const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
   const [totalDataCount, setTotalDataCount] = useState(0);
 
-  const tryingToViewDetailedVoterRegistration = stateType === DETAIL_STATE_TYPE_VOTER_REGISTRATION && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
+  const tryingToViewDetailedVoterRegistration =
+    stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
   const shouldOpenPopup = ["dropbox-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates"].some((x) =>
     location.pathname.includes(x)
@@ -396,7 +402,7 @@ function StateInformationView() {
       weight: 2.5,
     };
 
-    if (stateType !== DETAIL_STATE_TYPE_NONE) {
+    if (isDetailState(fipsCode!)) {
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
       if (row) {
         const dataEntry =
@@ -491,7 +497,7 @@ function StateInformationView() {
               }
             }}
           >
-            {stateType !== DETAIL_STATE_TYPE_NONE && !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) && (
+            {isDetailState(fipsCode!) && !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) && (
               <GradientMapLegend gradientMap={gradientMap} />
             )}
             <Typography

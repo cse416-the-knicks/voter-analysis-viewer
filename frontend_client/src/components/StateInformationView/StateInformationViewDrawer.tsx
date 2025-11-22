@@ -29,7 +29,7 @@ interface StateInformationViewDrawerProperties {
   stateHook: [number, (arg0: number) => void];
   onSelection: OnSelectionFn;
   sections: StateInformationViewDrawerSection[];
-  stateType: DetailStateType;
+  stateType: DetailStateType[];
   topMargin: string | number;
   drawerWidth: string | number;
 }
@@ -165,7 +165,9 @@ function StateInformationViewDrawer({ sections, stateHook, onSelection, stateTyp
         },
       }}
     >
-      <StateInfoCard type={stateType} />
+      {stateType.map((x) => (
+        <StateInfoCard type={x} />
+      ))}
       <List dense>{finalComponentsWithDividers}</List>
       <Button onClick={() => navigate("/")} variant="contained" color="secondary">
         <HighlightOffIcon /> Exit State Display

@@ -69,8 +69,8 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoun
       mouseout: onMouseOutHandler,
     };
 
-    if (stateType !== DETAIL_STATE_TYPE_NONE) {
-      layer.bindTooltip(stateName + " - " + getHumanReadableStateType(stateType));
+    if (isDetailState(id! as string)) {
+      layer.bindTooltip(stateName + " - " + stateType.map(getHumanReadableStateType).join(", "));
     } else {
       layer.bindTooltip(stateName);
     }
