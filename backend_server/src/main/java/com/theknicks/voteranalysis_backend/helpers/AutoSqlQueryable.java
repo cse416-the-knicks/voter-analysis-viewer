@@ -242,28 +242,16 @@ public class AutoSqlQueryable<T> {
 
     if (whereClausesToAdd > 0) {
       result.append("where ");
-      for (int i = 0; i < whereClausesToAdd; ++i) {
-        var clause = whereClauses[i];
-        result.append(clause);
-        if (i + 1 >= whereClausesToAdd) {
-          // omit
-        } else {
-          result.append(" and");
-        }
-        result.append("\n");
-      }
+      var queryClauses = String.join(" and ", whereClauses);
+      result.append(queryClauses);
+      result.append("\n");
     }
 
     if (groupByClausesToAdd > 0) {
       result.append("group by\n");
-      for (int i = 0; i < groupByClausesToAdd; ++i) {
-        result.append(autoSqlAnnotation.groupBy()[i]);
-        if (i + 1 >= groupByClausesToAdd) {
-          // omit
-        } else {
-          result.append(",\n");
-        }
-      }
+      var queryClauses = String.join(",\n", autoSqlAnnotation.groupBy());
+      result.append(queryClauses);
+      result.append("\n");
     }
     result.append("\n");
     return result.toString();
