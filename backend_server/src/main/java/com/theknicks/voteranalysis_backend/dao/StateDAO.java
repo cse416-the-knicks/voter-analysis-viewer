@@ -102,17 +102,23 @@ public class StateDAO implements IStateDAO {
       int republicanTotal = 0;
       int unaffiliatedTotal = 0;
       int totalRegisteredVoters = 0;
+      int totalActiveRegisteredVoters = 0;
 
       for (var item : queryResult) {
         democraticTotal += item.democraticTotal();
         republicanTotal += item.republicanTotal();
         unaffiliatedTotal += item.unaffiliatedTotal();
         totalRegisteredVoters += item.totalRegisteredVoters();
+        totalActiveRegisteredVoters += item.totalActiveRegisteredVoters();
       }
 
       return Collections.singletonList(
           new VoterAffiliationStatisticsModel(
-              democraticTotal, republicanTotal, unaffiliatedTotal, totalRegisteredVoters));
+              democraticTotal,
+              republicanTotal,
+              unaffiliatedTotal,
+              totalRegisteredVoters,
+              totalActiveRegisteredVoters));
     }
 
     return queryResult;

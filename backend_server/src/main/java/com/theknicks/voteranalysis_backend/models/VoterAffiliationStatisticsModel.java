@@ -39,16 +39,22 @@ public record VoterAffiliationStatisticsModel(
     @SqlColumnName(
             name = "sum(case when party_affiliation is null or party_affiliation = '' then 1 end)")
         int unaffiliatedTotal,
-    @SqlColumnName(name = "max(eavs_data.total_registered)") int totalRegisteredVoters) {
+    @SqlColumnName(name = "max(eavs_data.total_registered)") int totalRegisteredVoters,
+    @SqlColumnName(name = "max(eavs_data.active_registered)") int totalActiveRegisteredVoters) {
   public VoterAffiliationStatisticsModel(
-      int democraticTotal, int republicanTotal, int unaffiliatedTotal, int totalRegisteredVoters) {
+      int democraticTotal,
+      int republicanTotal,
+      int unaffiliatedTotal,
+      int totalRegisteredVoters,
+      int totalActiveRegisteredVoters) {
     this(
         "0000000000",
         "Aggregated",
         democraticTotal,
         republicanTotal,
         unaffiliatedTotal,
-        totalRegisteredVoters);
+        totalRegisteredVoters,
+        totalActiveRegisteredVoters);
   }
 
   public static class Queryable extends AutoSqlQueryable<VoterAffiliationStatisticsModel> {
