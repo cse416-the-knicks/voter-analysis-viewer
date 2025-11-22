@@ -4,9 +4,10 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
+  VoterRegistrationHistoryGraphDataModel
 } from "../../api/client";
 
-import { getProvisionalBallots, getMailBallotRejections, getVoterRegistrationCounts, getPollbookDeletions } from "../../api/client";
+import { getProvisionalBallots, getMailBallotRejections, getVoterRegistrationCounts, getPollbookDeletions, getVoterRegistrationHistory } from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
 
@@ -478,42 +479,13 @@ function StateInformationView() {
               path="compare-voter-registration-rates"
               element={
                 <LineChart
+                  //@ts-expect-error : Error expected, orval likes generating "optional" types even though they are actually identical.
                   data={async () => {
-                    const eavs2024Data = await getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: 2024 });
-                    const eavsYears = [
-                      2024,
-                      // 2022,
-                      2020, 2018, 2016,
-                    ];
-                    const eavsColors = ["red", "blue", "green", "magenta", "yellow"];
-                    const promises = eavsYears.map((year) => getVoterRegistrationCounts(fipsCode!, { aggregate: false, year: year }));
+                    const votingHistory = await getVoterRegistrationHistory(fipsCode!);
+                    const eavsColors = ["red", "blue", "green", "magenta", "black"];
 
-                    const completed = await Promise.all(promises);
-                    const pointSets = completed.map((data, index) => {
-                      // TODO(backend), this should be done on the server-side
-                      // so ideally the sorting doesn't happen here. I am personally A-OK with
-                      // this but I know Professor Kelly is not.
-
-                      const filtered = data.filter((x) => {
-                        if (eavs2024Data.find((a) => x.countyName === a.countyName)) {
-                          return true;
-                        }
-                        return false;
-                      });
-                      filtered.sort((a, b) => {
-                        const equivalentA = eavs2024Data.find((x) => x.countyName === a?.countyName);
-                        const equivalentB = eavs2024Data.find((x) => x.countyName === b?.countyName);
-                        return (equivalentB?.total || 0) - (equivalentA?.total || 0);
-                      });
-                      const points = filtered.map((data1) => ({ x: data1.countyName, y: data1.total! }));
-                      const obj = {
-                        points,
-                        label: eavsYears[index].toString(),
-                        color: eavsColors[index],
-                      };
-                      return obj;
-                    });
-                    return pointSets;
+                    // Manually assign back colors on the frontend.
+                    return votingHistory.map((x, i) => ({"color": eavsColors[i], ...x}));
                   }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
