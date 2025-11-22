@@ -12,6 +12,7 @@ import {
   getMailBallotRejections,
   getVoterRegistrationCounts,
   getPollbookDeletions,
+  getDetailedVoterRegistrationDataCount,
   getVoterRegistrationHistory,
 } from "../../api/client";
 
@@ -128,14 +129,58 @@ function a11yProps(index: number) {
   };
 }
 
+function getUrlForModeId(id: number, fipsCode: string) {
+  switch (id) {
+    case ID_SELECTION_PROVISIONAL_BALLOT:
+      return `/state/${fipsCode}/provisional-ballots`;
+    case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
+      return `/state/${fipsCode}/mail-ballot-rejections`;
+    case ID_SELECTION_ACTIVE_VOTERS:
+      return `/state/${fipsCode}/active-voters`;
+    case ID_SELECTION_POLLBOOK_DELETION:
+      return `/state/${fipsCode}/pollbook-deletions`;
+    case ID_SELECTION_VOTER_REGISTRATION:
+      return `/state/${fipsCode}/voter-registration`;
+    case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
+      return `/state/${fipsCode}/compare-voter-registration-rates/`;
+    case ID_SELECTION_REJECTED_BALLOTS:
+      return `/state/${fipsCode}/rejected-ballots-chart/`;
+    case ID_SELECTION_DROP_BOX_VOTING:
+      return `/state/${fipsCode}/dropbox-chart/`;
+    case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE:
+      return `/state/${fipsCode}/voter-table/`;
+  }
+  return "?";
+}
+
+function determineInitialStateBasedOnUrl(pathname: string) {
+  if (pathname.includes("/provisional-ballots")) {
+    return ID_SELECTION_PROVISIONAL_BALLOT;
+  } else if (pathname.includes("/mail-ballot-rejections")) {
+    return ID_SELECTION_MAIL_BALLOT_REJECTIONS;
+  } else if (pathname.includes("/active-voters")) {
+    return ID_SELECTION_ACTIVE_VOTERS;
+  } else if (pathname.includes("/pollbook-deletions")) {
+    return ID_SELECTION_POLLBOOK_DELETION;
+  } else if (pathname.includes("/voter-registration")) {
+    return ID_SELECTION_VOTER_REGISTRATION;
+  } else if (pathname.includes("/rejected-ballots-chart")) {
+    return ID_SELECTION_REJECTED_BALLOTS;
+  } else if (pathname.includes("/dropbox-chart/")) {
+    return ID_SELECTION_DROP_BOX_VOTING;
+  } else if (pathname.includes("/voter-table/")) {
+    return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
+  }
+  return -1;
+}
+
 function StateInformationView() {
   const { fipsCode } = useParams();
-  const activeDataStateHook = useState(0);
   const navigate = useNavigate();
   const theme = useTheme();
   const stateType = getDetailStateType(fipsCode!);
   const location = useLocation();
-  const choroplethScaleFactor = 0.05;
+  const activeDataStateHook = useState(determineInitialStateBasedOnUrl(location.pathname));
 
   /* NOTE(jerry): size tuning parameters */
   const boxMarginTop = "2vh";
@@ -192,7 +237,6 @@ function StateInformationView() {
         switch (activeDataState) {
           case ID_SELECTION_PROVISIONAL_BALLOT:
             {
-              navigate(`/state/${fipsCode!}/`);
               const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
@@ -203,7 +247,6 @@ function StateInformationView() {
                 })
               );
               setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
-              console.log(PROVISIONAL_BALLOT_COLUMNS);
               setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
               high = Math.max(...data.map((x) => x.totalProvisionalBallotsCast!));
               setTotalDataCount(aggregatedData[0].totalProvisionalBallotsCast!);
@@ -211,7 +254,6 @@ function StateInformationView() {
             break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
             {
-              navigate(`/state/${fipsCode!}/`);
               const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
@@ -229,7 +271,6 @@ function StateInformationView() {
             break;
           case ID_SELECTION_ACTIVE_VOTERS:
             {
-              navigate(`/state/${fipsCode!}/`);
               const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
@@ -245,9 +286,13 @@ function StateInformationView() {
               setTotalDataCount(aggregatedData[0].total!);
             }
             break;
+          case ID_SELECTION_VOTER_REGISTRATION:
+            {
+              // TODO: finish this for GUI17 completion.
+            }
+            break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
-              navigate(`/state/${fipsCode!}/`);
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
               const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
@@ -262,33 +307,6 @@ function StateInformationView() {
               setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
               high = Math.max(...data.map((x) => x.totalRemoved!));
               setTotalDataCount(aggregatedData[0].totalRemoved!);
-            }
-            break;
-          case ID_SELECTION_VOTER_REGISTRATION:
-            {
-              navigate(`/state/${fipsCode!}/`);
-              // TODO(jerry): add the endpoint to
-              // fill in the data from...
-            }
-            break;
-          case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
-            {
-              navigate(`/state/${fipsCode}/compare-voter-registration-rates/`);
-            }
-            break;
-          case ID_SELECTION_REJECTED_BALLOTS:
-            {
-              navigate(`/state/${fipsCode}/rejected-ballots-chart/`);
-            }
-            break;
-          case ID_SELECTION_DROP_BOX_VOTING:
-            {
-              navigate(`/state/${fipsCode}/dropbox-chart/`);
-            }
-            break;
-          case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE:
-            {
-              navigate(`/state/${fipsCode}/voter-table/`);
             }
             break;
           default:
@@ -324,7 +342,6 @@ function StateInformationView() {
     if (stateType !== DETAIL_STATE_TYPE_NONE) {
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
       if (row) {
-        console.log(row);
         const dataEntry =
           (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
           (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
@@ -359,6 +376,9 @@ function StateInformationView() {
     >
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
+        onSelection={(id) => {
+          navigate(getUrlForModeId(id, fipsCode!));
+        }}
         sections={dropDownSections}
         stateType={getDetailStateType(fipsCode!)}
         drawerWidth={selectionDrawerWidth}

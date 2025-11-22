@@ -24,8 +24,10 @@ interface StateInformationViewDrawerSection {
   items: StateInformationViewDrawerItem[];
 }
 
+type OnSelectionFn = (id: number) => void;
 interface StateInformationViewDrawerProperties {
   stateHook: [number, (arg0: number) => void];
+  onSelection: OnSelectionFn;
   sections: StateInformationViewDrawerSection[];
   stateType: DetailStateType;
   topMargin: string | number;
@@ -34,6 +36,7 @@ interface StateInformationViewDrawerProperties {
 
 interface StateInformationViewDrawerListItemProperties {
   stateHook: [number, (arg0: number) => void];
+  onSelection: OnSelectionFn;
   item: StateInformationViewDrawerItem;
 }
 
@@ -104,13 +107,20 @@ function StateInfoCard({ type }: StateInfoCardProperties) {
   return EAVsStateCard();
 }
 
-function StateInformationViewDrawerListItem({ item, stateHook }: StateInformationViewDrawerListItemProperties) {
+function StateInformationViewDrawerListItem({ item, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
   const [stateValue, setStateValue] = stateHook;
 
   return (
     <ListItem>
       <Tooltip title={"View " + item.textContent} placement="right" arrow>
-        <ListItemButton key={item.id} onClick={() => setStateValue(item.id)} selected={stateValue == item.id}>
+        <ListItemButton
+          key={item.id}
+          onClick={() => {
+            setStateValue(item.id);
+            onSelection(item.id);
+          }}
+          selected={stateValue == item.id}
+        >
           {item.iconComponent && <ListItemIcon>{item.iconComponent}</ListItemIcon>}
           <ListItemText primary={item.textContent} />
         </ListItemButton>
@@ -119,7 +129,7 @@ function StateInformationViewDrawerListItem({ item, stateHook }: StateInformatio
   );
 }
 
-function StateInformationViewDrawer({ sections, stateHook, stateType, topMargin, drawerWidth }: StateInformationViewDrawerProperties) {
+function StateInformationViewDrawer({ sections, stateHook, onSelection, stateType, topMargin, drawerWidth }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
   const sectionComponents = sections.map((section) => (
     <>
@@ -128,7 +138,7 @@ function StateInformationViewDrawer({ sections, stateHook, stateType, topMargin,
         <ListItemText primary={section.title} />
       </ListItem>
       {section.items.map((item) => (
-        <StateInformationViewDrawerListItem stateHook={stateHook} item={item} />
+        <StateInformationViewDrawerListItem onSelection={onSelection} stateHook={stateHook} item={item} />
       ))}
     </>
   ));
