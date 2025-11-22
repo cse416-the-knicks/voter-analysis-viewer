@@ -13,6 +13,7 @@ import {
   getVoterRegistrationCounts,
   getPollbookDeletions,
   getVoterRegistrationHistory,
+  getVoterAffiliations,
 } from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
