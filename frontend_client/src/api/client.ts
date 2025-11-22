@@ -4,6 +4,7 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
+import getRegressionCoefficientsMutator from "../helpers/backendConnectorAxiosInstance";
 import getVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
 import getVotingEquipmentUsageMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentByTypeMutator from "../helpers/backendConnectorAxiosInstance";
@@ -29,6 +30,12 @@ import getElectionResultsSummaryMutator from "../helpers/backendConnectorAxiosIn
 import getCountyGeoUnitCentroidsMutator from "../helpers/backendConnectorAxiosInstance";
 import getBallotStatisticsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateInformationTableMutator from "../helpers/backendConnectorAxiosInstance";
+export interface RegressionDataParameterModel {
+  pointsCount?: number;
+  xs?: number[];
+  ys?: number[];
+}
+
 export interface VotingEquipmentModel {
   manufacturer?: string;
   equipmentType?: string;
@@ -213,6 +220,10 @@ export interface GeoUnitCentroidModel {
   centerX?: number;
   centerY?: number;
 }
+
+export type GetRegressionCoefficientsParams = {
+  degree?: number;
+};
 
 export type GetVotingEquipmentUsageParams = {
   regionId?: string;
@@ -708,6 +719,17 @@ export type Error503ServiceUnavailableResponse = {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+export const getRegressionCoefficients = (
+  regressionDataParameterModel: RegressionDataParameterModel,
+  params?: GetRegressionCoefficientsParams,
+  options?: SecondParameter<typeof getRegressionCoefficientsMutator>
+) => {
+  return getRegressionCoefficientsMutator<number[]>(
+    { url: `/state/regression-coefficients`, method: "POST", headers: { "Content-Type": "application/json" }, data: regressionDataParameterModel, params },
+    options
+  );
+};
+
 export const getVotingEquipment = (manufacturer: string, model: string, options?: SecondParameter<typeof getVotingEquipmentMutator>) => {
   return getVotingEquipmentMutator<VotingEquipmentModel>({ url: `/votingequipment/${manufacturer}/${model}`, method: "GET" }, options);
 };
@@ -894,6 +916,7 @@ export const getStateInformationTable = (options?: SecondParameter<typeof getSta
   return getStateInformationTableMutator<GetStateInformationTable200>({ url: `/state/`, method: "GET" }, options);
 };
 
+export type GetRegressionCoefficientsResult = NonNullable<Awaited<ReturnType<typeof getRegressionCoefficients>>>;
 export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipment>>>;
 export type GetVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipmentUsage>>>;
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>;
