@@ -153,28 +153,40 @@ public class StateController {
 
   @GetMapping("/{fipsCode}/voter-registration-ordered-graph/")
   public List<VoterRegistrationHistoryGraphDataModel> getVoterRegistrationHistory(
-          @PathVariable("fipsCode") String fipsCode,
-          @RequestParam(name = "years", defaultValue = "2024,2022,2020,2018,2016") List<Integer> years) {
+      @PathVariable("fipsCode") String fipsCode,
+      @RequestParam(name = "years", defaultValue = "2024,2022,2020,2018,2016")
+          List<Integer> years) {
     // Used for sorting reference.
     var eavs2024Data = _service.getVoterRegistrationData(fipsCode, 2024, false);
-    var dataPerYear = years.stream().map(
-            year -> _service.getVoterRegistrationData(fipsCode, year, false)
-    ).toList();
 
-    // NOTE(jerry): I am so glad that lambdas exist in Java...
-    var finalPointSets = dataPerYear.stream().map(
-            eavsYearData -> {
-              var existingCountiesIn2024 = eavsYearData.stream().filter(
-                      item ->
-                        eavs2024Data.stream().anyMatch(x ->
-                                x.countyName().equalsIgnoreCase(item.countyName()))
-              );
+    var dataPerYear =
+        years.stream()
+            .map(year -> _service.getVoterRegistrationData(fipsCode, year, false))
+            .toList();
 
-              var orderedCountiesBy2024 = existingCountiesIn2024.sorted((a, b) -> {
-                var corresponding2024A = eavs2024Data.stream().filter(
-                        item -> item.countyName().equalsIgnoreCase(a.countyName())).findFirst();
-                var corresponding2024B = eavs2024Data.stream().filter(
-                        item -> item.countyName().equalsIgnoreCase(b.countyName())).findFirst();
+    var finalPointSets = new ArrayList<VoterRegistrationHistoryGraphDataModel>();
+    for (int i = 0; i < years.size(); ++i) {
+      int year = years.get(i);
+      var eavsYearData = dataPerYear.get(i);
+
+      var existingCountiesIn2024 =
+          eavsYearData.stream()
+              .filter(
+                  item ->
+                      eavs2024Data.stream()
+                          .anyMatch(x -> x.countyName().equalsIgnoreCase(item.countyName())));
+
+      var orderedCountiesBy2024 =
+          existingCountiesIn2024.sorted(
+              (a, b) -> {
+                var corresponding2024A =
+                    eavs2024Data.stream()
+                        .filter(item -> item.countyName().equalsIgnoreCase(a.countyName()))
+                        .findFirst();
+                var corresponding2024B =
+                    eavs2024Data.stream()
+                        .filter(item -> item.countyName().equalsIgnoreCase(b.countyName()))
+                        .findFirst();
                 int compareValueA = 0;
                 int compareValueB = 0;
 
@@ -189,12 +201,18 @@ public class StateController {
                 return compareValueB - compareValueA;
               });
 
-              var orderedPoints = orderedCountiesBy2024.map(data ->
-                      new VoterRegistrationHistoryGraphDataModel.Point(data.countyName(), data.total())).toList();
-              return new VoterRegistrationHistoryGraphDataModel("year!", orderedPoints);
-            }
-    );
-    return finalPointSets.toList();
+      var orderedPoints =
+          orderedCountiesBy2024
+              .map(
+                  data ->
+                      new VoterRegistrationHistoryGraphDataModel.Point(
+                          data.countyName(), data.total()))
+              .toList();
+      finalPointSets.add(
+          new VoterRegistrationHistoryGraphDataModel(String.valueOf(year), orderedPoints));
+    }
+
+    return finalPointSets;
   }
 
   @GetMapping("/{fipsCode}")
