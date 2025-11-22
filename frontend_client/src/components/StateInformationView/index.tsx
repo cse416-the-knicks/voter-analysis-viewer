@@ -221,7 +221,6 @@ function StateInformationView() {
         switch (activeDataState) {
           case ID_SELECTION_PROVISIONAL_BALLOT:
             {
-              navigate(`/state/${fipsCode!}/provisional-ballots`);
               const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
@@ -239,7 +238,6 @@ function StateInformationView() {
             break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
             {
-              navigate(`/state/${fipsCode!}/mail-ballot-rejections`);
               const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
@@ -257,7 +255,6 @@ function StateInformationView() {
             break;
           case ID_SELECTION_ACTIVE_VOTERS:
             {
-              navigate(`/state/${fipsCode!}/active-voters`);
               const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
@@ -273,9 +270,25 @@ function StateInformationView() {
               setTotalDataCount(aggregatedData[0].total!);
             }
             break;
+          case ID_SELECTION_VOTER_REGISTRATION:
+            {
+                const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
+                const [aggregatedData, data] = await Promise.all(promises);
+                setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
+                setBarGraphXTitle("Voter Categories");
+                setDataRows(
+                  data.map((x) => {
+                    return { id: x.fullRegionId, ...x };
+                  })
+                );
+                setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
+                setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
+                high = Math.max(...data.map((x) => x.total!));
+                setTotalDataCount(aggregatedData[0].total!);
+            }
+            break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
-              navigate(`/state/${fipsCode!}/pollbook-deletions`);
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
               const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
@@ -290,33 +303,6 @@ function StateInformationView() {
               setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
               high = Math.max(...data.map((x) => x.totalRemoved!));
               setTotalDataCount(aggregatedData[0].totalRemoved!);
-            }
-            break;
-          case ID_SELECTION_VOTER_REGISTRATION:
-            {
-              navigate(`/state/${fipsCode!}/voter-registration`);
-              // TODO(jerry): add the endpoint to
-              // fill in the data from...
-            }
-            break;
-          case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
-            {
-              navigate(`/state/${fipsCode}/compare-voter-registration-rates/`);
-            }
-            break;
-          case ID_SELECTION_REJECTED_BALLOTS:
-            {
-              navigate(`/state/${fipsCode}/rejected-ballots-chart/`);
-            }
-            break;
-          case ID_SELECTION_DROP_BOX_VOTING:
-            {
-              navigate(`/state/${fipsCode}/dropbox-chart/`);
-            }
-            break;
-          case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE:
-            {
-              navigate(`/state/${fipsCode}/voter-table/`);
             }
             break;
           default:
@@ -386,6 +372,7 @@ function StateInformationView() {
     >
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
+        onSelection={(id) => { navigate(getUrlForModeId(id, fipsCode!)); }}
         sections={dropDownSections}
         stateType={getDetailStateType(fipsCode!)}
         drawerWidth={selectionDrawerWidth}
