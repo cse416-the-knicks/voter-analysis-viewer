@@ -128,7 +128,6 @@ function StateInformationView() {
   const theme = useTheme();
   const stateType = getDetailStateType(fipsCode!);
   const location = useLocation();
-  const choroplethScaleFactor = 0.05;
 
   /* NOTE(jerry): size tuning parameters */
   const boxMarginTop = "2vh";

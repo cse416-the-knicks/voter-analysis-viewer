@@ -87,7 +87,7 @@ function FullScreenDetailedVoterRegistrationTable({ pageSize, width, height }: F
           height={height}
           pageSize={pageSize}
           onXout={function () {
-            navigate(-1);
+            navigate(`/state/${fipsCode!}/voter-registration`);
           }}
           getRowId={(r) => r.regionId + r.firstName + r.middleName + r.partyAffiliation + r.lastName + r.status}
           customCssRules={customCssRules}
