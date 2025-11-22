@@ -57,6 +57,7 @@ public class VoterRegistrationController {
         _logger.error(jpe.getMessage());
       }
     }
+    _logger.info(encodedSortParams);
     return _service.getDetailedVoterRegistrationData(
         stateFips,
         countyFips,

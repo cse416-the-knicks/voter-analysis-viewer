@@ -26,7 +26,7 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
       case 2:
         return " AND party_affiliation = 'R'";
     }
-    return " AND party_affiliation is NULL";
+    return " AND party_affiliation is NULL or party_affiliation = ''";
   }
 
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationDataRows(
@@ -74,7 +74,7 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
       params.add(countyFips.get());
     }
     sql.append(getFilterClauseForPartySelection(partySelectionFilterId));
-
+    _logger.info(sql.toString());
     Integer count = _jdbcTemplate.queryForObject(sql.toString(), Integer.class, params.toArray());
     return count != null ? count : 0;
   }
