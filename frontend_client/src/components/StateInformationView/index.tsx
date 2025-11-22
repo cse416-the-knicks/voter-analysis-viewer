@@ -5,6 +5,7 @@ import type {
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
   VoterRegistrationHistoryGraphDataModel,
+  VotingEquipmentUsageStatisticsModel,
 } from "../../api/client";
 
 import {
@@ -62,6 +63,7 @@ import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoter
 
 import { gradientMapNearest, type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
+import ColorKeyLegend from "../ColorKeyLegend";
 
 import { dropBoxData, equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
@@ -119,11 +121,31 @@ const choroplethColorBuckets = [
   "hsl(288, 100%, 60%)", // full, vibrant purple
 ];
 
+const votingEquipmentTypeColors = [
+  {
+    text: "DRE (No VVPAT)",
+    color: "green",
+  },
+  {
+    text: "DRE (VVPAT)",
+    color: "blue",
+  },
+  {
+    text: "BMD",
+    color: "yellow",
+  },
+  {
+    text: "Scanner",
+    color: "red",
+  },
+];
+
 type EAVsGeneralFact =
   | ProvisionalBallotStatisticsModel
   | PollbookDeletionStatisticsModel
   | MailBallotRejectionStatisticsModel
-  | VoterRegistrationStatisticsModel;
+  | VoterRegistrationStatisticsModel
+  | VotingEquipmentUsageStatisticsModel;
 
 function a11yProps(index: number) {
   return {
@@ -181,6 +203,119 @@ function determineInitialStateBasedOnUrl(pathname: string) {
   }
   return -1;
 }
+
+// NOTE(jery):
+// needed to make the patterns for the
+// voting equipment type map display.
+const CountyGradientSet = (data: VotingEquipmentUsageStatisticsModel, colorSet: string[]) => {
+  const colors = [];
+
+  if (data.dreNoVvpatTotal! > 0) {
+    colors.push(colorSet[0]);
+  }
+
+  if (data.dreVvpatTotal! > 0) {
+    colors.push(colorSet[1]);
+  }
+
+  if (data.bmdTotal! > 0) {
+    colors.push(colorSet[2]);
+  }
+
+  if (data.scannerTotal! > 0) {
+    colors.push(colorSet[3]);
+  }
+
+  // NOTE(jerry):
+  // While there is absolutely a programmatic
+  // way to do this, I'm not going to be very
+  // clever about this.
+
+  const x1 = 25;
+  const y1 = 25;
+  const x2 = (x1 * 1.2) / colors.length;
+  const y2 = (y1 * 1.2) / colors.length;
+
+  switch (colors.length) {
+    case 1:
+      return (
+        <linearGradient id={`vt${data.fullRegionId}`} gradientTransform="">
+          <stop offset="0" stop-color={colors[0]} />
+          <stop offset="100%" stop-color={colors[0]} />
+        </linearGradient>
+      );
+    case 2:
+      return (
+        <linearGradient
+          id={`vt${data.fullRegionId}`}
+          gradientTransform="rotate(0)"
+          x1={x1 + "%"}
+          y1={y1 + "%"}
+          x2={x2 + "%"}
+          y2={y2 + "%"}
+          spreadMethod="repeat"
+        >
+          <stop offset="0" stop-color={colors[0]} />
+          <stop offset="50%" stop-color={colors[0]} />
+          <stop offset="50%" stop-color={colors[1]} />
+          <stop offset="100%" stop-color={colors[1]} />
+        </linearGradient>
+      );
+    case 3:
+      return (
+        <linearGradient
+          id={`vt${data.fullRegionId}`}
+          gradientTransform="rotate(0)"
+          x1={x1 + "%"}
+          y1={y1 + "%"}
+          x2={x2 + "%"}
+          y2={y2 + "%"}
+          spreadMethod="repeat"
+        >
+          <stop offset="0" stop-color={colors[0]} />
+          <stop offset="33%" stop-color={colors[0]} />
+          <stop offset="33%" stop-color={colors[1]} />
+          <stop offset="66%" stop-color={colors[1]} />
+          <stop offset="66%" stop-color={colors[2]} />
+          <stop offset="100%" stop-color={colors[2]} />
+        </linearGradient>
+      );
+    case 4:
+      return (
+        <linearGradient
+          id={`vt${data.fullRegionId}`}
+          gradientTransform="rotate(0)"
+          x1={x1 + "%"}
+          y1={y1 + "%"}
+          x2={x2 + "%"}
+          y2={y2 + "%"}
+          spreadMethod="repeat"
+        >
+          <stop offset="0" stop-color={colors[0]} />
+          <stop offset="25%" stop-color={colors[0]} />
+          <stop offset="25%" stop-color={colors[1]} />
+          <stop offset="50%" stop-color={colors[1]} />
+          <stop offset="50%" stop-color={colors[2]} />
+          <stop offset="75%" stop-color={colors[2]} />
+          <stop offset="75%" stop-color={colors[3]} />
+          <stop offset="100%" stop-color={colors[3]} />
+        </linearGradient>
+      );
+  }
+};
+
+const CountyGradientStyleClass = (data: VotingEquipmentUsageStatisticsModel) => {
+  return (
+    <style>
+      {`
+.vt${data.fullRegionId} {
+fill: url("#vt${data.fullRegionId}");
+fill-opacity: 0.55;
+}
+`}
+    </style>
+  );
+};
 
 function StateInformationView() {
   const { fipsCode } = useParams();
@@ -356,9 +491,11 @@ function StateInformationView() {
     const { properties } = feature;
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const style = {
-      color: "red",
-      fillColor: "blue",
-      fillOpacity: 0.5,
+      color: "black",
+      // url: `#vt${fullRegionId}`,
+      className: `vt${fullRegionId}`,
+      // url: `myad`,
+      fillOpacity: 0.0,
       weight: 2.5,
     };
 
@@ -410,6 +547,22 @@ function StateInformationView() {
         left: `calc(${selectionDrawerWidth} + 1.5em)`,
       }}
     >
+      <svg width="0" height="0">
+        <defs>
+          <linearGradient id={`myad`} gradientTransform="">
+            <stop offset="0" stop-color="red" />
+            <stop offset="100%" stop-color="red" />
+          </linearGradient>
+          {dataRows.map((x) =>
+            CountyGradientSet(
+              x,
+              votingEquipmentTypeColors.map((c) => c.color)
+            )
+          )}
+        </defs>
+      </svg>
+      {dataRows.map(CountyGradientStyleClass)}
+
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
         onSelection={(id) => {
@@ -456,7 +609,7 @@ function StateInformationView() {
           <StateMap
             // @ts-expect-error, the style function *is* of the right type
             // although it's not immediately obvious to typescript atm.
-            styleFunction={(activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE) ? votingEquipmentMapStylingFunction : choroplethStylingFunction}
+            styleFunction={activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE ? votingEquipmentMapStylingFunction : choroplethStylingFunction}
             mapKey={activeDataState}
             width={maxWidthForMap}
             height={maxHeightForMap}
@@ -470,9 +623,14 @@ function StateInformationView() {
               }
             }}
           >
-            {stateType !== DETAIL_STATE_TYPE_NONE && !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) && (
-              <GradientMapLegend gradientMap={gradientMap} />
-            )}
+            {stateType !== DETAIL_STATE_TYPE_NONE &&
+              !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
+              activeDataState !== ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && <GradientMapLegend gradientMap={gradientMap} />}
+            {stateType !== DETAIL_STATE_TYPE_NONE &&
+              !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
+              activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                <ColorKeyLegend colors={votingEquipmentTypeColors.map((x) => x.color)} labels={votingEquipmentTypeColors.map((x) => x.text)} />
+              )}
             <Typography
               variant="h4"
               sx={{
