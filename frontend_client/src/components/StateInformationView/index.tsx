@@ -4,10 +4,16 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
-  VoterRegistrationHistoryGraphDataModel
+  VoterRegistrationHistoryGraphDataModel,
 } from "../../api/client";
 
-import { getProvisionalBallots, getMailBallotRejections, getVoterRegistrationCounts, getPollbookDeletions, getVoterRegistrationHistory } from "../../api/client";
+import {
+  getProvisionalBallots,
+  getMailBallotRejections,
+  getVoterRegistrationCounts,
+  getPollbookDeletions,
+  getVoterRegistrationHistory,
+} from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
 
@@ -485,7 +491,7 @@ function StateInformationView() {
                     const eavsColors = ["red", "blue", "green", "magenta", "black"];
 
                     // Manually assign back colors on the frontend.
-                    return votingHistory.map((x, i) => ({"color": eavsColors[i], ...x}));
+                    return votingHistory.map((x, i) => ({ color: eavsColors[i], ...x }));
                   }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
