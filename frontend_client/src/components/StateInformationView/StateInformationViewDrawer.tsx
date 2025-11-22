@@ -113,10 +113,14 @@ function StateInformationViewDrawerListItem({ item, onSelection, stateHook }: St
   return (
     <ListItem>
       <Tooltip title={"View " + item.textContent} placement="right" arrow>
-        <ListItemButton key={item.id} onClick={() => {
-            setStateValue(item.id); 
-            onSelection(item.id)
-          }} selected={stateValue == item.id}>
+        <ListItemButton
+          key={item.id}
+          onClick={() => {
+            setStateValue(item.id);
+            onSelection(item.id);
+          }}
+          selected={stateValue == item.id}
+        >
           {item.iconComponent && <ListItemIcon>{item.iconComponent}</ListItemIcon>}
           <ListItemText primary={item.textContent} />
         </ListItemButton>
