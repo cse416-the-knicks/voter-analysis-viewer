@@ -185,7 +185,7 @@ function StateInformationView() {
         switch (activeDataState) {
           case ID_SELECTION_PROVISIONAL_BALLOT:
             {
-              navigate(`/state/${fipsCode!}/`);
+              navigate(`/state/${fipsCode!}/provisional-ballots`);
               const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
@@ -204,7 +204,7 @@ function StateInformationView() {
             break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
             {
-              navigate(`/state/${fipsCode!}/`);
+              navigate(`/state/${fipsCode!}/mail-ballot-rejections`);
               const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
@@ -222,7 +222,7 @@ function StateInformationView() {
             break;
           case ID_SELECTION_ACTIVE_VOTERS:
             {
-              navigate(`/state/${fipsCode!}/`);
+              navigate(`/state/${fipsCode!}/active-voters`);
               const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
@@ -240,7 +240,7 @@ function StateInformationView() {
             break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
-              navigate(`/state/${fipsCode!}/`);
+              navigate(`/state/${fipsCode!}/pollbook-deletions`);
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
               const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
@@ -259,7 +259,7 @@ function StateInformationView() {
             break;
           case ID_SELECTION_VOTER_REGISTRATION:
             {
-              navigate(`/state/${fipsCode!}/`);
+              navigate(`/state/${fipsCode!}/voter-registration`);
               // TODO(jerry): add the endpoint to
               // fill in the data from...
             }
