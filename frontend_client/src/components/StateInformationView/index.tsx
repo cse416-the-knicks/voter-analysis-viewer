@@ -352,7 +352,20 @@ function StateInformationView() {
 
   useKeyDown("Escape", () => navigate("/"));
 
-  const styleFunction = (feature: GeoJSON.Feature) => {
+  const votingEquipmentMapStylingFunction = (feature: GeoJSON.Feature) => {
+    const { properties } = feature;
+    const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
+    const style = {
+      color: "red",
+      fillColor: "blue",
+      fillOpacity: 0.5,
+      weight: 2.5,
+    };
+
+    return style;
+  };
+
+  const choroplethStylingFunction = (feature: GeoJSON.Feature) => {
     const { properties } = feature;
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const style = {
@@ -443,7 +456,7 @@ function StateInformationView() {
           <StateMap
             // @ts-expect-error, the style function *is* of the right type
             // although it's not immediately obvious to typescript atm.
-            styleFunction={styleFunction}
+            styleFunction={(activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE) ? votingEquipmentMapStylingFunction : choroplethStylingFunction}
             mapKey={activeDataState}
             width={maxWidthForMap}
             height={maxHeightForMap}
