@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.theknicks.voteranalysis_backend.dao.IStateDAO;
 import com.theknicks.voteranalysis_backend.models.*;
 import java.util.*;
+import java.util.stream.DoubleStream;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -113,6 +116,40 @@ public class StateService {
   public Optional<BallotStatisticsModel> getBallotStatisticsForCounty(
       String fipsCode, String countyFipsCode, int year) {
     return _dao.getBallotStatisticsRowByCounty(fipsCode, countyFipsCode, year);
+  }
+
+  public List<Double> getRegressionCoefficients(
+      RegressionDataParameterModel dataPoints, int degree) {
+    List<WeightedObservedPoint> points = new ArrayList<>();
+    _logger.info("Received " + dataPoints.pointsCount() + " points.");
+    assert dataPoints.pointsCount() == dataPoints.xs().size()
+        : "Point Xs does not match the pointsCount data.";
+    assert dataPoints.pointsCount() == dataPoints.ys().size()
+        : "Point Ys does not match the pointsCount data.";
+
+    var fitter = PolynomialCurveFitter.create(degree);
+    var xs = dataPoints.xs();
+    var ys = dataPoints.ys();
+
+    for (int i = 0; i < dataPoints.pointsCount(); ++i) {
+      // For the regression, all points are equally weighted.
+      var newPoint = new WeightedObservedPoint(1.0, xs.get(i), ys.get(i));
+      points.add(newPoint);
+    }
+
+    var bestFitCoefficients = fitter.fit(points);
+    var coefficientList = DoubleStream.of(bestFitCoefficients).boxed().toList();
+
+    /*
+      NOTE(jerry): coefficients are returned in
+      lowest exponent to highest by default by fitter.fit,
+      however I think this is not intuitive (arguably I shouldn't assume),
+
+      I'll reverse the coefficients. Should be paired with an appropriate
+      helper function anyway.
+    */
+    Collections.reverse(coefficientList);
+    return coefficientList;
   }
 
   public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(String fipsCode) {

@@ -4,6 +4,7 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
+import getRegressionCoefficientsMutator from "../helpers/backendConnectorAxiosInstance";
 import getVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
 import getVotingEquipmentUsageMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentByTypeMutator from "../helpers/backendConnectorAxiosInstance";
@@ -19,6 +20,7 @@ import getMailBallotRejectionsByCountyMutator from "../helpers/backendConnectorA
 import getBallotStatisticsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
 import getViewStateYearSummaryByStateMutator from "../helpers/backendConnectorAxiosInstance";
 import getViewStateYearSummaryByStateForYearMutator from "../helpers/backendConnectorAxiosInstance";
+import getVoterRegistrationHistoryMutator from "../helpers/backendConnectorAxiosInstance";
 import getVoterRegistrationCountsMutator from "../helpers/backendConnectorAxiosInstance";
 import getVoterAffiliationsMutator from "../helpers/backendConnectorAxiosInstance";
 import getProvisionalBallotsMutator from "../helpers/backendConnectorAxiosInstance";
@@ -29,6 +31,12 @@ import getElectionResultsSummaryMutator from "../helpers/backendConnectorAxiosIn
 import getCountyGeoUnitCentroidsMutator from "../helpers/backendConnectorAxiosInstance";
 import getBallotStatisticsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateInformationTableMutator from "../helpers/backendConnectorAxiosInstance";
+export interface RegressionDataParameterModel {
+  pointsCount?: number;
+  xs?: number[];
+  ys?: number[];
+}
+
 export interface VotingEquipmentModel {
   manufacturer?: string;
   equipmentType?: string;
@@ -188,6 +196,16 @@ export interface ViewStateYearSummaryModel {
   mailinBallotVotingShareRate?: number;
 }
 
+export interface Point {
+  x?: string;
+  y?: number;
+}
+
+export interface VoterRegistrationHistoryGraphDataModel {
+  label?: string;
+  points?: Point[];
+}
+
 export interface VoterAffiliationStatisticsModel {
   fullRegionId?: string;
   countyName?: string;
@@ -213,6 +231,10 @@ export interface GeoUnitCentroidModel {
   centerX?: number;
   centerY?: number;
 }
+
+export type GetRegressionCoefficientsParams = {
+  degree?: number;
+};
 
 export type GetVotingEquipmentUsageParams = {
   regionId?: string;
@@ -252,6 +274,10 @@ export type GetMailBallotRejectionsByCountyParams = {
 
 export type GetBallotStatisticsByCountyParams = {
   year?: number;
+};
+
+export type GetVoterRegistrationHistoryParams = {
+  years?: number[];
 };
 
 export type GetVoterRegistrationCountsParams = {
@@ -708,6 +734,17 @@ export type Error503ServiceUnavailableResponse = {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+export const getRegressionCoefficients = (
+  regressionDataParameterModel: RegressionDataParameterModel,
+  params?: GetRegressionCoefficientsParams,
+  options?: SecondParameter<typeof getRegressionCoefficientsMutator>
+) => {
+  return getRegressionCoefficientsMutator<number[]>(
+    { url: `/state/regression-coefficients`, method: "POST", headers: { "Content-Type": "application/json" }, data: regressionDataParameterModel, params },
+    options
+  );
+};
+
 export const getVotingEquipment = (manufacturer: string, model: string, options?: SecondParameter<typeof getVotingEquipmentMutator>) => {
   return getVotingEquipmentMutator<VotingEquipmentModel>({ url: `/votingequipment/${manufacturer}/${model}`, method: "GET" }, options);
 };
@@ -821,6 +858,17 @@ export const getViewStateYearSummaryByStateForYear = (
   return getViewStateYearSummaryByStateForYearMutator<ViewStateYearSummaryModel>({ url: `/state/${fipsCode}/year-summary/${year}`, method: "GET" }, options);
 };
 
+export const getVoterRegistrationHistory = (
+  fipsCode: string,
+  params?: GetVoterRegistrationHistoryParams,
+  options?: SecondParameter<typeof getVoterRegistrationHistoryMutator>
+) => {
+  return getVoterRegistrationHistoryMutator<VoterRegistrationHistoryGraphDataModel[]>(
+    { url: `/state/${fipsCode}/voter-registration-ordered-graph/`, method: "GET", params },
+    options
+  );
+};
+
 export const getVoterRegistrationCounts = (
   fipsCode: string,
   params?: GetVoterRegistrationCountsParams,
@@ -887,6 +935,7 @@ export const getStateInformationTable = (options?: SecondParameter<typeof getSta
   return getStateInformationTableMutator<GetStateInformationTable200>({ url: `/state/`, method: "GET" }, options);
 };
 
+export type GetRegressionCoefficientsResult = NonNullable<Awaited<ReturnType<typeof getRegressionCoefficients>>>;
 export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipment>>>;
 export type GetVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipmentUsage>>>;
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>;
@@ -902,6 +951,7 @@ export type GetMailBallotRejectionsByCountyResult = NonNullable<Awaited<ReturnTy
 export type GetBallotStatisticsByCountyResult = NonNullable<Awaited<ReturnType<typeof getBallotStatisticsByCounty>>>;
 export type GetViewStateYearSummaryByStateResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByState>>>;
 export type GetViewStateYearSummaryByStateForYearResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByStateForYear>>>;
+export type GetVoterRegistrationHistoryResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationHistory>>>;
 export type GetVoterRegistrationCountsResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCounts>>>;
 export type GetVoterAffiliationsResult = NonNullable<Awaited<ReturnType<typeof getVoterAffiliations>>>;
 export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallots>>>;
