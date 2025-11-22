@@ -32,7 +32,14 @@ import Stack from "@mui/material/Stack";
 
 import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab } from "@mui/material";
 
-import { DETAIL_STATE_TYPE_NONE, DETAIL_STATE_TYPE_VOTER_REGISTRATION, getDetailStateType } from "../FullBoundedUSMap/detailedStatesInfo";
+import {
+  DETAIL_STATE_TYPE_DEMOCRAT,
+  DETAIL_STATE_TYPE_NONE,
+  DETAIL_STATE_TYPE_REPUBLICAN,
+  DETAIL_STATE_TYPE_VOTER_REGISTRATION,
+  getDetailStateType,
+  type DetailStateType,
+} from "../FullBoundedUSMap/detailedStatesInfo";
 
 import { useState, useEffect } from "react";
 
@@ -89,6 +96,30 @@ const defaultDropDownSections = [
       { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
       { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
       { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
+    ],
+  },
+  {
+    title: "Voting Equipment",
+    items: [
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Type" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
+    ],
+  },
+  {
+    title: "Voter Registration",
+    items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
+  },
+];
+
+const partyStateDropDownSections = [
+  {
+    title: "Ballot Data",
+    iconComponent: <BallotIcon />,
+    items: [
+      { id: ID_SELECTION_PROVISIONAL_BALLOT, iconComponent: <InboxIcon />, textContent: "Provisional Ballots" },
+      { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
+      { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
+      { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
       { id: ID_SELECTION_DROP_BOX_VOTING, iconComponent: <HowToVoteIcon />, textContent: "Drop Box Voting" },
       { id: ID_SELECTION_REJECTED_BALLOTS, iconComponent: <DoNotDisturbIcon />, textContent: "Rejected Ballots" },
     ],
@@ -100,7 +131,50 @@ const defaultDropDownSections = [
       { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
     ],
   },
+  {
+    title: "Voter Registration",
+    items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
+  },
 ];
+
+const voterRegistrationStateDropDownSections = [
+  {
+    title: "Ballot Data",
+    iconComponent: <BallotIcon />,
+    items: [
+      { id: ID_SELECTION_PROVISIONAL_BALLOT, iconComponent: <InboxIcon />, textContent: "Provisional Ballots" },
+      { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
+      { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
+      { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
+    ],
+  },
+  {
+    title: "Voting Equipment",
+    items: [
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Type" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
+    ],
+  },
+  {
+    title: "Voter Registration",
+    items: [
+      { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
+      { id: ID_SELECTION_VOTER_REGISTRATION, iconComponent: <PersonIcon />, textContent: "Registration Data" },
+      { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
+    ],
+  },
+];
+
+function pickDropdownType(stateType: DetailStateType) {
+  switch (stateType) {
+    case DETAIL_STATE_TYPE_DEMOCRAT:
+    case DETAIL_STATE_TYPE_REPUBLICAN:
+      return partyStateDropDownSections;
+    case DETAIL_STATE_TYPE_VOTER_REGISTRATION:
+      return voterRegistrationStateDropDownSections;
+  }
+  return defaultDropDownSections;
+}
 
 const choroplethColorBuckets = [
   "hsl(288, 10%, 80%)",
@@ -212,23 +286,6 @@ function StateInformationView() {
   const shouldOpenPopup = ["dropbox-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates"].some((x) =>
     location.pathname.includes(x)
   );
-
-  const dropDownSections = [...defaultDropDownSections];
-  if (stateType == DETAIL_STATE_TYPE_VOTER_REGISTRATION) {
-    dropDownSections.push({
-      title: "Voter Registration",
-      items: [
-        { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
-        { id: ID_SELECTION_VOTER_REGISTRATION, iconComponent: <PersonIcon />, textContent: "Registration Data" },
-        { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
-      ],
-    });
-  } else {
-    dropDownSections.push({
-      title: "Voter Registration",
-      items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
-    });
-  }
 
   useEffect(
     function () {
@@ -379,7 +436,7 @@ function StateInformationView() {
         onSelection={(id) => {
           navigate(getUrlForModeId(id, fipsCode!));
         }}
-        sections={dropDownSections}
+        sections={pickDropdownType(stateType)}
         stateType={getDetailStateType(fipsCode!)}
         drawerWidth={selectionDrawerWidth}
         topMargin={boxMarginTop}

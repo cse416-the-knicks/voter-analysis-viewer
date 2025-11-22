@@ -22,6 +22,7 @@ import getViewStateYearSummaryByStateMutator from "../helpers/backendConnectorAx
 import getViewStateYearSummaryByStateForYearMutator from "../helpers/backendConnectorAxiosInstance";
 import getVoterRegistrationHistoryMutator from "../helpers/backendConnectorAxiosInstance";
 import getVoterRegistrationCountsMutator from "../helpers/backendConnectorAxiosInstance";
+import getVoterAffiliationsMutator from "../helpers/backendConnectorAxiosInstance";
 import getProvisionalBallotsMutator from "../helpers/backendConnectorAxiosInstance";
 import getPollbookDeletionsMutator from "../helpers/backendConnectorAxiosInstance";
 import getMailBallotRejectionsMutator from "../helpers/backendConnectorAxiosInstance";
@@ -205,6 +206,16 @@ export interface VoterRegistrationHistoryGraphDataModel {
   points?: Point[];
 }
 
+export interface VoterAffiliationStatisticsModel {
+  fullRegionId?: string;
+  countyName?: string;
+  democraticTotal?: number;
+  republicanTotal?: number;
+  unaffiliatedTotal?: number;
+  registeredVotersTotal?: number;
+  activeRegisteredVotersTotal?: number;
+}
+
 export interface ElectionResultsSummaryModel {
   fullRegionId?: string;
   regionName?: string;
@@ -271,6 +282,10 @@ export type GetVoterRegistrationHistoryParams = {
 
 export type GetVoterRegistrationCountsParams = {
   year?: number;
+  aggregate?: boolean;
+};
+
+export type GetVoterAffiliationsParams = {
   aggregate?: boolean;
 };
 
@@ -865,6 +880,10 @@ export const getVoterRegistrationCounts = (
   );
 };
 
+export const getVoterAffiliations = (fipsCode: string, params?: GetVoterAffiliationsParams, options?: SecondParameter<typeof getVoterAffiliationsMutator>) => {
+  return getVoterAffiliationsMutator<VoterAffiliationStatisticsModel[]>({ url: `/state/${fipsCode}/voter-affiliations`, method: "GET", params }, options);
+};
+
 export const getProvisionalBallots = (
   fipsCode: string,
   params?: GetProvisionalBallotsParams,
@@ -934,6 +953,7 @@ export type GetViewStateYearSummaryByStateResult = NonNullable<Awaited<ReturnTyp
 export type GetViewStateYearSummaryByStateForYearResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByStateForYear>>>;
 export type GetVoterRegistrationHistoryResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationHistory>>>;
 export type GetVoterRegistrationCountsResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCounts>>>;
+export type GetVoterAffiliationsResult = NonNullable<Awaited<ReturnType<typeof getVoterAffiliations>>>;
 export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallots>>>;
 export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletions>>>;
 export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>;
