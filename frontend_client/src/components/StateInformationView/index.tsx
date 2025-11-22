@@ -121,9 +121,46 @@ function a11yProps(index: number) {
   };
 }
 
+function getUrlForModeId(id: number, fipsCode: string) {
+  switch (id) {
+    case ID_SELECTION_PROVISIONAL_BALLOT: return `/state/${fipsCode}/provisional-ballots`;
+    case ID_SELECTION_MAIL_BALLOT_REJECTIONS: return `/state/${fipsCode}/mail-ballot-rejections`;
+    case ID_SELECTION_ACTIVE_VOTERS: return `/state/${fipsCode}/active-voters`;
+    case ID_SELECTION_POLLBOOK_DELETION: return `/state/${fipsCode}/pollbook-deletions`;
+    case ID_SELECTION_VOTER_REGISTRATION: return `/state/${fipsCode}/voter-registration`;
+    case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES: return `/state/${fipsCode}/compare-voter-registration-rates/`;
+    case ID_SELECTION_REJECTED_BALLOTS: return `/state/${fipsCode}/rejected-ballots-chart/`;
+    case ID_SELECTION_DROP_BOX_VOTING: return `/state/${fipsCode}/dropbox-chart/`;
+    case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE: return `/state/${fipsCode}/voter-table/`;
+  }
+  return "?";
+}
+
+function determineInitialStateBasedOnUrl() {
+  const location = useLocation();
+  if (location.pathname.includes("/provisional-ballots")) {
+    return ID_SELECTION_PROVISIONAL_BALLOT;
+  } else if (location.pathname.includes("/mail-ballot-rejections")) {
+    return ID_SELECTION_MAIL_BALLOT_REJECTIONS;
+  } else if (location.pathname.includes("/active-voters")) {
+    return ID_SELECTION_ACTIVE_VOTERS;
+  } else if (location.pathname.includes("/pollbook-deletions")) {
+    return ID_SELECTION_POLLBOOK_DELETION;
+  } else if (location.pathname.includes("/voter-registration")) {
+    return ID_SELECTION_VOTER_REGISTRATION;
+  } else if (location.pathname.includes("/rejected-ballots-chart")) {
+    return ID_SELECTION_REJECTED_BALLOTS;
+  } else if (location.pathname.includes("/dropbox-chart/")) {
+    return ID_SELECTION_DROP_BOX_VOTING;
+  } else if (location.pathname.includes("/voter-table/")) {
+    return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
+  }
+  return -1;
+}
+
 function StateInformationView() {
   const { fipsCode } = useParams();
-  const activeDataStateHook = useState(0);
+  const activeDataStateHook = useState(determineInitialStateBasedOnUrl());
   const navigate = useNavigate();
   const theme = useTheme();
   const stateType = getDetailStateType(fipsCode!);
@@ -195,7 +232,6 @@ function StateInformationView() {
                 })
               );
               setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
-              console.log(PROVISIONAL_BALLOT_COLUMNS);
               setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
               high = Math.max(...data.map((x) => x.totalProvisionalBallotsCast!));
               setTotalDataCount(aggregatedData[0].totalProvisionalBallotsCast!);
@@ -316,7 +352,6 @@ function StateInformationView() {
     if (stateType !== DETAIL_STATE_TYPE_NONE) {
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
       if (row) {
-        console.log(row);
         const dataEntry =
           (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
           (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
