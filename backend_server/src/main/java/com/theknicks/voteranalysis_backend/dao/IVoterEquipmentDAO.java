@@ -21,8 +21,7 @@ public interface IVoterEquipmentDAO {
 
   List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode);
 
-  List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(
-      String fipsCode, boolean inAggregate);
+  List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(String fipsCode);
 
   /**
    * Get the information of a particular voting equipment machine by a manufacturer, and model

@@ -63,7 +63,7 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
 
   @Override
   public List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(
-      String fipsCode, boolean inAggregate) {
+      String fipsCode) {
     var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
     var entries =
         _jdbcTemplate.query(

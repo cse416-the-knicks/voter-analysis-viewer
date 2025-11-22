@@ -233,7 +233,7 @@ function bargraphDataForActiveVoterRegistrations(aggregatedStatistics: VoterRegi
 function bargraphDataForVotingEquipmentUsages(aggregatedStatistics: VotingEquipmentUsageStatisticsModel): BarChartDataEntry[] {
   return [
     { category: "DRE (No VVPAT)", value: aggregatedStatistics.dreNoVvpatTotal || 0 },
-    { category: "DRE (VVPAT)", value: aggregatedStatistics.dreNoVvpatTotal || 0 },
+    { category: "DRE (VVPAT)", value: aggregatedStatistics.dreVvpatTotal || 0 },
     { category: "BMD", value: aggregatedStatistics.bmdTotal || 0 },
     { category: "Scanner", value: aggregatedStatistics.scannerTotal || 0 },
   ];
