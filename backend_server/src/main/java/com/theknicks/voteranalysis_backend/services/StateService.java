@@ -60,6 +60,12 @@ public class StateService {
     return _dao.getVoterRegistrationRowByCounty(fipsCode, countyCode, year);
   }
 
+  @Cacheable(cacheNames = "voterAffiliationStatistics", key = "{ #fipsCode, #inAggregate }")
+  public List<VoterAffiliationStatisticsModel> getVoterAffiliationData(
+      String fipsCode, boolean inAggregate) {
+    return _dao.getVoterAffiliationRows(fipsCode, inAggregate);
+  }
+
   @Cacheable(cacheNames = "pollBookDeletions", key = "{ #fipsCode, #year, #inAggregate }")
   public List<PollbookDeletionStatisticsModel> getPollbookDeletionData(
       String fipsCode, int year, boolean inAggregate) {

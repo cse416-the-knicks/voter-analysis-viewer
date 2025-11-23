@@ -4,6 +4,7 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   VoterRegistrationDataModel,
+  VoterAffiliationStatisticsModel,
 } from "../../api/client";
 import type { GridColDef } from "@mui/x-data-grid";
 import type { BarChartDataEntry } from "../DataDisplays/BarChart";
@@ -39,6 +40,18 @@ const ACTIVE_VOTER_REGISTRATION_COLUMNS: GridColDef<VoterRegistrationStatisticsM
   { field: "total", headerName: "Total Voters Registered", type: "number", width: 200 },
   { field: "active", headerName: "Active Voters", type: "number", width: 150 },
   { field: "inactive", headerName: "Inactive Voters", type: "number", width: 150 },
+];
+
+const VOTER_AFFILIATION_COLUMNS: GridColDef<VoterAffiliationStatisticsModel[]>[] = [
+  {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // This hides the "Select All" checkbox
+  },
+  { field: "countyName", headerName: "County", width: 120 },
+  { field: "democraticTotal", headerName: "Democratic", type: "number", width: 200 },
+  { field: "republicanTotal", headerName: "Republican", type: "number", width: 150 },
+  { field: "unaffiliatedTotal", headerName: "Unaffiliated", type: "number", width: 150 },
+  { field: "registeredVotersTotal", headerName: "Total Registered", type: "number", width: 150 },
 ];
 
 const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[] = [
@@ -217,14 +230,25 @@ function bargraphDataForActiveVoterRegistrations(aggregatedStatistics: VoterRegi
   ];
 }
 
+function bargraphDataForVoterAffiliations(aggregatedStatistics: VoterAffiliationStatisticsModel): BarChartDataEntry[] {
+  return [
+    { category: "Democratic Voters", value: aggregatedStatistics.democraticTotal || 0 },
+    { category: "Republican Voters", value: aggregatedStatistics.republicanTotal || 0 },
+    { category: "Unaffiliated Voters", value: aggregatedStatistics.unaffiliatedTotal || 0 },
+    { category: "Total Registered Voters", value: aggregatedStatistics.registeredVotersTotal || 0 },
+  ];
+}
+
 export {
   PROVISIONAL_BALLOT_COLUMNS,
   MAIL_BALLOT_REJECTION_COLUMNS,
   POLL_BOOK_DELETION_COLUMNS,
   ACTIVE_VOTER_REGISTRATION_COLUMNS,
   VOTER_REGISTRATION_INFO_COLUMNS,
+  VOTER_AFFILIATION_COLUMNS,
   bargraphDataForProvisionalBallots,
   bargraphDataForMailBallotRejections,
   bargraphDataForPollBookDeletions,
   bargraphDataForActiveVoterRegistrations,
+  bargraphDataForVoterAffiliations,
 };

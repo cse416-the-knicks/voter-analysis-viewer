@@ -7,6 +7,7 @@ import com.theknicks.voteranalysis_backend.models.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.Collections.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
@@ -81,6 +82,46 @@ public class StateDAO implements IStateDAO {
   public List<VoterRegistrationStatisticsModel> getVoterRegistrationRows(
       String fipsCode, int year, boolean aggregated) {
     return getStateDataRows(VoterRegistrationStatisticsModel.class, fipsCode, year, aggregated);
+  }
+
+  public List<VoterAffiliationStatisticsModel> getVoterAffiliationRows(
+      String fipsCode, boolean aggregated) {
+    var queryable = new VoterAffiliationStatisticsModel.Queryable();
+    var sqlQuery =
+        queryable.QueryWhere(
+            new String[] {"eavs_data.\"year\" = 2024", "app.eavs_geounit.state_id = ?"});
+    var mapper = queryable.Mapper();
+    var queryResult = _jdbcTemplate.query(sqlQuery, mapper, Integer.parseInt(fipsCode, 10));
+
+    if (aggregated) {
+      // NOTE(jerry):
+      // The aggregation on this is kind of complicated
+      // imo, and is a different query which our ORM (and I assume many tbh),
+      // don't specifically support, so the aggregation will be done here manually.
+      int democraticTotal = 0;
+      int republicanTotal = 0;
+      int unaffiliatedTotal = 0;
+      int totalRegisteredVoters = 0;
+      int totalActiveRegisteredVoters = 0;
+
+      for (var item : queryResult) {
+        democraticTotal += item.democraticTotal();
+        republicanTotal += item.republicanTotal();
+        unaffiliatedTotal += item.unaffiliatedTotal();
+        totalRegisteredVoters += item.registeredVotersTotal();
+        totalActiveRegisteredVoters += item.activeRegisteredVotersTotal();
+      }
+
+      return Collections.singletonList(
+          new VoterAffiliationStatisticsModel(
+              democraticTotal,
+              republicanTotal,
+              unaffiliatedTotal,
+              totalRegisteredVoters,
+              totalActiveRegisteredVoters));
+    }
+
+    return queryResult;
   }
 
   public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationRowByCounty(
