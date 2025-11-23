@@ -13,38 +13,36 @@ type DetailStateType =
   | typeof DETAIL_STATE_TYPE_REPUBLICAN
   | typeof DETAIL_STATE_TYPE_VOTER_REGISTRATION;
 
-// TODO(frontend): support multiple detail state types? some will overlap.
-function getDetailStateType(fipsCode: string): DetailStateType {
+function getDetailStateType(fipsCode: string): DetailStateType[] {
   switch (fipsCode) {
     case "48":
       {
-        return DETAIL_STATE_TYPE_OPTIN;
+        return [DETAIL_STATE_TYPE_OPTIN, DETAIL_STATE_TYPE_REPUBLICAN];
       }
       break;
     case "26":
     case "13":
       {
-        return DETAIL_STATE_TYPE_OPTOUT;
+        return [DETAIL_STATE_TYPE_OPTOUT];
       }
       break;
     case "36":
       {
-        return DETAIL_STATE_TYPE_DEMOCRAT;
+        return [DETAIL_STATE_TYPE_DEMOCRAT];
       }
       break;
-    // case "48":
     case "40":
       {
-        return DETAIL_STATE_TYPE_REPUBLICAN;
+        return [DETAIL_STATE_TYPE_REPUBLICAN];
       }
       break;
     case "39":
       {
-        return DETAIL_STATE_TYPE_VOTER_REGISTRATION;
+        return [DETAIL_STATE_TYPE_VOTER_REGISTRATION];
       }
       break;
   }
-  return DETAIL_STATE_TYPE_NONE;
+  return [DETAIL_STATE_TYPE_NONE];
 }
 
 function getHumanReadableStateType(type: string): string {
@@ -67,7 +65,7 @@ function getHumanReadableStateType(type: string): string {
 }
 
 function isDetailState(fipsCode: string): boolean {
-  return getDetailStateType(fipsCode) !== DETAIL_STATE_TYPE_NONE;
+  return getDetailStateType(fipsCode).every((x) => x != DETAIL_STATE_TYPE_NONE);
 }
 
 export type { DetailStateType };
