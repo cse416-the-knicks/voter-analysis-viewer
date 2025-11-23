@@ -171,7 +171,7 @@ function determineInitialStateBasedOnUrl(pathname: string) {
   } else if (pathname.includes("/voter-table/")) {
     return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
   }
-  return -1;
+  return ID_SELECTION_PROVISIONAL_BALLOT;
 }
 
 function StateInformationView() {
