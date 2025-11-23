@@ -2,7 +2,7 @@ import type { CssUnitValue } from "../../helpers/CssUnits";
 import { useEffect, useState } from "react";
 import L from "leaflet";
 import type { MapRef } from "react-leaflet/MapContainer";
-import { GeoJSON, MapContainer, TileLayer, useMap } from "react-leaflet";
+import { GeoJSON, MapContainer, TileLayer, Pane, useMap } from "react-leaflet";
 import { getStateGeometry } from "../../api/client";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -92,13 +92,26 @@ function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFe
           height: height,
         }}
       >
+        <style>
+          {`
+.leaflet-tile {
+  background-color: rgba(111, 45, 200, 0.1); /* Or an image */
+}
+`}
+        </style>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={useDarkMode ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
+          url={"https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"}
         />
         <GeoJSON key={mapKey} style={styleFunction} onEachFeature={onEachFeatureHandler} data={stateGeoJson!} />
         <MapFitToBoundsInternal boundsToFit={stateMapBounds!} />
         {children}
+        <Pane name="labels" style={{ zIndex: 499 }}>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url={"https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"}
+          />
+        </Pane>
       </MapContainer>
     );
   } else {

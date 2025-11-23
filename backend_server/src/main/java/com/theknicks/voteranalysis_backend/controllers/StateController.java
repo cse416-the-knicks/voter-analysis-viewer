@@ -79,6 +79,13 @@ public class StateController {
     return _service.getVoterRegistrationDataForCounty(fipsCode, countyFipsCode, year);
   }
 
+  @GetMapping("/{fipsCode}/voter-affiliations")
+  public List<VoterAffiliationStatisticsModel> getVoterAffiliations(
+      @PathVariable("fipsCode") String fipsCode,
+      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
+    return _service.getVoterAffiliationData(fipsCode, inAggregate);
+  }
+
   @GetMapping("/{fipsCode}/pollbook-deletions")
   public List<PollbookDeletionStatisticsModel> getPollbookDeletions(
       @PathVariable("fipsCode") String fipsCode,
