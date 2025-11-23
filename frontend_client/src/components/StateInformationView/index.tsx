@@ -706,7 +706,7 @@ function StateInformationView() {
               !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
               activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
                 <ColorKeyLegend colors={votingEquipmentTypeColors.map((x) => x.color)} labels={votingEquipmentTypeColors.map((x) => x.text)} />
-            )}
+              )}
             <Typography
               variant="h4"
               sx={{
