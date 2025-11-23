@@ -6,20 +6,7 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 
 /*
  This is the data required to fulfill
- GUI.17, and is a custom aggregation without SQL.
-
- SELECT
-    voter_registration.region_id,
-	eavs_geounit.name,
-    SUM(CASE WHEN party_affiliation = 'R' THEN 1 ELSE 0 END) AS republican_count,
-    SUM(CASE WHEN party_affiliation = 'D' THEN 1 ELSE 0 END) AS democrat_count,
-    SUM(CASE WHEN party_affiliation IS NULL OR party_affiliation = '' THEN 1 ELSE 0 END) AS unaffiliated_count,
-    max(eavs_data.total_registered) AS total_registered -- or MAX(...) if one per region
-FROM voter_registration
-JOIN eavs_data ON eavs_data.region_id = voter_registration.region_id
-JOIN eavs_geounit ON eavs_geounit.eavs_unit_code = voter_registration.region_id
-WHERE eavs_data."year" = 2024
-GROUP BY voter_registration.region_id, eavs_geounit.name;
+ GUI.17
 */
 
 @AutoSql(
