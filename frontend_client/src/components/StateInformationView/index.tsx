@@ -5,6 +5,7 @@ import type {
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
   VoterRegistrationHistoryGraphDataModel,
+  VotingEquipmentUsageStatisticsModel,
   VoterAffiliationStatisticsModel,
 } from "../../api/client";
 
@@ -15,6 +16,7 @@ import {
   getPollbookDeletions,
   getDetailedVoterRegistrationDataCount,
   getVoterRegistrationHistory,
+  getDetailedVotingEquipmentUsage,
   getVoterAffiliations,
 } from "../../api/client";
 
@@ -63,6 +65,8 @@ import {
   bargraphDataForVoterAffiliations,
   MAIL_BALLOT_REJECTION_COLUMNS,
   PROVISIONAL_BALLOT_COLUMNS,
+  VOTING_EQUIPMENT_COLUMNS,
+  bargraphDataForVotingEquipmentUsages,
   VOTER_AFFILIATION_COLUMNS,
 } from "./dataColumns";
 
@@ -70,6 +74,7 @@ import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoter
 
 import { gradientMapNearest, type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
+import ColorKeyLegend from "../ColorKeyLegend";
 
 import { dropBoxData, equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
@@ -131,8 +136,8 @@ const partyStateDropDownSections = [
   {
     title: "Voting Equipment",
     items: [
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Type" },
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Type" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Age" },
     ],
   },
   {
@@ -199,11 +204,31 @@ const choroplethColorBuckets = [
   "hsl(288, 100%, 60%)", // full, vibrant purple
 ];
 
+const votingEquipmentTypeColors = [
+  {
+    text: "DRE (No VVPAT)",
+    color: "green",
+  },
+  {
+    text: "DRE (VVPAT)",
+    color: "blue",
+  },
+  {
+    text: "BMD",
+    color: "yellow",
+  },
+  {
+    text: "Scanner",
+    color: "red",
+  },
+];
+
 type EAVsGeneralFact =
   | ProvisionalBallotStatisticsModel
   | PollbookDeletionStatisticsModel
   | MailBallotRejectionStatisticsModel
-  | VoterRegistrationStatisticsModel;
+  | VoterRegistrationStatisticsModel
+  | VotingEquipmentUsageStatisticsModel;
 
 function a11yProps(index: number) {
   return {
@@ -213,6 +238,7 @@ function a11yProps(index: number) {
 }
 
 function getUrlForModeId(id: number, fipsCode: string) {
+  console.log(id);
   switch (id) {
     case ID_SELECTION_PROVISIONAL_BALLOT:
       return `/state/${fipsCode}/provisional-ballots`;
@@ -232,6 +258,8 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/dropbox-chart/`;
     case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE:
       return `/state/${fipsCode}/voter-table/`;
+    case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
+      return `/state/${fipsCode}/equipment-by-type/`;
   }
   return "?";
 }
@@ -253,9 +281,124 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_DROP_BOX_VOTING;
   } else if (pathname.includes("/voter-table/")) {
     return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
+  } else if (pathname.includes("/equipment-by-type/")) {
+    return ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE;
   }
   return ID_SELECTION_PROVISIONAL_BALLOT;
 }
+
+// NOTE(jery):
+// needed to make the patterns for the
+// voting equipment type map display.
+const CountyGradientSet = (data: VotingEquipmentUsageStatisticsModel, colorSet: string[]) => {
+  const colors = [];
+
+  if (data.dreNoVvpatTotal! > 0) {
+    colors.push(colorSet[0]);
+  }
+
+  if (data.dreVvpatTotal! > 0) {
+    colors.push(colorSet[1]);
+  }
+
+  if (data.bmdTotal! > 0) {
+    colors.push(colorSet[2]);
+  }
+
+  if (data.scannerTotal! > 0) {
+    colors.push(colorSet[3]);
+  }
+
+  // NOTE(jerry):
+  // While there is absolutely a programmatic
+  // way to do this, I'm not going to be very
+  // clever about this.
+
+  const x1 = 25;
+  const y1 = 25;
+  const x2 = (x1 * 1.2) / colors.length;
+  const y2 = (y1 * 1.2) / colors.length;
+
+  switch (colors.length) {
+    case 1:
+      return (
+        <linearGradient id={`vt${data.fullRegionId}`} gradientTransform="">
+          <stop offset="0" stop-color={colors[0]} />
+          <stop offset="100%" stop-color={colors[0]} />
+        </linearGradient>
+      );
+    case 2:
+      return (
+        <linearGradient
+          id={`vt${data.fullRegionId}`}
+          gradientTransform="rotate(0)"
+          x1={x1 + "%"}
+          y1={y1 + "%"}
+          x2={x2 + "%"}
+          y2={y2 + "%"}
+          spreadMethod="repeat"
+        >
+          <stop offset="0" stop-color={colors[0]} />
+          <stop offset="50%" stop-color={colors[0]} />
+          <stop offset="50%" stop-color={colors[1]} />
+          <stop offset="100%" stop-color={colors[1]} />
+        </linearGradient>
+      );
+    case 3:
+      return (
+        <linearGradient
+          id={`vt${data.fullRegionId}`}
+          gradientTransform="rotate(0)"
+          x1={x1 + "%"}
+          y1={y1 + "%"}
+          x2={x2 + "%"}
+          y2={y2 + "%"}
+          spreadMethod="repeat"
+        >
+          <stop offset="0" stop-color={colors[0]} />
+          <stop offset="33%" stop-color={colors[0]} />
+          <stop offset="33%" stop-color={colors[1]} />
+          <stop offset="66%" stop-color={colors[1]} />
+          <stop offset="66%" stop-color={colors[2]} />
+          <stop offset="100%" stop-color={colors[2]} />
+        </linearGradient>
+      );
+    case 4:
+      return (
+        <linearGradient
+          id={`vt${data.fullRegionId}`}
+          gradientTransform="rotate(0)"
+          x1={x1 + "%"}
+          y1={y1 + "%"}
+          x2={x2 + "%"}
+          y2={y2 + "%"}
+          spreadMethod="repeat"
+        >
+          <stop offset="0" stop-color={colors[0]} />
+          <stop offset="25%" stop-color={colors[0]} />
+          <stop offset="25%" stop-color={colors[1]} />
+          <stop offset="50%" stop-color={colors[1]} />
+          <stop offset="50%" stop-color={colors[2]} />
+          <stop offset="75%" stop-color={colors[2]} />
+          <stop offset="75%" stop-color={colors[3]} />
+          <stop offset="100%" stop-color={colors[3]} />
+        </linearGradient>
+      );
+  }
+};
+
+const CountyGradientStyleClass = (data: VotingEquipmentUsageStatisticsModel) => {
+  return (
+    <style>
+      {`
+.vt${data.fullRegionId} {
+fill: url("#vt${data.fullRegionId}");
+fill-opacity: 0.55;
+}
+`}
+    </style>
+  );
+};
 
 function StateInformationView() {
   const { fipsCode } = useParams();
@@ -366,6 +509,21 @@ function StateInformationView() {
               // TODO: finish this for GUI17 completion.
             }
             break;
+          case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
+            {
+              const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voting Equipment Type Count`);
+              setBarGraphXTitle("Equipment Type");
+              setDataRows(
+                data.map((x) => {
+                  return { id: x.fullRegionId, ...x };
+                })
+              );
+              setDataColumns(VOTING_EQUIPMENT_COLUMNS);
+              setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
+            }
+            break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
@@ -403,7 +561,22 @@ function StateInformationView() {
 
   useKeyDown("Escape", () => navigate("/"));
 
-  const styleFunction = (feature: GeoJSON.Feature) => {
+  const votingEquipmentMapStylingFunction = (feature: GeoJSON.Feature) => {
+    const { properties } = feature;
+    const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
+    const style = {
+      color: "black",
+      // url: `#vt${fullRegionId}`,
+      className: `vt${fullRegionId}`,
+      // url: `myad`,
+      fillOpacity: 0.0,
+      weight: 2.5,
+    };
+
+    return style;
+  };
+
+  const choroplethStylingFunction = (feature: GeoJSON.Feature) => {
     const { properties } = feature;
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const style = {
@@ -450,6 +623,22 @@ function StateInformationView() {
         left: `calc(${selectionDrawerWidth} + 1.5em)`,
       }}
     >
+      <svg width="0" height="0">
+        <defs>
+          <linearGradient id={`myad`} gradientTransform="">
+            <stop offset="0" stop-color="red" />
+            <stop offset="100%" stop-color="red" />
+          </linearGradient>
+          {dataRows.map((x) =>
+            CountyGradientSet(
+              x,
+              votingEquipmentTypeColors.map((c) => c.color)
+            )
+          )}
+        </defs>
+      </svg>
+      {dataRows.map(CountyGradientStyleClass)}
+
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
         onSelection={(id) => {
@@ -496,7 +685,7 @@ function StateInformationView() {
           <StateMap
             // @ts-expect-error, the style function *is* of the right type
             // although it's not immediately obvious to typescript atm.
-            styleFunction={styleFunction}
+            styleFunction={activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE ? votingEquipmentMapStylingFunction : choroplethStylingFunction}
             mapKey={activeDataState}
             width={maxWidthForMap}
             height={maxHeightForMap}
@@ -510,9 +699,14 @@ function StateInformationView() {
               }
             }}
           >
-            {isDetailState(fipsCode!) && !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) && (
-              <GradientMapLegend gradientMap={gradientMap} />
-            )}
+            {isDetailState(fipsCode!) &&
+              !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
+              activeDataState !== ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && <GradientMapLegend gradientMap={gradientMap} />}
+            {isDetailState(fipsCode!) &&
+              !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
+              activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                <ColorKeyLegend colors={votingEquipmentTypeColors.map((x) => x.color)} labels={votingEquipmentTypeColors.map((x) => x.text)} />
+              )}
             <Typography
               variant="h4"
               sx={{

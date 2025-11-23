@@ -4,6 +4,7 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   VoterRegistrationDataModel,
+  VotingEquipmentUsageStatisticsModel,
   VoterAffiliationStatisticsModel,
 } from "../../api/client";
 import type { GridColDef } from "@mui/x-data-grid";
@@ -168,6 +169,18 @@ const MAIL_BALLOT_REJECTION_COLUMNS: GridColDef<MailBallotRejectionStatisticsMod
   { field: "rejectOther", headerName: "Other", type: "number", width: 120 },
 ];
 
+const VOTING_EQUIPMENT_COLUMNS: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
+  {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // hides the "Select All" checkbox
+  },
+  { field: "countyName", headerName: "County", width: 120 },
+  { field: "dreNoVvpatTotal", headerName: "DRE (No VVPAT) Total", type: "number", width: 150 },
+  { field: "dreVvpatTotal", headerName: "DRE Total", type: "number", width: 120 },
+  { field: "bmdTotal", headerName: "BMD Total", type: "number", width: 130 },
+  { field: "scannerTotal", headerName: "Scanner Total", type: "number", width: 120 },
+];
+
 function bargraphDataForProvisionalBallots(aggregatedStatistics: ProvisionalBallotStatisticsModel): BarChartDataEntry[] {
   return [
     { category: "Total Provisional Ballots", value: aggregatedStatistics.totalProvisionalBallotsCast || 0 },
@@ -230,6 +243,15 @@ function bargraphDataForActiveVoterRegistrations(aggregatedStatistics: VoterRegi
   ];
 }
 
+function bargraphDataForVotingEquipmentUsages(aggregatedStatistics: VotingEquipmentUsageStatisticsModel): BarChartDataEntry[] {
+  return [
+    { category: "DRE (No VVPAT)", value: aggregatedStatistics.dreNoVvpatTotal || 0 },
+    { category: "DRE (VVPAT)", value: aggregatedStatistics.dreVvpatTotal || 0 },
+    { category: "BMD", value: aggregatedStatistics.bmdTotal || 0 },
+    { category: "Scanner", value: aggregatedStatistics.scannerTotal || 0 },
+  ];
+}
+
 function bargraphDataForVoterAffiliations(aggregatedStatistics: VoterAffiliationStatisticsModel): BarChartDataEntry[] {
   return [
     { category: "Democratic Voters", value: aggregatedStatistics.democraticTotal || 0 },
@@ -245,10 +267,12 @@ export {
   POLL_BOOK_DELETION_COLUMNS,
   ACTIVE_VOTER_REGISTRATION_COLUMNS,
   VOTER_REGISTRATION_INFO_COLUMNS,
+  VOTING_EQUIPMENT_COLUMNS,
   VOTER_AFFILIATION_COLUMNS,
   bargraphDataForProvisionalBallots,
   bargraphDataForMailBallotRejections,
   bargraphDataForPollBookDeletions,
   bargraphDataForActiveVoterRegistrations,
+  bargraphDataForVotingEquipmentUsages,
   bargraphDataForVoterAffiliations,
 };
