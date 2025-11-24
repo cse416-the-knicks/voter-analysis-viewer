@@ -41,4 +41,15 @@ public interface IVoterRegistrationDAO {
    */
   int getDetailedVoterRegistrationDataCount(
       String stateFips, Optional<String> countyFips, int partySelectionFilterId);
+
+  /**
+   * This access point is meant to retrieve CVAP Statistics on a per county level for a particular
+   * state. Although it can also return an aggregate for the entire state if necessary.
+   *
+   * @param stateFips - State code fips. This is required.
+   * @param year - Year of CVAP to query. Only defined for 2023, as per the usecases
+   * @param
+   */
+  List<CVAPStatisticsModel> getCVAPStatisticsDataRows(
+      String stateFips, int year, boolean inAggregate);
 }

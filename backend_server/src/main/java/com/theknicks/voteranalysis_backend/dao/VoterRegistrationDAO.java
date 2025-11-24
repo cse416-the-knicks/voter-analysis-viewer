@@ -78,4 +78,9 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     Integer count = _jdbcTemplate.queryForObject(sql.toString(), Integer.class, params.toArray());
     return count != null ? count : 0;
   }
+
+  public List<CVAPStatisticsModel> getCVAPStatisticsDataRows(
+      String stateFips, int year, boolean inAggregate) {
+    return List.of();
+  }
 }
