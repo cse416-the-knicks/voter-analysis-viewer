@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.dao;
 
+import com.theknicks.voteranalysis_backend.models.CVAPStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.CollectionSortParamModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationDataModel;
 import java.util.*;

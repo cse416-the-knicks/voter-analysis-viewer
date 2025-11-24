@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.dao;
 
+import com.theknicks.voteranalysis_backend.models.CVAPStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.CollectionSortParamModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationDataModel;
 import java.util.*;
@@ -48,7 +49,9 @@ public interface IVoterRegistrationDAO {
    *
    * @param stateFips - State code fips. This is required.
    * @param year - Year of CVAP to query. Only defined for 2023, as per the usecases
-   * @param
+   * @param inAggregate - whether to return data in aggregate or not.
+   * @return A list of CVAPStatisticsModel on a per-county basis or a list of a single model for the
+   *     stats aggregates.
    */
   List<CVAPStatisticsModel> getCVAPStatisticsDataRows(
       String stateFips, int year, boolean inAggregate);

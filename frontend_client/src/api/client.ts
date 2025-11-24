@@ -11,6 +11,7 @@ import getVotingEquipmentUsageMutator from "../helpers/backendConnectorAxiosInst
 import getAllVotingEquipmentByTypeMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentByManufacturerMutator from "../helpers/backendConnectorAxiosInstance";
 import getAllVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
+import getCVAPStatisticsDataMutator from "../helpers/backendConnectorAxiosInstance";
 import getDetailedVoterRegistrationDataCountMutator from "../helpers/backendConnectorAxiosInstance";
 import getDetailedVoterRegistrationDataMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateInformationTableForStateMutator from "../helpers/backendConnectorAxiosInstance";
@@ -57,6 +58,17 @@ export interface VotingEquipmentUsageStatisticsModel {
   dreVvpatTotal?: number;
   bmdTotal?: number;
   scannerTotal?: number;
+}
+
+export interface CVAPStatisticsModel {
+  fullRegionId?: string;
+  regionName?: string;
+  asianTotal?: number;
+  africanAmericanTotal?: number;
+  hispanicTotal?: number;
+  whiteTotal?: number;
+  nativeAmericanTotal?: number;
+  otherTotal?: number;
 }
 
 export interface VoterRegistrationDataModel {
@@ -246,6 +258,11 @@ export type GetDetailedVotingEquipmentUsageParams = {
 
 export type GetVotingEquipmentUsageParams = {
   year?: number;
+};
+
+export type GetCVAPStatisticsDataParams = {
+  year?: number;
+  aggregate?: boolean;
 };
 
 export type GetDetailedVoterRegistrationDataCountParams = {
@@ -786,6 +803,14 @@ export const getAllVotingEquipment = (options?: SecondParameter<typeof getAllVot
   return getAllVotingEquipmentMutator<VotingEquipmentModel[]>({ url: `/votingequipment/`, method: "GET" }, options);
 };
 
+export const getCVAPStatisticsData = (
+  fipsCode: string,
+  params?: GetCVAPStatisticsDataParams,
+  options?: SecondParameter<typeof getCVAPStatisticsDataMutator>
+) => {
+  return getCVAPStatisticsDataMutator<CVAPStatisticsModel[]>({ url: `/voter-registration/cvap/${fipsCode}`, method: "GET", params }, options);
+};
+
 export const getDetailedVoterRegistrationDataCount = (
   params?: GetDetailedVoterRegistrationDataCountParams,
   options?: SecondParameter<typeof getDetailedVoterRegistrationDataCountMutator>
@@ -960,6 +985,7 @@ export type GetVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeo
 export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>;
 export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>;
 export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>;
+export type GetCVAPStatisticsDataResult = NonNullable<Awaited<ReturnType<typeof getCVAPStatisticsData>>>;
 export type GetDetailedVoterRegistrationDataCountResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationDataCount>>>;
 export type GetDetailedVoterRegistrationDataResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationData>>>;
 export type GetStateInformationTableForStateResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTableForState>>>;
