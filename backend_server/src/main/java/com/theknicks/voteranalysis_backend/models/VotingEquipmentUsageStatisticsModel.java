@@ -2,15 +2,17 @@ package com.theknicks.voteranalysis_backend.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /*
-   This is similar to VotingEquipmentUsageStatisticsEntryModel but is
-   formatted in such a way that it is suitable for tabulation (and state
-   analysis.)
+  This is similar to VotingEquipmentUsageStatisticsEntryModel but is
+  formatted in such a way that it is suitable for tabulation (and state
+  analysis.)
 
-   TODO(jerry): rename some stuff to be more general, this needs to be shared
-   for the total aggregate (of the state), and per county.
+  TODO(jerry): rename some stuff to be more general, this needs to be shared
+  for the total aggregate (of the state), and per county.
 */
 public record VotingEquipmentUsageStatisticsModel(
     String stateName,
@@ -23,7 +25,8 @@ public record VotingEquipmentUsageStatisticsModel(
     int scannerTotal,
     int averageAge) {
   private static VotingEquipmentUsageStatisticsModel aggregateEquipmentCounts(
-      List<VotingEquipmentUsageStatisticsEntryModel> entries) {
+      List<VotingEquipmentUsageStatisticsEntryModel> entries,
+      Map<Integer, Optional<Integer>> deviceAgeMap) {
     var stateName = "";
     var fullRegionId = "";
     var countyName = "";
@@ -58,9 +61,16 @@ public record VotingEquipmentUsageStatisticsModel(
       }
 
       int deviceCount = entry.totalDevices();
+      var deviceAge = deviceAgeMap.get(entry.deviceId());
 
-      totalDeviceCount += deviceCount;
-      totalYears += 1 * deviceCount;
+      // If the device doesn't have an age, we don't want
+      // to impute it as zero to drag anything down. We'll
+      // just not count it for the sake of keeping the average
+      // integrity.
+      if (deviceAge.isPresent()) {
+        totalDeviceCount += deviceCount;
+        totalYears += deviceAge.get() * deviceCount;
+      }
 
       switch (entry.deviceType()) {
         case "DRE Dial":
@@ -103,7 +113,8 @@ public record VotingEquipmentUsageStatisticsModel(
   }
 
   public static List<VotingEquipmentUsageStatisticsModel> fromDataRows(
-      List<VotingEquipmentUsageStatisticsEntryModel> rows) {
+      List<VotingEquipmentUsageStatisticsEntryModel> rows,
+      Map<Integer, Optional<Integer>> deviceAgeMap) {
     var statisticsRows = new ArrayList<VotingEquipmentUsageStatisticsModel>();
     var dataByStates =
         rows.stream()
@@ -112,7 +123,7 @@ public record VotingEquipmentUsageStatisticsModel(
     // Classification sorting...
     for (var state : dataByStates.keySet()) {
       var dataRowsPerState = dataByStates.get(state);
-      var aggregated = aggregateEquipmentCounts(dataRowsPerState);
+      var aggregated = aggregateEquipmentCounts(dataRowsPerState, deviceAgeMap);
       statisticsRows.add(
           new VotingEquipmentUsageStatisticsModel(
               aggregated.stateName(),
@@ -123,14 +134,15 @@ public record VotingEquipmentUsageStatisticsModel(
               aggregated.dreVvpatTotal(),
               aggregated.bmdTotal(),
               aggregated.scannerTotal(),
-              aggregated.averageAge());
+              aggregated.averageAge()));
     }
 
     return statisticsRows;
   }
 
   public static List<VotingEquipmentUsageStatisticsModel> fromDataRowsPerCounty(
-      List<VotingEquipmentUsageStatisticsEntryModel> rows) {
+      List<VotingEquipmentUsageStatisticsEntryModel> rows,
+      Map<Integer, Optional<Integer>> deviceAgeMap) {
     var statisticsRows = new ArrayList<VotingEquipmentUsageStatisticsModel>();
     var dataByStates =
         rows.stream()
@@ -145,7 +157,7 @@ public record VotingEquipmentUsageStatisticsModel(
 
       for (var county : dataByCounties.keySet()) {
         var countyData = dataByCounties.get(county);
-        var aggregated = aggregateEquipmentCounts(countyData);
+        var aggregated = aggregateEquipmentCounts(countyData, deviceAgeMap);
         statisticsRows.add(
             new VotingEquipmentUsageStatisticsModel(
                 aggregated.stateName(),

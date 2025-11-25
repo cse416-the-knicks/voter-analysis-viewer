@@ -46,6 +46,7 @@ export interface VotingEquipmentModel {
   firstManufactured?: string;
   operatingSystem?: string;
   certificationLevel?: string;
+  age?: number;
 }
 
 export interface VotingEquipmentUsageStatisticsModel {
@@ -57,6 +58,7 @@ export interface VotingEquipmentUsageStatisticsModel {
   dreVvpatTotal?: number;
   bmdTotal?: number;
   scannerTotal?: number;
+  averageAge?: number;
 }
 
 export interface VoterRegistrationDataModel {
