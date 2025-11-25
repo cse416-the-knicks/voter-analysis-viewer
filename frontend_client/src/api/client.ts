@@ -62,12 +62,12 @@ export interface VotingEquipmentUsageStatisticsModel {
 
 export interface CVAPStatisticsModel {
   fullRegionId?: string;
-  regionName?: string;
+  countyName?: string;
+  cvapTotal?: number;
   asianTotal?: number;
-  africanAmericanTotal?: number;
+  blackTotal?: number;
   hispanicTotal?: number;
   whiteTotal?: number;
-  nativeAmericanTotal?: number;
   otherTotal?: number;
 }
 
