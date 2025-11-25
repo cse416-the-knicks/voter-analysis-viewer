@@ -1,5 +1,7 @@
 package com.theknicks.voteranalysis_backend.models;
 
+import com.theknicks.voteranalysis_backend.annotations.AutoSql;
+import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 
 /**
@@ -7,33 +9,35 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
  *
  * <p>Might have to consider double-counting on accident.
  */
-
-// TODO(jerry):
-// Which collection does this stuff belong to?
+@AutoSql(
+    collection = "app.cvap_data",
+    joining = {"app.eavs_geounit"},
+    joinMethod = {"inner"},
+    joinOn = {"app.eavs_geounit.eavs_unit_code = app.eavs_data.region_id"})
 public record CVAPStatisticsModel(
-    String fullRegionId,
-    String regionName,
-    int asianTotal,
-    int africanAmericanTotal,
-    int hispanicTotal,
-    int whiteTotal,
-    int nativeAmericanTotal,
-    int otherTotal) {
+    @SqlColumnName(name = "eavs_data.region_id", omitFromAggregate = true) String fullRegionId,
+    @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String countyName,
+    @SqlColumnName(name = "cvap_total") int cvapTotal,
+    @SqlColumnName(name = "cvap_asian") int asianTotal,
+    @SqlColumnName(name = "cvap_black") int blackTotal,
+    @SqlColumnName(name = "cvap_hispanic") int hispanicTotal,
+    @SqlColumnName(name = "cvap_white") int whiteTotal,
+    @SqlColumnName(name = "cvap_other") int otherTotal) {
   public CVAPStatisticsModel(
+      int cvapTotal,
       int asianTotal,
-      int africanAmericanTotal,
+      int blackTotal,
       int hispanicTotal,
       int whiteTotal,
-      int nativeAmericanTotal,
       int otherTotal) {
     this(
         "0000000000",
         "Aggregated",
+        cvapTotal,
         asianTotal,
-        africanAmericanTotal,
+        blackTotal,
         hispanicTotal,
         whiteTotal,
-        nativeAmericanTotal,
         otherTotal);
   }
 
