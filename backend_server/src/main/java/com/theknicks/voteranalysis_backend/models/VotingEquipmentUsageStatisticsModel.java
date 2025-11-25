@@ -20,7 +20,8 @@ public record VotingEquipmentUsageStatisticsModel(
     int dreNoVvpatTotal,
     int dreVvpatTotal,
     int bmdTotal,
-    int scannerTotal) {
+    int scannerTotal,
+    int averageAge) {
   private static VotingEquipmentUsageStatisticsModel aggregateEquipmentCounts(
       List<VotingEquipmentUsageStatisticsEntryModel> entries) {
     var stateName = "";
@@ -30,6 +31,10 @@ public record VotingEquipmentUsageStatisticsModel(
     var dreVvpatCount = 0;
     var bmdCount = 0;
     var scannerCount = 0;
+
+    // Used for calculating average age.
+    var totalDeviceCount = 0;
+    var totalYears = 0;
 
     for (var entry : entries) {
       if (stateName.isEmpty()) {
@@ -53,6 +58,10 @@ public record VotingEquipmentUsageStatisticsModel(
       }
 
       int deviceCount = entry.totalDevices();
+
+      totalDeviceCount += deviceCount;
+      totalYears += 1 * deviceCount;
+
       switch (entry.deviceType()) {
         case "DRE Dial":
         case "DRE with VVPAT":
@@ -82,7 +91,15 @@ public record VotingEquipmentUsageStatisticsModel(
     }
 
     return new VotingEquipmentUsageStatisticsModel(
-        stateName, 0, fullRegionId, countyName, dreCount, dreVvpatCount, bmdCount, scannerCount);
+        stateName,
+        0,
+        fullRegionId,
+        countyName,
+        dreCount,
+        dreVvpatCount,
+        bmdCount,
+        scannerCount,
+        totalYears / totalDeviceCount);
   }
 
   public static List<VotingEquipmentUsageStatisticsModel> fromDataRows(
@@ -105,7 +122,8 @@ public record VotingEquipmentUsageStatisticsModel(
               aggregated.dreNoVvpatTotal(),
               aggregated.dreVvpatTotal(),
               aggregated.bmdTotal(),
-              aggregated.scannerTotal()));
+              aggregated.scannerTotal(),
+              aggregated.averageAge());
     }
 
     return statisticsRows;
@@ -137,7 +155,8 @@ public record VotingEquipmentUsageStatisticsModel(
                 aggregated.dreNoVvpatTotal(),
                 aggregated.dreVvpatTotal(),
                 aggregated.bmdTotal(),
-                aggregated.scannerTotal()));
+                aggregated.scannerTotal(),
+                aggregated.averageAge()));
       }
     }
 

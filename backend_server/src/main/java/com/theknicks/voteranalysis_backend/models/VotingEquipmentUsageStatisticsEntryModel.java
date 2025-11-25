@@ -25,11 +25,13 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
     groupBy = {
       "eavs_geounit.state_id",
       "eavs_geounit.region_id",
+      "device_model.device_model_id",
       "states.name",
       "device_type",
       "certification"
     })
 public record VotingEquipmentUsageStatisticsEntryModel(
+    @SqlColumnName(name = "device_model.device_model_id") int deviceId,
     @SqlColumnName(name = "states.name") String stateName,
     @SqlColumnName(name = "eavs_geounit.state_id") int stateId,
     @SqlColumnName(name = "eavs_geounit.eavs_unit_code") String fullRegionId,

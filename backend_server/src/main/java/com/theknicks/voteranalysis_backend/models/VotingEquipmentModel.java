@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.theknicks.voteranalysis_backend.annotations.AutoSql;
 import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
@@ -14,6 +15,7 @@ import java.util.Optional;
  */
 @AutoSql(collection = "app.device_model")
 public record VotingEquipmentModel(
+    @JsonIgnore @SqlColumnName(name = "device_model_id") int id,
     @SqlColumnName(name = "vendor") String manufacturer,
     // No strong opinions, but this could be an enum.
     @SqlColumnName(name = "device_type") String equipmentType,
@@ -43,6 +45,7 @@ public record VotingEquipmentModel(
     ) {
 
   public VotingEquipmentModel(
+      int id,
       String manufacturer,
       String equipmentType,
       String modelName,
@@ -51,6 +54,7 @@ public record VotingEquipmentModel(
       Optional<String> operatingSystem,
       Optional<String> certificationLevel) {
     this(
+        id,
         manufacturer,
         equipmentType,
         modelName,
