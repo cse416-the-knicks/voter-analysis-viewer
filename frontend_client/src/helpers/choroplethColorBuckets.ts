@@ -14,5 +14,4 @@ const choroplethColorBuckets = [
   "hsl(280, 70%, 60%)", // top, stronger but still soft
 ];
 
-
 export default choroplethColorBuckets;

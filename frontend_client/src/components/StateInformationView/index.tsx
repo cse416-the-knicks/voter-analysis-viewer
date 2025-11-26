@@ -557,38 +557,35 @@ function StateInformationView() {
     return style;
   };
 
-  const choroplethStylingFunction = useChoroplethStylingFunction(
-    (feature: GeoJSON.Feature) => {
-      if (!isDetailState(fipsCode!) || (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart)) {
-	return null;
-      }
+  const choroplethStylingFunction = useChoroplethStylingFunction((feature: GeoJSON.Feature) => {
+    if (!isDetailState(fipsCode!) || (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart)) {
+      return null;
+    }
 
-      const { properties } = feature;
-      const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
-      const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
+    const { properties } = feature;
+    const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
+    const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
 
-      let colorPoint: number | null = null;
-      if (row) {
-        const dataEntry =
-          (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
-          (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
-          (row as PollbookDeletionStatisticsModel).totalRemoved! ||
-          (row as VoterRegistrationStatisticsModel).active! ||
-          (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
-        const dataEntryTotal =
-          (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||
-          (row as ProvisionalBallotStatisticsModel).totalBallotsCast! || // TODO(jerry): needs total actual ballots vs total Provisional
-          (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
-          (row as VoterRegistrationStatisticsModel).total! ||
-          (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
-	if (dataEntryTotal !== 0) {
-	  colorPoint = (dataEntry / dataEntryTotal) * 100;
-	}
+    let colorPoint: number | null = null;
+    if (row) {
+      const dataEntry =
+        (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
+        (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
+        (row as PollbookDeletionStatisticsModel).totalRemoved! ||
+        (row as VoterRegistrationStatisticsModel).active! ||
+        (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
+      const dataEntryTotal =
+        (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||
+        (row as ProvisionalBallotStatisticsModel).totalBallotsCast! || // TODO(jerry): needs total actual ballots vs total Provisional
+        (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
+        (row as VoterRegistrationStatisticsModel).total! ||
+        (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
+      if (dataEntryTotal !== 0) {
+        colorPoint = (dataEntry / dataEntryTotal) * 100;
       }
-      return colorPoint;
-    },
-    gradientMap
-  );
+    }
+    return colorPoint;
+  }, gradientMap);
 
   return (
     <div

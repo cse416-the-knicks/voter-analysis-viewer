@@ -23,7 +23,7 @@ function useChoroplethStylingFunction(valueFn: ValueFunction, gradientMap: Gradi
     }
 
     return style;
-  }
+  };
 }
 
 export default useChoroplethStylingFunction;

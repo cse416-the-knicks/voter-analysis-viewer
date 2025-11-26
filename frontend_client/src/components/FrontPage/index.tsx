@@ -43,7 +43,7 @@ const VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS: GradientMap = {
   8: choroplethColorBuckets[8],
   9: choroplethColorBuckets[9],
   10: choroplethColorBuckets[10],
-}
+};
 
 function FrontPageDrawer({ showVotingEquipmentHook }: FrontPageDrawerProperties) {
   const navigate = useNavigate();
@@ -99,9 +99,13 @@ function FrontPageDrawer({ showVotingEquipmentHook }: FrontPageDrawerProperties)
         </ListItem>
         <ListItem>
           {" "}
-          <ListItemButton onClick={() => {showVotingEquipmentHook[1](!showVotingEquipmentHook[0]);}}>
+          <ListItemButton
+            onClick={() => {
+              showVotingEquipmentHook[1](!showVotingEquipmentHook[0]);
+            }}
+          >
             {" "}
-            <ListItemText primary={(showVotingEquipmentHook[0]) ? "Show Default Map" : "Show Voting Equipment Age"} />{" "}
+            <ListItemText primary={showVotingEquipmentHook[0] ? "Show Default Map" : "Show Voting Equipment Age"} />{" "}
           </ListItemButton>{" "}
         </ListItem>
       </List>
@@ -151,26 +155,26 @@ function FrontPage() {
   useEffect(
     function () {
       (async function () {
-	if (showVotingEquipmentAge) {
-	  const data = await getVotingEquipmentUsage();
-	  setVotingEquipmentUsageData(data);
-	}
+        if (showVotingEquipmentAge) {
+          const data = await getVotingEquipmentUsage();
+          setVotingEquipmentUsageData(data);
+        }
       })();
-    }, [showVotingEquipmentAge]);
-
-  const choroplethStylingFunction = useChoroplethStylingFunction(
-    function (feature: GeoJSON.Feature) {
-      if (!votingEquipmentUsageData) {
-	return null;
-      }
-      const { id } = feature;
-
-      const matchingRow = votingEquipmentUsageData.find((x) => x.stateId === parseInt(id as string, 10));
-      const stateName = FIPS_TO_STATES_MAP[id!];
-      console.log(id, stateName, matchingRow, matchingRow?.averageAge);
-      return matchingRow?.averageAge || null;
     },
-    VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS);
+    [showVotingEquipmentAge]
+  );
+
+  const choroplethStylingFunction = useChoroplethStylingFunction(function (feature: GeoJSON.Feature) {
+    if (!votingEquipmentUsageData) {
+      return null;
+    }
+    const { id } = feature;
+
+    const matchingRow = votingEquipmentUsageData.find((x) => x.stateId === parseInt(id as string, 10));
+    const stateName = FIPS_TO_STATES_MAP[id!];
+    console.log(id, stateName, matchingRow, matchingRow?.averageAge);
+    return matchingRow?.averageAge || null;
+  }, VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS);
 
   const styleFunction: FullBoundedUSMapStylingFn = (highlightedStateFipsId: string, feature: GeoJSON.Feature) => {
     const fipsCode = feature.id as string;
@@ -190,20 +194,20 @@ function FrontPage() {
 
     if (showVotingEquipmentAge) {
       if (highlightedStateFipsId === fipsCode) {
-	result.fillOpacity = 1.0;
-	// NOTE(jerry):
-	// this is blue with the default MUI theme, and we're intentionally
-	// not picking another shade of purple, because otherwise it might be misleading with
-	// the choropleth.
-	result.fillColor = theme.palette.primary.light;
-	return result;
+        result.fillOpacity = 1.0;
+        // NOTE(jerry):
+        // this is blue with the default MUI theme, and we're intentionally
+        // not picking another shade of purple, because otherwise it might be misleading with
+        // the choropleth.
+        result.fillColor = theme.palette.primary.light;
+        return result;
       }
 
       return choroplethStylingFunction(feature);
     } else {
       if (highlightedStateFipsId === fipsCode) {
-	result.fillOpacity = 0.88;
-	result.fillColor = theme.palette.secondary.light;
+        result.fillOpacity = 0.88;
+        result.fillColor = theme.palette.secondary.light;
       }
     }
 
@@ -221,21 +225,10 @@ function FrontPage() {
           mt: "48px",
         }}
       >
-        <FrontPageDrawer
-	  showVotingEquipmentHook={showVotingEquipmentHook}/>
-	<FullBoundedUSMap
-	  mapRef={mapState}
-	  id={styles.mainMap}
-	  onStateClick={onStateClick}
-	  styleFunction={styleFunction}
-	  >
-	  {
-	    (showVotingEquipmentAge) &&
-	      <GradientMapLegend
-		positionPreference={"topright"}
-		gradientMap={VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS} />
-}
-	</FullBoundedUSMap>
+        <FrontPageDrawer showVotingEquipmentHook={showVotingEquipmentHook} />
+        <FullBoundedUSMap mapRef={mapState} id={styles.mainMap} onStateClick={onStateClick} styleFunction={styleFunction}>
+          {showVotingEquipmentAge && <GradientMapLegend positionPreference={"topright"} gradientMap={VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS} />}
+        </FullBoundedUSMap>
       </Box>
     </React.Fragment>
   );

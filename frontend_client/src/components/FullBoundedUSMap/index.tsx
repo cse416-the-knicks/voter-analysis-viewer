@@ -77,8 +77,7 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, styleFunction, onStateCl
     layer.on(defaultHandlers);
   };
 
-  const stylingFunctionWrapper = (feature: GeoJSON.Feature) =>
-    styleFunction(highlightedStateFipsId!, feature);
+  const stylingFunctionWrapper = (feature: GeoJSON.Feature) => styleFunction(highlightedStateFipsId!, feature);
 
   return (
     <MapContainer
