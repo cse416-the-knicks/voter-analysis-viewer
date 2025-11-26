@@ -3,8 +3,7 @@ import L from "leaflet";
 import type { MapRef } from "react-leaflet/MapContainer";
 import { GeoJSON, MapContainer, TileLayer, Pane } from "react-leaflet";
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from "./boundaryData";
-import { DETAIL_STATE_TYPE_NONE, getDetailStateType, getHumanReadableStateType, isDetailState } from "./detailedStatesInfo";
-import { useTheme } from "@mui/material";
+import { getDetailStateType, getHumanReadableStateType, isDetailState } from "./detailedStatesInfo";
 import { useState } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -21,6 +20,7 @@ const MIN_ACCEPTABLE_ZOOM = 4;
 
 type FipsCode = string; // It's really not just a string, but this is easier to keep.
 type OnStateClickFn = (fipsCode: FipsCode) => void;
+type FullBoundedUSMapStylingFn = (highlightedStateFipsId: string, feature: GeoJSON.Feature) => L.StyleFunction;
 
 interface FullBoundedUSMapProperties {
   id: string;
@@ -28,6 +28,7 @@ interface FullBoundedUSMapProperties {
   onStateClick?: OnStateClickFn;
   zoom?: number;
   children?: React.ReactNode;
+  styleFunction: FullBoundedUSMapStylingFn;
 }
 
 /**
@@ -39,8 +40,7 @@ interface FullBoundedUSMapProperties {
     Will show state names and such, and allow registering
     callbacks on click.
 **/
-function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoundedUSMapProperties) {
-  const theme = useTheme();
+function FullBoundedUSMap({ id, mapRef, zoom, children, styleFunction, onStateClick }: FullBoundedUSMapProperties) {
   const [highlightedStateFipsId, setHighlightedStateFipsId] = useState<string | null>(null);
   const useDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const onFeatureClickHandler = (event: L.LeafletMouseEvent) => {
@@ -53,7 +53,6 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoun
   const onMouseOverHandler = (event: L.LeafletMouseEvent) => {
     const target = event.target as L.FeatureGroup;
     const featureData = target.feature as GeoJSON.Feature;
-    console.log(target);
     setHighlightedStateFipsId(featureData.id! as FipsCode);
   };
   const onMouseOutHandler = (event: L.LeafletMouseEvent) => {
@@ -77,30 +76,9 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoun
 
     layer.on(defaultHandlers);
   };
-  const styleFunction = (feature: GeoJSON.Feature) => {
-    const fipsCode = feature.id as string;
-    const result = {
-      fillColor: "#00000000",
-      fillOpacity: 0,
-      color: theme.palette.secondary.main,
-      weight: 1,
-      zIndex: 10,
-    };
 
-    console.log(highlightedStateFipsId);
-    if (fipsCode && isDetailState(fipsCode)) {
-      result.weight = 4;
-      result.fillOpacity = 0.4;
-      result.fillColor = theme.palette.secondary.light;
-    }
-
-    if (highlightedStateFipsId === fipsCode) {
-      result.fillOpacity = 0.88;
-      result.fillColor = theme.palette.secondary.light;
-    }
-
-    return result;
-  };
+  const stylingFunctionWrapper = (feature: GeoJSON.Feature) =>
+    styleFunction(highlightedStateFipsId!, feature);
 
   return (
     <MapContainer
@@ -124,9 +102,8 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoun
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={"https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"}
-          // url={useDarkMode ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
         />
-        <GeoJSON style={styleFunction} data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON} onEachFeature={onEachFeatureHandler} />
+        <GeoJSON style={stylingFunctionWrapper} data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON} onEachFeature={onEachFeatureHandler} />
         {children}
       </Pane>
       <Pane name="labels" style={{ zIndex: 499 }}>
@@ -139,6 +116,6 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoun
   );
 }
 
-export type { FipsCode, OnStateClickFn };
+export type { FipsCode, OnStateClickFn, FullBoundedUSMapStylingFn };
 
 export default FullBoundedUSMap;

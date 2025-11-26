@@ -2,7 +2,7 @@ import "leaflet/dist/leaflet.css";
 import styles from "./FrontPage.module.css";
 
 import type { MapRef } from "react-leaflet/MapContainer";
-import type { FipsCode } from "../FullBoundedUSMap/";
+import type { FipsCode, FullBoundedUSMapStylingFn } from "../FullBoundedUSMap/";
 
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router";
@@ -13,6 +13,8 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 import WelcomeApplicationDialog from "../WelcomeApplicationDialog";
 import NotImplementedYet from "../NotImplementedYetDialog";
+
+import { isDetailState } from "../FullBoundedUSMap/detailedStatesInfo";
 
 interface FrontPageDrawerProperties {
   showVotingEquipmentHook: [boolean, (arg0: boolean) => void];
@@ -113,9 +115,34 @@ function FrontPage() {
   const mapState = useRef<MapRef>(null);
   const navigate = useNavigate();
   const showVotingEquipmentHook = useState(false);
+  const theme = useTheme();
 
   const onStateClick = (fipsCode: FipsCode) => {
     navigate(`/state/${fipsCode}`);
+  };
+
+  const styleFunction: FullBoundedUSMapStylingFn = (highlightedStateFipsId: string, feature: GeoJSON.Feature) => {
+    const fipsCode = feature.id as string;
+    const result = {
+      fillColor: "#00000000",
+      fillOpacity: 0,
+      color: theme.palette.secondary.main,
+      weight: 1,
+      zIndex: 10,
+    };
+
+    if (fipsCode && isDetailState(fipsCode)) {
+      result.weight = 4;
+      result.fillOpacity = 0.4;
+      result.fillColor = theme.palette.secondary.light;
+    }
+
+    if (highlightedStateFipsId === fipsCode) {
+      result.fillOpacity = 0.88;
+      result.fillColor = theme.palette.secondary.light;
+    }
+
+    return result;
   };
 
   return (
@@ -131,7 +158,12 @@ function FrontPage() {
       >
         <FrontPageDrawer
 	  showVotingEquipmentHook={showVotingEquipmentHook}/>
-	<FullBoundedUSMap mapRef={mapState} id={styles.mainMap} onStateClick={onStateClick}>
+	<FullBoundedUSMap
+	  mapRef={mapState}
+	  id={styles.mainMap}
+	  onStateClick={onStateClick}
+	  styleFunction={styleFunction}
+	  >
 	</FullBoundedUSMap>
       </Box>
     </React.Fragment>
