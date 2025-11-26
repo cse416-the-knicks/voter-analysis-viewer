@@ -20,8 +20,9 @@ import {
   getVoterAffiliations,
 } from "../../api/client";
 
-import choroplethColorBuckets from "../../helpers/choroplethColorBuckets";
 import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
+
+import { PERCENTAGE_CHOROPLETH_BUCKETS, VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS } from "../../helpers/choroplethBuckets";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
 
@@ -493,6 +494,21 @@ function StateInformationView() {
               // TODO: finish this for GUI17 completion.
             }
             break;
+          case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
+            {
+              const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voting Equipment Type Count`);
+              setBarGraphXTitle("Equipment Type");
+              setDataRows(
+                data.map((x) => {
+                  return { id: x.fullRegionId, ...x };
+                })
+              );
+              setDataColumns(VOTING_EQUIPMENT_COLUMNS);
+              setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
+            }
+            break;
           case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
             {
               const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
@@ -531,12 +547,11 @@ function StateInformationView() {
             break;
         }
 
-        const newGradientMap: GradientMap = {};
-        const binSize = 10;
-        for (let i = 0; i < choroplethColorBuckets.length; ++i) {
-          newGradientMap[binSize * i] = choroplethColorBuckets[i];
-        }
-        setGradientMap(newGradientMap);
+	if (activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_AGE) {
+	  setGradientMap(VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS);
+	} else {
+	  setGradientMap(PERCENTAGE_CHOROPLETH_BUCKETS);
+	}
       })();
     },
     [activeDataState, fipsCode, navigate]
@@ -568,20 +583,37 @@ function StateInformationView() {
 
     let colorPoint: number | null = null;
     if (row) {
-      const dataEntry =
-        (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
-        (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
-        (row as PollbookDeletionStatisticsModel).totalRemoved! ||
-        (row as VoterRegistrationStatisticsModel).active! ||
-        (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
-      const dataEntryTotal =
-        (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||
-        (row as ProvisionalBallotStatisticsModel).totalBallotsCast! || // TODO(jerry): needs total actual ballots vs total Provisional
-        (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
-        (row as VoterRegistrationStatisticsModel).total! ||
-        (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
+      let dataEntry: number = 0;
+      let dataEntryTotal: number = 0;
+      switch (activeDataState) {
+	case ID_SELECTION_PROVISIONAL_BALLOT:
+	  dataEntry = (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast!;
+	  dataEntryTotal = (row as ProvisionalBallotStatisticsModel).totalBallotsCast!;
+	  break;
+	case ID_SELECTION_ACTIVE_VOTERS:
+	  dataEntry = (row as VoterRegistrationStatisticsModel).active!;
+	  dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
+	  break;
+	case ID_SELECTION_POLLBOOK_DELETION:
+	  dataEntry = (row as PollbookDeletionStatisticsModel).totalRemoved!;
+	  dataEntryTotal = (row as PollbookDeletionStatisticsModel).totalRegisteredVoters!;
+	  console.log(dataEntry, dataEntryTotal);
+	  break;
+	case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
+	  dataEntry = (row as MailBallotRejectionStatisticsModel).rejectTotal!;
+	  dataEntryTotal = (row as MailBallotRejectionStatisticsModel).totalBallotsByMail!;
+	  break;
+	case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
+	  dataEntry = (row as VotingEquipmentUsageStatisticsModel).averageAge!;
+	  dataEntryTotal = 100; // HACKME(jerry): to avoid writing more special case code.
+	  break;
+	case ID_SELECTION_VOTER_REGISTRATION:
+	  dataEntry = (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
+	  dataEntryTotal = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
+	  break;
+      }
       if (dataEntryTotal !== 0) {
-        colorPoint = (dataEntry / dataEntryTotal) * 100;
+	colorPoint = (dataEntry / dataEntryTotal) * 100;
       }
     }
     return colorPoint;
