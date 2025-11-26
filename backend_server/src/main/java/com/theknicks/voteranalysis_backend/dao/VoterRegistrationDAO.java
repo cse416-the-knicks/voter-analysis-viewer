@@ -84,7 +84,8 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
       String stateFips, int year, boolean inAggregate) {
     var queryable = new CVAPStatisticsModel.Queryable();
     var mapper = queryable.Mapper(inAggregate);
-    var selectQuery = queryable.QueryWhere(new String[] { "cvap_data.state_id = ?" }, inAggregate);
-    return _jdbcTemplate.query(selectQuery.toString(), mapper, new Object[] { Integer.parseInt(stateFips, 10) });
+    var selectQuery = queryable.QueryWhere(new String[] {"cvap_data.state_id = ?"}, inAggregate);
+    return _jdbcTemplate.query(
+        selectQuery.toString(), mapper, new Object[] {Integer.parseInt(stateFips, 10)});
   }
 }
