@@ -599,10 +599,6 @@ function StateInformationView() {
     >
       <svg width="0" height="0">
         <defs>
-          <linearGradient id={`myad`} gradientTransform="">
-            <stop offset="0" stop-color="red" />
-            <stop offset="100%" stop-color="red" />
-          </linearGradient>
           {dataRows.map((x) =>
             CountyGradientSet(
               x,
