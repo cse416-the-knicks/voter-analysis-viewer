@@ -259,6 +259,8 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/pollbook-deletions`;
     case ID_SELECTION_VOTER_REGISTRATION:
       return `/state/${fipsCode}/voter-registration`;
+    case ID_SELECTION_VIEW_CVAP_INFO:
+      return `/state/${fipsCode}/cvap`;
     case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
       return `/state/${fipsCode}/compare-voter-registration-rates/`;
     case ID_SELECTION_REJECTED_BALLOTS:
@@ -292,6 +294,8 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
   } else if (pathname.includes("/equipment-by-type/")) {
     return ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE;
+  } else if (pathname.includes("/cvap")) {
+    return ID_SELECTION_VIEW_CVAP_INFO;
   }
   return ID_SELECTION_PROVISIONAL_BALLOT;
 }
