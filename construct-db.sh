@@ -77,5 +77,7 @@ python3 load_ohio_voter_reg_data.py # COMMENT OUT IF NOT NEEDED, TAKES 5 OR MORE
 python3 load_device_model.py
 python3 load_2024_equipment_usage.py
 python3 load_ny_election_results.py
+python3 load_ok_election_results.py
+python3 load_cvap_data.py
 
 touch  /var/lib/postgresql/.lockfile
