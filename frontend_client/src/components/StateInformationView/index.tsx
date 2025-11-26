@@ -20,6 +20,9 @@ import {
   getVoterAffiliations,
 } from "../../api/client";
 
+import choroplethColorBuckets from "../../helpers/choroplethColorBuckets";
+import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
+
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
 
 import InboxIcon from "@mui/icons-material/Inbox";
@@ -189,20 +192,6 @@ function pickDropdownType(stateType: DetailStateType[]) {
   }
   return result;
 }
-
-const choroplethColorBuckets = [
-  "hsl(288, 10%, 80%)",
-  "hsl(288, 20%, 78%)",
-  "hsl(288, 30%, 76%)",
-  "hsl(288, 40%, 74%)",
-  "hsl(288, 50%, 72%)",
-  "hsl(288, 60%, 70%)",
-  "hsl(288, 70%, 68%)",
-  "hsl(288, 80%, 66%)",
-  "hsl(288, 90%, 64%)",
-  "hsl(288, 95%, 62%)",
-  "hsl(288, 100%, 60%)", // full, vibrant purple
-];
 
 const votingEquipmentTypeColors = [
   {
@@ -431,7 +420,6 @@ function StateInformationView() {
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
   const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
-  const [totalDataCount, setTotalDataCount] = useState(0);
 
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
@@ -457,7 +445,6 @@ function StateInformationView() {
               );
               setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
               setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].totalProvisionalBallotsCast!);
             }
             break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
@@ -473,7 +460,6 @@ function StateInformationView() {
               );
               setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
               setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].rejectTotal!);
             }
             break;
           case ID_SELECTION_ACTIVE_VOTERS:
@@ -489,7 +475,6 @@ function StateInformationView() {
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].total!);
             }
             break;
           case ID_SELECTION_VOTER_REGISTRATION:
@@ -505,7 +490,6 @@ function StateInformationView() {
               );
               setDataColumns(VOTER_AFFILIATION_COLUMNS);
               setBarData(bargraphDataForVoterAffiliations(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].registeredVotersTotal!);
               // TODO: finish this for GUI17 completion.
             }
             break;
@@ -538,7 +522,6 @@ function StateInformationView() {
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].totalRemoved!);
             }
             break;
           default:
@@ -566,9 +549,7 @@ function StateInformationView() {
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const style = {
       color: "black",
-      // url: `#vt${fullRegionId}`,
       className: `vt${fullRegionId}`,
-      // url: `myad`,
       fillOpacity: 0.0,
       weight: 2.5,
     };
@@ -576,18 +557,17 @@ function StateInformationView() {
     return style;
   };
 
-  const choroplethStylingFunction = (feature: GeoJSON.Feature) => {
-    const { properties } = feature;
-    const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
-    const style = {
-      color: theme.palette.secondary.main,
-      fillColor: theme.palette.secondary.main,
-      fillOpacity: 0.5,
-      weight: 2.5,
-    };
+  const choroplethStylingFunction = useChoroplethStylingFunction(
+    (feature: GeoJSON.Feature) => {
+      if (!isDetailState(fipsCode!) || (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart)) {
+	return null;
+      }
 
-    if (isDetailState(fipsCode!)) {
+      const { properties } = feature;
+      const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
+
+      let colorPoint: number | null = null;
       if (row) {
         const dataEntry =
           (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
@@ -601,20 +581,14 @@ function StateInformationView() {
           (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
           (row as VoterRegistrationStatisticsModel).total! ||
           (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
-        const colorPoint = (dataEntry / dataEntryTotal) * 100;
-
-        style.fillOpacity = 1.0;
-        style.fillColor = gradientMapNearest(colorPoint, gradientMap);
+	if (dataEntryTotal !== 0) {
+	  colorPoint = (dataEntry / dataEntryTotal) * 100;
+	}
       }
-
-      if (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) {
-        style.fillOpacity = 0;
-        style.weight = 1;
-      }
-    }
-
-    return style;
-  };
+      return colorPoint;
+    },
+    gradientMap
+  );
 
   return (
     <div
