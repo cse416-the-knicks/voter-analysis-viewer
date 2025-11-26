@@ -16,8 +16,29 @@ import NotImplementedYet from "../NotImplementedYetDialog";
 
 import { isDetailState } from "../FullBoundedUSMap/detailedStatesInfo";
 
+import choroplethColorBuckets from "../../helpers/choroplethColorBuckets";
+import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
+import { type GradientMap } from "../../helpers/GradientMap";
+import GradientMapLegend from "../GradientMapLegend";
+
+import { Grow } from "@mui/material";
+
 interface FrontPageDrawerProperties {
   showVotingEquipmentHook: [boolean, (arg0: boolean) => void];
+}
+
+const VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS: GradientMap = {
+  0: choroplethColorBuckets[0],
+  1: choroplethColorBuckets[1],
+  2: choroplethColorBuckets[2],
+  3: choroplethColorBuckets[3],
+  4: choroplethColorBuckets[4],
+  5: choroplethColorBuckets[5],
+  6: choroplethColorBuckets[6],
+  7: choroplethColorBuckets[7],
+  8: choroplethColorBuckets[8],
+  9: choroplethColorBuckets[9],
+  10: choroplethColorBuckets[10],
 }
 
 function FrontPageDrawer({ showVotingEquipmentHook }: FrontPageDrawerProperties) {
@@ -164,6 +185,12 @@ function FrontPage() {
 	  onStateClick={onStateClick}
 	  styleFunction={styleFunction}
 	  >
+	  {
+	    (showVotingEquipmentHook[0]) &&
+	      <GradientMapLegend
+		positionPreference={"topright"}
+		gradientMap={VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS} />
+}
 	</FullBoundedUSMap>
       </Box>
     </React.Fragment>

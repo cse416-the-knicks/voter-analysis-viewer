@@ -75,7 +75,7 @@ import {
 
 import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
 
-import { gradientMapNearest, type GradientMap } from "../../helpers/GradientMap";
+import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
 
