@@ -15,10 +15,10 @@ import WelcomeApplicationDialog from "../WelcomeApplicationDialog";
 import NotImplementedYet from "../NotImplementedYetDialog";
 
 interface FrontPageDrawerProperties {
-  setNotImplementedYet: (v: boolean) => void;
+  showVotingEquipmentHook: [boolean, (arg0: boolean) => void];
 }
 
-function FrontPageDrawer({ setNotImplementedYet }: FrontPageDrawerProperties) {
+function FrontPageDrawer({ showVotingEquipmentHook }: FrontPageDrawerProperties) {
   const navigate = useNavigate();
 
   return (
@@ -70,6 +70,13 @@ function FrontPageDrawer({ setNotImplementedYet }: FrontPageDrawerProperties) {
             <ListItemText primary={"Voting Equipment 2024 Summary"} />{" "}
           </ListItemButton>{" "}
         </ListItem>
+        <ListItem>
+          {" "}
+          <ListItemButton onClick={() => {showVotingEquipmentHook[1](!showVotingEquipmentHook[0]);}}>
+            {" "}
+            <ListItemText primary={(showVotingEquipmentHook[0]) ? "Show Default Map" : "Show Voting Equipment Age"} />{" "}
+          </ListItemButton>{" "}
+        </ListItem>
       </List>
       <Button variant="contained" color="secondary">
         <HighlightOffIcon /> Reset to Default
@@ -105,6 +112,7 @@ function FrontPage() {
   const showNotImplementedYetHook = useState<boolean>(false);
   const mapState = useRef<MapRef>(null);
   const navigate = useNavigate();
+  const showVotingEquipmentHook = useState(false);
 
   const onStateClick = (fipsCode: FipsCode) => {
     navigate(`/state/${fipsCode}`);
@@ -121,8 +129,10 @@ function FrontPage() {
           mt: "48px",
         }}
       >
-        <FrontPageDrawer setNotImplementedYet={showNotImplementedYetHook[1]} />
-        <FullBoundedUSMap mapRef={mapState} id={styles.mainMap} onStateClick={onStateClick} />
+        <FrontPageDrawer
+	  showVotingEquipmentHook={showVotingEquipmentHook}/>
+	<FullBoundedUSMap mapRef={mapState} id={styles.mainMap} onStateClick={onStateClick}>
+	</FullBoundedUSMap>
       </Box>
     </React.Fragment>
   );
