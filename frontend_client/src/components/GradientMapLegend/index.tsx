@@ -6,16 +6,17 @@ import { useTheme } from "@mui/material";
 
 interface GradientMapLegendProperties {
   gradientMap: GradientMap;
+  positionPreference?: ("topleft" | "bottomleft" | "bottomright" | "topright");
 }
 
-function GradientMapLegend({ gradientMap }: GradientMapLegendProperties) {
+function GradientMapLegend({ gradientMap, positionPreference }: GradientMapLegendProperties) {
   const leafletMap = useMap();
   const theme = useTheme();
 
   useEffect(() => {
     if (!leafletMap) return;
 
-    const legend = L.control({ position: "bottomright" });
+    const legend = L.control({ position: positionPreference || "bottomright"});
 
     legend.onAdd = function () {
       const div = L.DomUtil.create("div", "info legend");
