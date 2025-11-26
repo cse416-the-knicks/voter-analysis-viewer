@@ -95,6 +95,7 @@ const ID_SELECTION_DROP_BOX_VOTING = 7;
 
 const ID_SELECTION_VOTER_REGISTRATION = 8;
 const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
+const ID_SELECTION_VIEW_CVAP_INFO = 11;
 
 const defaultDropDownSections = [
   {
@@ -142,7 +143,10 @@ const partyStateDropDownSections = [
   },
   {
     title: "Voter Registration",
-    items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
+    items: [
+      { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
+      { id: ID_SELECTION_VIEW_CVAP_INFO, iconComponent: <PersonIcon />, textContent: "CVAP Statistics" }
+    ],
   },
 ];
 
@@ -181,6 +185,7 @@ function pickDropdownType(stateType: DetailStateType[]) {
   if (partyState || voterRegistrationState) {
     if (partyState) {
       result[0] = partyStateDropDownSections[0];
+      result[2] = partyStateDropDownSections[2];
     }
     if (voterRegistrationState) {
       result[2] = voterRegistrationStateDropDownSections[2];
