@@ -1,17 +1,18 @@
 // This is shared for any "generic" choropleths
 // so we have a consistent color theme.
 const choroplethColorBuckets = [
-  "hsl(288, 10%, 80%)",
-  "hsl(288, 20%, 78%)",
-  "hsl(288, 30%, 76%)",
-  "hsl(288, 40%, 74%)",
-  "hsl(288, 50%, 72%)",
-  "hsl(288, 60%, 70%)",
-  "hsl(288, 70%, 68%)",
-  "hsl(288, 80%, 66%)",
-  "hsl(288, 90%, 64%)",
-  "hsl(288, 95%, 62%)",
-  "hsl(288, 100%, 60%)", // full, vibrant purple
+  "hsl(280, 20%, 95%)", // very soft lavender
+  "hsl(280, 22%, 92%)",
+  "hsl(280, 25%, 89%)",
+  "hsl(280, 28%, 86%)",
+  "hsl(280, 32%, 83%)",
+  "hsl(280, 35%, 80%)",
+  "hsl(280, 38%, 77%)",
+  "hsl(280, 45%, 73%)",
+  "hsl(280, 52%, 69%)",
+  "hsl(280, 60%, 65%)",
+  "hsl(280, 70%, 60%)", // top, stronger but still soft
 ];
+
 
 export default choroplethColorBuckets;
