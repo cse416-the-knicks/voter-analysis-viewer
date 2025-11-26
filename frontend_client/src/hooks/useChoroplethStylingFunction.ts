@@ -18,7 +18,7 @@ function useChoroplethStylingFunction(valueFn: ValueFunction, gradientMap: Gradi
       style.fillOpacity = 1.0;
       style.fillColor = gradientMapNearest(densityValue, gradientMap);
     } else {
-      style.fillOpacity = 0;
+      style.fillOpacity = 0.15;
       style.weight = 1;
     }
 
