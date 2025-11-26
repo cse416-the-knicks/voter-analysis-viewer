@@ -173,10 +173,6 @@ function FrontPage() {
     VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS);
 
   const styleFunction: FullBoundedUSMapStylingFn = (highlightedStateFipsId: string, feature: GeoJSON.Feature) => {
-    if (showVotingEquipmentAge) {
-      return choroplethStylingFunction(feature);
-    }
-
     const fipsCode = feature.id as string;
     const result = {
       fillColor: "#00000000",
@@ -192,9 +188,23 @@ function FrontPage() {
       result.fillColor = theme.palette.secondary.light;
     }
 
-    if (highlightedStateFipsId === fipsCode) {
-      result.fillOpacity = 0.88;
-      result.fillColor = theme.palette.secondary.light;
+    if (showVotingEquipmentAge) {
+      if (highlightedStateFipsId === fipsCode) {
+	result.fillOpacity = 1.0;
+	// NOTE(jerry):
+	// this is blue with the default MUI theme, and we're intentionally
+	// not picking another shade of purple, because otherwise it might be misleading with
+	// the choropleth.
+	result.fillColor = theme.palette.primary.light;
+	return result;
+      }
+
+      return choroplethStylingFunction(feature);
+    } else {
+      if (highlightedStateFipsId === fipsCode) {
+	result.fillOpacity = 0.88;
+	result.fillColor = theme.palette.secondary.light;
+      }
     }
 
     return result;
