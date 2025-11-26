@@ -13,9 +13,9 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
     collection = "app.cvap_data",
     joining = {"app.eavs_geounit"},
     joinMethod = {"inner"},
-    joinOn = {"app.eavs_geounit.eavs_unit_code = app.eavs_data.region_id"})
+    joinOn = {"app.eavs_geounit.eavs_unit_code = app.cvap_data.region_id"})
 public record CVAPStatisticsModel(
-    @SqlColumnName(name = "eavs_data.region_id", omitFromAggregate = true) String fullRegionId,
+    @SqlColumnName(name = "cvap_data.region_id", omitFromAggregate = true) String fullRegionId,
     @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String countyName,
     @SqlColumnName(name = "cvap_total") int cvapTotal,
     @SqlColumnName(name = "cvap_asian") int asianTotal,
