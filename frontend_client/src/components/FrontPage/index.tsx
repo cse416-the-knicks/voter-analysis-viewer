@@ -4,7 +4,10 @@ import styles from "./FrontPage.module.css";
 import type { MapRef } from "react-leaflet/MapContainer";
 import type { FipsCode, FullBoundedUSMapStylingFn } from "../FullBoundedUSMap/";
 
-import React, { useRef, useState } from "react";
+// CALIFORNI
+import { FIPS_TO_STATES_MAP } from "../FullBoundedUSMap/boundaryData";
+
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import FullBoundedUSMap from "../FullBoundedUSMap/";
 
@@ -21,7 +24,8 @@ import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFuncti
 import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 
-import { Grow } from "@mui/material";
+import type { VotingEquipmentUsageStatisticsModel } from "../../api/client";
+import { getVotingEquipmentUsage } from "../../api/client";
 
 interface FrontPageDrawerProperties {
   showVotingEquipmentHook: [boolean, (arg0: boolean) => void];
@@ -136,13 +140,43 @@ function FrontPage() {
   const mapState = useRef<MapRef>(null);
   const navigate = useNavigate();
   const showVotingEquipmentHook = useState(false);
+  const [showVotingEquipmentAge, _] = showVotingEquipmentHook;
+  const [votingEquipmentUsageData, setVotingEquipmentUsageData] = useState<VotingEquipmentUsageStatisticsModel[]>([]);
   const theme = useTheme();
 
   const onStateClick = (fipsCode: FipsCode) => {
     navigate(`/state/${fipsCode}`);
   };
 
+  useEffect(
+    function () {
+      (async function () {
+	if (showVotingEquipmentAge) {
+	  const data = await getVotingEquipmentUsage();
+	  setVotingEquipmentUsageData(data);
+	}
+      })();
+    }, [showVotingEquipmentAge]);
+
+  const choroplethStylingFunction = useChoroplethStylingFunction(
+    function (feature: GeoJSON.Feature) {
+      if (!votingEquipmentUsageData) {
+	return null;
+      }
+      const { id } = feature;
+
+      const matchingRow = votingEquipmentUsageData.find((x) => x.stateId === parseInt(id as string, 10));
+      const stateName = FIPS_TO_STATES_MAP[id!];
+      console.log(id, stateName, matchingRow, matchingRow?.averageAge);
+      return matchingRow?.averageAge || null;
+    },
+    VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS);
+
   const styleFunction: FullBoundedUSMapStylingFn = (highlightedStateFipsId: string, feature: GeoJSON.Feature) => {
+    if (showVotingEquipmentAge) {
+      return choroplethStylingFunction(feature);
+    }
+
     const fipsCode = feature.id as string;
     const result = {
       fillColor: "#00000000",
@@ -186,7 +220,7 @@ function FrontPage() {
 	  styleFunction={styleFunction}
 	  >
 	  {
-	    (showVotingEquipmentHook[0]) &&
+	    (showVotingEquipmentAge) &&
 	      <GradientMapLegend
 		positionPreference={"topright"}
 		gradientMap={VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS} />
