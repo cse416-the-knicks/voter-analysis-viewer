@@ -7,6 +7,7 @@ import type {
   VoterRegistrationHistoryGraphDataModel,
   VotingEquipmentUsageStatisticsModel,
   VoterAffiliationStatisticsModel,
+  CVAPStatisticsModel,
 } from "../../api/client";
 
 import {
@@ -18,6 +19,7 @@ import {
   getVoterRegistrationHistory,
   getDetailedVotingEquipmentUsage,
   getVoterAffiliations,
+  getCVAPStatisticsData,
 } from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
@@ -34,7 +36,7 @@ import HowToVoteIcon from "@mui/icons-material/HowToVote";
 
 import Stack from "@mui/material/Stack";
 
-import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab } from "@mui/material";
+import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
@@ -68,6 +70,8 @@ import {
   VOTING_EQUIPMENT_COLUMNS,
   bargraphDataForVotingEquipmentUsages,
   VOTER_AFFILIATION_COLUMNS,
+  CVAP_INFO_COLUMNS,
+  bargraphDataForCVAPInfo,
 } from "./dataColumns";
 
 import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
@@ -529,6 +533,21 @@ function StateInformationView() {
               setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
             }
             break;
+	  case ID_SELECTION_VIEW_CVAP_INFO:
+	    {
+              const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition`);
+              setBarGraphXTitle("Race");
+              setDataRows(
+                data.map((x) => {
+                  return { id: x.fullRegionId, ...x };
+                })
+              );
+              setDataColumns(CVAP_INFO_COLUMNS);
+              setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
+	    }
+	    break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
