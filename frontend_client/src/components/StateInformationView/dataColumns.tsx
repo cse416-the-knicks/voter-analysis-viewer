@@ -6,6 +6,7 @@ import type {
   VoterRegistrationDataModel,
   VotingEquipmentUsageStatisticsModel,
   VoterAffiliationStatisticsModel,
+  CVAPStatisticsModel,
 } from "../../api/client";
 import type { GridColDef } from "@mui/x-data-grid";
 import type { BarChartDataEntry } from "../DataDisplays/BarChart";
@@ -122,6 +123,57 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
       { value: "INACTIVE", label: "Inactive" },
     ],
     filterable: false,
+  },
+];
+
+const CVAP_INFO_COLUMNS: GridColDef<CVAPStatisticsModel[]>[] = [
+  {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // This hides the "Select All" checkbox
+  },
+  // { field: "regionId", headerName: "RegionID", width: 120 },
+  {
+    field: "countyName",
+    headerName: "Region Name",
+    width: 120,
+    valueFormatter: titleCaseString,
+    filterable: false,
+  },
+  {
+    field: "cvapTotal",
+    headerName: "Total",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "asianTotal",
+    headerName: "Asian",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "blackTotal",
+    headerName: "Black",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "hispanicTotal",
+    headerName: "Hispanic",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "whiteTotal",
+    headerName: "White",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "otherTotal",
+    headerName: "Other",
+    type: "number",
+    width: 120,
   },
 ];
 
@@ -261,6 +313,17 @@ function bargraphDataForVoterAffiliations(aggregatedStatistics: VoterAffiliation
   ];
 }
 
+function bargraphDataForCVAPInfo(aggregatedStatistics: CVAPStatisticsModel): BarChartDataEntry[] {
+  return [
+    { category: "Total", value: aggregatedStatistics.cvapTotal || 0 },
+    { category: "Asian", value: aggregatedStatistics.asianTotal || 0 },
+    { category: "Black", value: aggregatedStatistics.blackTotal || 0 },
+    { category: "Hispanic", value: aggregatedStatistics.hispanicTotal || 0 },
+    { category: "White", value: aggregatedStatistics.whiteTotal || 0 },
+    { category: "Other", value: aggregatedStatistics.otherTotal || 0 },
+  ];
+}
+
 export {
   PROVISIONAL_BALLOT_COLUMNS,
   MAIL_BALLOT_REJECTION_COLUMNS,
@@ -269,10 +332,12 @@ export {
   VOTER_REGISTRATION_INFO_COLUMNS,
   VOTING_EQUIPMENT_COLUMNS,
   VOTER_AFFILIATION_COLUMNS,
+  CVAP_INFO_COLUMNS,
   bargraphDataForProvisionalBallots,
   bargraphDataForMailBallotRejections,
   bargraphDataForPollBookDeletions,
   bargraphDataForActiveVoterRegistrations,
   bargraphDataForVotingEquipmentUsages,
   bargraphDataForVoterAffiliations,
+  bargraphDataForCVAPInfo,
 };
