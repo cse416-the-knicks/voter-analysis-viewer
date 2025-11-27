@@ -751,6 +751,8 @@ function StateInformationView() {
                   data={dropBoxData}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
+		  maxXScale={100}
+		  maxYScale={100}
                   title="Drop Box Voting by Party"
                   xAxisLabel="Republican Votes (%)"
                   yAxisLabel="Drop Box Voting (%)"
