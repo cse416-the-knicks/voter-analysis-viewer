@@ -149,7 +149,7 @@ const partyStateDropDownSections = [
     title: "Voter Registration",
     items: [
       { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
-      { id: ID_SELECTION_VIEW_CVAP_INFO, iconComponent: <PersonIcon />, textContent: "CVAP Statistics" }
+      { id: ID_SELECTION_VIEW_CVAP_INFO, iconComponent: <PersonIcon />, textContent: "CVAP Statistics" },
     ],
   },
 ];
@@ -537,8 +537,8 @@ function StateInformationView() {
               setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
             }
             break;
-	  case ID_SELECTION_VIEW_CVAP_INFO:
-	    {
+          case ID_SELECTION_VIEW_CVAP_INFO:
+            {
               const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition`);
@@ -550,8 +550,8 @@ function StateInformationView() {
               );
               setDataColumns(CVAP_INFO_COLUMNS);
               setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
-	    }
-	    break;
+            }
+            break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
@@ -756,10 +756,34 @@ function StateInformationView() {
             >
               {FIPS_TO_STATES_MAP[fipsCode!]}
             </Typography>
+            {activeDataState == ID_SELECTION_VIEW_CVAP_INFO && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  p: 1.5,
+                  left: `75%`,
+                  top: `0`,
+                  width: `calc(${maxWidthForMap} * 0.25)`,
+                  zIndex: 1001,
+                }}
+              >
+                <Paper>
+                  <FormControl fullWidth>
+                    <InputLabel>CVAP Demographic</InputLabel>
+                    <Select value={0} label="CVAP Demographic">
+                      {["Asian", "Black", "Hispanic", "White", "Other"].map((x, i) => (
+                        <MenuItem value={i}>{x}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Paper>
+              </Box>
+            )}
             {tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart && <GeoUnitBubbleChart fipsCode={fipsCode!} />}
           </StateMap>
         </Paper>
       </Stack>
+
       <Backdrop open={shouldOpenPopup} sx={{ zIndex: 1199 }} />
       <Grow in={shouldOpenPopup}>
         <Box
