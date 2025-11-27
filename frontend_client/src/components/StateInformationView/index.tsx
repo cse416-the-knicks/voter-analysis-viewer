@@ -17,7 +17,8 @@ import {
   getDetailedVoterRegistrationDataCount,
   getVoterRegistrationHistory,
   getDetailedVotingEquipmentUsage,
-  getVoterAffiliations,
+  getElectionResultsSummary,
+  getBallotStatistics,
 } from "../../api/client";
 
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
@@ -748,11 +749,25 @@ function StateInformationView() {
               path="dropbox-chart"
               element={
                 <BubbleChart
-                  data={dropBoxData}
+                  data={async () => {
+		    const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
+		    const ballotStatisticsData = await getBallotStatistics(fipsCode!);
+		    const mergedData = electionResultsData.map((e, i) => ({...e, ...ballotStatisticsData[i]}));
+
+		    const republicanBubbleColor = "#d73027";
+		    const democraticBubbleColor = "#4575b4";
+
+		    return mergedData.map((data) => ({
+		      x: (data.republicanVotes! / data.totalVotes!) * 100.0,
+		      y: (data.dropboxBallots! / data.totalBallotsCast!) * 100.0,
+		      name: data.regionName!,
+		      size: (data.regionName!.length),
+		      color: (data.republicanVotes! > data.democratVotes!) ? republicanBubbleColor : democraticBubbleColor,
+		    }));
+		  }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
 		  maxXScale={100}
-		  maxYScale={100}
                   title="Drop Box Voting by Party"
                   xAxisLabel="Republican Votes (%)"
                   yAxisLabel="Drop Box Voting (%)"
