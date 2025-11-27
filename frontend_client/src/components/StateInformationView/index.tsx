@@ -100,6 +100,7 @@ const ID_SELECTION_DROP_BOX_VOTING = 7;
 const ID_SELECTION_VOTER_REGISTRATION = 8;
 const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
 const ID_SELECTION_VIEW_CVAP_INFO = 11;
+const ID_SELECTION_VIEW_CVAP_PERCENTAGE = 12;
 
 const defaultDropDownSections = [
   {
@@ -150,6 +151,7 @@ const partyStateDropDownSections = [
     items: [
       { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
       { id: ID_SELECTION_VIEW_CVAP_INFO, iconComponent: <PersonIcon />, textContent: "CVAP Statistics" },
+      { id: ID_SELECTION_VIEW_CVAP_PERCENTAGE, iconComponent: <PersonIcon />, textContent: "CVAP Registration" },
     ],
   },
 ];
@@ -258,6 +260,8 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/pollbook-deletions`;
     case ID_SELECTION_VOTER_REGISTRATION:
       return `/state/${fipsCode}/voter-registration`;
+    case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
+      return `/state/${fipsCode}/cvap-registration`;
     case ID_SELECTION_VIEW_CVAP_INFO:
       return `/state/${fipsCode}/cvap`;
     case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
@@ -293,6 +297,8 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
   } else if (pathname.includes("/equipment-by-type/")) {
     return ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE;
+  } else if (pathname.includes("/cvap-registration")) {
+    return ID_SELECTION_VIEW_CVAP_PERCENTAGE;
   } else if (pathname.includes("/cvap")) {
     return ID_SELECTION_VIEW_CVAP_INFO;
   }
@@ -552,6 +558,24 @@ function StateInformationView() {
               setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
             }
             break;
+          case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
+            {
+              const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
+              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              const [_activeVoterAggregatedData, activeVoterData] = await Promise.all(activeVoterPromises);
+
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition`);
+              setBarGraphXTitle("Race");
+              setDataRows(
+                data.map((x, i) => {
+                  return { id: x.fullRegionId, ...x, ...activeVoterData[i] };
+                })
+              );
+              setDataColumns(CVAP_INFO_COLUMNS);
+              setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
+            }
+            break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
@@ -617,7 +641,7 @@ function StateInformationView() {
     if (isDetailState(fipsCode!)) {
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
 
-      if (activeDataState == ID_SELECTION_VIEW_CVAP_INFO) {
+      if (activeDataState === ID_SELECTION_VIEW_CVAP_INFO) {
 	const dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
 	let dataEntry = 0;
 	switch (cvapDemographicSelection) {
@@ -637,6 +661,12 @@ function StateInformationView() {
 	    dataEntry = (row as CVAPStatisticsModel).otherTotal!;
 	  } break;
 	}
+	const colorPoint = (dataEntry / dataEntryTotal) * 100;
+	style.fillOpacity = 1.0;
+	style.fillColor = gradientMapNearest(colorPoint, gradientMap);
+      } else if (activeDataState === ID_SELECTION_VIEW_CVAP_PERCENTAGE) {
+	const dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
+	const dataEntry = (row as CVAPStatisticsModel).cvapTotal!;
 	const colorPoint = (dataEntry / dataEntryTotal) * 100;
 	style.fillOpacity = 1.0;
 	style.fillColor = gradientMapNearest(colorPoint, gradientMap);
