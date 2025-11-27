@@ -27,24 +27,14 @@ interface BubbleChartProperties {
 
 import { useState, useEffect, useRef } from "react";
 
-function BubbleChart({
-  data,
-  width,
-  height,
-  title,
-  xAxisLabel,
-  yAxisLabel,
-  useRegression,
-  maxXScale,
-  maxYScale
-}: BubbleChartProperties) {
+function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale }: BubbleChartProperties) {
   const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
   const chartWidth = width - chartMargin.left - chartMargin.right + 125;
   const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
 
   const [actualData, setActualData] = useState<readonly BubbleChartDataPoint[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  
+
   useEffect(
     function () {
       if (typeof data === "function") {
@@ -54,7 +44,7 @@ function BubbleChart({
           setIsLoaded(true);
         })();
       } else {
-	setActualData(data);
+        setActualData(data);
         setIsLoaded(true);
       }
     },
