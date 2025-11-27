@@ -77,7 +77,7 @@ import { gradientMapNearest, type GradientMap } from "../../helpers/GradientMap"
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
 
-import { dropBoxData, equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
+import { equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";

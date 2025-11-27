@@ -86,7 +86,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     return () => {
       circleSelector.on("mouseover", null).on("mouseout", null);
     };
-  }, [data]);
+  }, [actualData]);
 
   return (
     <>
