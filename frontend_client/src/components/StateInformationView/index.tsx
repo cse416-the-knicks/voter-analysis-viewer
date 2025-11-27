@@ -247,7 +247,6 @@ function a11yProps(index: number) {
 }
 
 function getUrlForModeId(id: number, fipsCode: string) {
-  console.log(id);
   switch (id) {
     case ID_SELECTION_PROVISIONAL_BALLOT:
       return `/state/${fipsCode}/provisional-ballots`;
@@ -445,6 +444,7 @@ function StateInformationView() {
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
   const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
   const [totalDataCount, setTotalDataCount] = useState(0);
+  const [cvapDemographicSelection, setCvapDemographicSelection] = useState(0);
 
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
@@ -616,24 +616,51 @@ function StateInformationView() {
 
     if (isDetailState(fipsCode!)) {
       const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
-      if (row) {
-        const dataEntry =
-          (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
-          (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
-          (row as PollbookDeletionStatisticsModel).totalRemoved! ||
-          (row as VoterRegistrationStatisticsModel).active! ||
-          (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
-        const dataEntryTotal =
-          (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||
-          (row as ProvisionalBallotStatisticsModel).totalBallotsCast! || // TODO(jerry): needs total actual ballots vs total Provisional
-          (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
-          (row as VoterRegistrationStatisticsModel).total! ||
-          (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
-        const colorPoint = (dataEntry / dataEntryTotal) * 100;
 
-        style.fillOpacity = 1.0;
-        style.fillColor = gradientMapNearest(colorPoint, gradientMap);
+      if (activeDataState == ID_SELECTION_VIEW_CVAP_INFO) {
+	const dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
+	let dataEntry = 0;
+	switch (cvapDemographicSelection) {
+	  case 0: {
+	    dataEntry = (row as CVAPStatisticsModel).asianTotal!;
+	  } break;
+	  case 1: {
+	    dataEntry = (row as CVAPStatisticsModel).blackTotal!;
+	  } break;
+	  case 2: {
+	    dataEntry = (row as CVAPStatisticsModel).hispanicTotal!;
+	  } break;
+	  case 3: {
+	    dataEntry = (row as CVAPStatisticsModel).whiteTotal!;
+	  } break;
+	  case 4: {
+	    dataEntry = (row as CVAPStatisticsModel).otherTotal!;
+	  } break;
+	}
+	const colorPoint = (dataEntry / dataEntryTotal) * 100;
+	style.fillOpacity = 1.0;
+	style.fillColor = gradientMapNearest(colorPoint, gradientMap);
+      } else {
+	if (row) {
+	  const dataEntry =
+	    (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
+	      (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
+	      (row as PollbookDeletionStatisticsModel).totalRemoved! ||
+	      (row as VoterRegistrationStatisticsModel).active! ||
+	      (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
+	  const dataEntryTotal =
+	    (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||
+	      (row as ProvisionalBallotStatisticsModel).totalBallotsCast! || // TODO(jerry): needs total actual ballots vs total Provisional
+	      (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
+	      (row as VoterRegistrationStatisticsModel).total! ||
+	      (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
+	  const colorPoint = (dataEntry / dataEntryTotal) * 100;
+
+	  style.fillOpacity = 1.0;
+	  style.fillColor = gradientMapNearest(colorPoint, gradientMap);
+	}
       }
+
 
       if (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) {
         style.fillOpacity = 0;
@@ -770,7 +797,7 @@ function StateInformationView() {
                 <Paper>
                   <FormControl fullWidth>
                     <InputLabel>CVAP Demographic</InputLabel>
-                    <Select value={0} label="CVAP Demographic">
+                    <Select onChange={(event) => setCvapDemographicSelection(event.target.value) } value={cvapDemographicSelection} label="CVAP Demographic">
                       {["Asian", "Black", "Hispanic", "White", "Other"].map((x, i) => (
                         <MenuItem value={i}>{x}</MenuItem>
                       ))}
