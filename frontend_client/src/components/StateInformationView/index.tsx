@@ -24,6 +24,10 @@ import {
   getCVAPStatisticsData,
 } from "../../api/client";
 
+import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
+
+import { PERCENTAGE_CHOROPLETH_BUCKETS, VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS } from "../../helpers/choroplethBuckets";
+
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
 
 import InboxIcon from "@mui/icons-material/Inbox";
@@ -78,7 +82,7 @@ import {
 
 import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
 
-import { gradientMapNearest, type GradientMap } from "../../helpers/GradientMap";
+import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
 
@@ -202,20 +206,6 @@ function pickDropdownType(stateType: DetailStateType[]) {
   }
   return result;
 }
-
-const choroplethColorBuckets = [
-  "hsl(288, 10%, 80%)",
-  "hsl(288, 20%, 78%)",
-  "hsl(288, 30%, 76%)",
-  "hsl(288, 40%, 74%)",
-  "hsl(288, 50%, 72%)",
-  "hsl(288, 60%, 70%)",
-  "hsl(288, 70%, 68%)",
-  "hsl(288, 80%, 66%)",
-  "hsl(288, 90%, 64%)",
-  "hsl(288, 95%, 62%)",
-  "hsl(288, 100%, 60%)", // full, vibrant purple
-];
 
 const votingEquipmentTypeColors = [
   {
@@ -478,7 +468,6 @@ function StateInformationView() {
               );
               setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
               setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].totalProvisionalBallotsCast!);
             }
             break;
           case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
@@ -494,7 +483,6 @@ function StateInformationView() {
               );
               setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
               setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].rejectTotal!);
             }
             break;
           case ID_SELECTION_ACTIVE_VOTERS:
@@ -510,7 +498,6 @@ function StateInformationView() {
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].total!);
             }
             break;
           case ID_SELECTION_VOTER_REGISTRATION:
@@ -526,8 +513,22 @@ function StateInformationView() {
               );
               setDataColumns(VOTER_AFFILIATION_COLUMNS);
               setBarData(bargraphDataForVoterAffiliations(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].registeredVotersTotal!);
               // TODO: finish this for GUI17 completion.
+            }
+            break;
+          case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
+            {
+              const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voting Equipment Type Count`);
+              setBarGraphXTitle("Equipment Type");
+              setDataRows(
+                data.map((x) => {
+                  return { id: x.fullRegionId, ...x };
+                })
+              );
+              setDataColumns(VOTING_EQUIPMENT_COLUMNS);
+              setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
             }
             break;
           case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
@@ -592,7 +593,6 @@ function StateInformationView() {
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
-              setTotalDataCount(aggregatedData[0].totalRemoved!);
             }
             break;
           default:
@@ -602,12 +602,11 @@ function StateInformationView() {
             break;
         }
 
-        const newGradientMap: GradientMap = {};
-        const binSize = 10;
-        for (let i = 0; i < choroplethColorBuckets.length; ++i) {
-          newGradientMap[binSize * i] = choroplethColorBuckets[i];
+        if (activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_AGE) {
+          setGradientMap(VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS);
+        } else {
+          setGradientMap(PERCENTAGE_CHOROPLETH_BUCKETS);
         }
-        setGradientMap(newGradientMap);
       })();
     },
     [activeDataState, fipsCode, navigate]
@@ -620,9 +619,7 @@ function StateInformationView() {
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const style = {
       color: "black",
-      // url: `#vt${fullRegionId}`,
       className: `vt${fullRegionId}`,
-      // url: `myad`,
       fillOpacity: 0.0,
       weight: 2.5,
     };
@@ -630,78 +627,87 @@ function StateInformationView() {
     return style;
   };
 
-  const choroplethStylingFunction = (feature: GeoJSON.Feature) => {
-    const { properties } = feature;
-    const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
-    const style = {
-      color: theme.palette.secondary.main,
-      fillColor: theme.palette.secondary.main,
-      fillOpacity: 0.5,
-      weight: 2.5,
-    };
-
-    if (isDetailState(fipsCode!)) {
-      const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
-
-      if (activeDataState === ID_SELECTION_VIEW_CVAP_INFO) {
-	const dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
-	let dataEntry = 0;
-	switch (cvapDemographicSelection) {
-	  case 0: {
-	    dataEntry = (row as CVAPStatisticsModel).asianTotal!;
-	  } break;
-	  case 1: {
-	    dataEntry = (row as CVAPStatisticsModel).blackTotal!;
-	  } break;
-	  case 2: {
-	    dataEntry = (row as CVAPStatisticsModel).hispanicTotal!;
-	  } break;
-	  case 3: {
-	    dataEntry = (row as CVAPStatisticsModel).whiteTotal!;
-	  } break;
-	  case 4: {
-	    dataEntry = (row as CVAPStatisticsModel).otherTotal!;
-	  } break;
-	}
-	const colorPoint = (dataEntry / dataEntryTotal) * 100;
-	style.fillOpacity = 1.0;
-	style.fillColor = gradientMapNearest(colorPoint, gradientMap);
-      } else if (activeDataState === ID_SELECTION_VIEW_CVAP_PERCENTAGE) {
-	const dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
-	const dataEntry = (row as CVAPStatisticsModel).cvapTotal!;
-	const colorPoint = (dataEntry / dataEntryTotal) * 100;
-	style.fillOpacity = 1.0;
-	style.fillColor = gradientMapNearest(colorPoint, gradientMap);
-      } else {
-	if (row) {
-	  const dataEntry =
-	    (row as MailBallotRejectionStatisticsModel).rejectTotal! ||
-	      (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast! ||
-	      (row as PollbookDeletionStatisticsModel).totalRemoved! ||
-	      (row as VoterRegistrationStatisticsModel).active! ||
-	      (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
-	  const dataEntryTotal =
-	    (row as MailBallotRejectionStatisticsModel).totalBallotsByMail! ||
-	      (row as ProvisionalBallotStatisticsModel).totalBallotsCast! || // TODO(jerry): needs total actual ballots vs total Provisional
-	      (row as PollbookDeletionStatisticsModel).totalRegisteredVoters! ||
-	      (row as VoterRegistrationStatisticsModel).total! ||
-	      (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
-	  const colorPoint = (dataEntry / dataEntryTotal) * 100;
-
-	  style.fillOpacity = 1.0;
-	  style.fillColor = gradientMapNearest(colorPoint, gradientMap);
-	}
-      }
-
-
-      if (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) {
-        style.fillOpacity = 0;
-        style.weight = 1;
-      }
+  const choroplethStylingFunction = useChoroplethStylingFunction((feature: GeoJSON.Feature) => {
+    if (!isDetailState(fipsCode!) || (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart)) {
+      return null;
     }
 
-    return style;
-  };
+    const { properties } = feature;
+    const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
+    const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
+
+    let colorPoint: number | null = null;
+    if (row) {
+      let dataEntry: number = 0;
+      let dataEntryTotal: number = 0;
+      switch (activeDataState) {
+        case ID_SELECTION_PROVISIONAL_BALLOT:
+          dataEntry = (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast!;
+          dataEntryTotal = (row as ProvisionalBallotStatisticsModel).totalBallotsCast!;
+          break;
+        case ID_SELECTION_ACTIVE_VOTERS:
+          dataEntry = (row as VoterRegistrationStatisticsModel).active!;
+          dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
+          break;
+        case ID_SELECTION_POLLBOOK_DELETION:
+          dataEntry = (row as PollbookDeletionStatisticsModel).totalRemoved!;
+          dataEntryTotal = (row as PollbookDeletionStatisticsModel).totalRegisteredVoters!;
+          console.log(dataEntry, dataEntryTotal);
+          break;
+        case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
+          dataEntry = (row as MailBallotRejectionStatisticsModel).rejectTotal!;
+          dataEntryTotal = (row as MailBallotRejectionStatisticsModel).totalBallotsByMail!;
+          break;
+        case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
+          dataEntry = (row as VotingEquipmentUsageStatisticsModel).averageAge!;
+          dataEntryTotal = 100; // HACKME(jerry): to avoid writing more special case code.
+          break;
+        case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
+          dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
+          dataEntry = (row as CVAPStatisticsModel).cvapTotal!;
+          break;
+        case ID_SELECTION_VIEW_CVAP_INFO:
+          dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
+          dataEntry = 0;
+          switch (cvapDemographicSelection) {
+            case 0:
+              {
+                dataEntry = (row as CVAPStatisticsModel).asianTotal!;
+              }
+              break;
+            case 1:
+              {
+                dataEntry = (row as CVAPStatisticsModel).blackTotal!;
+              }
+              break;
+            case 2:
+              {
+                dataEntry = (row as CVAPStatisticsModel).hispanicTotal!;
+              }
+              break;
+            case 3:
+              {
+                dataEntry = (row as CVAPStatisticsModel).whiteTotal!;
+              }
+              break;
+            case 4:
+              {
+                dataEntry = (row as CVAPStatisticsModel).otherTotal!;
+              }
+              break;
+          }
+          break;
+        case ID_SELECTION_VOTER_REGISTRATION:
+          dataEntry = (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
+          dataEntryTotal = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
+          break;
+      }
+      if (dataEntryTotal !== 0) {
+        colorPoint = (dataEntry / dataEntryTotal) * 100;
+      }
+    }
+    return colorPoint;
+  }, gradientMap);
 
   return (
     <div
@@ -712,10 +718,6 @@ function StateInformationView() {
     >
       <svg width="0" height="0">
         <defs>
-          <linearGradient id={`myad`} gradientTransform="">
-            <stop offset="0" stop-color="red" />
-            <stop offset="100%" stop-color="red" />
-          </linearGradient>
           {dataRows.map((x) =>
             CountyGradientSet(
               x,
@@ -829,7 +831,7 @@ function StateInformationView() {
                 <Paper>
                   <FormControl fullWidth>
                     <InputLabel>CVAP Demographic</InputLabel>
-                    <Select onChange={(event) => setCvapDemographicSelection(event.target.value) } value={cvapDemographicSelection} label="CVAP Demographic">
+                    <Select onChange={(event) => setCvapDemographicSelection(event.target.value)} value={cvapDemographicSelection} label="CVAP Demographic">
                       {["Asian", "Black", "Hispanic", "White", "Other"].map((x, i) => (
                         <MenuItem value={i}>{x}</MenuItem>
                       ))}

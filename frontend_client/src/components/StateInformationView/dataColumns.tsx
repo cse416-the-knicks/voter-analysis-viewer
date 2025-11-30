@@ -231,6 +231,7 @@ const VOTING_EQUIPMENT_COLUMNS: GridColDef<VotingEquipmentUsageStatisticsModel[]
   { field: "dreVvpatTotal", headerName: "DRE Total", type: "number", width: 120 },
   { field: "bmdTotal", headerName: "BMD Total", type: "number", width: 130 },
   { field: "scannerTotal", headerName: "Scanner Total", type: "number", width: 120 },
+  { field: "averageAge", headerName: "Average Age", type: "number", width: 130 },
 ];
 
 function bargraphDataForProvisionalBallots(aggregatedStatistics: ProvisionalBallotStatisticsModel): BarChartDataEntry[] {
