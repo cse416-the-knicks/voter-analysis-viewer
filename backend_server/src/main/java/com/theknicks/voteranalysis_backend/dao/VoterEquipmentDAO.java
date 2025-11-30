@@ -9,6 +9,7 @@ import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatistics
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -58,7 +59,10 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
               Integer.parseInt(fipsCode, 10));
     }
 
-    return VotingEquipmentUsageStatisticsModel.fromDataRows(entries);
+    var votingEquipmentAgeMap =
+        getAllVotingEquipment().stream()
+            .collect(Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::age));
+    return VotingEquipmentUsageStatisticsModel.fromDataRows(entries, votingEquipmentAgeMap);
   }
 
   @Override
@@ -70,7 +74,12 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
             queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
             queryable.Mapper(),
             Integer.parseInt(fipsCode, 10));
-    return VotingEquipmentUsageStatisticsModel.fromDataRowsPerCounty(entries);
+
+    var votingEquipmentAgeMap =
+        getAllVotingEquipment().stream()
+            .collect(Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::age));
+    return VotingEquipmentUsageStatisticsModel.fromDataRowsPerCounty(
+        entries, votingEquipmentAgeMap);
   }
 
   @Override
