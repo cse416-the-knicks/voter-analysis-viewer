@@ -18,6 +18,8 @@ import {
   getDetailedVoterRegistrationDataCount,
   getVoterRegistrationHistory,
   getDetailedVotingEquipmentUsage,
+  getElectionResultsSummary,
+  getBallotStatistics,
   getVoterAffiliations,
   getCVAPStatisticsData,
 } from "../../api/client";
@@ -80,7 +82,7 @@ import { gradientMapNearest, type GradientMap } from "../../helpers/GradientMap"
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
 
-import { dropBoxData, equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
+import { equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
@@ -857,9 +859,25 @@ function StateInformationView() {
               path="dropbox-chart"
               element={
                 <BubbleChart
-                  data={dropBoxData}
+                  data={async () => {
+                    const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
+                    const ballotStatisticsData = await getBallotStatistics(fipsCode!);
+                    const mergedData = electionResultsData.map((e, i) => ({ ...e, ...ballotStatisticsData[i] }));
+
+                    const republicanBubbleColor = "#d73027";
+                    const democraticBubbleColor = "#4575b4";
+
+                    return mergedData.map((data) => ({
+                      x: (data.republicanVotes! / data.totalVotes!) * 100.0,
+                      y: (data.dropboxBallots! / data.totalBallotsCast!) * 100.0,
+                      name: data.regionName!,
+                      size: data.regionName!.length,
+                      color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
+                    }));
+                  }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
+                  maxXScale={100}
                   title="Drop Box Voting by Party"
                   xAxisLabel="Republican Votes (%)"
                   yAxisLabel="Drop Box Voting (%)"
