@@ -73,6 +73,17 @@ export interface CVAPStatisticsModel {
   otherTotal?: number;
 }
 
+export interface CVAPStatisticsModel {
+  fullRegionId?: string;
+  countyName?: string;
+  cvapTotal?: number;
+  asianTotal?: number;
+  blackTotal?: number;
+  hispanicTotal?: number;
+  whiteTotal?: number;
+  otherTotal?: number;
+}
+
 export interface VoterRegistrationDataModel {
   regionId?: string;
   firstName?: string;
