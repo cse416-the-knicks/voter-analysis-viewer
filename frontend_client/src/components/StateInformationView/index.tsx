@@ -602,11 +602,11 @@ function StateInformationView() {
             break;
         }
 
-	if (activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_AGE) {
-	  setGradientMap(VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS);
-	} else {
-	  setGradientMap(PERCENTAGE_CHOROPLETH_BUCKETS);
-	}
+        if (activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_AGE) {
+          setGradientMap(VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS);
+        } else {
+          setGradientMap(PERCENTAGE_CHOROPLETH_BUCKETS);
+        }
       })();
     },
     [activeDataState, fipsCode, navigate]
@@ -641,27 +641,27 @@ function StateInformationView() {
       let dataEntry: number = 0;
       let dataEntryTotal: number = 0;
       switch (activeDataState) {
-	case ID_SELECTION_PROVISIONAL_BALLOT:
-	  dataEntry = (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast!;
-	  dataEntryTotal = (row as ProvisionalBallotStatisticsModel).totalBallotsCast!;
-	  break;
-	case ID_SELECTION_ACTIVE_VOTERS:
-	  dataEntry = (row as VoterRegistrationStatisticsModel).active!;
-	  dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
-	  break;
-	case ID_SELECTION_POLLBOOK_DELETION:
-	  dataEntry = (row as PollbookDeletionStatisticsModel).totalRemoved!;
-	  dataEntryTotal = (row as PollbookDeletionStatisticsModel).totalRegisteredVoters!;
-	  console.log(dataEntry, dataEntryTotal);
-	  break;
-	case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
-	  dataEntry = (row as MailBallotRejectionStatisticsModel).rejectTotal!;
-	  dataEntryTotal = (row as MailBallotRejectionStatisticsModel).totalBallotsByMail!;
-	  break;
-	case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
-	  dataEntry = (row as VotingEquipmentUsageStatisticsModel).averageAge!;
-	  dataEntryTotal = 100; // HACKME(jerry): to avoid writing more special case code.
-	  break;
+        case ID_SELECTION_PROVISIONAL_BALLOT:
+          dataEntry = (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast!;
+          dataEntryTotal = (row as ProvisionalBallotStatisticsModel).totalBallotsCast!;
+          break;
+        case ID_SELECTION_ACTIVE_VOTERS:
+          dataEntry = (row as VoterRegistrationStatisticsModel).active!;
+          dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
+          break;
+        case ID_SELECTION_POLLBOOK_DELETION:
+          dataEntry = (row as PollbookDeletionStatisticsModel).totalRemoved!;
+          dataEntryTotal = (row as PollbookDeletionStatisticsModel).totalRegisteredVoters!;
+          console.log(dataEntry, dataEntryTotal);
+          break;
+        case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
+          dataEntry = (row as MailBallotRejectionStatisticsModel).rejectTotal!;
+          dataEntryTotal = (row as MailBallotRejectionStatisticsModel).totalBallotsByMail!;
+          break;
+        case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
+          dataEntry = (row as VotingEquipmentUsageStatisticsModel).averageAge!;
+          dataEntryTotal = 100; // HACKME(jerry): to avoid writing more special case code.
+          break;
         case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
           dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
           dataEntry = (row as CVAPStatisticsModel).cvapTotal!;
@@ -670,30 +670,40 @@ function StateInformationView() {
           dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
           dataEntry = 0;
           switch (cvapDemographicSelection) {
-            case 0: {
-              dataEntry = (row as CVAPStatisticsModel).asianTotal!;
-            } break;
-            case 1: {
-              dataEntry = (row as CVAPStatisticsModel).blackTotal!;
-            } break;
-            case 2: {
-              dataEntry = (row as CVAPStatisticsModel).hispanicTotal!;
-            } break;
-            case 3: {
-              dataEntry = (row as CVAPStatisticsModel).whiteTotal!;
-            } break;
-            case 4: {
-              dataEntry = (row as CVAPStatisticsModel).otherTotal!;
-            } break;
+            case 0:
+              {
+                dataEntry = (row as CVAPStatisticsModel).asianTotal!;
+              }
+              break;
+            case 1:
+              {
+                dataEntry = (row as CVAPStatisticsModel).blackTotal!;
+              }
+              break;
+            case 2:
+              {
+                dataEntry = (row as CVAPStatisticsModel).hispanicTotal!;
+              }
+              break;
+            case 3:
+              {
+                dataEntry = (row as CVAPStatisticsModel).whiteTotal!;
+              }
+              break;
+            case 4:
+              {
+                dataEntry = (row as CVAPStatisticsModel).otherTotal!;
+              }
+              break;
           }
           break;
-	case ID_SELECTION_VOTER_REGISTRATION:
-	  dataEntry = (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
-	  dataEntryTotal = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
-	  break;
+        case ID_SELECTION_VOTER_REGISTRATION:
+          dataEntry = (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
+          dataEntryTotal = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
+          break;
       }
       if (dataEntryTotal !== 0) {
-	colorPoint = (dataEntry / dataEntryTotal) * 100;
+        colorPoint = (dataEntry / dataEntryTotal) * 100;
       }
     }
     return colorPoint;
@@ -821,7 +831,7 @@ function StateInformationView() {
                 <Paper>
                   <FormControl fullWidth>
                     <InputLabel>CVAP Demographic</InputLabel>
-                    <Select onChange={(event) => setCvapDemographicSelection(event.target.value) } value={cvapDemographicSelection} label="CVAP Demographic">
+                    <Select onChange={(event) => setCvapDemographicSelection(event.target.value)} value={cvapDemographicSelection} label="CVAP Demographic">
                       {["Asian", "Black", "Hispanic", "White", "Other"].map((x, i) => (
                         <MenuItem value={i}>{x}</MenuItem>
                       ))}
