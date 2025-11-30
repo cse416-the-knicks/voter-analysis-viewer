@@ -44,4 +44,10 @@ public class VoterRegistrationService {
     return _dao.getDetailedVoterRegistrationDataCount(
         stateFips, countyFipsParam, partySelectionFilterId);
   }
+
+  @Cacheable(cacheNames = "voterRegistrationCvap", key = "{ #stateFips, #year, #inAggregate }")
+  public List<CVAPStatisticsModel> getCVAPStatisticsData(
+      String stateFips, int year, boolean inAggregate) {
+    return _dao.getCVAPStatisticsDataRows(stateFips, year, inAggregate);
+  }
 }

@@ -7,6 +7,7 @@ import type {
   VoterRegistrationHistoryGraphDataModel,
   VotingEquipmentUsageStatisticsModel,
   VoterAffiliationStatisticsModel,
+  CVAPStatisticsModel,
 } from "../../api/client";
 
 import {
@@ -17,7 +18,10 @@ import {
   getDetailedVoterRegistrationDataCount,
   getVoterRegistrationHistory,
   getDetailedVotingEquipmentUsage,
+  getElectionResultsSummary,
+  getBallotStatistics,
   getVoterAffiliations,
+  getCVAPStatisticsData,
 } from "../../api/client";
 
 import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
@@ -38,7 +42,7 @@ import HowToVoteIcon from "@mui/icons-material/HowToVote";
 
 import Stack from "@mui/material/Stack";
 
-import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab } from "@mui/material";
+import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
@@ -72,6 +76,8 @@ import {
   VOTING_EQUIPMENT_COLUMNS,
   bargraphDataForVotingEquipmentUsages,
   VOTER_AFFILIATION_COLUMNS,
+  CVAP_INFO_COLUMNS,
+  bargraphDataForCVAPInfo,
 } from "./dataColumns";
 
 import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
@@ -80,7 +86,7 @@ import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
 
-import { dropBoxData, equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
+import { equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
@@ -99,6 +105,8 @@ const ID_SELECTION_DROP_BOX_VOTING = 7;
 
 const ID_SELECTION_VOTER_REGISTRATION = 8;
 const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
+const ID_SELECTION_VIEW_CVAP_INFO = 11;
+const ID_SELECTION_VIEW_CVAP_PERCENTAGE = 12;
 
 const defaultDropDownSections = [
   {
@@ -146,7 +154,11 @@ const partyStateDropDownSections = [
   },
   {
     title: "Voter Registration",
-    items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
+    items: [
+      { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
+      { id: ID_SELECTION_VIEW_CVAP_INFO, iconComponent: <PersonIcon />, textContent: "CVAP Statistics" },
+      { id: ID_SELECTION_VIEW_CVAP_PERCENTAGE, iconComponent: <PersonIcon />, textContent: "CVAP Registration" },
+    ],
   },
 ];
 
@@ -185,6 +197,7 @@ function pickDropdownType(stateType: DetailStateType[]) {
   if (partyState || voterRegistrationState) {
     if (partyState) {
       result[0] = partyStateDropDownSections[0];
+      result[2] = partyStateDropDownSections[2];
     }
     if (voterRegistrationState) {
       result[2] = voterRegistrationStateDropDownSections[2];
@@ -228,7 +241,6 @@ function a11yProps(index: number) {
 }
 
 function getUrlForModeId(id: number, fipsCode: string) {
-  console.log(id);
   switch (id) {
     case ID_SELECTION_PROVISIONAL_BALLOT:
       return `/state/${fipsCode}/provisional-ballots`;
@@ -240,6 +252,10 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/pollbook-deletions`;
     case ID_SELECTION_VOTER_REGISTRATION:
       return `/state/${fipsCode}/voter-registration`;
+    case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
+      return `/state/${fipsCode}/cvap-registration`;
+    case ID_SELECTION_VIEW_CVAP_INFO:
+      return `/state/${fipsCode}/cvap`;
     case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
       return `/state/${fipsCode}/compare-voter-registration-rates/`;
     case ID_SELECTION_REJECTED_BALLOTS:
@@ -273,6 +289,10 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
   } else if (pathname.includes("/equipment-by-type/")) {
     return ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE;
+  } else if (pathname.includes("/cvap-registration")) {
+    return ID_SELECTION_VIEW_CVAP_PERCENTAGE;
+  } else if (pathname.includes("/cvap")) {
+    return ID_SELECTION_VIEW_CVAP_INFO;
   }
   return ID_SELECTION_PROVISIONAL_BALLOT;
 }
@@ -421,6 +441,8 @@ function StateInformationView() {
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
   const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
+  const [totalDataCount, setTotalDataCount] = useState(0);
+  const [cvapDemographicSelection, setCvapDemographicSelection] = useState(0);
 
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
@@ -524,6 +546,39 @@ function StateInformationView() {
               setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
             }
             break;
+          case ID_SELECTION_VIEW_CVAP_INFO:
+            {
+              const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition`);
+              setBarGraphXTitle("Race");
+              setDataRows(
+                data.map((x) => {
+                  return { id: x.fullRegionId, ...x };
+                })
+              );
+              setDataColumns(CVAP_INFO_COLUMNS);
+              setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
+            }
+            break;
+          case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
+            {
+              const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
+              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
+              const [aggregatedData, data] = await Promise.all(promises);
+              const [_activeVoterAggregatedData, activeVoterData] = await Promise.all(activeVoterPromises);
+
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition`);
+              setBarGraphXTitle("Race");
+              setDataRows(
+                data.map((x, i) => {
+                  return { id: x.fullRegionId, ...x, ...activeVoterData[i] };
+                })
+              );
+              setDataColumns(CVAP_INFO_COLUMNS);
+              setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
+            }
+            break;
           case ID_SELECTION_POLLBOOK_DELETION:
             {
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
@@ -607,6 +662,31 @@ function StateInformationView() {
 	  dataEntry = (row as VotingEquipmentUsageStatisticsModel).averageAge!;
 	  dataEntryTotal = 100; // HACKME(jerry): to avoid writing more special case code.
 	  break;
+        case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
+          dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
+          dataEntry = (row as CVAPStatisticsModel).cvapTotal!;
+          break;
+        case ID_SELECTION_VIEW_CVAP_INFO:
+          dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
+          dataEntry = 0;
+          switch (cvapDemographicSelection) {
+            case 0: {
+              dataEntry = (row as CVAPStatisticsModel).asianTotal!;
+            } break;
+            case 1: {
+              dataEntry = (row as CVAPStatisticsModel).blackTotal!;
+            } break;
+            case 2: {
+              dataEntry = (row as CVAPStatisticsModel).hispanicTotal!;
+            } break;
+            case 3: {
+              dataEntry = (row as CVAPStatisticsModel).whiteTotal!;
+            } break;
+            case 4: {
+              dataEntry = (row as CVAPStatisticsModel).otherTotal!;
+            } break;
+          }
+          break;
 	case ID_SELECTION_VOTER_REGISTRATION:
 	  dataEntry = (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
 	  dataEntryTotal = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
@@ -727,10 +807,34 @@ function StateInformationView() {
             >
               {FIPS_TO_STATES_MAP[fipsCode!]}
             </Typography>
+            {activeDataState == ID_SELECTION_VIEW_CVAP_INFO && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  p: 1.5,
+                  left: `75%`,
+                  top: `0`,
+                  width: `calc(${maxWidthForMap} * 0.25)`,
+                  zIndex: 1001,
+                }}
+              >
+                <Paper>
+                  <FormControl fullWidth>
+                    <InputLabel>CVAP Demographic</InputLabel>
+                    <Select onChange={(event) => setCvapDemographicSelection(event.target.value) } value={cvapDemographicSelection} label="CVAP Demographic">
+                      {["Asian", "Black", "Hispanic", "White", "Other"].map((x, i) => (
+                        <MenuItem value={i}>{x}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Paper>
+              </Box>
+            )}
             {tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart && <GeoUnitBubbleChart fipsCode={fipsCode!} />}
           </StateMap>
         </Paper>
       </Stack>
+
       <Backdrop open={shouldOpenPopup} sx={{ zIndex: 1199 }} />
       <Grow in={shouldOpenPopup}>
         <Box
@@ -747,9 +851,25 @@ function StateInformationView() {
               path="dropbox-chart"
               element={
                 <BubbleChart
-                  data={dropBoxData}
+                  data={async () => {
+                    const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
+                    const ballotStatisticsData = await getBallotStatistics(fipsCode!);
+                    const mergedData = electionResultsData.map((e, i) => ({ ...e, ...ballotStatisticsData[i] }));
+
+                    const republicanBubbleColor = "#d73027";
+                    const democraticBubbleColor = "#4575b4";
+
+                    return mergedData.map((data) => ({
+                      x: (data.republicanVotes! / data.totalVotes!) * 100.0,
+                      y: (data.dropboxBallots! / data.totalBallotsCast!) * 100.0,
+                      name: data.regionName!,
+                      size: data.regionName!.length,
+                      color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
+                    }));
+                  }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
+                  maxXScale={100}
                   title="Drop Box Voting by Party"
                   xAxisLabel="Republican Votes (%)"
                   yAxisLabel="Drop Box Voting (%)"
