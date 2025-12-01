@@ -38,7 +38,9 @@ public record VotingEquipmentModel(
 
     // Mostly VVSG
     @SqlColumnName(name = "certification") Optional<String> certificationLevel,
-    Optional<Integer> age
+    Optional<Integer> age,
+
+    Optional<Integer> equipmentQuality
 
     // DNE
     // @SqlColumnName(name = "security_description") Optional<String> securityRiskDescription
@@ -52,7 +54,8 @@ public record VotingEquipmentModel(
       Optional<Boolean> discontinued,
       Optional<Date> firstManufactured,
       Optional<String> operatingSystem,
-      Optional<String> certificationLevel) {
+      Optional<String> certificationLevel,
+      Optional<Integer> equipmentQuality) {
     this(
         id,
         manufacturer,
@@ -62,6 +65,7 @@ public record VotingEquipmentModel(
         firstManufactured,
         operatingSystem,
         certificationLevel,
+        equipmentQuality,
         // NOTE(jerry): No flexible constructor
         // support without Java-Preview... :|
         firstManufactured
