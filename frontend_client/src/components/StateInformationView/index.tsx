@@ -863,7 +863,7 @@ function StateInformationView() {
                 <BubbleChart
                   data={async () => {
                     const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
-                    const ballotStatisticsData = await getBallotStatistics(fipsCode!);
+                    const ballotStatisticsData = await getMailBallotRejections(fipsCode!);
                     const mergedData = electionResultsData.map((e, i) => ({ ...e, ...ballotStatisticsData[i] }));
 
                     const republicanBubbleColor = "#d73027";
@@ -871,7 +871,7 @@ function StateInformationView() {
 
                     return mergedData.map((data) => ({
                       x: (data.republicanVotes! / data.totalVotes!) * 100.0,
-                      y: (data.dropboxBallots! / data.totalBallotsCast!) * 100.0,
+                      y: (data.totalBallotsByMail! / data.totalBallotsCast!) * 100.0,
                       name: data.regionName!,
                       size: data.regionName!.length,
                       color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
