@@ -39,8 +39,7 @@ public record VotingEquipmentModel(
     // Mostly VVSG
     @SqlColumnName(name = "certification") Optional<String> certificationLevel,
     Optional<Integer> age,
-
-    Optional<Integer> equipmentQuality
+    @SqlColumnName(name = "quality_score") Optional<Integer> equipmentQuality
 
     // DNE
     // @SqlColumnName(name = "security_description") Optional<String> securityRiskDescription
