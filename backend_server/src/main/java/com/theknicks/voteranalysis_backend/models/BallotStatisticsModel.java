@@ -19,9 +19,10 @@ public record BallotStatisticsModel(
     @SqlColumnName(name = "eavs_data.region_id", omitFromAggregate = true) String fullRegionId,
     @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String regionName,
     @SqlColumnName(name = "ballots_dropbox") int dropboxBallots,
+    @SqlColumnName(name = "ballots_by_mail") int totalBallotsByMail,
     @SqlColumnName(name = "total_ballots_cast") int totalBallotsCast) {
-  public BallotStatisticsModel(int dropboxBallots, int totalBallotsCast) {
-    this("0000000000", "Aggregated", dropboxBallots, totalBallotsCast);
+  public BallotStatisticsModel(int dropboxBallots, int totalBallotsByMail, int totalBallotsCast) {
+    this("0000000000", "Aggregated", dropboxBallots, totalBallotsByMail, totalBallotsCast);
   }
 
   public static class Queryable extends AutoSqlQueryable<BallotStatisticsModel> {

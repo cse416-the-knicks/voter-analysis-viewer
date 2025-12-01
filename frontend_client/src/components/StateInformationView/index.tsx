@@ -101,7 +101,9 @@ const ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES = 10;
 const ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE = 4;
 const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
 const ID_SELECTION_REJECTED_BALLOTS = 6;
-const ID_SELECTION_DROP_BOX_VOTING = 7;
+const ID_SELECTION_MAIL_IN_VOTING
+
+ = 7;
 
 const ID_SELECTION_VOTER_REGISTRATION = 8;
 const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
@@ -141,7 +143,7 @@ const partyStateDropDownSections = [
       { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
       { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
       { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
-      { id: ID_SELECTION_DROP_BOX_VOTING, iconComponent: <HowToVoteIcon />, textContent: "Drop Box Voting" },
+      { id: ID_SELECTION_MAIL_IN_VOTING, iconComponent: <HowToVoteIcon />, textContent: "Mail-In Voting" },
       { id: ID_SELECTION_REJECTED_BALLOTS, iconComponent: <DoNotDisturbIcon />, textContent: "Rejected Ballots" },
     ],
   },
@@ -260,8 +262,8 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/compare-voter-registration-rates/`;
     case ID_SELECTION_REJECTED_BALLOTS:
       return `/state/${fipsCode}/rejected-ballots-chart/`;
-    case ID_SELECTION_DROP_BOX_VOTING:
-      return `/state/${fipsCode}/dropbox-chart/`;
+    case ID_SELECTION_MAIL_IN_VOTING:
+      return `/state/${fipsCode}/mail-in-chart/`;
     case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE:
       return `/state/${fipsCode}/voter-table/`;
     case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
@@ -283,8 +285,8 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_VOTER_REGISTRATION;
   } else if (pathname.includes("/rejected-ballots-chart")) {
     return ID_SELECTION_REJECTED_BALLOTS;
-  } else if (pathname.includes("/dropbox-chart/")) {
-    return ID_SELECTION_DROP_BOX_VOTING;
+  } else if (pathname.includes("/mail-in-chart/")) {
+    return ID_SELECTION_MAIL_IN_VOTING;
   } else if (pathname.includes("/voter-table/")) {
     return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
   } else if (pathname.includes("/equipment-by-type/")) {
@@ -447,7 +449,7 @@ function StateInformationView() {
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-  const shouldOpenPopup = ["dropbox-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates"].some((x) =>
+  const shouldOpenPopup = ["mail-in-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates"].some((x) =>
     location.pathname.includes(x)
   );
 
@@ -858,12 +860,12 @@ function StateInformationView() {
         >
           <Routes>
             <Route
-              path="dropbox-chart"
+              path="mail-in-chart"
               element={
                 <BubbleChart
                   data={async () => {
                     const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
-                    const ballotStatisticsData = await getMailBallotRejections(fipsCode!);
+                    const ballotStatisticsData = await getBallotStatistics(fipsCode!);
                     const mergedData = electionResultsData.map((e, i) => ({ ...e, ...ballotStatisticsData[i] }));
 
                     const republicanBubbleColor = "#d73027";
@@ -880,9 +882,9 @@ function StateInformationView() {
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
                   maxXScale={100}
-                  title="Drop Box Voting by Party"
+                  title="Mail Ballots by Party"
                   xAxisLabel="Republican Votes (%)"
-                  yAxisLabel="Drop Box Voting (%)"
+                  yAxisLabel="Mail Ballot Voting (%)"
                 />
               }
             />
