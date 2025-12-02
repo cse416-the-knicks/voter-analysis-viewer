@@ -64,7 +64,6 @@ public record VotingEquipmentModel(
         firstManufactured,
         operatingSystem,
         certificationLevel,
-        equipmentQuality,
         // NOTE(jerry): No flexible constructor
         // support without Java-Preview... :|
         firstManufactured
@@ -79,7 +78,8 @@ public record VotingEquipmentModel(
 
                   return Optional.of(currentYear - yearManufactured);
                 })
-            .orElse(Optional.empty()));
+            .orElse(Optional.empty()),
+        equipmentQuality);
   }
 
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentModel> {
