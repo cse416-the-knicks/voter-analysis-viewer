@@ -22,6 +22,7 @@ import {
   getBallotStatistics,
   getVoterAffiliations,
   getCVAPStatisticsData,
+  getAllVotingEquipment,
 } from "../../api/client";
 
 import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
@@ -890,7 +891,33 @@ function StateInformationView() {
               path="rejected-ballots-chart"
               element={
                 <BubbleChart
-                  data={equipmentQualityData}
+                  data={async () => {
+                    /*
+                    The state page will include a screen component to allow the user to request the display of a
+                    bubble chart that associates voting equipment quality with the percentage of rejected ballots.
+                    Each bubble will be placed at an x, y location, where the x-axis shows the quality level of voting
+                    equipment in the county (as calculated previously) and the y-axis shows the percentage of
+                    rejected ballots in the EAVS data for 2024. The percentage of rejected ballots is calculated as the
+                    number of rejected ballots divided by the total number of ballots (Absentee Ballots Counted +
+                    Early In-Person Ballots Counted + Election Day Ballots + Provisional Ballots Counted). The
+                    number of rejected ballots includes mail-in ballots (C9a), provisional ballots (E1d), and
+                    UOCAVA ballots (B24a). 
+                    */
+
+                    const equipmentQuality = await getAllVotingEquipment();
+                    const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
+                    const [aggregatedData, data] = await Promise.all(promises);
+
+                    const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...aggregatedData[i] }));
+
+                    return mergedData.map((data) => ({
+                      x: data.equipmentQuality!,
+                      y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0,
+                      name: data.countyName!,
+                      size: 10,
+                      color: theme.palette.secondary.light,
+                    }));
+                  }}
                   width={bubbleChartWidth}
                   height={bubbleChartHeight}
                   title="Voting Equipment Quality"

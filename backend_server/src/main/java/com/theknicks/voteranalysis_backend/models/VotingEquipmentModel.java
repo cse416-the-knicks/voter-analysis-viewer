@@ -38,7 +38,8 @@ public record VotingEquipmentModel(
 
     // Mostly VVSG
     @SqlColumnName(name = "certification") Optional<String> certificationLevel,
-    Optional<Integer> age
+    Optional<Integer> age,
+    @SqlColumnName(name = "quality_score") Optional<Integer> equipmentQuality
 
     // DNE
     // @SqlColumnName(name = "security_description") Optional<String> securityRiskDescription
@@ -52,7 +53,8 @@ public record VotingEquipmentModel(
       Optional<Boolean> discontinued,
       Optional<Date> firstManufactured,
       Optional<String> operatingSystem,
-      Optional<String> certificationLevel) {
+      Optional<String> certificationLevel,
+      Optional<Integer> equipmentQuality) {
     this(
         id,
         manufacturer,
@@ -76,7 +78,8 @@ public record VotingEquipmentModel(
 
                   return Optional.of(currentYear - yearManufactured);
                 })
-            .orElse(Optional.empty()));
+            .orElse(Optional.empty()),
+        equipmentQuality);
   }
 
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentModel> {

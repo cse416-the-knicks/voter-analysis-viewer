@@ -48,6 +48,7 @@ export interface VotingEquipmentModel {
   operatingSystem?: string;
   certificationLevel?: string;
   age?: number;
+  equipmentQuality?: number;
 }
 
 export interface VotingEquipmentUsageStatisticsModel {
