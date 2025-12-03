@@ -17,14 +17,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Card,
-  CardContent,
-  Typography,
   Tooltip,
   Chip,
   Stack,
-  type ChipPropsColorOverrides,
-  type ChipOwnProps,
 } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useNavigate } from "react-router";
