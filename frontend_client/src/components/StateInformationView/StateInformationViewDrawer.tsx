@@ -8,19 +8,7 @@ import {
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
 } from "../FullBoundedUSMap/detailedStatesInfo";
 
-import {
-  Button,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-  Chip,
-  Stack,
-} from "@mui/material";
+import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Chip, Stack } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useNavigate } from "react-router";
 
