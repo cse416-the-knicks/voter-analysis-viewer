@@ -9,19 +9,7 @@ import {
   DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
 } from "../FullBoundedUSMap/detailedStatesInfo";
 
-import {
-  Button,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-  Chip,
-  Stack,
-} from "@mui/material";
+import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Chip, Stack } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useNavigate } from "react-router";
 
@@ -79,7 +67,7 @@ const DemocratStateCard = () =>
     "Democrat Dominated State",
     "This is a selected detail state that is Democrat dominated, you can compare this against our Republican state."
   );
-  const PreclearanceStateCard = () =>
+const PreclearanceStateCard = () =>
   BasicStateTypeInfoCard(
     "Preclearance State",
     "This is a selected detail state that is subject to 'preclearance requirements' under the Voting Rights Act, due to historical voting discrimination."
@@ -92,17 +80,17 @@ interface StateInfoCardProperties {
 function StateInfoCard({ type }: StateInfoCardProperties) {
   switch (type) {
     case DETAIL_STATE_TYPE_OPTIN:
-        return OptInStateCard();
+      return OptInStateCard();
     case DETAIL_STATE_TYPE_OPTOUT:
-        return OptOutStateCard();
+      return OptOutStateCard();
     case DETAIL_STATE_TYPE_DEMOCRAT:
-        return DemocratStateCard();
+      return DemocratStateCard();
     case DETAIL_STATE_TYPE_REPUBLICAN:
-        return RepublicanStateCard();
+      return RepublicanStateCard();
     case DETAIL_STATE_TYPE_VOTER_REGISTRATION:
-        return VoterRegistrationStateCard();
+      return VoterRegistrationStateCard();
     case DETAIL_STATE_TYPE_PRECLEARANCE_STATE:
-        return PreclearanceStateCard();
+      return PreclearanceStateCard();
   }
   return EAVsStateCard();
 }

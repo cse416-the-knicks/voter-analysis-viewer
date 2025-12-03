@@ -62,7 +62,7 @@ function getHumanReadableStateType(type: string): string {
     case "DETAIL_STATE_TYPE_VOTER_REGISTRATION":
       return "Voter Registration State";
     case "DETAIL_STATE_TYPE_PRECLEARANCE_STATE":
-        return "Preclearance State";
+      return "Preclearance State";
     default:
       return type;
   }
@@ -83,5 +83,5 @@ export {
   DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_REPUBLICAN,
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
-  DETAIL_STATE_TYPE_PRECLEARANCE_STATE
+  DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
 };

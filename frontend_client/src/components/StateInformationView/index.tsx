@@ -207,8 +207,8 @@ const ecologicalInferenceDropDownSections = [
       { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, iconComponent: <PersonIcon />, textContent: "Gingles Chart" },
       { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, iconComponent: <ScannerIcon />, textContent: "Equipment Accessibility" },
       { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, iconComponent: <PersonOffIcon />, textContent: "CVAP Rejections" },
-    ]
-  }
+    ],
+  },
 ];
 
 function pickDropdownType(stateType: DetailStateType[]) {
@@ -484,9 +484,15 @@ function StateInformationView() {
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-  const shouldOpenPopup = ["mail-in-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates", "ei-gingles-chart", "ei-rejected-ballots", "ei-voting-equipment"].some((x) =>
-    location.pathname.includes(x)
-  );
+  const shouldOpenPopup = [
+    "mail-in-chart",
+    "rejected-ballots-chart",
+    "voter-table",
+    "compare-voter-registration-rates",
+    "ei-gingles-chart",
+    "ei-rejected-ballots",
+    "ei-voting-equipment",
+  ].some((x) => location.pathname.includes(x));
 
   useEffect(
     function () {
@@ -987,18 +993,9 @@ function StateInformationView() {
               path="voter-table/:countyCode?"
               element={<FullScreenDetailedVoterRegistrationTable pageSize={15} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
             />
-            <Route
-              path="ei-gingles-chart"
-              element={<DisplayEIGinglesChart/>}
-            />
-            <Route
-              path="ei-rejected-ballots"
-              element={<DisplayEIRejectedBallots/>}
-            />
-            <Route
-              path="ei-voting-equipment"
-              element={<DisplayEIVotingEquipment/>}
-            />
+            <Route path="ei-gingles-chart" element={<DisplayEIGinglesChart />} />
+            <Route path="ei-rejected-ballots" element={<DisplayEIRejectedBallots />} />
+            <Route path="ei-voting-equipment" element={<DisplayEIVotingEquipment />} />
           </Routes>
         </Box>
       </Grow>
