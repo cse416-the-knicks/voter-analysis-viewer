@@ -8,7 +8,24 @@ import {
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
 } from "../FullBoundedUSMap/detailedStatesInfo";
 
-import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Card, CardContent, Typography, Tooltip, Chip, Stack, type ChipPropsColorOverrides, type ChipOwnProps } from "@mui/material";
+import {
+  Button,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Card,
+  CardContent,
+  Typography,
+  Tooltip,
+  Chip,
+  Stack,
+  type ChipPropsColorOverrides,
+  type ChipOwnProps,
+} from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useNavigate } from "react-router";
 
@@ -43,9 +60,7 @@ interface StateInformationViewDrawerListItemProperties {
 function BasicStateTypeInfoCard(title: string, text: string) {
   return (
     <Tooltip title={text}>
-      <Chip
-        color="secondary"
-        variant="outlined" label={title}/>
+      <Chip color="secondary" variant="outlined" label={title} />
     </Tooltip>
   );
 }
@@ -160,15 +175,17 @@ function StateInformationViewDrawer({ sections, stateHook, onSelection, stateTyp
         },
       }}
     >
-      <Stack spacing={0.5} sx={{p: 1}}>
+      <Stack spacing={0.5} sx={{ p: 1 }}>
         {stateType.map((x) => (
           <StateInfoCard type={x} />
         ))}
       </Stack>
       <Divider />
-      <List disablePadding dense>{finalComponentsWithDividers}</List>
+      <List disablePadding dense>
+        {finalComponentsWithDividers}
+      </List>
       <Divider />
-      <Button sx={{mt: 2, ml: 2, mr: 2, p: 1.5}} onClick={() => navigate("/")} variant="contained" color="secondary">
+      <Button sx={{ mt: 2, ml: 2, mr: 2, p: 1.5 }} onClick={() => navigate("/")} variant="contained" color="secondary">
         <HighlightOffIcon /> Exit State Display
       </Button>
     </Drawer>
