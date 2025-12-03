@@ -35,9 +35,15 @@ const columns: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
   },
 ];
 
+function DisplayVotingEquipmentHistoryChart() {
+  const navigate = useNavigate();
+  return <></>;
+}
+
 function DisplayVotingMachineSummaryView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<VotingEquipmentUsageStatisticsModel[]>([]);
+  const [test, setTest] = useState(false);
   const maxWidth = 800; // pixels
 
   useEffect(function () {
@@ -47,22 +53,26 @@ function DisplayVotingMachineSummaryView() {
     })();
   }, []);
 
-  useKeyDown("Escape", () => navigate("/"));
+  useKeyDown("Escape", () => navigate(-1));
 
   return (
-    <WindowTitledDataGrid
-      title={"State Voting Equipment Usage Summary"}
-      onXout={() => navigate("/")}
-      width={maxWidth}
-      maxWidth={maxWidth}
-      rows={rows}
-      columns={columns}
-      getRowId={(x) => x.stateId}
-      pageSize={12}
-      left={`calc(50vw - ${maxWidth / 2}px)`}
-      top={"0"}
-      onRowDoubleClick={(params, event, details) => {}}
-    />
+    <>
+      <WindowTitledDataGrid
+        title={"State Voting Equipment Usage Summary"}
+        onXout={() => navigate("/")}
+        width={maxWidth}
+        maxWidth={maxWidth}
+        rows={rows}
+        columns={columns}
+        getRowId={(x) => x.stateId}
+        pageSize={12}
+        left={`calc(50vw - ${maxWidth / 2}px)`}
+        top={"0"}
+        onRowDoubleClick={(params, event, details) => {
+          const targetRow = params.row;
+        }}
+      />
+    </>
   );
 }
 
