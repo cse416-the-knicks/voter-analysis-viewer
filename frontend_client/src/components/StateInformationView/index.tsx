@@ -47,6 +47,7 @@ import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab, Select, Me
 
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
+  DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
   DETAIL_STATE_TYPE_REPUBLICAN,
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
   getDetailStateType,
@@ -92,6 +93,10 @@ import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
 import LineChart from "../DataDisplays/LineChart";
+import NotImplementedYet from "../NotImplementedYetDialog";
+import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
+import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
+import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -108,6 +113,10 @@ const ID_SELECTION_VOTER_REGISTRATION = 8;
 const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
 const ID_SELECTION_VIEW_CVAP_INFO = 11;
 const ID_SELECTION_VIEW_CVAP_PERCENTAGE = 12;
+
+const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART = 13;
+const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT = 14;
+const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS = 15;
 
 const defaultDropDownSections = [
   {
@@ -191,10 +200,22 @@ const voterRegistrationStateDropDownSections = [
   },
 ];
 
+const ecologicalInferenceDropDownSections = [
+  {
+    title: "Ecological Inference",
+    items: [
+      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, iconComponent: <PersonIcon />, textContent: "Gingles Chart" },
+      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, iconComponent: <ScannerIcon />, textContent: "Equipment Accessibility" },
+      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, iconComponent: <PersonOffIcon />, textContent: "CVAP Rejections" },
+    ],
+  },
+];
+
 function pickDropdownType(stateType: DetailStateType[]) {
   const partyState = stateType.some((x) => x === DETAIL_STATE_TYPE_REPUBLICAN || x === DETAIL_STATE_TYPE_DEMOCRAT);
   const voterRegistrationState = stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION);
-  const result = [...defaultDropDownSections];
+  const preclearanceState = stateType.some((x) => x === DETAIL_STATE_TYPE_PRECLEARANCE_STATE);
+  let result = [...defaultDropDownSections];
   if (partyState || voterRegistrationState) {
     if (partyState) {
       result[0] = partyStateDropDownSections[0];
@@ -202,6 +223,9 @@ function pickDropdownType(stateType: DetailStateType[]) {
     }
     if (voterRegistrationState) {
       result[2] = voterRegistrationStateDropDownSections[2];
+    }
+    if (preclearanceState) {
+      result = result.concat(ecologicalInferenceDropDownSections);
     }
     return result;
   }
@@ -267,6 +291,12 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/voter-table/`;
     case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
       return `/state/${fipsCode}/equipment-by-type/`;
+    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART:
+      return `/state/${fipsCode}/ei-gingles-chart/`;
+    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS:
+      return `/state/${fipsCode}/ei-rejected-ballots/`;
+    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT:
+      return `/state/${fipsCode}/ei-voting-equipment`;
   }
   return "?";
 }
@@ -294,6 +324,12 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_VIEW_CVAP_PERCENTAGE;
   } else if (pathname.includes("/cvap")) {
     return ID_SELECTION_VIEW_CVAP_INFO;
+  } else if (pathname.includes("/ei-gingles-chart")) {
+    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART;
+  } else if (pathname.includes("/ei-rejected-ballots")) {
+    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS;
+  } else if (pathname.includes("/ei-voting-equipment")) {
+    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT;
   }
   return ID_SELECTION_PROVISIONAL_BALLOT;
 }
@@ -448,9 +484,15 @@ function StateInformationView() {
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-  const shouldOpenPopup = ["mail-in-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates"].some((x) =>
-    location.pathname.includes(x)
-  );
+  const shouldOpenPopup = [
+    "mail-in-chart",
+    "rejected-ballots-chart",
+    "voter-table",
+    "compare-voter-registration-rates",
+    "ei-gingles-chart",
+    "ei-rejected-ballots",
+    "ei-voting-equipment",
+  ].some((x) => location.pathname.includes(x));
 
   useEffect(
     function () {
@@ -951,6 +993,9 @@ function StateInformationView() {
               path="voter-table/:countyCode?"
               element={<FullScreenDetailedVoterRegistrationTable pageSize={15} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
             />
+            <Route path="ei-gingles-chart" element={<DisplayEIGinglesChart />} />
+            <Route path="ei-rejected-ballots" element={<DisplayEIRejectedBallots />} />
+            <Route path="ei-voting-equipment" element={<DisplayEIVotingEquipment />} />
           </Routes>
         </Box>
       </Grow>

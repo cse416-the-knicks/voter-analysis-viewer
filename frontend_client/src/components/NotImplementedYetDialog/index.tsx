@@ -13,7 +13,7 @@ function NotImplementedYet({ hook }: NotImplementedYetProperties) {
   };
   return (
     <React.Fragment>
-      <Dialog open={hook[0]} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+      <Dialog sx={{ zIndex: 9999 }} open={hook[0]} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">{"Your UI is in another castle!"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
