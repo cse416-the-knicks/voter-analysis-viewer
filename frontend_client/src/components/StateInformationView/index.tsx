@@ -93,6 +93,10 @@ import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
 import LineChart from "../DataDisplays/LineChart";
+import NotImplementedYet from "../NotImplementedYetDialog";
+import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
+import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
+import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -982,6 +986,18 @@ function StateInformationView() {
             <Route
               path="voter-table/:countyCode?"
               element={<FullScreenDetailedVoterRegistrationTable pageSize={15} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
+            />
+            <Route
+              path="ei-gingles-chart"
+              element={<DisplayEIGinglesChart/>}
+            />
+            <Route
+              path="ei-rejected-ballots"
+              element={<DisplayEIRejectedBallots/>}
+            />
+            <Route
+              path="ei-voting-equipment"
+              element={<DisplayEIVotingEquipment/>}
             />
           </Routes>
         </Box>
