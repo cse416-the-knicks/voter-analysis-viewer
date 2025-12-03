@@ -897,7 +897,7 @@ function StateInformationView() {
                     const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
                     const [aggregatedData, data] = await Promise.all(promises);
                     const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...aggregatedData[i], ...electionResultsData[i] }));
-                    
+
                     // console.log(mergedData)
 
                     const republicanBubbleColor = "#d73027";

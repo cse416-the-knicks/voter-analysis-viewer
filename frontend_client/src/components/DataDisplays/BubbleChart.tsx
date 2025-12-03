@@ -53,7 +53,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     },
     [data]
   );
-  
+
   const xAxisScale = d3
     .scaleLinear()
     .domain([0, maxXScale || d3.max(actualData, (x) => x.x)! + 5])
@@ -97,44 +97,44 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
 
   useEffect(() => {
     const calculateRegressionLines = async () => {
-      if (!useRegression) 
-        return;
+      if (!useRegression) return;
 
-        const lineGroups = [...new Set(actualData.map(d => d.party))];
+      const lineGroups = [...new Set(actualData.map((d) => d.party))];
 
-        const regressionLineGroups = await Promise.all(
-          lineGroups.map(async (lineGroup) => {
-            const lineGroupData = actualData.filter(d => d.party === lineGroup);
-            const xVals = lineGroupData.map(d => d.x);
-            const yVals = lineGroupData.map(d => d.y);
+      const regressionLineGroups = await Promise.all(
+        lineGroups.map(async (lineGroup) => {
+          const lineGroupData = actualData.filter((d) => d.party === lineGroup);
+          const xVals = lineGroupData.map((d) => d.x);
+          const yVals = lineGroupData.map((d) => d.y);
 
-            const lineCoeffs = await getRegressionCoefficients({pointsCount: lineGroupData.length, xs:xVals, ys:yVals});
-            const regressionFunction = makePolynomial(lineCoeffs);
+          const lineCoeffs = await getRegressionCoefficients({ pointsCount: lineGroupData.length, xs: xVals, ys: yVals });
+          const regressionFunction = makePolynomial(lineCoeffs);
 
-            const xValMin = d3.min(xVals) ?? 0;
-            const xValMax = d3.max(xVals) ?? xValMin + 1;
+          const xValMin = d3.min(xVals) ?? 0;
+          const xValMax = d3.max(xVals) ?? xValMin + 1;
 
-            const regressionPoints = d3.range(0, 101).map(i => {
-              const x = xValMin + (i / 100) * (xValMax - xValMin);
-              return {x, y: regressionFunction(x)}
-            });
+          const regressionPoints = d3.range(0, 101).map((i) => {
+            const x = xValMin + (i / 100) * (xValMax - xValMin);
+            return { x, y: regressionFunction(x) };
+          });
 
-            const makeRegressionLines = d3.line<{ x: number, y: number }>()
-              .x(p => xAxisScale(p.x))
-              .y(p => yAxisScale(p.y))
-              .curve(d3.curveBasis);
+          const makeRegressionLines = d3
+            .line<{ x: number; y: number }>()
+            .x((p) => xAxisScale(p.x))
+            .y((p) => yAxisScale(p.y))
+            .curve(d3.curveBasis);
 
-            return {
-              id: `reg-${lineGroup}`,
-              d: makeRegressionLines(regressionPoints) ?? '',
-              color: lineGroup === "Dem" ? 'blue' : 'red',
-            };
-          })
-        );
-        setRegressionPaths(regressionLineGroups);
-      };
-      calculateRegressionLines() 
-    }, [data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale]);
+          return {
+            id: `reg-${lineGroup}`,
+            d: makeRegressionLines(regressionPoints) ?? "",
+            color: lineGroup === "Dem" ? "blue" : "red",
+          };
+        })
+      );
+      setRegressionPaths(regressionLineGroups);
+    };
+    calculateRegressionLines();
+  }, [data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale]);
 
   return (
     <>
@@ -176,11 +176,9 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
         >
           {yAxisLabel}
         </text>
-        
+
         {/* Bubble Chart Linear Regression */}
-        {useRegression && regressionPaths.map(line => (
-          <path key={line.id} d={line.d} stroke={line.color} fill="none" strokeWidth={3}/>
-        ))}
+        {useRegression && regressionPaths.map((line) => <path key={line.id} d={line.d} stroke={line.color} fill="none" strokeWidth={3} />)}
 
         {/* Bubble Chart Bubbles */}
         {actualData.map((x, y) => (
