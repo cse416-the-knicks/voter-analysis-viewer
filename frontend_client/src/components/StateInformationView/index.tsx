@@ -480,7 +480,7 @@ function StateInformationView() {
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-  const shouldOpenPopup = ["mail-in-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates"].some((x) =>
+  const shouldOpenPopup = ["mail-in-chart", "rejected-ballots-chart", "voter-table", "compare-voter-registration-rates", "ei-gingles-chart", "ei-rejected-ballots", "ei-voting-equipment"].some((x) =>
     location.pathname.includes(x)
   );
 
