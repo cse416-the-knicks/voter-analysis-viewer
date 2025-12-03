@@ -87,7 +87,6 @@ import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
 
-import { equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
@@ -897,6 +896,8 @@ function StateInformationView() {
                     const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
                     const [aggregatedData, data] = await Promise.all(promises);
                     const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...aggregatedData[i], ...electionResultsData[i] }));
+                    
+                    // console.log(mergedData)
 
                     const republicanBubbleColor = "#d73027";
                     const democraticBubbleColor = "#4575b4";
@@ -905,7 +906,8 @@ function StateInformationView() {
                       x: data.equipmentQuality!,
                       y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0,
                       name: data.countyName!,
-                      size: 10,
+                      size: 10, // placeholder for now
+                      party: data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem",
                       color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
                     }));
                   }}
