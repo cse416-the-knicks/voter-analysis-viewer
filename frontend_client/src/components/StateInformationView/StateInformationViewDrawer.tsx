@@ -6,6 +6,7 @@ import {
   DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_REPUBLICAN,
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
+  DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
 } from "../FullBoundedUSMap/detailedStatesInfo";
 
 import {
@@ -78,6 +79,11 @@ const DemocratStateCard = () =>
     "Democrat Dominated State",
     "This is a selected detail state that is Democrat dominated, you can compare this against our Republican state."
   );
+  const PreclearanceStateCard = () =>
+  BasicStateTypeInfoCard(
+    "Preclearance State",
+    "This is a selected detail state that is subject to 'preclearance requirements' under the Voting Rights Act, due to historical voting discrimination."
+  );
 
 interface StateInfoCardProperties {
   type: DetailStateType;
@@ -86,30 +92,17 @@ interface StateInfoCardProperties {
 function StateInfoCard({ type }: StateInfoCardProperties) {
   switch (type) {
     case DETAIL_STATE_TYPE_OPTIN:
-      {
         return OptInStateCard();
-      }
-      break;
     case DETAIL_STATE_TYPE_OPTOUT:
-      {
         return OptOutStateCard();
-      }
-      break;
     case DETAIL_STATE_TYPE_DEMOCRAT:
-      {
         return DemocratStateCard();
-      }
-      break;
     case DETAIL_STATE_TYPE_REPUBLICAN:
-      {
         return RepublicanStateCard();
-      }
-      break;
     case DETAIL_STATE_TYPE_VOTER_REGISTRATION:
-      {
         return VoterRegistrationStateCard();
-      }
-      break;
+    case DETAIL_STATE_TYPE_PRECLEARANCE_STATE:
+        return PreclearanceStateCard();
   }
   return EAVsStateCard();
 }

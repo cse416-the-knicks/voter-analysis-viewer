@@ -109,6 +109,10 @@ const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
 const ID_SELECTION_VIEW_CVAP_INFO = 11;
 const ID_SELECTION_VIEW_CVAP_PERCENTAGE = 12;
 
+const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART = 13;
+const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT = 14;
+const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS = 15;
+
 const defaultDropDownSections = [
   {
     title: "Ballot Data",
@@ -189,6 +193,17 @@ const voterRegistrationStateDropDownSections = [
       { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
     ],
   },
+];
+
+const ecologicalInferenceDropDownSections = [
+  {
+    title: "Ecological Inference",
+    items: [
+      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, textContent: "CVAP Gingles Chart" },
+      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, textContent: "Voting Equipment Accessibility" },
+      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, textContent: "CVAP Rejections" },
+    ]
+  }
 ];
 
 function pickDropdownType(stateType: DetailStateType[]) {
