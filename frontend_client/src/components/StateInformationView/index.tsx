@@ -420,12 +420,12 @@ function StateInformationView() {
   const activeDataStateHook = useState(determineInitialStateBasedOnUrl(location.pathname));
 
   /* NOTE(jerry): size tuning parameters */
-  const boxMarginTop = "2vh";
-  const selectionDrawerWidth = "15em";
-  const maxWidthForMap = "44vw";
-  const heightUsage = "88vh";
+  const boxMarginTop = "1.2vh";
+  const selectionDrawerWidth = "16.2em";
+  const maxWidthForMap = "40vw";
+  const heightUsage = "95vh";
   const maxHeightForMap = heightUsage;
-  const remainingWidthAfterSelectionDrawer = useCssCalc(`calc(100vw - (${selectionDrawerWidth} + 1.5em + ${maxWidthForMap} + 1vw))`);
+  const remainingWidthAfterSelectionDrawer = useCssCalc(`calc(100vw - (${selectionDrawerWidth} + 1.2em + ${maxWidthForMap} + 1vw))`);
   const maxWidthForTable = remainingWidthAfterSelectionDrawer;
   const maxHeightForTable = useCssCalc(`calc(${heightUsage} / 2)`);
   const maxWidthForChart = maxWidthForTable;
@@ -808,10 +808,10 @@ function StateInformationView() {
                 paddingLeft: "0.45em",
                 paddingRight: "1.0em",
                 paddingBottom: "0.35em",
-                paddingTop: "0.15em",
-                background: "rgba(0.5, 0.5, 0.5, 0.7)",
-                borderRadius: "0 16px 0 0",
-                color: "white",
+                paddingTop: "0.2em",
+                background: "white",
+                borderRadius: "0 3px 0 0",
+                color: "black",
                 fontWeight: "boldest",
                 zIndex: 1000,
               }}
