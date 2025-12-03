@@ -108,7 +108,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
             const xVals = lineGroupData.map(d => d.x);
             const yVals = lineGroupData.map(d => d.y);
 
-            const lineCoeffs = await getRegressionCoefficients({pointsCount: actualData.length, xs:xVals, ys:yVals});
+            const lineCoeffs = await getRegressionCoefficients({pointsCount: lineGroupData.length, xs:xVals, ys:yVals});
             const regressionFunction = makePolynomial(lineCoeffs);
 
             const xValMin = d3.min(xVals) ?? 0;
