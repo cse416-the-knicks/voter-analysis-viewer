@@ -3,7 +3,7 @@ import SimpleTooltip from "../SimpleTooltip";
 import { getRegressionCoefficients } from "../../api/client";
 import makePolynomial from "../../helpers/makePolynomial";
 
-type PartyAffiliation = "Rep" | "Dem";
+type PartyAffiliation = "Rep" | "Dem" | "NONE";
 
 interface BubbleChartDataPoint {
   name: string;
@@ -28,7 +28,13 @@ interface BubbleChartProperties {
   maxYScale?: number;
 }
 
-import { useState, useEffect, useRef } from "react";
+interface RegressionLine {
+  party: PartyAffiliation;
+  d: string;
+  color: string;
+}
+
+import { useState, useEffect, useRef, act } from "react";
 
 function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale }: BubbleChartProperties) {
   const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
@@ -53,6 +59,8 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     },
     [data]
   );
+
+  console.log("actualData = ", actualData);
 
   const xAxisScale = d3
     .scaleLinear()
@@ -91,50 +99,68 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     };
   }, [actualData]);
 
-  // let regressionLines: Array<{ id: string; d: string; color: string }> = [];
-
-  const [regressionPaths, setRegressionPaths] = useState<any[]>([]);
+  const [regressionLines, setRegressionLines] = useState<RegressionLine[]>([]);
 
   useEffect(() => {
-    const calculateRegressionLines = async () => {
-      if (!useRegression) return;
+    if(!useRegression || actualData.length === 0)
+      return;
 
-      const lineGroups = [...new Set(actualData.map((d) => d.party))];
+    async function calcRegression() {
+      try {
+        const parties = [...new Set(actualData.map(d => d.party))];
+        const partyLines = [];
 
-      const regressionLineGroups = await Promise.all(
-        lineGroups.map(async (lineGroup) => {
-          const lineGroupData = actualData.filter((d) => d.party === lineGroup);
-          const xVals = lineGroupData.map((d) => d.x);
-          const yVals = lineGroupData.map((d) => d.y);
+        for(const party of parties) {
+          const points = actualData.filter(d => d.party === party && d.y !== 0);
 
-          const lineCoeffs = await getRegressionCoefficients({ pointsCount: lineGroupData.length, xs: xVals, ys: yVals });
-          const regressionFunction = makePolynomial(lineCoeffs);
+          // if(points.length < 2)
+          //   continue;
 
-          const xValMin = d3.min(xVals) ?? 0;
-          const xValMax = d3.max(xVals) ?? xValMin + 1;
+          const xVals = points.map(d => d.x);
+          const yVals = points.map(d => d.y);
 
-          const regressionPoints = d3.range(0, 101).map((i) => {
-            const x = xValMin + (i / 100) * (xValMax - xValMin);
-            return { x, y: regressionFunction(x) };
-          });
+          console.log("count", points.length);
+          console.log("VALUES", xVals,yVals);
 
-          const makeRegressionLines = d3
-            .line<{ x: number; y: number }>()
-            .x((p) => xAxisScale(p.x))
-            .y((p) => yAxisScale(p.y))
+          const regressionCoefficients = await getRegressionCoefficients({ 
+            pointsCount: points.length, 
+            xs: xVals, 
+            ys: yVals });
+          console.log("coeffs = ", regressionCoefficients);
+          const regressionFunction = makePolynomial(regressionCoefficients);
+          console.log("function = ", regressionFunction);
+
+          const minX = Math.min(...xVals);
+          const maxX = Math.max(...xVals);
+
+          const regressionPoints: [number, number][] = [];
+          for(let i = 0; i <= 100; i++) {
+            const valX = minX + (i/100) * (maxX - minX);
+            const valY = regressionFunction(valX);
+            console.log("x = ", valX, "y = ", valY);
+            regressionPoints.push([valX, valY]);
+          }
+
+          const regressionLine = d3.line<[number, number]>()
+            .x(p => xAxisScale(p[0]))
+            .y(p => yAxisScale(p[1]))
             .curve(d3.curveBasis);
 
-          return {
-            id: `reg-${lineGroup}`,
-            d: makeRegressionLines(regressionPoints) ?? "",
-            color: lineGroup === "Dem" ? "blue" : "red",
-          };
-        })
-      );
-      setRegressionPaths(regressionLineGroups);
-    };
-    calculateRegressionLines();
-  }, [data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale]);
+          partyLines.push({
+            party, 
+            d: regressionLine(regressionPoints),
+            color: party === "Dem" ? "blue" : "red"
+          });
+        }
+
+        setRegressionLines(partyLines.filter(line => line.d !== null) as RegressionLine[]);
+      } catch (err) {
+        console.error("Error calculating regression: ", err);
+      }
+    }
+
+    calcRegression();
+  }, [actualData, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale]);
 
   return (
     <>
@@ -178,7 +204,16 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
         </text>
 
         {/* Bubble Chart Linear Regression */}
-        {useRegression && regressionPaths.map((line) => <path key={line.id} d={line.d} stroke={line.color} fill="none" strokeWidth={3} />)}
+        {useRegression && regressionLines.map(lines => (
+          <path
+            key={lines.party}
+            d={lines.d}
+            stroke={lines.color}
+            fill="none"
+            strokeWidth={3}
+            opacity={0.85}
+          />
+        ))}
 
         {/* Bubble Chart Bubbles */}
         {actualData.map((x, y) => (

@@ -138,8 +138,8 @@ public class StateService {
     }
 
     var bestFitCoefficients = fitter.fit(points);
-    var coefficientList = DoubleStream.of(bestFitCoefficients).boxed().toList();
-
+    var coefficientList = new ArrayList(DoubleStream.of(bestFitCoefficients).boxed().toList());
+    _logger.info("Best Fit Coefficients: " + bestFitCoefficients.toString());
     /*
       NOTE(jerry): coefficients are returned in
       lowest exponent to highest by default by fitter.fit,
@@ -148,7 +148,13 @@ public class StateService {
       I'll reverse the coefficients. Should be paired with an appropriate
       helper function anyway.
     */
+   for (var coefficient: coefficientList) {
+    _logger.info("COEF: " + coefficient);
+   }
     Collections.reverse(coefficientList);
+    for (var coefficient: coefficientList) {
+    _logger.info("REVERSED COEF: " + coefficient);
+   }
     return coefficientList;
   }
 

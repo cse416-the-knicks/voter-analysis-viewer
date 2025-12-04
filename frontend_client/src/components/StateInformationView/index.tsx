@@ -874,7 +874,7 @@ function StateInformationView() {
                       y: (data.totalBallotsByMail! / data.totalBallotsCast!) * 100.0,
                       name: data.regionName!,
                       size: data.regionName!.length,
-                      party: "",
+                      party: "NONE", 
                       color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
                     }));
                   }}
@@ -893,19 +893,16 @@ function StateInformationView() {
                 <BubbleChart
                   data={async () => {
                     const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
-                    const equipmentQuality = await getAllVotingEquipment();
-                    const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
-                    const [aggregatedData, data] = await Promise.all(promises);
-                    const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...aggregatedData[i], ...electionResultsData[i] }));
-
-                    // console.log(mergedData)
+                    const equipmentQuality = await getDetailedVotingEquipmentUsage(fipsCode!);
+                    const rejectionData = await getMailBallotRejections(fipsCode!);
+                    const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...rejectionData[i], ...electionResultsData[i] }));
 
                     const republicanBubbleColor = "#d73027";
                     const democraticBubbleColor = "#4575b4";
 
                     return mergedData.map((data) => ({
-                      x: data.equipmentQuality!,
-                      y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0,
+                      x: data.averageQualityScore!,
+                      y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0 || 0,
                       name: data.countyName!,
                       size: 10, // placeholder for now
                       party: data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem",
