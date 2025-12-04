@@ -24,6 +24,7 @@ interface DisplayPathOverlay {
 const theme = responsiveFontSizes(
   createTheme({
     colorSchemes: {},
+    typography: {},
   })
 );
 
@@ -32,6 +33,7 @@ const darkTheme = responsiveFontSizes(
     colorSchemes: {
       dark: true,
     },
+    typography: {},
   })
 );
 
