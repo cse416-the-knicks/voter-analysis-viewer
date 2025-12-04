@@ -138,18 +138,7 @@ public class StateService {
     }
 
     var bestFitCoefficients = fitter.fit(points);
-    var coefficientList = DoubleStream.of(bestFitCoefficients).boxed().toList();
-
-    /*
-      NOTE(jerry): coefficients are returned in
-      lowest exponent to highest by default by fitter.fit,
-      however I think this is not intuitive (arguably I shouldn't assume),
-
-      I'll reverse the coefficients. Should be paired with an appropriate
-      helper function anyway.
-    */
-    Collections.reverse(coefficientList);
-    return coefficientList;
+    return DoubleStream.of(bestFitCoefficients).boxed().toList();
   }
 
   public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(String fipsCode) {
