@@ -39,7 +39,7 @@ public record VotingEquipmentModel(
     // Mostly VVSG
     @SqlColumnName(name = "certification") Optional<String> certificationLevel,
     Optional<Integer> age,
-    @SqlColumnName(name = "quality_score") Optional<Integer> equipmentQuality
+    @SqlColumnName(name = "quality_score") Optional<Double> equipmentQuality
 
     // DNE
     // @SqlColumnName(name = "security_description") Optional<String> securityRiskDescription
@@ -54,7 +54,7 @@ public record VotingEquipmentModel(
       Optional<Date> firstManufactured,
       Optional<String> operatingSystem,
       Optional<String> certificationLevel,
-      Optional<Integer> equipmentQuality) {
+      Optional<Double> equipmentQuality) {
     this(
         id,
         manufacturer,
