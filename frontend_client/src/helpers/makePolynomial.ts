@@ -21,17 +21,12 @@ function makePolynomial(coefficients: number[]): PolynomialFunction {
   function f(x: number) {
     const maxDegree = coefficients.length - 1;
     let result = 0;
-    for (let degree = 0; degree <= maxDegree; ++degree) {
-      result += coefficients[degree] * Math.pow(x, maxDegree-degree);
+    for (let degree = maxDegree; degree >= 0; --degree) {
+      result += coefficients[degree] * Math.pow(x, degree);
     }
     return result;
   }
   return f;
-}
-
-const fTest = makePolynomial([3,2,1]);
-for (let i = 0; i < 10; i++) {
-  console.log(fTest(i), " --- TEST");
 }
 
 export default makePolynomial;
