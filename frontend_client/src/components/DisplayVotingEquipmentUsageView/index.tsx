@@ -43,23 +43,15 @@ interface DisplayVotingEquipmentHistoryChartProperties {
   onXout: () => void;
 }
 
-function DisplayVotingEquipmentHistoryChart(
-  {
-    stateName,
-    stateFips,
-    onXout,
-  }: DisplayVotingEquipmentHistoryChartProperties) {
+function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: DisplayVotingEquipmentHistoryChartProperties) {
   const navigate = useNavigate();
   const maxWidth = 800; // pixels
 
-  return <>
-    <WindowTitled 
-      title={`${stateName} Voting Equipment History`}
-      width={maxWidth}
-      maxWidth={maxWidth}
-      onXout={onXout}>
-    </WindowTitled>
-  </>;
+  return (
+    <>
+      <WindowTitled title={`${stateName} Voting Equipment History`} width={maxWidth} maxWidth={maxWidth} onXout={onXout}></WindowTitled>
+    </>
+  );
 }
 
 function DisplayVotingMachineSummaryView() {
@@ -95,10 +87,10 @@ function DisplayVotingMachineSummaryView() {
           setTargetState(targetRow);
         }}
       />
-      <Backdrop open={targetState!=null} sx={{ zIndex: 1200 }}>
-        {
-          (targetState != null) && <DisplayVotingEquipmentHistoryChart onXout={() => setTargetState(null)} stateName={targetState.stateName!} stateFips={targetState.stateId!} />
-        }
+      <Backdrop open={targetState != null} sx={{ zIndex: 1200 }}>
+        {targetState != null && (
+          <DisplayVotingEquipmentHistoryChart onXout={() => setTargetState(null)} stateName={targetState.stateName!} stateFips={targetState.stateId!} />
+        )}
       </Backdrop>
     </>
   );
