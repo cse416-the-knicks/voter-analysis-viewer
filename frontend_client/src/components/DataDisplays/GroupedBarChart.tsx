@@ -88,7 +88,7 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
     .range([chartMargin.left, chartWidth - chartMargin.right])
     .paddingInner(0.2);
 
-  const x1 = d3.scaleBand().domain(categories).range([0, x0.bandwidth()]).padding(0.1);
+  const x1 = d3.scaleBand().domain(categories).range([0, x0.bandwidth()]).padding(0.05);
 
   const maxValue = d3.max(actualData, (d) => d.value) || 0;
 
@@ -109,7 +109,7 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
 
         {/* X axis */}
         {groups.map((g) => (
-          <text key={g} x={x0(g)! + x0.bandwidth() / 2} y={chartHeight} textAnchor="middle" fontSize={12} fontWeight="bold">
+          <text key={g} x={x0(g)! + x0.bandwidth() / 2} y={chartHeight-35} textAnchor="middle" fontSize={16} fontWeight="bold">
             {g}
           </text>
         ))}
@@ -126,9 +126,9 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
 
         {/* Bars */}
         {isLoaded &&
-          groups.map((g) => (
+          groups.map((g, gi) => (
             <g key={g} transform={`translate(${x0(g)}, 0)`}>
-              {categories.map((c) => {
+              {categories.map((c, ci) => {
                 const entry = actualData.find((d) => d.title === g && d.category === c);
                 if (!entry) return null;
                 const barX = x1(c)!;
@@ -143,7 +143,6 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
                     width={x1.bandwidth()}
                     height={barH}
                     fill={colorMap[c] || "#999"}
-                    stroke="black"
                     onMouseOver={() => {
                       setTooltipText(`${entry.title} - ${entry.category}: ${entry.value}`);
                       setShowTooltip(true);
@@ -156,7 +155,7 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
           ))}
 
         {/* X label */}
-        <text x={width / 2} y={height - 10} textAnchor="middle" fontSize={15} fontWeight="bold">
+        <text x={width / 2} y={height - 30} textAnchor="middle" fontSize={16} fontWeight="bold">
           {xAxisLabel}
         </text>
 
