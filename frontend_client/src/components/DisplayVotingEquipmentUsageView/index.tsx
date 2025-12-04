@@ -5,10 +5,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useKeyDown from "../../hooks/useKeyDown";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
-import { getVotingEquipmentUsage } from "../../api/client";
+import { getDetailedVotingEquipmentUsage, getVotingEquipmentUsage } from "../../api/client";
 import WindowTitled from "../WindowTitled";
 import { Backdrop } from "@mui/material";
 import GroupedBarChart from "../DataDisplays/GroupedBarChart";
+import zip from "../../helpers/zip";
+import VOTING_EQUIPMENT_TYPE_COLORS from "../../helpers/votingEquipmentColorBuckets";
+import useCssCalc from "../../hooks/useCssCalc";
 
 const columns: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
   {
@@ -45,8 +48,8 @@ interface DisplayVotingEquipmentHistoryChartProperties {
 }
 
 function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: DisplayVotingEquipmentHistoryChartProperties) {
-  const navigate = useNavigate();
-  const maxWidth = 800; // pixels
+  const maxWidth = useCssCalc("75vw"); // pixels
+  const maxHeight = useCssCalc("80vh");
 
   return (
     <>
@@ -55,31 +58,56 @@ function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: Di
           title={"Equipment History"}
           xAxisLabel={"Category"}
           yAxisLabel={"Quantity"}
-          colorMap={{
-            Hardware: "#1f77b4",
-            Software: "#ff7f0e",
-            Accessories: "#2ca02c",
-          }}
+          colorMap={zip(VOTING_EQUIPMENT_TYPE_COLORS.map(x => x.text), VOTING_EQUIPMENT_TYPE_COLORS.map(x => x.color))}
           data={async () => {
-            return [
-              // Group: "2021"
-              { value: 120, title: "2021", category: "Hardware" },
-              { value: 80, title: "2021", category: "Software" },
-              { value: 50, title: "2021", category: "Accessories" },
+            const electionYears = [2016, 2018, 2020, 2022, 2024];
+            var promises = electionYears.map((year) => 
+              getDetailedVotingEquipmentUsage(stateFips.toString(), { year: year, aggregate: true }))
+            var votingEquipmentUsages = (await Promise.all(promises)).map((x) => x[0]);
+            var scannerUsages = votingEquipmentUsages.map(
+              (e, i) => 
+                {return { 
+                  value: e.scannerTotal!,
+                  title: electionYears[i].toString(),
+                  category: "Scanner"  
+                }}
+            );
+            var bmdUsages = votingEquipmentUsages.map(
+              (e, i) => 
+                {return { 
+                  value: e.bmdTotal!,
+                  title: electionYears[i].toString(),
+                  category: "BMD"  
+                }}
+            );
+            var dreVvpatUsages = votingEquipmentUsages.map(
+              (e, i) => 
+                {return { 
+                  value: e.dreVvpatTotal!,
+                  title: electionYears[i].toString(),
+                  category: "DRE (VVPAT)"  
+                }}
+            );
+            var dreNoVvpatUsages = votingEquipmentUsages.map(
+              (e, i) => 
+                {return { 
+                  value: e.dreNoVvpatTotal!,
+                  title: electionYears[i].toString(),
+                  category: "DRE (No VVPAT)"  
+                }}
+            );
 
-              // Group: "2022"
-              { value: 150, title: "2022", category: "Hardware" },
-              { value: 95, title: "2022", category: "Software" },
-              { value: 60, title: "2022", category: "Accessories" },
-
-              // Group: "2023"
-              { value: 170, title: "2023", category: "Hardware" },
-              { value: 110, title: "2023", category: "Software" },
-              { value: 75, title: "2023", category: "Accessories" },
+            const dataEntries =  [
+              ...dreVvpatUsages,
+              ...dreNoVvpatUsages,
+              ...bmdUsages,
+              ...scannerUsages
             ];
+
+            return dataEntries;
           }}
           width={maxWidth}
-          height={maxWidth}
+          height={maxHeight}
         />
       </WindowTitled>
     </>
@@ -99,7 +127,11 @@ function DisplayVotingMachineSummaryView() {
     })();
   }, []);
 
-  useKeyDown("Escape", () => navigate(-1));
+  useKeyDown("Escape", () => {if (targetState) {
+    setTargetState(null);
+  } else {
+    navigate(-1)
+  }});
 
   return (
     <>

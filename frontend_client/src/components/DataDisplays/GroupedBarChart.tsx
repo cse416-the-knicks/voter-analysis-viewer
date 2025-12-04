@@ -41,7 +41,7 @@ function SimpleD3Legend({ colorMap, left, top }: SimpleD3LegendProperties) {
         <b>Chart Key</b>
         {keys.map((x) => (
           <>
-            <span style={{ paddingLeft: "8px", paddingRight: "8px", paddingBottom: "0", margin: "auto", height: "5px", display: "flex" }}>
+            <span style={{ paddingLeft: "4px", paddingRight: "4px", paddingBottom: "0", margin: "auto", height: "3px", display: "flex" }}>
               <i
                 style={{ background: colorMap[x], width: "18px", height: "18px", display: "inline-block", marginRight: "8px", border: "1.5px solid black" }}
               ></i>
@@ -165,7 +165,7 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
         </text>
       </svg>
 
-      {isLoaded && <SimpleD3Legend left={chartWidth - 150} top={"4em"} colorMap={colorMap} />}
+      {isLoaded && <SimpleD3Legend left={"0.5em"} top={"3.5em"} colorMap={colorMap} />}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
   );

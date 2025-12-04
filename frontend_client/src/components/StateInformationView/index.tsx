@@ -25,6 +25,8 @@ import {
   getAllVotingEquipment,
 } from "../../api/client";
 
+import VOTING_EQUIPMENT_TYPE_COLORS from "../../helpers/votingEquipmentColorBuckets";
+
 import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
 
 import { PERCENTAGE_CHOROPLETH_BUCKETS, VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS } from "../../helpers/choroplethBuckets";
@@ -231,25 +233,6 @@ function pickDropdownType(stateType: DetailStateType[]) {
   }
   return result;
 }
-
-const votingEquipmentTypeColors = [
-  {
-    text: "DRE (No VVPAT)",
-    color: "green",
-  },
-  {
-    text: "DRE (VVPAT)",
-    color: "blue",
-  },
-  {
-    text: "BMD",
-    color: "yellow",
-  },
-  {
-    text: "Scanner",
-    color: "red",
-  },
-];
 
 type EAVsGeneralFact =
   | ProvisionalBallotStatisticsModel
@@ -764,7 +747,7 @@ function StateInformationView() {
           {dataRows.map((x) =>
             CountyGradientSet(
               x,
-              votingEquipmentTypeColors.map((c) => c.color)
+              VOTING_EQUIPMENT_TYPE_COLORS.map((c) => c.color)
             )
           )}
         </defs>
@@ -837,7 +820,7 @@ function StateInformationView() {
             {isDetailState(fipsCode!) &&
               !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
               activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
-                <ColorKeyLegend colors={votingEquipmentTypeColors.map((x) => x.color)} labels={votingEquipmentTypeColors.map((x) => x.text)} />
+                <ColorKeyLegend colors={VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.color)} labels={VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.text)} />
               )}
             <Typography
               variant="h4"
