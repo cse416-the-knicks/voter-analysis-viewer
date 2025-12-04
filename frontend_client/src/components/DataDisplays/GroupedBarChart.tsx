@@ -9,9 +9,7 @@ interface GroupedBarChartEntry {
   category: string;
 }
 
-type GroupedBarChartDataMaker =
-  | readonly GroupedBarChartEntry[]
-  | (() => Promise<GroupedBarChartEntry[]>);
+type GroupedBarChartDataMaker = readonly GroupedBarChartEntry[] | (() => Promise<GroupedBarChartEntry[]>);
 
 interface GroupedBarChartProperties {
   title: string;
@@ -24,17 +22,12 @@ interface GroupedBarChartProperties {
 }
 
 interface SimpleD3LegendProperties {
-    colorMap: Record<string, string>,
-    left: number | string,
-    top: number | string,
+  colorMap: Record<string, string>;
+  left: number | string;
+  top: number | string;
 }
 
-function SimpleD3Legend(
-    { 
-        colorMap,
-        left,
-        top
-    }: SimpleD3LegendProperties ) {
+function SimpleD3Legend({ colorMap, left, top }: SimpleD3LegendProperties) {
   const keys = Object.keys(colorMap);
   return (
     <Box
@@ -49,7 +42,9 @@ function SimpleD3Legend(
         {keys.map((x) => (
           <>
             <span style={{ paddingLeft: "8px", paddingRight: "8px", paddingBottom: "0", margin: "auto", height: "5px", display: "flex" }}>
-              <i style={{ background: colorMap[x], width: "18px", height: "18px", display: "inline-block", marginRight: "8px", border: "1.5px solid black" }}></i>
+              <i
+                style={{ background: colorMap[x], width: "18px", height: "18px", display: "inline-block", marginRight: "8px", border: "1.5px solid black" }}
+              ></i>
               <Typography>{x}</Typography>
             </span>
             <br />
@@ -60,15 +55,7 @@ function SimpleD3Legend(
   );
 }
 
-function GroupedBarChart({
-  title,
-  xAxisLabel,
-  yAxisLabel,
-  colorMap,
-  data,
-  width,
-  height,
-}: GroupedBarChartProperties) {
+function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width, height }: GroupedBarChartProperties) {
   const chartMargin = { top: 60, right: 40, bottom: 60, left: 70 };
   const chartWidth = width - chartMargin.left - chartMargin.right + 125;
   const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
@@ -101,11 +88,7 @@ function GroupedBarChart({
     .range([chartMargin.left, chartWidth - chartMargin.right])
     .paddingInner(0.2);
 
-  const x1 = d3
-    .scaleBand()
-    .domain(categories)
-    .range([0, x0.bandwidth()])
-    .padding(0.1);
+  const x1 = d3.scaleBand().domain(categories).range([0, x0.bandwidth()]).padding(0.1);
 
   const maxValue = d3.max(actualData, (d) => d.value) || 0;
 
@@ -119,18 +102,14 @@ function GroupedBarChart({
   return (
     <>
       <svg width={width} height={height} style={{ background: "#ffffff", borderRadius: "8px" }}>
-        <text x={width / 2} y={30} textAnchor="middle" fontSize={20}> {title} </text>
+        <text x={width / 2} y={30} textAnchor="middle" fontSize={20}>
+          {" "}
+          {title}{" "}
+        </text>
 
         {/* X axis */}
         {groups.map((g) => (
-          <text
-            key={g}
-            x={x0(g)! + x0.bandwidth() / 2}
-            y={chartHeight}
-            textAnchor="middle"
-            fontSize={12}
-            fontWeight="bold"
-          >
+          <text key={g} x={x0(g)! + x0.bandwidth() / 2} y={chartHeight} textAnchor="middle" fontSize={12} fontWeight="bold">
             {g}
           </text>
         ))}
@@ -138,13 +117,7 @@ function GroupedBarChart({
         {/* Y axis ticks and grid lines */}
         {yTicks.map((t, i) => (
           <g key={i}>
-            <line
-              x1={chartMargin.left}
-              x2={chartWidth - chartMargin.right}
-              y1={y(t)}
-              y2={y(t)}
-              stroke="#ccc"
-            />
+            <line x1={chartMargin.left} x2={chartWidth - chartMargin.right} y1={y(t)} y2={y(t)} stroke="#ccc" />
             <text x={chartMargin.left - 10} y={y(t) + 4} textAnchor="end" fontSize={12}>
               {t}
             </text>
@@ -160,7 +133,7 @@ function GroupedBarChart({
                 if (!entry) return null;
                 const barX = x1(c)!;
                 const barY = y(entry.value);
-                const barH = (chartHeight - chartMargin.bottom) - barY;
+                const barH = chartHeight - chartMargin.bottom - barY;
 
                 return (
                   <rect
@@ -188,19 +161,12 @@ function GroupedBarChart({
         </text>
 
         {/* Y label */}
-        <text
-          x={-height / 2}
-          y={20}
-          transform="rotate(-90)"
-          textAnchor="middle"
-          fontSize={15}
-          fontWeight="bold"
-        >
+        <text x={-height / 2} y={20} transform="rotate(-90)" textAnchor="middle" fontSize={15} fontWeight="bold">
           {yAxisLabel}
         </text>
       </svg>
 
-      {isLoaded && <SimpleD3Legend left={chartWidth-150} top={"4em"} colorMap={colorMap} />}
+      {isLoaded && <SimpleD3Legend left={chartWidth - 150} top={"4em"} colorMap={colorMap} />}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
   );
