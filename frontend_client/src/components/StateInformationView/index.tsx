@@ -874,7 +874,7 @@ function StateInformationView() {
                       y: (data.totalBallotsByMail! / data.totalBallotsCast!) * 100.0,
                       name: data.regionName!,
                       size: data.regionName!.length,
-                      party: "NONE", 
+                      party: "NONE",
                       color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
                     }));
                   }}

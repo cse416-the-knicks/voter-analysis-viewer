@@ -115,8 +115,7 @@ public record VotingEquipmentUsageStatisticsModel(
         bmdCount,
         scannerCount,
         totalYears / totalDeviceCount,
-        totalQualityScore / totalDeviceCount
-        );
+        totalQualityScore / totalDeviceCount);
   }
 
   public static List<VotingEquipmentUsageStatisticsModel> fromDataRows(

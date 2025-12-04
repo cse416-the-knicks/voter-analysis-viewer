@@ -100,49 +100,53 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
   const [regressionLines, setRegressionLines] = useState<RegressionLine[]>([]);
 
   useEffect(() => {
-    if(!useRegression || actualData.length === 0)
-      return;
+    if (!useRegression || actualData.length === 0) return;
 
     async function calcRegression() {
       try {
-        const parties = [...new Set(actualData.map(d => d.party))];
+        const parties = [...new Set(actualData.map((d) => d.party))];
         const partyLines = [];
 
-        for(const party of parties) {
-          const actualPoints = actualData.filter(d => d.party === party && d.y !== 0);
+        for (const party of parties) {
+          const actualPoints = actualData.filter((d) => d.party === party && d.y !== 0);
 
-          const xVals = actualPoints.map(d => d.x);
-          const yVals = actualPoints.map(d => d.y);
+          const xVals = actualPoints.map((d) => d.x);
+          const yVals = actualPoints.map((d) => d.y);
 
-          const regressionCoefficients = await getRegressionCoefficients({ 
-            pointsCount: actualPoints.length, 
-            xs: xVals, 
-            ys: yVals }, { degree: 8}); // best fitting degree
+          const regressionCoefficients = await getRegressionCoefficients(
+            {
+              pointsCount: actualPoints.length,
+              xs: xVals,
+              ys: yVals,
+            },
+            { degree: 8 }
+          ); // best fitting degree
           const regressionFunction = makePolynomial(regressionCoefficients);
 
           const minXVal = Math.min(...xVals);
           const maxXVal = Math.max(...xVals);
 
           const regressionPoints: [number, number][] = [];
-          for(let i = 0; i <= 100; i++) {
-            const setValX = minXVal + (i/100) * (maxXVal - minXVal);
+          for (let i = 0; i <= 100; i++) {
+            const setValX = minXVal + (i / 100) * (maxXVal - minXVal);
             const setValY = regressionFunction(setValX);
             regressionPoints.push([setValX, setValY]);
           }
 
-          const regressionLine = d3.line<[number, number]>()
-            .x(d => xAxisScale(d[0]))
-            .y(d => yAxisScale(d[1]))
+          const regressionLine = d3
+            .line<[number, number]>()
+            .x((d) => xAxisScale(d[0]))
+            .y((d) => yAxisScale(d[1]))
             .curve(d3.curveBasis);
 
           partyLines.push({
-            party, 
+            party,
             data: regressionLine(regressionPoints),
-            color: party === "Dem" ? "blue" : "red"
+            color: party === "Dem" ? "blue" : "red",
           });
         }
 
-        setRegressionLines(partyLines.filter(line => line.data !== null) as RegressionLine[]);
+        setRegressionLines(partyLines.filter((line) => line.data !== null) as RegressionLine[]);
       } catch (err) {
         console.error("Error calculating regression: ", err);
       }
@@ -193,29 +197,12 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
         </text>
 
         {/* Bubble Chart Linear Regression */}
-        {useRegression && regressionLines.map(lines => (
-          <path
-            key={lines.party}
-            d={lines.data}
-            stroke={lines.color}
-            fill="none"
-            strokeWidth={2.5}
-            opacity={0.85}
-          />
-        ))}
+        {useRegression &&
+          regressionLines.map((lines) => <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} />)}
 
         {/* Bubble Chart Bubbles */}
         {actualData.map((x, y) => (
-          <circle
-            key={y}
-            data-title={x.name}
-            cx={xAxisScale(x.x)}
-            cy={yAxisScale(x.y)}
-            r={chartScale(x.size)}
-            fill={x.color}
-            opacity={0.5}
-            stroke="#000"
-          />
+          <circle key={y} data-title={x.name} cx={xAxisScale(x.x)} cy={yAxisScale(x.y)} r={chartScale(x.size)} fill={x.color} opacity={0.5} stroke="#000" />
         ))}
       </svg>
       {/* Tooltip when moused over. */}
