@@ -68,7 +68,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     .range([chartMargin.left, chartWidth - chartMargin.right]);
   const yAxisScale = d3
     .scaleLinear()
-    .domain([0, maxYScale || d3.max(actualData, (x) => x.y)! + 5])
+    .domain([0, maxYScale || d3.max(actualData, (x) => x.y)!])
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
   const chartScale = d3
     .scaleSqrt()
@@ -125,7 +125,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           const regressionCoefficients = await getRegressionCoefficients({ 
             pointsCount: points.length, 
             xs: xVals, 
-            ys: yVals });
+            ys: yVals }, { degree: 8});
           console.log("coeffs = ", regressionCoefficients);
           const regressionFunction = makePolynomial(regressionCoefficients);
           console.log("function = ", regressionFunction);
