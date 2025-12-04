@@ -8,6 +8,7 @@ import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { getVotingEquipmentUsage } from "../../api/client";
 import WindowTitled from "../WindowTitled";
 import { Backdrop } from "@mui/material";
+import GroupedBarChart from "../DataDisplays/GroupedBarChart";
 
 const columns: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
   {
@@ -49,7 +50,38 @@ function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: Di
 
   return (
     <>
-      <WindowTitled title={`${stateName} Voting Equipment History`} width={maxWidth} maxWidth={maxWidth} onXout={onXout}></WindowTitled>
+      <WindowTitled title={`${stateName} Voting Equipment History`} width={maxWidth} maxWidth={maxWidth} onXout={onXout}>
+      <GroupedBarChart
+        title={"Equipment History"}
+        xAxisLabel={"Category"}
+        yAxisLabel={"Quantity"}
+        colorMap={{
+          Hardware: "#1f77b4",
+          Software: "#ff7f0e",
+          Accessories: "#2ca02c",
+        }}
+        data={async () => {
+          return [
+            // Group: "2021"
+            { value: 120, title: "2021", category: "Hardware" },
+            { value: 80,  title: "2021", category: "Software" },
+            { value: 50,  title: "2021", category: "Accessories" },
+
+            // Group: "2022"
+            { value: 150, title: "2022", category: "Hardware" },
+            { value: 95,  title: "2022", category: "Software" },
+            { value: 60,  title: "2022", category: "Accessories" },
+
+            // Group: "2023"
+            { value: 170, title: "2023", category: "Hardware" },
+            { value: 110, title: "2023", category: "Software" },
+            { value: 75,  title: "2023", category: "Accessories" },
+          ];
+        }}
+        width={maxWidth}
+        height={maxWidth}
+      />
+      </WindowTitled>
     </>
   );
 }
