@@ -109,7 +109,7 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
 
         {/* X axis */}
         {groups.map((g) => (
-          <text key={g} x={x0(g)! + x0.bandwidth() / 2} y={chartHeight-35} textAnchor="middle" fontSize={16} fontWeight="bold">
+          <text key={g} x={x0(g)! + x0.bandwidth() / 2} y={chartHeight - 35} textAnchor="middle" fontSize={16} fontWeight="bold">
             {g}
           </text>
         ))}
