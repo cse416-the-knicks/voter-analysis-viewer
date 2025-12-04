@@ -115,8 +115,7 @@ public record VotingEquipmentUsageStatisticsModel(
         bmdCount,
         scannerCount,
         totalYears / totalDeviceCount,
-        //totalQualityScore / totalDeviceCount
-        Math.abs((double) fullRegionId.hashCode() * countyName.hashCode()) / 5000000000.0
+        totalQualityScore / totalDeviceCount
         );
   }
 

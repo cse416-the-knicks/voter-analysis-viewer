@@ -904,7 +904,7 @@ function StateInformationView() {
                       x: data.averageQualityScore!,
                       y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0 || 0,
                       name: data.countyName!,
-                      size: 10, // placeholder for now
+                      size: 10,
                       party: data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem",
                       color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
                     }));

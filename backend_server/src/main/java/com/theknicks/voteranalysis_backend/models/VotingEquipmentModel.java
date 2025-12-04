@@ -6,9 +6,6 @@ import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 import java.util.Date;
 import java.util.Optional;
-import java.util.random.*;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Voting Equipment Model Response
@@ -16,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>For simplicity, this model is going to be almost directly in sync with the spreadsheet
  * columns.
  */
-
 @AutoSql(collection = "app.device_model")
 public record VotingEquipmentModel(
     @JsonIgnore @SqlColumnName(name = "device_model_id") int id,
@@ -83,7 +79,7 @@ public record VotingEquipmentModel(
                   return Optional.of(currentYear - yearManufactured);
                 })
             .orElse(Optional.empty()),
-        Optional.of(0.5));
+        equipmentQuality);
   }
 
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentModel> {

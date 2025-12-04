@@ -30,7 +30,7 @@ interface BubbleChartProperties {
 
 interface RegressionLine {
   party: PartyAffiliation;
-  d: string;
+  data: string;
   color: string;
 }
 
@@ -59,8 +59,6 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     },
     [data]
   );
-
-  console.log("actualData = ", actualData);
 
   const xAxisScale = d3
     .scaleLinear()
@@ -111,49 +109,40 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
         const partyLines = [];
 
         for(const party of parties) {
-          const points = actualData.filter(d => d.party === party && d.y !== 0);
+          const actualPoints = actualData.filter(d => d.party === party && d.y !== 0);
 
-          // if(points.length < 2)
-          //   continue;
-
-          const xVals = points.map(d => d.x);
-          const yVals = points.map(d => d.y);
-
-          console.log("count", points.length);
-          console.log("VALUES", xVals,yVals);
+          const xVals = actualPoints.map(d => d.x);
+          const yVals = actualPoints.map(d => d.y);
 
           const regressionCoefficients = await getRegressionCoefficients({ 
-            pointsCount: points.length, 
+            pointsCount: actualPoints.length, 
             xs: xVals, 
-            ys: yVals }, { degree: 8});
-          console.log("coeffs = ", regressionCoefficients);
+            ys: yVals }, { degree: 8}); // best fitting degree
           const regressionFunction = makePolynomial(regressionCoefficients);
-          console.log("function = ", regressionFunction);
 
-          const minX = Math.min(...xVals);
-          const maxX = Math.max(...xVals);
+          const minXVal = Math.min(...xVals);
+          const maxXVal = Math.max(...xVals);
 
           const regressionPoints: [number, number][] = [];
           for(let i = 0; i <= 100; i++) {
-            const valX = minX + (i/100) * (maxX - minX);
-            const valY = regressionFunction(valX);
-            console.log("x = ", valX, "y = ", valY);
-            regressionPoints.push([valX, valY]);
+            const setValX = minXVal + (i/100) * (maxXVal - minXVal);
+            const setValY = regressionFunction(setValX);
+            regressionPoints.push([setValX, setValY]);
           }
 
           const regressionLine = d3.line<[number, number]>()
-            .x(p => xAxisScale(p[0]))
-            .y(p => yAxisScale(p[1]))
+            .x(d => xAxisScale(d[0]))
+            .y(d => yAxisScale(d[1]))
             .curve(d3.curveBasis);
 
           partyLines.push({
             party, 
-            d: regressionLine(regressionPoints),
+            data: regressionLine(regressionPoints),
             color: party === "Dem" ? "blue" : "red"
           });
         }
 
-        setRegressionLines(partyLines.filter(line => line.d !== null) as RegressionLine[]);
+        setRegressionLines(partyLines.filter(line => line.data !== null) as RegressionLine[]);
       } catch (err) {
         console.error("Error calculating regression: ", err);
       }
@@ -207,10 +196,10 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
         {useRegression && regressionLines.map(lines => (
           <path
             key={lines.party}
-            d={lines.d}
+            d={lines.data}
             stroke={lines.color}
             fill="none"
-            strokeWidth={3}
+            strokeWidth={2.5}
             opacity={0.85}
           />
         ))}
@@ -223,7 +212,6 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
             cx={xAxisScale(x.x)}
             cy={yAxisScale(x.y)}
             r={chartScale(x.size)}
-            // fill={x.party === "Rep" ? "#d73027" : "#4575b4"}
             fill={x.color}
             opacity={0.5}
             stroke="#000"
