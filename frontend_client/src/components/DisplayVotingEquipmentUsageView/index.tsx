@@ -5,7 +5,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useKeyDown from "../../hooks/useKeyDown";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
-import { getVotingEquipmentUsage } from "../../api/client";
+import { getDetailedVotingEquipmentUsage, getVotingEquipmentUsage } from "../../api/client";
+import WindowTitled from "../WindowTitled";
+import { Backdrop } from "@mui/material";
+import GroupedBarChart from "../DataDisplays/GroupedBarChart";
+import zip from "../../helpers/zip";
+import VOTING_EQUIPMENT_TYPE_COLORS from "../../helpers/votingEquipmentColorBuckets";
+import useCssCalc from "../../hooks/useCssCalc";
 
 const columns: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
   {
@@ -35,9 +41,83 @@ const columns: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
   },
 ];
 
+interface DisplayVotingEquipmentHistoryChartProperties {
+  stateName: string;
+  stateFips: number;
+  onXout: () => void;
+}
+
+function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: DisplayVotingEquipmentHistoryChartProperties) {
+  const maxWidth = useCssCalc("75vw"); // pixels
+  const maxHeight = useCssCalc("80vh");
+
+  return (
+    <>
+      <WindowTitled title={`${stateName} Voting Equipment History`} width={maxWidth} maxWidth={maxWidth} onXout={onXout}>
+        <GroupedBarChart
+          title={"Equipment History"}
+          xAxisLabel={"Category"}
+          yAxisLabel={"Quantity"}
+          colorMap={zip(VOTING_EQUIPMENT_TYPE_COLORS.map(x => x.text), VOTING_EQUIPMENT_TYPE_COLORS.map(x => x.color))}
+          data={async () => {
+            const electionYears = [2016, 2018, 2020, 2022, 2024];
+            var promises = electionYears.map((year) => 
+              getDetailedVotingEquipmentUsage(stateFips.toString(), { year: year, aggregate: true }))
+            var votingEquipmentUsages = (await Promise.all(promises)).map((x) => x[0]);
+            var scannerUsages = votingEquipmentUsages.map(
+              (e, i) => 
+                {return { 
+                  value: e.scannerTotal!,
+                  title: electionYears[i].toString(),
+                  category: "Scanner"  
+                }}
+            );
+            var bmdUsages = votingEquipmentUsages.map(
+              (e, i) => 
+                {return { 
+                  value: e.bmdTotal!,
+                  title: electionYears[i].toString(),
+                  category: "BMD"  
+                }}
+            );
+            var dreVvpatUsages = votingEquipmentUsages.map(
+              (e, i) => 
+                {return { 
+                  value: e.dreVvpatTotal!,
+                  title: electionYears[i].toString(),
+                  category: "DRE (VVPAT)"  
+                }}
+            );
+            var dreNoVvpatUsages = votingEquipmentUsages.map(
+              (e, i) => 
+                {return { 
+                  value: e.dreNoVvpatTotal!,
+                  title: electionYears[i].toString(),
+                  category: "DRE (No VVPAT)"  
+                }}
+            );
+
+            const dataEntries =  [
+              ...dreVvpatUsages,
+              ...dreNoVvpatUsages,
+              ...bmdUsages,
+              ...scannerUsages
+            ];
+
+            return dataEntries;
+          }}
+          width={maxWidth}
+          height={maxHeight}
+        />
+      </WindowTitled>
+    </>
+  );
+}
+
 function DisplayVotingMachineSummaryView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<VotingEquipmentUsageStatisticsModel[]>([]);
+  const [targetState, setTargetState] = useState<VotingEquipmentUsageStatisticsModel | null>(null);
   const maxWidth = 800; // pixels
 
   useEffect(function () {
@@ -47,22 +127,36 @@ function DisplayVotingMachineSummaryView() {
     })();
   }, []);
 
-  useKeyDown("Escape", () => navigate("/"));
+  useKeyDown("Escape", () => {if (targetState) {
+    setTargetState(null);
+  } else {
+    navigate(-1)
+  }});
 
   return (
-    <WindowTitledDataGrid
-      title={"State Voting Equipment Usage Summary"}
-      onXout={() => navigate("/")}
-      width={maxWidth}
-      maxWidth={maxWidth}
-      rows={rows}
-      columns={columns}
-      getRowId={(x) => x.stateId}
-      pageSize={12}
-      left={`calc(50vw - ${maxWidth / 2}px)`}
-      top={"0"}
-      onRowDoubleClick={(params, event, details) => {}}
-    />
+    <>
+      <WindowTitledDataGrid
+        title={"State Voting Equipment Usage Summary"}
+        onXout={() => navigate("/")}
+        width={maxWidth}
+        maxWidth={maxWidth}
+        rows={rows}
+        columns={columns}
+        getRowId={(x) => x.stateId}
+        pageSize={12}
+        left={`calc(50vw - ${maxWidth / 2}px)`}
+        top={"0"}
+        onRowDoubleClick={(params, _event, _details) => {
+          const targetRow = params.row;
+          setTargetState(targetRow);
+        }}
+      />
+      <Backdrop open={targetState != null} sx={{ zIndex: 1200 }}>
+        {targetState != null && (
+          <DisplayVotingEquipmentHistoryChart onXout={() => setTargetState(null)} stateName={targetState.stateName!} stateFips={targetState.stateId!} />
+        )}
+      </Backdrop>
+    </>
   );
 }
 
