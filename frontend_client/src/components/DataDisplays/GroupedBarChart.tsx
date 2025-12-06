@@ -144,7 +144,7 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
                     height={barH}
                     fill={colorMap[c] || "#999"}
                     onMouseOver={() => {
-                      setTooltipText(`${entry.title} - ${entry.category}: ${entry.value}`);
+                      setTooltipText(`${entry.title} - ${entry.category}: ${entry.value.toLocaleString(navigator.language)}`);
                       setShowTooltip(true);
                     }}
                     onMouseOut={() => setShowTooltip(false)}

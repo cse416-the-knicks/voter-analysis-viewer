@@ -60,7 +60,8 @@ function BarChart({ title, xTitle, data, width, height, margins }: BarChartPrope
         const element = this as Element;
         d3.select(this).attr("fill", defaultHighlightColor);
         setShowTooltip(true);
-        setTooltipText(element.getAttribute("data-title") + ": " + element.getAttribute("data-value"));
+        setTooltipText(element.getAttribute("data-title") + ": " + 
+        (parseInt(element.getAttribute("data-value") || "0", 10)).toLocaleString(navigator.language));
       })
       .on("mouseout", function (_event, _d) {
         d3.select(this).attr("fill", defaultBlockColor);
