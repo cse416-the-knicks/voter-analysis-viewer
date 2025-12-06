@@ -533,12 +533,14 @@ function StateInformationView() {
           case ID_SELECTION_VOTER_REGISTRATION:
             {
               const promises = [true, false].map((v) => getVoterAffiliations(fipsCode!, { aggregate: v }));
+              const cvapPromises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
+              const [aggregatedCvapData, cvapData] = await Promise.all(cvapPromises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Affiliation Count`);
               setBarGraphXTitle("Voter Party");
               setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
+                data.map((x, i) => {
+                  return { id: x.fullRegionId, ...x, ...cvapPromises[i] };
                 })
               );
               setDataColumns(VOTER_AFFILIATION_COLUMNS);
@@ -727,8 +729,8 @@ function StateInformationView() {
           }
           break;
         case ID_SELECTION_VOTER_REGISTRATION:
-          dataEntry = (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
-          dataEntryTotal = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
+          dataEntry = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
+          dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
           break;
       }
       if (dataEntryTotal !== 0) {
