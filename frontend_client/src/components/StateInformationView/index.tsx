@@ -495,7 +495,9 @@ function StateInformationView() {
               setDataRows(
                 data.map((x) => {
                   return { id: x.fullRegionId, ...x };
-                })
+                }).concat(
+                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
+                }))
               );
               setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
               setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
@@ -510,7 +512,9 @@ function StateInformationView() {
               setDataRows(
                 data.map((x) => {
                   return { id: x.fullRegionId, ...x };
-                })
+                }).concat(
+                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
+                }))
               );
               setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
               setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
@@ -525,7 +529,9 @@ function StateInformationView() {
               setDataRows(
                 data.map((x) => {
                   return { id: x.fullRegionId, ...x };
-                })
+                }).concat(
+                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
+                }))
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
@@ -541,8 +547,12 @@ function StateInformationView() {
               setBarGraphXTitle("Voter Party");
               setDataRows(
                 data.map((x, i) => {
-                  return { id: x.fullRegionId, ...x, ...cvapPromises[i] };
-                })
+                  return { id: x.fullRegionId, ...x, ...cvapData[i] };
+                }).concat(
+                  aggregatedData.map((x, i) => {
+                    return { id: x.fullRegionId, ...x, ...aggregatedCvapData[i] };
+                  })
+                )
               );
               setDataColumns(VOTER_AFFILIATION_COLUMNS);
               setBarData(bargraphDataForVoterAffiliations(aggregatedData[0]));
@@ -557,7 +567,9 @@ function StateInformationView() {
               setDataRows(
                 data.map((x) => {
                   return { id: x.fullRegionId, ...x };
-                })
+                }).concat(
+                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
+                }))
               );
               setDataColumns(VOTING_EQUIPMENT_COLUMNS);
               setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
@@ -572,7 +584,9 @@ function StateInformationView() {
               setDataRows(
                 data.map((x) => {
                   return { id: x.fullRegionId, ...x };
-                })
+                }).concat(
+                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
+                }))
               );
               setDataColumns(VOTING_EQUIPMENT_COLUMNS);
               setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
@@ -587,7 +601,9 @@ function StateInformationView() {
               setDataRows(
                 data.map((x) => {
                   return { id: x.fullRegionId, ...x };
-                })
+                }).concat(
+                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
+                }))
               );
               setDataColumns(CVAP_INFO_COLUMNS);
               setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
@@ -605,7 +621,11 @@ function StateInformationView() {
               setDataRows(
                 data.map((x, i) => {
                   return { id: x.fullRegionId, ...x, ...activeVoterData[i] };
-                })
+                }).concat(
+                  aggregatedData.map((x, i) => {
+                    return { id: x.fullRegionId, ...x, ...activeVoterData[i] };
+                  })
+                )
               );
               setDataColumns(CVAP_INFO_COLUMNS);
               setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
@@ -616,12 +636,17 @@ function StateInformationView() {
               const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
               const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
+              const [aggregatedDataVoter, voterData]= await Promise.all(activeVoterPromises);
               setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
               setBarGraphXTitle("Deletion Reasons");
               setDataRows(
-                (await activeVoterPromises[1]).map((x, i) => {
+                voterData.map((x, i) => {
                   return { id: x.fullRegionId, ...x, ...data[i] };
-                })
+                }).concat(
+                  aggregatedDataVoter.map((x, i) => {
+                    return { id: x.fullRegionId, ...x, ...aggregatedData[i] };
+                  })
+                )
               );
               setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
               setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
