@@ -1,7 +1,9 @@
 import * as d3 from "d3";
 import SimpleTooltip from "../SimpleTooltip";
+import { getRegressionCoefficients } from "../../api/client";
+import makePolynomial from "../../helpers/makePolynomial";
 
-type PartyAffiliation = "Rep" | "Dem";
+type PartyAffiliation = "Rep" | "Dem" | "NONE";
 
 interface BubbleChartDataPoint {
   name: string;
@@ -9,6 +11,7 @@ interface BubbleChartDataPoint {
   size: number;
   x: number;
   y: number;
+  party: PartyAffiliation;
 }
 
 type BubbleChartDataMaker = readonly BubbleChartDataPoint[] | (() => Promise<BubbleChartDataPoint[]>);
@@ -25,7 +28,13 @@ interface BubbleChartProperties {
   maxYScale?: number;
 }
 
-import { useState, useEffect, useRef } from "react";
+interface RegressionLine {
+  party: PartyAffiliation;
+  data: string;
+  color: string;
+}
+
+import { useState, useEffect, useRef, act } from "react";
 
 function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale }: BubbleChartProperties) {
   const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
@@ -57,7 +66,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     .range([chartMargin.left, chartWidth - chartMargin.right]);
   const yAxisScale = d3
     .scaleLinear()
-    .domain([0, maxYScale || d3.max(actualData, (x) => x.y)! + 5])
+    .domain([0, maxYScale || d3.max(actualData, (x) => x.y)!])
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
   const chartScale = d3
     .scaleSqrt()
@@ -87,6 +96,64 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
       circleSelector.on("mouseover", null).on("mouseout", null);
     };
   }, [actualData]);
+
+  const [regressionLines, setRegressionLines] = useState<RegressionLine[]>([]);
+
+  useEffect(() => {
+    if (!useRegression || actualData.length === 0) return;
+
+    async function calcRegression() {
+      try {
+        const parties = [...new Set(actualData.map((d) => d.party))];
+        const partyLines = [];
+
+        for (const party of parties) {
+          const actualPoints = actualData.filter((d) => d.party === party && d.y !== 0);
+
+          const xVals = actualPoints.map((d) => d.x);
+          const yVals = actualPoints.map((d) => d.y);
+
+          const regressionCoefficients = await getRegressionCoefficients(
+            {
+              pointsCount: actualPoints.length,
+              xs: xVals,
+              ys: yVals,
+            },
+            { degree: 8 }
+          ); // best fitting degree
+          const regressionFunction = makePolynomial(regressionCoefficients);
+
+          const minXVal = Math.min(...xVals);
+          const maxXVal = Math.max(...xVals);
+
+          const regressionPoints: [number, number][] = [];
+          for (let i = 0; i <= 100; i++) {
+            const setValX = minXVal + (i / 100) * (maxXVal - minXVal);
+            const setValY = regressionFunction(setValX);
+            regressionPoints.push([setValX, setValY]);
+          }
+
+          const regressionLine = d3
+            .line<[number, number]>()
+            .x((d) => xAxisScale(d[0]))
+            .y((d) => yAxisScale(d[1]))
+            .curve(d3.curveBasis);
+
+          partyLines.push({
+            party,
+            data: regressionLine(regressionPoints),
+            color: party === "Dem" ? "blue" : "red",
+          });
+        }
+
+        setRegressionLines(partyLines.filter((line) => line.data !== null) as RegressionLine[]);
+      } catch (err) {
+        console.error("Error calculating regression: ", err);
+      }
+    }
+
+    calcRegression();
+  }, [actualData, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale]);
 
   return (
     <>
@@ -129,19 +196,13 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           {yAxisLabel}
         </text>
 
+        {/* Bubble Chart Linear Regression */}
+        {useRegression &&
+          regressionLines.map((lines) => <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} />)}
+
         {/* Bubble Chart Bubbles */}
         {actualData.map((x, y) => (
-          <circle
-            key={y}
-            data-title={x.name}
-            cx={xAxisScale(x.x)}
-            cy={yAxisScale(x.y)}
-            r={chartScale(x.size)}
-            // fill={x.party === "Rep" ? "#d73027" : "#4575b4"}
-            fill={x.color}
-            opacity={0.5}
-            stroke="#000"
-          />
+          <circle key={y} data-title={x.name} cx={xAxisScale(x.x)} cy={yAxisScale(x.y)} r={chartScale(x.size)} fill={x.color} opacity={0.5} stroke="#000" />
         ))}
       </svg>
       {/* Tooltip when moused over. */}

@@ -23,10 +23,12 @@ public record VotingEquipmentUsageStatisticsModel(
     int dreVvpatTotal,
     int bmdTotal,
     int scannerTotal,
-    int averageAge) {
+    int averageAge,
+    double averageQualityScore) {
   private static VotingEquipmentUsageStatisticsModel aggregateEquipmentCounts(
       List<VotingEquipmentUsageStatisticsEntryModel> entries,
-      Map<Integer, Optional<Integer>> deviceAgeMap) {
+      Map<Integer, Optional<Integer>> deviceAgeMap,
+      Map<Integer, Optional<Double>> deviceQualityMap) {
     var stateName = "";
     var fullRegionId = "";
     var countyName = "";
@@ -38,6 +40,7 @@ public record VotingEquipmentUsageStatisticsModel(
     // Used for calculating average age.
     var totalDeviceCount = 0;
     var totalYears = 0;
+    var totalQualityScore = 0.0;
 
     for (var entry : entries) {
       if (stateName.isEmpty()) {
@@ -62,6 +65,7 @@ public record VotingEquipmentUsageStatisticsModel(
 
       int deviceCount = entry.totalDevices();
       var deviceAge = deviceAgeMap.get(entry.deviceId());
+      var deviceQuality = deviceQualityMap.get(entry.deviceId());
 
       // If the device doesn't have an age, we don't want
       // to impute it as zero to drag anything down. We'll
@@ -70,6 +74,7 @@ public record VotingEquipmentUsageStatisticsModel(
       if (deviceAge.isPresent()) {
         totalDeviceCount += deviceCount;
         totalYears += deviceAge.get() * deviceCount;
+        totalQualityScore += deviceQuality.get() * deviceCount;
       }
 
       switch (entry.deviceType()) {
@@ -109,12 +114,14 @@ public record VotingEquipmentUsageStatisticsModel(
         dreVvpatCount,
         bmdCount,
         scannerCount,
-        totalYears / totalDeviceCount);
+        totalYears / totalDeviceCount,
+        totalQualityScore / totalDeviceCount);
   }
 
   public static List<VotingEquipmentUsageStatisticsModel> fromDataRows(
       List<VotingEquipmentUsageStatisticsEntryModel> rows,
-      Map<Integer, Optional<Integer>> deviceAgeMap) {
+      Map<Integer, Optional<Integer>> deviceAgeMap,
+      Map<Integer, Optional<Double>> deviceQualityMap) {
     var statisticsRows = new ArrayList<VotingEquipmentUsageStatisticsModel>();
     var dataByStates =
         rows.stream()
@@ -123,7 +130,7 @@ public record VotingEquipmentUsageStatisticsModel(
     // Classification sorting...
     for (var state : dataByStates.keySet()) {
       var dataRowsPerState = dataByStates.get(state);
-      var aggregated = aggregateEquipmentCounts(dataRowsPerState, deviceAgeMap);
+      var aggregated = aggregateEquipmentCounts(dataRowsPerState, deviceAgeMap, deviceQualityMap);
       statisticsRows.add(
           new VotingEquipmentUsageStatisticsModel(
               aggregated.stateName(),
@@ -134,7 +141,8 @@ public record VotingEquipmentUsageStatisticsModel(
               aggregated.dreVvpatTotal(),
               aggregated.bmdTotal(),
               aggregated.scannerTotal(),
-              aggregated.averageAge()));
+              aggregated.averageAge(),
+              aggregated.averageQualityScore()));
     }
 
     return statisticsRows;
@@ -142,7 +150,8 @@ public record VotingEquipmentUsageStatisticsModel(
 
   public static List<VotingEquipmentUsageStatisticsModel> fromDataRowsPerCounty(
       List<VotingEquipmentUsageStatisticsEntryModel> rows,
-      Map<Integer, Optional<Integer>> deviceAgeMap) {
+      Map<Integer, Optional<Integer>> deviceAgeMap,
+      Map<Integer, Optional<Double>> deviceQualityMap) {
     var statisticsRows = new ArrayList<VotingEquipmentUsageStatisticsModel>();
     var dataByStates =
         rows.stream()
@@ -157,7 +166,7 @@ public record VotingEquipmentUsageStatisticsModel(
 
       for (var county : dataByCounties.keySet()) {
         var countyData = dataByCounties.get(county);
-        var aggregated = aggregateEquipmentCounts(countyData, deviceAgeMap);
+        var aggregated = aggregateEquipmentCounts(countyData, deviceAgeMap, deviceQualityMap);
         statisticsRows.add(
             new VotingEquipmentUsageStatisticsModel(
                 aggregated.stateName(),
@@ -168,7 +177,8 @@ public record VotingEquipmentUsageStatisticsModel(
                 aggregated.dreVvpatTotal(),
                 aggregated.bmdTotal(),
                 aggregated.scannerTotal(),
-                aggregated.averageAge()));
+                aggregated.averageAge(),
+                aggregated.averageQualityScore()));
       }
     }
 

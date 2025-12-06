@@ -90,7 +90,6 @@ import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
 
-import { equipmentQualityData } from "../DataDisplays/PartyStatesMockData";
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
@@ -900,6 +899,7 @@ function StateInformationView() {
                       y: (data.totalBallotsByMail! / data.totalBallotsCast!) * 100.0,
                       name: data.regionName!,
                       size: data.regionName!.length,
+                      party: "NONE",
                       color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
                     }));
                   }}
@@ -917,30 +917,21 @@ function StateInformationView() {
               element={
                 <BubbleChart
                   data={async () => {
-                    /*
-                    The state page will include a screen component to allow the user to request the display of a
-                    bubble chart that associates voting equipment quality with the percentage of rejected ballots.
-                    Each bubble will be placed at an x, y location, where the x-axis shows the quality level of voting
-                    equipment in the county (as calculated previously) and the y-axis shows the percentage of
-                    rejected ballots in the EAVS data for 2024. The percentage of rejected ballots is calculated as the
-                    number of rejected ballots divided by the total number of ballots (Absentee Ballots Counted +
-                    Early In-Person Ballots Counted + Election Day Ballots + Provisional Ballots Counted). The
-                    number of rejected ballots includes mail-in ballots (C9a), provisional ballots (E1d), and
-                    UOCAVA ballots (B24a). 
-                    */
+                    const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
+                    const equipmentQuality = await getDetailedVotingEquipmentUsage(fipsCode!);
+                    const rejectionData = await getMailBallotRejections(fipsCode!);
+                    const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...rejectionData[i], ...electionResultsData[i] }));
 
-                    const equipmentQuality = await getAllVotingEquipment();
-                    const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
-                    const [aggregatedData, data] = await Promise.all(promises);
-
-                    const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...aggregatedData[i] }));
+                    const republicanBubbleColor = "#d73027";
+                    const democraticBubbleColor = "#4575b4";
 
                     return mergedData.map((data) => ({
-                      x: data.equipmentQuality!,
-                      y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0,
+                      x: data.averageQualityScore!,
+                      y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0 || 0,
                       name: data.countyName!,
                       size: 10,
-                      color: theme.palette.secondary.light,
+                      party: data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem",
+                      color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
                     }));
                   }}
                   width={bubbleChartWidth}

@@ -64,7 +64,12 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     var votingEquipmentAgeMap =
         getAllVotingEquipment().stream()
             .collect(Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::age));
-    return VotingEquipmentUsageStatisticsModel.fromDataRows(entries, votingEquipmentAgeMap);
+    var votingEquipmentQualityMap =
+        getAllVotingEquipment().stream()
+            .collect(
+                Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::equipmentQuality));
+    return VotingEquipmentUsageStatisticsModel.fromDataRows(
+        entries, votingEquipmentAgeMap, votingEquipmentQualityMap);
   }
 
   @Override
@@ -81,8 +86,12 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     var votingEquipmentAgeMap =
         getAllVotingEquipment().stream()
             .collect(Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::age));
+    var votingEquipmentQualityMap =
+        getAllVotingEquipment().stream()
+            .collect(
+                Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::equipmentQuality));
     return VotingEquipmentUsageStatisticsModel.fromDataRowsPerCounty(
-        entries, votingEquipmentAgeMap);
+        entries, votingEquipmentAgeMap, votingEquipmentQualityMap);
   }
 
   @Override

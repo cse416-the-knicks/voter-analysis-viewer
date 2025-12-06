@@ -61,6 +61,7 @@ export interface VotingEquipmentUsageStatisticsModel {
   bmdTotal?: number;
   scannerTotal?: number;
   averageAge?: number;
+  averageQualityScore?: number;
 }
 
 export interface CVAPStatisticsModel {

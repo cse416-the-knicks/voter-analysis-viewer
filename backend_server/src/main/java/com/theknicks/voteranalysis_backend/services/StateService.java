@@ -138,7 +138,7 @@ public class StateService {
     }
 
     var bestFitCoefficients = fitter.fit(points);
-    return DoubleStream.of(bestFitCoefficients).boxed().toList();
+    return new ArrayList(DoubleStream.of(bestFitCoefficients).boxed().toList());
   }
 
   public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(String fipsCode) {
