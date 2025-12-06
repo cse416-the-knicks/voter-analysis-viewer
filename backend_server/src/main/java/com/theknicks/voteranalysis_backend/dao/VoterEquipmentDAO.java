@@ -46,7 +46,8 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
   }
 
   @Override
-  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode) {
+  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
+      int year, String fipsCode) {
     var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
     List<VotingEquipmentUsageStatisticsEntryModel> entries;
     if (fipsCode.isEmpty()) {
@@ -54,9 +55,10 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     } else {
       entries =
           _jdbcTemplate.query(
-              queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
+              queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?", "year = ?"}),
               queryable.Mapper(),
-              Integer.parseInt(fipsCode, 10));
+              Integer.parseInt(fipsCode, 10),
+              year);
     }
 
     var votingEquipmentAgeMap =
@@ -72,13 +74,14 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
 
   @Override
   public List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(
-      String fipsCode) {
+      int year, String fipsCode) {
     var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
     var entries =
         _jdbcTemplate.query(
-            queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
+            queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?", "year = ?"}),
             queryable.Mapper(),
-            Integer.parseInt(fipsCode, 10));
+            Integer.parseInt(fipsCode, 10),
+            year);
 
     var votingEquipmentAgeMap =
         getAllVotingEquipment().stream()

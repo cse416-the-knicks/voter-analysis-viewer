@@ -51,7 +51,7 @@ public class VoterEquipmentController {
   @GetMapping("/usages/")
   public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
       @RequestParam(name = "year", defaultValue = "2024") int year) {
-    return _service.getVotingEquipmentUsage("");
+    return _service.getVotingEquipmentUsage(year, "");
   }
 
   @GetMapping("/usages/{fipsCode}")
@@ -59,6 +59,6 @@ public class VoterEquipmentController {
       @PathVariable("fipsCode") String fipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
-    return _service.getDetailedVotingEquipmentUsage(fipsCode, inAggregate);
+    return _service.getDetailedVotingEquipmentUsage(fipsCode, year, inAggregate);
   }
 }
