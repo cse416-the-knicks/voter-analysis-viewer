@@ -338,15 +338,16 @@ const CountyGradientSet = (data: VotingEquipmentUsageStatisticsModel, colorSet: 
     colors.push(colorSet[3]);
   }
 
-  // NOTE(jerry):
-  // While there is absolutely a programmatic
-  // way to do this, I'm not going to be very
-  // clever about this.
 
   const x1 = 25;
   const y1 = 25;
   const x2 = (x1 * 1.2) / colors.length;
   const y2 = (y1 * 1.2) / colors.length;
+
+  // Colorband thresholds are repeated because linear gradient
+  // will try to interpolate between colors. So the duplicate "edge" color
+  // is to force a "hard transition" so that the colors appear striped instead
+  // of as a gradient.
 
   switch (colors.length) {
     case 1:
@@ -476,6 +477,10 @@ function StateInformationView() {
     "ei-voting-equipment",
   ].some((x) => location.pathname.includes(x));
 
+  /*
+    This annoyingly giant portion of code should be refactored
+    out, the pattern is quite obvious.
+  */
   useEffect(
     function () {
       (async function () {
@@ -538,7 +543,6 @@ function StateInformationView() {
               );
               setDataColumns(VOTER_AFFILIATION_COLUMNS);
               setBarData(bargraphDataForVoterAffiliations(aggregatedData[0]));
-              // TODO: finish this for GUI17 completion.
             }
             break;
           case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
