@@ -61,37 +61,38 @@ function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: Di
           colorMap={zip(VOTING_EQUIPMENT_TYPE_COLORS.map(x => x.text), VOTING_EQUIPMENT_TYPE_COLORS.map(x => x.color))}
           data={async () => {
             const electionYears = [2016, 2018, 2020, 2022, 2024];
-            var promises = electionYears.map((year) => 
+            const promises = electionYears.map((year) => 
               getDetailedVotingEquipmentUsage(stateFips.toString(), { year: year, aggregate: true }))
-            var votingEquipmentUsages = (await Promise.all(promises)).map((x) => x[0]);
-            var scannerUsages = votingEquipmentUsages.map(
+            const votingEquipmentUsages = (await Promise.all(promises)).map((x) => x[0]);
+            console.log(votingEquipmentUsages);
+            const scannerUsages = votingEquipmentUsages.map(
               (e, i) => 
                 {return { 
-                  value: e.scannerTotal!,
+                  value: e?.scannerTotal! || 0,
                   title: electionYears[i].toString(),
                   category: "Scanner"  
                 }}
             );
-            var bmdUsages = votingEquipmentUsages.map(
+            const bmdUsages = votingEquipmentUsages.map(
               (e, i) => 
                 {return { 
-                  value: e.bmdTotal!,
+                  value: e?.bmdTotal! || 0,
                   title: electionYears[i].toString(),
                   category: "BMD"  
                 }}
             );
-            var dreVvpatUsages = votingEquipmentUsages.map(
+            const dreVvpatUsages = votingEquipmentUsages.map(
               (e, i) => 
                 {return { 
-                  value: e.dreVvpatTotal!,
+                  value: e?.dreVvpatTotal! || 0,
                   title: electionYears[i].toString(),
                   category: "DRE (VVPAT)"  
                 }}
             );
-            var dreNoVvpatUsages = votingEquipmentUsages.map(
+            const dreNoVvpatUsages = votingEquipmentUsages.map(
               (e, i) => 
                 {return { 
-                  value: e.dreNoVvpatTotal!,
+                  value: e?.dreNoVvpatTotal! || 0,
                   title: electionYears[i].toString(),
                   category: "DRE (No VVPAT)"  
                 }}
