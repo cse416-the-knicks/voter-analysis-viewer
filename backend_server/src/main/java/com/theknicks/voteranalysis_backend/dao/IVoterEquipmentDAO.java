@@ -13,7 +13,7 @@ public interface IVoterEquipmentDAO {
    * <p>It's sufficient to do direct queries, but this might evolve based on how it seems the
    * Frontend might like to request the data.
    */
-  List<VotingEquipmentModel> getAllVotingEquipment();
+  List<VotingEquipmentModel> getAllVotingEquipment(Optional<String> stateFips);
 
   List<VotingEquipmentModel> getVotingEquipmentByType(String type);
 

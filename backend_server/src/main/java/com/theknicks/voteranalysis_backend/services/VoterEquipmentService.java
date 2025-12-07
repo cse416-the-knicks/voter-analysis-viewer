@@ -24,8 +24,8 @@ public class VoterEquipmentService {
     _dao = dao;
   }
 
-  public List<VotingEquipmentModel> getAllVotingEquipment() {
-    return _dao.getAllVotingEquipment();
+  public List<VotingEquipmentModel> getAllVotingEquipment(Optional<String> stateFips) {
+    return _dao.getAllVotingEquipment(stateFips);
   }
 
   public List<VotingEquipmentModel> getAllVotingEquipmentByManufacturer(String manufacturer) {

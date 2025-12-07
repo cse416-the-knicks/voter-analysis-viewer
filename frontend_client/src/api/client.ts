@@ -52,6 +52,7 @@ export interface VotingEquipmentModel {
   scanRate?: number;
   errorRate?: number;
   reliabilityScore?: number;
+  quantity?: number;
 }
 
 export interface VotingEquipmentUsageStatisticsModel {
@@ -90,7 +91,7 @@ export interface VoterRegistrationDataModel {
 export type StateInformationModelRegistrationMethod = typeof StateInformationModelRegistrationMethod[keyof typeof StateInformationModelRegistrationMethod];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const StateInformationModelRegistrationMethod = {
   NONE: 'NONE',
   OPT_IN: 'OPT_IN',
@@ -101,7 +102,7 @@ export const StateInformationModelRegistrationMethod = {
 export type StateInformationModelFelonyDisenfranchisement = typeof StateInformationModelFelonyDisenfranchisement[keyof typeof StateInformationModelFelonyDisenfranchisement];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const StateInformationModelFelonyDisenfranchisement = {
   UNKNOWN: 'UNKNOWN',
   NO_DENIAL_OF_VOTING: 'NO_DENIAL_OF_VOTING',
@@ -114,7 +115,7 @@ export const StateInformationModelFelonyDisenfranchisement = {
 export type StateInformationModelAffiliation = typeof StateInformationModelAffiliation[keyof typeof StateInformationModelAffiliation];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const StateInformationModelAffiliation = {
   UNAFFILIATED: 'UNAFFILIATED',
   DEMOCRAT: 'DEMOCRAT',
@@ -273,6 +274,10 @@ export type GetVotingEquipmentUsageParams = {
 year?: number;
 };
 
+export type GetAllVotingEquipmentParams = {
+stateFips?: string;
+};
+
 export type GetCVAPStatisticsDataParams = {
 year?: number;
 aggregate?: boolean;
@@ -356,7 +361,7 @@ export type GetStateInformationTable200 = {[key: string]: StateInformationModel}
 export type GeoJsonObjectType = typeof GeoJsonObjectType[keyof typeof GeoJsonObjectType];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const GeoJsonObjectType = {
   Feature: 'Feature',
   FeatureCollection: 'FeatureCollection',
@@ -384,7 +389,7 @@ export interface GeoJsonObject {
 export type GeometryAllOfType = typeof GeometryAllOfType[keyof typeof GeometryAllOfType];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const GeometryAllOfType = {
   Point: 'Point',
   MultiPoint: 'MultiPoint',
@@ -408,7 +413,7 @@ export type Geometry = GeoJsonObject & GeometryAllOf;
 export type GeometryElementAllOfType = typeof GeometryElementAllOfType[keyof typeof GeometryElementAllOfType];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const GeometryElementAllOfType = {
   Point: 'Point',
   MultiPoint: 'MultiPoint',
@@ -493,7 +498,7 @@ export type LinearRing = Position[];
 export type PointAllOfType = typeof PointAllOfType[keyof typeof PointAllOfType];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const PointAllOfType = {
   Point: 'Point',
 } as const;
@@ -568,7 +573,7 @@ export type GeometryCollection = Geometry & GeometryCollectionAllOf;
 export type Error400BadRequestResponseStatusCode = typeof Error400BadRequestResponseStatusCode[keyof typeof Error400BadRequestResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error400BadRequestResponseStatusCode = {
   NUMBER_400: 400,
 } as const;
@@ -576,7 +581,7 @@ export const Error400BadRequestResponseStatusCode = {
 export type Error400BadRequestResponseMessage = typeof Error400BadRequestResponseMessage[keyof typeof Error400BadRequestResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error400BadRequestResponseMessage = {
   The_JSON_is_not_valid: 'The JSON is not valid.',
 } as const;
@@ -589,7 +594,7 @@ export type Error400BadRequestResponse = {
 export type Error401UnauthorizedResponseStatusCode = typeof Error401UnauthorizedResponseStatusCode[keyof typeof Error401UnauthorizedResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error401UnauthorizedResponseStatusCode = {
   NUMBER_401: 401,
 } as const;
@@ -597,7 +602,7 @@ export const Error401UnauthorizedResponseStatusCode = {
 export type Error401UnauthorizedResponseMessage = typeof Error401UnauthorizedResponseMessage[keyof typeof Error401UnauthorizedResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error401UnauthorizedResponseMessage = {
   The_request_requires_an_user_authentication: 'The request requires an user authentication.',
 } as const;
@@ -610,7 +615,7 @@ export type Error401UnauthorizedResponse = {
 export type Error403ForbiddenResponseStatusCode = typeof Error403ForbiddenResponseStatusCode[keyof typeof Error403ForbiddenResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error403ForbiddenResponseStatusCode = {
   NUMBER_403: 403,
 } as const;
@@ -618,7 +623,7 @@ export const Error403ForbiddenResponseStatusCode = {
 export type Error403ForbiddenResponseMessage = typeof Error403ForbiddenResponseMessage[keyof typeof Error403ForbiddenResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error403ForbiddenResponseMessage = {
   The_access_is_not_allowed: 'The access is not allowed.',
 } as const;
@@ -631,7 +636,7 @@ export type Error403ForbiddenResponse = {
 export type Error404NotFoundResponseStatusCode = typeof Error404NotFoundResponseStatusCode[keyof typeof Error404NotFoundResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error404NotFoundResponseStatusCode = {
   NUMBER_404: 404,
 } as const;
@@ -639,7 +644,7 @@ export const Error404NotFoundResponseStatusCode = {
 export type Error404NotFoundResponseMessage = typeof Error404NotFoundResponseMessage[keyof typeof Error404NotFoundResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error404NotFoundResponseMessage = {
   The_resource_was_not_found: 'The resource was not found.',
 } as const;
@@ -652,7 +657,7 @@ export type Error404NotFoundResponse = {
 export type Error405MethodNotAllowedResponseStatusCode = typeof Error405MethodNotAllowedResponseStatusCode[keyof typeof Error405MethodNotAllowedResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error405MethodNotAllowedResponseStatusCode = {
   NUMBER_405: 405,
 } as const;
@@ -660,7 +665,7 @@ export const Error405MethodNotAllowedResponseStatusCode = {
 export type Error405MethodNotAllowedResponseMessage = typeof Error405MethodNotAllowedResponseMessage[keyof typeof Error405MethodNotAllowedResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error405MethodNotAllowedResponseMessage = {
   Request_method_is_not_supported_for_the_requested_resource: 'Request method is not supported for the requested resource.',
 } as const;
@@ -673,7 +678,7 @@ export type Error405MethodNotAllowedResponse = {
 export type Error406NotAcceptableResponseStatusCode = typeof Error406NotAcceptableResponseStatusCode[keyof typeof Error406NotAcceptableResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error406NotAcceptableResponseStatusCode = {
   NUMBER_406: 406,
 } as const;
@@ -681,7 +686,7 @@ export const Error406NotAcceptableResponseStatusCode = {
 export type Error406NotAcceptableResponseMessage = typeof Error406NotAcceptableResponseMessage[keyof typeof Error406NotAcceptableResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error406NotAcceptableResponseMessage = {
   Headers_sent_in_the_request_are_not_compatible_with_the_service: 'Headers sent in the request are not compatible with the service.',
 } as const;
@@ -694,7 +699,7 @@ export type Error406NotAcceptableResponse = {
 export type Error408RequestTimeoutResponseStatusCode = typeof Error408RequestTimeoutResponseStatusCode[keyof typeof Error408RequestTimeoutResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error408RequestTimeoutResponseStatusCode = {
   NUMBER_408: 408,
 } as const;
@@ -702,7 +707,7 @@ export const Error408RequestTimeoutResponseStatusCode = {
 export type Error408RequestTimeoutResponseMessage = typeof Error408RequestTimeoutResponseMessage[keyof typeof Error408RequestTimeoutResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error408RequestTimeoutResponseMessage = {
   The_client_did_not_produce_a_request_within_the_time_that_the_server_was_prepared_to_wait_The_client_may_repeat_the_request_without_modifications_at_any_later_time: 'The client did not produce a request within the time that the server was prepared to wait. The client may repeat the request without modifications at any later time.',
 } as const;
@@ -715,7 +720,7 @@ export type Error408RequestTimeoutResponse = {
 export type Error410GoneResponseStatusCode = typeof Error410GoneResponseStatusCode[keyof typeof Error410GoneResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error410GoneResponseStatusCode = {
   NUMBER_410: 410,
 } as const;
@@ -723,7 +728,7 @@ export const Error410GoneResponseStatusCode = {
 export type Error410GoneResponseMessage = typeof Error410GoneResponseMessage[keyof typeof Error410GoneResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error410GoneResponseMessage = {
   The_requested_resource_is_no_longer_available_and_will_not_be_available_again_The_resource_should_be_purged_from_the_client_system: 'The requested resource is no longer available and will not be available again. The resource should be purged from the client system.',
 } as const;
@@ -736,7 +741,7 @@ export type Error410GoneResponse = {
 export type Error423LockedResponseStatusCode = typeof Error423LockedResponseStatusCode[keyof typeof Error423LockedResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error423LockedResponseStatusCode = {
   NUMBER_423: 423,
 } as const;
@@ -744,7 +749,7 @@ export const Error423LockedResponseStatusCode = {
 export type Error423LockedResponseMessage = typeof Error423LockedResponseMessage[keyof typeof Error423LockedResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error423LockedResponseMessage = {
   The_resource_that_is_being_accessed_is_locked: 'The resource that is being accessed is locked.',
 } as const;
@@ -757,7 +762,7 @@ export type Error423LockedResponse = {
 export type Error429TooManyRequestsResponseStatusCode = typeof Error429TooManyRequestsResponseStatusCode[keyof typeof Error429TooManyRequestsResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error429TooManyRequestsResponseStatusCode = {
   NUMBER_429: 429,
 } as const;
@@ -765,7 +770,7 @@ export const Error429TooManyRequestsResponseStatusCode = {
 export type Error429TooManyRequestsResponseMessage = typeof Error429TooManyRequestsResponseMessage[keyof typeof Error429TooManyRequestsResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error429TooManyRequestsResponseMessage = {
   The_user_has_sent_too_many_requests_in_a_short_period: 'The user has sent too many requests in a short period.',
 } as const;
@@ -778,7 +783,7 @@ export type Error429TooManyRequestsResponse = {
 export type Error500InternalServerErrorResponseStatusCode = typeof Error500InternalServerErrorResponseStatusCode[keyof typeof Error500InternalServerErrorResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error500InternalServerErrorResponseStatusCode = {
   NUMBER_500: 500,
 } as const;
@@ -786,7 +791,7 @@ export const Error500InternalServerErrorResponseStatusCode = {
 export type Error500InternalServerErrorResponseMessage = typeof Error500InternalServerErrorResponseMessage[keyof typeof Error500InternalServerErrorResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error500InternalServerErrorResponseMessage = {
   An_unexpected_error_occured: 'An unexpected error occured.',
 } as const;
@@ -799,7 +804,7 @@ export type Error500InternalServerErrorResponse = {
 export type Error503ServiceUnavailableResponseStatusCode = typeof Error503ServiceUnavailableResponseStatusCode[keyof typeof Error503ServiceUnavailableResponseStatusCode];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error503ServiceUnavailableResponseStatusCode = {
   NUMBER_503: 503,
 } as const;
@@ -807,7 +812,7 @@ export const Error503ServiceUnavailableResponseStatusCode = {
 export type Error503ServiceUnavailableResponseMessage = typeof Error503ServiceUnavailableResponseMessage[keyof typeof Error503ServiceUnavailableResponseMessage];
 
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const Error503ServiceUnavailableResponseMessage = {
   The_server_is_currently_unable_to_handle_the_request: 'The server is currently unable to handle the request.',
 } as const;
@@ -883,10 +888,11 @@ export const getAllVotingEquipmentByManufacturer = (
     }
   
 export const getAllVotingEquipment = (
-    
+    params?: GetAllVotingEquipmentParams,
  options?: SecondParameter<typeof getAllVotingEquipmentMutator>,) => {
       return getAllVotingEquipmentMutator<VotingEquipmentModel[]>(
-      {url: `/votingequipment/`, method: 'GET'
+      {url: `/votingequipment/`, method: 'GET',
+        params
     },
       options);
     }

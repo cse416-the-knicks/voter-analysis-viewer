@@ -27,8 +27,10 @@ public class VoterEquipmentController {
   }
 
   @GetMapping("/")
-  public List<VotingEquipmentModel> getAllVotingEquipment() {
-    return _service.getAllVotingEquipment();
+  public List<VotingEquipmentModel> getAllVotingEquipment(
+      @RequestParam(value = "stateFips", defaultValue = "") String stateFips) {
+    return _service.getAllVotingEquipment(
+        stateFips.isEmpty() ? Optional.empty() : Optional.of(stateFips));
   }
 
   @GetMapping("/by-manufacturer/{manufacturer}")

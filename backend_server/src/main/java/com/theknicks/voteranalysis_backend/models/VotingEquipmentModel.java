@@ -13,9 +13,18 @@ import java.util.Optional;
  * <p>For simplicity, this model is going to be almost directly in sync with the spreadsheet
  * columns.
  */
-@AutoSql(collection = "app.device_model")
+@AutoSql(
+    collection = "app.device_model",
+    joining = {"app.equipment_usage"},
+    joinMethod = {"left"},
+    joinOn = {
+      "equipment_usage.device_model_id = device_model.device_model_id",
+    },
+    groupBy = {
+      "device_model.device_model_id",
+    })
 public record VotingEquipmentModel(
-    @JsonIgnore @SqlColumnName(name = "device_model_id") int id,
+    @JsonIgnore @SqlColumnName(name = "device_model.device_model_id") int id,
     @SqlColumnName(name = "vendor") String manufacturer,
     // No strong opinions, but this could be an enum.
     @SqlColumnName(name = "device_type") String equipmentType,
@@ -35,7 +44,8 @@ public record VotingEquipmentModel(
     @SqlColumnName(name = "quality_score") Optional<Double> equipmentQuality,
     @SqlColumnName(name = "scan_rate") Optional<Double> scanRate,
     @SqlColumnName(name = "error_rate") Optional<Double> errorRate,
-    @SqlColumnName(name = "reliability") Optional<Double> reliabilityScore) {
+    @SqlColumnName(name = "reliability") Optional<Double> reliabilityScore,
+    @SqlColumnName(name = "sum(quantity)") int quantity) {
 
   public VotingEquipmentModel(
       int id,
@@ -49,7 +59,8 @@ public record VotingEquipmentModel(
       Optional<Double> equipmentQuality,
       Optional<Double> scanRate,
       Optional<Double> errorRate,
-      Optional<Double> reliabilityScore) {
+      Optional<Double> reliabilityScore,
+      int quantity) {
     this(
         id,
         manufacturer,
@@ -77,7 +88,8 @@ public record VotingEquipmentModel(
         equipmentQuality,
         scanRate,
         errorRate,
-        reliabilityScore);
+        reliabilityScore,
+        quantity);
   }
 
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentModel> {

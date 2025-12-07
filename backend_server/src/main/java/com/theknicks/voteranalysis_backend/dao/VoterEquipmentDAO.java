@@ -26,9 +26,21 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
   }
 
   @Override
-  public List<VotingEquipmentModel> getAllVotingEquipment() {
+  public List<VotingEquipmentModel> getAllVotingEquipment(Optional<String> stateFips) {
     var queryable = new VotingEquipmentModel.Queryable();
-    return _jdbcTemplate.query(queryable.Query(false), queryable.Mapper(false));
+    String sql;
+    Object[] params;
+
+    if (stateFips.isPresent()) {
+      sql = queryable.QueryWhere(new String[] {"equipment_usage.state_id = ?"});
+      params = new Object[] {Integer.parseInt(stateFips.get(), 10)};
+    } else {
+      sql = queryable.Query(false);
+      params = new Object[] {};
+    }
+
+    return _jdbcTemplate.query(
+        sql + " order by device_model.device_model_id", params, queryable.Mapper(false));
   }
 
   @Override
@@ -62,10 +74,10 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     }
 
     var votingEquipmentAgeMap =
-        getAllVotingEquipment().stream()
+        getAllVotingEquipment(Optional.empty()).stream()
             .collect(Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::age));
     var votingEquipmentQualityMap =
-        getAllVotingEquipment().stream()
+        getAllVotingEquipment(Optional.empty()).stream()
             .collect(
                 Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::equipmentQuality));
     return VotingEquipmentUsageStatisticsModel.fromDataRows(
@@ -84,10 +96,10 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
             year);
 
     var votingEquipmentAgeMap =
-        getAllVotingEquipment().stream()
+        getAllVotingEquipment(Optional.empty()).stream()
             .collect(Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::age));
     var votingEquipmentQualityMap =
-        getAllVotingEquipment().stream()
+        getAllVotingEquipment(Optional.empty()).stream()
             .collect(
                 Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::equipmentQuality));
     return VotingEquipmentUsageStatisticsModel.fromDataRowsPerCounty(

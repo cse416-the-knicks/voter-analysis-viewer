@@ -53,6 +53,12 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     width: 100,
   },
   {
+    field: "quantity",
+    headerName: "Quantity",
+    type: "number",
+    width: 80,
+  },
+  {
     field: "reliabilityScore",
     headerName: "Reliability",
     type: "number",
