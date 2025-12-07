@@ -267,159 +267,41 @@ function StateInformationView() {
     const overlayViews = Object.values(FACT_VIEW_CONFIGURATIONS).filter(cfg => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY);
     const shouldOpenPopup = overlayViews.some(cfg => location.pathname.includes(cfg.path));
 
-  /*
-    This annoyingly giant portion of code should be refactored
-    out, the pattern is quite obvious.
-  */
   useEffect(
     function () {
       (async function () {
         const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
         if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
-          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - ${viewConfig.description.barGraphTitle}`);
-          setBarGraphXTitle(`${viewConfig.description.barGraphXTitle}`);
-          setDataColumns(viewConfig.description.dataColumnSet);
-        }
+          const description = viewConfig.description;
+          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - ${description.barGraphTitle}`);
+          setBarGraphXTitle(`${description.barGraphXTitle}`);
+          setDataColumns(description.dataColumnSet);
 
-        switch (activeDataState) {
-          case ID_SELECTION_PROVISIONAL_BALLOT:
-            {
-              const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                }).concat(
-                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
-                }))
-              );
-              setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
-            {
-              const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                }).concat(
-                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
-                }))
-              );
-              setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_ACTIVE_VOTERS:
-            {
-              const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                }).concat(
-                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
-                }))
-              );
-              setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VOTER_REGISTRATION:
-            {
-              const promises = [true, false].map((v) => getVoterAffiliations(fipsCode!, { aggregate: v }));
-              const cvapPromises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              const [aggregatedCvapData, cvapData] = await Promise.all(cvapPromises);
-              setDataRows(
-                data.map((x, i) => {
-                  return { id: x.fullRegionId, ...x, ...cvapData[i] };
-                }).concat(
-                  aggregatedData.map((x, i) => {
-                    return { id: x.fullRegionId, ...x, ...aggregatedCvapData[i] };
-                  })
-                )
-              );
-              setBarData(bargraphDataForVoterAffiliations(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
-            {
-              const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                }).concat(
-                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
-                }))
-              );
-              setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
-            {
-              const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                }).concat(
-                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
-                }))
-              );
-              setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VIEW_CVAP_INFO:
-            {
-              const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                }).concat(
-                  aggregatedData.map((x) => { return { id: x.fullRegionId, ...x }
-                }))
-              );
-              setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
-            {
-              const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
-              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              const [_activeVoterAggregatedData, activeVoterData] = await Promise.all(activeVoterPromises);
-              setDataRows(
-                data.map((x, i) => {
-                  return { id: x.fullRegionId, ...x, ...activeVoterData[i] };
-                }).concat(
-                  aggregatedData.map((x, i) => {
-                    return { id: x.fullRegionId, ...x, ...activeVoterData[i] };
-                  })
-                )
-              );
-              setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_POLLBOOK_DELETION:
-            {
-              const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
-              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              const [aggregatedDataVoter, voterData]= await Promise.all(activeVoterPromises);
-              setDataRows(
-                voterData.map((x, i) => {
-                  return { id: x.fullRegionId, ...x, ...data[i] };
-                }).concat(
-                  aggregatedDataVoter.map((x, i) => {
-                    return { id: x.fullRegionId, ...x, ...aggregatedData[i] };
-                  })
-                )
-              );
-              setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
-            }
-            break;
+          console.log(description.rowDataGenerators);
+          const rowDataSet = await Promise.all(description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: false })));
+          
+          // Aggregated data rows are exactly 1 entry
+          // for uniformity in the endpoint (so that it can share the same endpoint as the per-county variant.)
+          const aggregatedDataSet = await Promise.all(
+            description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: true }))
+          );
+          console.log("BEFORE PROCESS", rowDataSet, aggregatedDataSet);
+
+          // All EAVS "facts" have the same length, which is the amount of counties of
+          // that state.
+          // For each county, then for each corresponding row in each query.
+          const rowData = rowDataSet[0].map((_, i) =>
+            rowDataSet.reduce((acc, entry) => ({ ...acc, ...entry[i] }), {})
+          ).map((x: EAVsGeneralFact) => ({ id: x.fullRegionId, ...x }));
+
+          const aggregatedData = aggregatedDataSet.reduce(
+            (acc, entry) => ({ ...acc, ...entry[0] }),
+            {}
+          );
+
+          console.log(rowData, aggregatedData);
+          setBarData(description.barDataGenerator(aggregatedData));
+          setDataRows(rowData);
         }
 
         if (activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_AGE) {
@@ -451,9 +333,11 @@ function StateInformationView() {
     if (!isDetailState(fipsCode!) || (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart)) {
       return null;
     }
+    if (FACT_VIEW_CONFIGURATIONS[activeDataState].description.type != STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
+      return null;
+    }
 
     const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState].description as StateInformationViewSimpleFactView;
-
     const { properties } = feature;
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
