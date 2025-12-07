@@ -95,7 +95,7 @@ import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
 import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
 import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
 import VotingMachineSummaryTable from "../VotingEquipmentSummaryTable";
-import { ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS } from "./dataViewModeConfig";
+import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS } from "./dataViewModeConfig";
 import EquipmentGradientSet from "./EquipmentGradientSet";
 
 const defaultDropDownSections = [
@@ -230,78 +230,18 @@ function a11yProps(index: number) {
 }
 
 function getUrlForModeId(id: number, fipsCode: string) {
-  switch (id) {
-    case ID_SELECTION_PROVISIONAL_BALLOT:
-      return `/state/${fipsCode}/provisional-ballots`;
-    case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
-      return `/state/${fipsCode}/mail-ballot-rejections`;
-    case ID_SELECTION_ACTIVE_VOTERS:
-      return `/state/${fipsCode}/active-voters`;
-    case ID_SELECTION_POLLBOOK_DELETION:
-      return `/state/${fipsCode}/pollbook-deletions`;
-    case ID_SELECTION_VOTER_REGISTRATION:
-      return `/state/${fipsCode}/voter-registration`;
-    case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
-      return `/state/${fipsCode}/cvap-registration`;
-    case ID_SELECTION_VIEW_CVAP_INFO:
-      return `/state/${fipsCode}/cvap`;
-    case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
-      return `/state/${fipsCode}/compare-voter-registration-rates/`;
-    case ID_SELECTION_REJECTED_BALLOTS:
-      return `/state/${fipsCode}/rejected-ballots-chart/`;
-    case ID_SELECTION_MAIL_IN_VOTING:
-      return `/state/${fipsCode}/mail-in-chart/`;
-    case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE:
-      return `/state/${fipsCode}/voter-table/`;
-    case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
-      return `/state/${fipsCode}/equipment-by-type/`;
-    case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
-      return `/state/${fipsCode}/equipment-by-age/`;
-    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART:
-      return `/state/${fipsCode}/ei-gingles-chart/`;
-    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS:
-      return `/state/${fipsCode}/ei-rejected-ballots/`;
-    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT:
-      return `/state/${fipsCode}/ei-voting-equipment`;
-    case ID_SELECTION_VOTING_EQUIPMENT_SUMMARY:
-      return `/state/${fipsCode}/equipment-summary`;
+  const configuration = FACT_VIEW_CONFIGURATIONS[id];
+  if (configuration) {
+    return `/state/${fipsCode}/${configuration.path}`;
   }
   return "?";
 }
 
 function determineInitialStateBasedOnUrl(pathname: string) {
-  if (pathname.includes("/provisional-ballots")) {
-    return ID_SELECTION_PROVISIONAL_BALLOT;
-  } else if (pathname.includes("/mail-ballot-rejections")) {
-    return ID_SELECTION_MAIL_BALLOT_REJECTIONS;
-  } else if (pathname.includes("/active-voters")) {
-    return ID_SELECTION_ACTIVE_VOTERS;
-  } else if (pathname.includes("/pollbook-deletions")) {
-    return ID_SELECTION_POLLBOOK_DELETION;
-  } else if (pathname.includes("/voter-registration")) {
-    return ID_SELECTION_VOTER_REGISTRATION;
-  } else if (pathname.includes("/rejected-ballots-chart")) {
-    return ID_SELECTION_REJECTED_BALLOTS;
-  } else if (pathname.includes("/mail-in-chart/")) {
-    return ID_SELECTION_MAIL_IN_VOTING;
-  } else if (pathname.includes("/voter-table/")) {
-    return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
-  } else if (pathname.includes("/equipment-by-type/")) {
-    return ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE;
-  } else if (pathname.includes("/equipment-by-age/")) {
-    return ID_SELECTION_VOTING_EQUIPMENT_BY_AGE;
-  } else if (pathname.includes("/cvap-registration")) {
-    return ID_SELECTION_VIEW_CVAP_PERCENTAGE;
-  } else if (pathname.includes("/cvap")) {
-    return ID_SELECTION_VIEW_CVAP_INFO;
-  } else if (pathname.includes("/ei-gingles-chart")) {
-    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART;
-  } else if (pathname.includes("/ei-rejected-ballots")) {
-    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS;
-  } else if (pathname.includes("/ei-voting-equipment")) {
-    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT;
-  } else if (pathname.includes("/equipment-summary")) {
-    return ID_SELECTION_VOTING_EQUIPMENT_SUMMARY;
+  for (const [id, config] of Object.entries(FACT_VIEW_CONFIGURATIONS)) {
+    if (pathname.includes(config.path)) {
+      return Number(id);
+    }
   }
   return ID_SELECTION_PROVISIONAL_BALLOT;
 }

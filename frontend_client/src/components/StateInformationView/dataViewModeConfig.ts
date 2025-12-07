@@ -40,19 +40,69 @@ const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS = 15;
 interface StateInformationViewDataConfiguration {
     path: string;
 
-    barGraphTitle: string;
-    barGraphXTitle: string;
+    // barGraphTitle: string;
+    // barGraphXTitle: string;
 
-    dataColumnSet: GridColDef<DataFact[]>[];
+    // dataColumnSet: GridColDef<DataFact[]>[];
     
-    barDataGenerator: (fipsCode: string) => BarChartDataEntry[];
-    rowDataGenerator: (fipsCode: string)=> DataFact[];
+    // barDataGenerator: (fipsCode: string) => BarChartDataEntry[];
+    // rowDataGenerator: (fipsCode: string)=> DataFact[];
+
     // TODO: allow choropleth configuration here.
 }
 
-// const FACT_VIEW_CONFIGURATIONS: Record<number, StateInformationViewDataConfiguration> = {
-//     []
-// }
+//TODO: allow registration from outside of this file?
+
+const FACT_VIEW_CONFIGURATIONS: Record<number, StateInformationViewDataConfiguration> = {
+    [ID_SELECTION_PROVISIONAL_BALLOT]: {
+        path: "provisional-ballots"
+    },
+    [ID_SELECTION_MAIL_BALLOT_REJECTIONS]: {
+        path: "mail-ballot-rejections"
+    },
+    [ID_SELECTION_ACTIVE_VOTERS]: {
+        path: "active-voters"
+    },
+    [ID_SELECTION_POLLBOOK_DELETION]: {
+        path: "pollbook-deletions"
+    },
+    [ID_SELECTION_VOTER_REGISTRATION]: {
+        path: "voter-registration"
+    },
+    [ID_SELECTION_VIEW_CVAP_INFO]: {
+        path: "cvap"
+    },
+    [ID_SELECTION_VIEW_CVAP_PERCENTAGE]: {
+        path: "cvap-registration"
+    },
+    [ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES]: {
+        path: "compare-voter-registration-rates"
+    },
+    [ID_SELECTION_REJECTED_BALLOTS]: {
+        path: "rejected-ballots-chart"
+    },
+    [ID_SELECTION_MAIL_IN_VOTING]: {
+        path: "mail-in-chart"
+    },
+    [ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE]: {
+        path: "voter-table"
+    },
+    [ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE]: {
+        path: "equipment-by-type"
+    },
+    [ID_SELECTION_VOTING_EQUIPMENT_BY_AGE]: {
+        path: "equipment-by-age"
+    },
+    [ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART]: {
+        path: "ei-gingles-chart"
+    },
+    [ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS]: {
+        path: "ei-rejected-ballots"
+    },
+    [ID_SELECTION_VOTING_EQUIPMENT_SUMMARY]: {
+        path: "ei-equipment-summary"
+    },
+}
 
 export {
     ID_SELECTION_PROVISIONAL_BALLOT,
@@ -72,4 +122,5 @@ export {
     ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART,
     ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS,
     ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT,
+    FACT_VIEW_CONFIGURATIONS,
 }
