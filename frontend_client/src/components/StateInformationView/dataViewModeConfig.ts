@@ -1,6 +1,7 @@
 import type { GridColDef } from "@mui/x-data-grid";
 import type { ElectionResultsSummaryModel, MailBallotRejectionStatisticsModel, PollbookDeletionStatisticsModel, ProvisionalBallotStatisticsModel, VoterAffiliationStatisticsModel, VoterRegistrationStatisticsModel, VotingEquipmentUsageStatisticsModel } from "../../api/client";
 import type { BarChartDataEntry } from "../DataDisplays/BarChart";
+import { ACTIVE_VOTER_REGISTRATION_COLUMNS, CVAP_INFO_COLUMNS, MAIL_BALLOT_REJECTION_COLUMNS, PROVISIONAL_BALLOT_COLUMNS, VOTER_AFFILIATION_COLUMNS, VOTING_EQUIPMENT_COLUMNS } from "./dataColumns";
 
 type DataFact =
   | ProvisionalBallotStatisticsModel
@@ -33,20 +34,15 @@ const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART = 13;
 const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT = 14;
 const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS = 15;
 
-// These view configurations are specifically used
-// for the Choropleth / Table combination.
-//
-// Fullscreen style data views are handled specifically.
 interface StateInformationViewDataConfiguration {
     path: string;
 
-    // barGraphTitle: string;
-    // barGraphXTitle: string;
+    barGraphTitle: string;
+    barGraphXTitle: string;
+    dataColumnSet: GridColDef<DataFact[]>[];
 
-    // dataColumnSet: GridColDef<DataFact[]>[];
-    
     // barDataGenerator: (fipsCode: string) => BarChartDataEntry[];
-    // rowDataGenerator: (fipsCode: string)=> DataFact[];
+    // rowDataGenerator: (fipsCode: string) => DataFact[];
 
     // TODO: allow choropleth configuration here.
 }
@@ -55,52 +51,100 @@ interface StateInformationViewDataConfiguration {
 
 const FACT_VIEW_CONFIGURATIONS: Record<number, StateInformationViewDataConfiguration> = {
     [ID_SELECTION_PROVISIONAL_BALLOT]: {
-        path: "provisional-ballots"
+        path: "provisional-ballots",
+        barGraphTitle: "Provisional Ballots",
+        barGraphXTitle: "Ballots Cast",
+        dataColumnSet: PROVISIONAL_BALLOT_COLUMNS,
     },
     [ID_SELECTION_MAIL_BALLOT_REJECTIONS]: {
-        path: "mail-ballot-rejections"
+        path: "mail-ballot-rejections",
+        barGraphTitle: "Mail Ballots Rejection",
+        barGraphXTitle: "Rejection Reasons",
+        dataColumnSet: MAIL_BALLOT_REJECTION_COLUMNS,
     },
     [ID_SELECTION_ACTIVE_VOTERS]: {
-        path: "active-voters"
+        path: "active-voters",
+        barGraphTitle: "Voter Registration Count",
+        barGraphXTitle: "Voter Categories",
+        dataColumnSet: ACTIVE_VOTER_REGISTRATION_COLUMNS,
     },
     [ID_SELECTION_POLLBOOK_DELETION]: {
-        path: "pollbook-deletions"
+        path: "pollbook-deletions",
+        barGraphTitle: "Poll Book Deletions",
+        barGraphXTitle: "Deletion Reasons",
+        dataColumnSet: ACTIVE_VOTER_REGISTRATION_COLUMNS,
     },
     [ID_SELECTION_VOTER_REGISTRATION]: {
-        path: "voter-registration"
+        path: "voter-registration",
+        barGraphTitle: "Voter Affiliation Count",
+        barGraphXTitle: "Voter Party",
+        dataColumnSet: VOTER_AFFILIATION_COLUMNS,
     },
     [ID_SELECTION_VIEW_CVAP_INFO]: {
-        path: "cvap"
+        path: "cvap",
+        barGraphTitle: "CVAP Composition",
+        barGraphXTitle: "Race",
+        dataColumnSet: CVAP_INFO_COLUMNS,
     },
     [ID_SELECTION_VIEW_CVAP_PERCENTAGE]: {
-        path: "cvap-registration"
+        path: "cvap-registration",
+        barGraphTitle: "CVAP Composition",
+        barGraphXTitle: "Race",
+        dataColumnSet: CVAP_INFO_COLUMNS,
     },
     [ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES]: {
-        path: "compare-voter-registration-rates"
+        path: "compare-voter-registration-rates",
+        barGraphTitle: "N/A",
+        barGraphXTitle: "N/A",
+        dataColumnSet: [],
     },
     [ID_SELECTION_REJECTED_BALLOTS]: {
-        path: "rejected-ballots-chart"
+        path: "rejected-ballots-chart",
+        barGraphTitle: "N/A",
+        barGraphXTitle: "N/A",
+        dataColumnSet: [],
     },
     [ID_SELECTION_MAIL_IN_VOTING]: {
-        path: "mail-in-chart"
+        path: "mail-in-chart",
+        barGraphTitle: "N/A",
+        barGraphXTitle: "N/A",
+        dataColumnSet: [],
     },
     [ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE]: {
-        path: "voter-table"
+        path: "voter-table",
+        barGraphTitle: "N/A",
+        barGraphXTitle: "N/A",
+        dataColumnSet: [],
     },
     [ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE]: {
-        path: "equipment-by-type"
+        path: "equipment-by-type",
+        barGraphTitle: "Voting Equipment Type Count",
+        barGraphXTitle: "Equipment Type",
+        dataColumnSet: VOTING_EQUIPMENT_COLUMNS,
     },
     [ID_SELECTION_VOTING_EQUIPMENT_BY_AGE]: {
-        path: "equipment-by-age"
+        path: "equipment-by-age",
+        barGraphTitle: "Voting Equipment Type Count",
+        barGraphXTitle: "Equipment Type",
+        dataColumnSet: VOTING_EQUIPMENT_COLUMNS,
     },
     [ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART]: {
-        path: "ei-gingles-chart"
+        path: "ei-gingles-chart",
+        barGraphTitle: "N/A",
+        barGraphXTitle: "N/A",
+        dataColumnSet: [],
     },
     [ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS]: {
-        path: "ei-rejected-ballots"
+        path: "ei-rejected-ballots",
+        barGraphTitle: "N/A",
+        barGraphXTitle: "N/A",
+        dataColumnSet: [],
     },
     [ID_SELECTION_VOTING_EQUIPMENT_SUMMARY]: {
-        path: "ei-equipment-summary"
+        path: "equipment-summary",
+        barGraphTitle: "N/A",
+        barGraphXTitle: "N/A",
+        dataColumnSet: [],
     },
 }
 
