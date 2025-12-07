@@ -11,7 +11,7 @@ host = os.getenv("DB_HOST")
 port = os.getenv("DB_PORT")
 database = os.getenv("DB_NAME")
 
-EAVS_PATH = "../raw/2024_EAVS_for_Public_Release_V1_xlsx.xlsx"
+EAVS_PATH = "../raw/2022_EAVS_for_Public_Release_V1.1.xlsx"
 MAPPING_PATH = "../processed/device_model_mapping_filled.csv"
 OUT_PATH = "../processed/equipment_usage.csv"
 
@@ -22,10 +22,10 @@ mapping = pd.read_csv(MAPPING_PATH, dtype=str).fillna("")
 map_dict = dict(zip(mapping["raw_text"], mapping["device_model_id"]))
 
 groups = {
-    "DRE no VVPAT": ("F3a", ["F3b_1", "F3b_2", "F3b_3"], ["F3c_1", "F3c_2", "F3c_3"]),
-    "DRE with VVPAT": ("F4a", ["F4b_1", "F4b_2", "F4b_3"], ["F4c_1", "F4c_2", "F4c_3"]),
-    "BMD": ("F5a", ["F5b_1", "F5b_2", "F5b_3"], ["F5c_1", "F5c_2", "F5c_3"]),
-    "Scanner": ("F6a", ["F6b_1", "F6b_2", "F6b_3"], ["F6c_1", "F6c_2", "F6c_3"]),
+    "DRE no VVPAT": ("F5a", ["F5b_1", "F5b_2", "F5b_3"], ["F5c_1", "F5c_2", "F5c_3"]),
+    "DRE with VVPAT": ("F6a", ["F6b_1", "F6b_2", "F6b_3"], ["F6c_1", "F6c_2", "F6c_3"]),
+    "BMD": ("F7a", ["F7b_1", "F7b_2", "F7b_3"], ["F7c_1", "F7c_2", "F7c_3"]),
+    "Scanner": ("F8a", ["F8b_1", "F8b_2", "F8b_3"], ["F8c_1", "F8c_2", "F8c_3"]),
 }
 
 records = []
@@ -76,7 +76,7 @@ for device_type, (flag_col, model_cols, qty_cols) in groups.items():
             records.append({
                 "state_id": int(region_id[:2]),
                 "region_id": region_id,
-                "year": 2024,
+                "year": 2022,
                 "device_model_id": device_model_id,
                 "quantity": quantity
             })
@@ -106,4 +106,4 @@ usage_df.to_sql(
     index=False
 )
 
-print("Finished inserting 2024 equipment_usage data into the database")
+print("Finished inserting 2022 equipment_usage data into the database")

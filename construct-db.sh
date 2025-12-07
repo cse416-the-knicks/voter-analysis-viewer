@@ -76,6 +76,10 @@ python3 load_2016_eavs_data.py
 python3 load_ohio_voter_reg_data.py # COMMENT OUT IF NOT NEEDED, TAKES 5 OR MORE MIN TO RUN
 python3 load_device_model.py
 python3 load_2024_equipment_usage.py
+python3 load_2022_equipment_usage.py
+python3 load_2020_equipment_usage.py
+python3 load_2018_equipment_usage.py
+python3 load_2016_equipment_usage.py
 python3 load_ny_election_results.py
 python3 load_ok_election_results.py
 python3 load_cvap_data.py
