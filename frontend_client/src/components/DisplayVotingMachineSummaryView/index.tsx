@@ -19,7 +19,7 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
   {
     field: "equipmentType",
     headerName: "Type",
-    width: 250,
+    width: 220,
   },
   {
     field: "modelName",
@@ -30,17 +30,16 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     field: "firstManufactured",
     headerName: "First Manufactured",
     width: 150,
-  },
-  {
-    field: "lastManufactured",
-    headerName: "Last Manufactured",
-    width: 150,
+    valueFormatter: (value) => {
+      const parsedDate = new Date(value);
+      return parsedDate.toLocaleDateString(navigator.language);
+    }
   },
   {
     field: "discontinued",
     headerName: "Discontinued",
     type: "boolean",
-    width: 160,
+    width: 120,
   },
   {
     field: "operatingSystem",
@@ -52,6 +51,12 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     headerName: "VVPAT?",
     type: "boolean",
     width: 100,
+  },
+  {
+    field: "equipmentQuality",
+    headerName: "Quality",
+    type: "number",
+    width: 80,
   },
 ];
 
