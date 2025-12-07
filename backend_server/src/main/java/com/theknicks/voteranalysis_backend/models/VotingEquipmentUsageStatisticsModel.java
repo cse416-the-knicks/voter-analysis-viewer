@@ -58,8 +58,7 @@ public record VotingEquipmentUsageStatisticsModel(
       var hasVvpat = false;
 
       assert entry.deviceType() != null;
-      if (entry.certification() != null && entry.certification().contains("VVPAT")
-          || entry.deviceType().contains("VVPAT")) {
+      if (entry.deviceType().contains("VVPAT") || entry.hasVvpat().orElse(false)) {
         hasVvpat = true;
       }
 
@@ -71,6 +70,8 @@ public record VotingEquipmentUsageStatisticsModel(
       // to impute it as zero to drag anything down. We'll
       // just not count it for the sake of keeping the average
       // integrity.
+      //
+      // This is also why the aggregation is done in Java as opposed to SQL.
       if (deviceAge.isPresent()) {
         totalDeviceCount += deviceCount;
         totalYears += deviceAge.get() * deviceCount;

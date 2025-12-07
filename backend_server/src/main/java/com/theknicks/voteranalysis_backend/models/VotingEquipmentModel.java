@@ -23,27 +23,19 @@ public record VotingEquipmentModel(
     @SqlColumnName(name = "is_discontinued") Optional<Boolean> discontinued,
     // Could/Should be dates, can change later.
     @SqlColumnName(name = "first_manufactured") Optional<Date> firstManufactured,
-
-    // DNE
-    // @SqlColumnName(name = "last_manufactured") Optional<Integer> lastManufactured,
-
     @SqlColumnName(name = "underlying_os") Optional<String> operatingSystem,
-
-    // DNE
-    // @SqlColumnName(name = "firmware_version") Optional<String> firmwareVersion,
 
     // Voter Verified Paper Audit Trail
     // DNE
-    // @SqlColumnName(name = "has_vvpat") Optional<Boolean> vvpat,
+    // @SqlColumnName(name = "vvpat") Optional<Boolean> vvpat,
 
     // Mostly VVSG
     @SqlColumnName(name = "certification") Optional<String> certificationLevel,
     Optional<Integer> age,
-    @SqlColumnName(name = "quality_score") Optional<Double> equipmentQuality
-
-    // DNE
-    // @SqlColumnName(name = "security_description") Optional<String> securityRiskDescription
-    ) {
+    @SqlColumnName(name = "quality_score") Optional<Double> equipmentQuality,
+    @SqlColumnName(name = "scan_rate") Optional<Double> scanRate,
+    @SqlColumnName(name = "error_rate") Optional<Double> errorRate,
+    @SqlColumnName(name = "reliability") Optional<Double> reliabilityScore) {
 
   public VotingEquipmentModel(
       int id,
@@ -54,7 +46,10 @@ public record VotingEquipmentModel(
       Optional<Date> firstManufactured,
       Optional<String> operatingSystem,
       Optional<String> certificationLevel,
-      Optional<Double> equipmentQuality) {
+      Optional<Double> equipmentQuality,
+      Optional<Double> scanRate,
+      Optional<Double> errorRate,
+      Optional<Double> reliabilityScore) {
     this(
         id,
         manufacturer,
@@ -79,7 +74,10 @@ public record VotingEquipmentModel(
                   return Optional.of(currentYear - yearManufactured);
                 })
             .orElse(Optional.empty()),
-        equipmentQuality);
+        equipmentQuality,
+        scanRate,
+        errorRate,
+        reliabilityScore);
   }
 
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentModel> {
