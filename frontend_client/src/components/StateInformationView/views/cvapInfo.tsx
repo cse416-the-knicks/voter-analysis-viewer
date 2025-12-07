@@ -1,6 +1,6 @@
 import { getCVAPStatisticsData, type CVAPStatisticsModel } from "../../../api/client";
 import { CVAP_INFO_COLUMNS, bargraphDataForCVAPInfo } from "../dataColumns";
-import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfiguration } from "../dataViewModeConfig";
+import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_VIEW_CVAP_INFO } from "./viewIds";
 
 const CVAP_KEYS = [

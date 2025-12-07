@@ -1,6 +1,6 @@
 import { getProvisionalBallots, type ProvisionalBallotStatisticsModel } from "../../../api/client";
 import { PROVISIONAL_BALLOT_COLUMNS, bargraphDataForProvisionalBallots } from "../dataColumns";
-import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfiguration } from "../dataViewModeConfig";
+import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_PROVISIONAL_BALLOT } from "./viewIds";
 
 export default {

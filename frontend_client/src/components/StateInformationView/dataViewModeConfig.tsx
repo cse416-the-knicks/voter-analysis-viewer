@@ -38,6 +38,4 @@ const FACT_VIEW_CONFIGURATIONS: Record<number, StateInformationViewDataConfigura
     ...ECOLOGICAL_INFERENCE_REJECTED_BALLOTS_VIEW,
 }
 
-export {
-    FACT_VIEW_CONFIGURATIONS,
-}
+export { FACT_VIEW_CONFIGURATIONS, type StateInformationViewDataConfiguration, };

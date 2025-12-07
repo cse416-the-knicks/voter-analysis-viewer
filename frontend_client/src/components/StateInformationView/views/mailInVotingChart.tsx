@@ -1,5 +1,5 @@
-import { BubbleChart } from "@mui/icons-material";
 import { getElectionResultsSummary, getBallotStatistics } from "../../../api/client";
+import BubbleChart from "../../DataDisplays/BubbleChart";
 import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_MAIL_IN_VOTING } from "./viewIds";
 

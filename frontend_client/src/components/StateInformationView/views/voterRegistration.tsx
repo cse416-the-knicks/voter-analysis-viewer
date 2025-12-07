@@ -1,6 +1,6 @@
 import { getVoterAffiliations, type VoterAffiliationStatisticsModel } from "../../../api/client";
 import { VOTER_AFFILIATION_COLUMNS, bargraphDataForVoterAffiliations } from "../dataColumns";
-import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfiguration } from "../dataViewModeConfig";
+import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_VOTER_REGISTRATION } from "./viewIds";
 
 export default {

@@ -1,6 +1,6 @@
 import { getPollbookDeletions, getVoterRegistrationCounts, type PollbookDeletionStatisticsModel } from "../../../api/client";
 import { ACTIVE_VOTER_REGISTRATION_COLUMNS, bargraphDataForPollBookDeletions } from "../dataColumns";
-import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfiguration } from "../dataViewModeConfig";
+import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_POLLBOOK_DELETION } from "./viewIds";
 
 export default {
