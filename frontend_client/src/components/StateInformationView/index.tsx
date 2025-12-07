@@ -279,6 +279,8 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/voter-table/`;
     case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
       return `/state/${fipsCode}/equipment-by-type/`;
+    case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
+      return `/state/${fipsCode}/equipment-by-age/`;
     case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART:
       return `/state/${fipsCode}/ei-gingles-chart/`;
     case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS:
@@ -310,6 +312,8 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
   } else if (pathname.includes("/equipment-by-type/")) {
     return ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE;
+  } else if (pathname.includes("/equipment-by-age/")) {
+    return ID_SELECTION_VOTING_EQUIPMENT_BY_AGE;
   } else if (pathname.includes("/cvap-registration")) {
     return ID_SELECTION_VIEW_CVAP_PERCENTAGE;
   } else if (pathname.includes("/cvap")) {
