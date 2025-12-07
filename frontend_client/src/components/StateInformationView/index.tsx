@@ -95,7 +95,7 @@ import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
 import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
 import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
 import VotingMachineSummaryTable from "../VotingEquipmentSummaryTable";
-import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, STATE_INFORMATION_VIEW_TYPE_SIMPLE, STATE_INFORMATION_VIEW_TYPE_OVERLAY } from "./dataViewModeConfig";
+import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, STATE_INFORMATION_VIEW_TYPE_SIMPLE, STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewOverlayView } from "./dataViewModeConfig";
 import EquipmentGradientSet from "./EquipmentGradientSet";
 
 const defaultDropDownSections = [
@@ -283,9 +283,8 @@ function StateInformationView() {
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-    const shouldOpenPopup = Object.values(FACT_VIEW_CONFIGURATIONS)
-      .filter(cfg => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY)
-      .some(cfg => location.pathname.includes(cfg.path));
+    const overlayViews = Object.values(FACT_VIEW_CONFIGURATIONS).filter(cfg => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY);
+    const shouldOpenPopup = overlayViews.some(cfg => location.pathname.includes(cfg.path));
 
   /*
     This annoyingly giant portion of code should be refactored
@@ -691,36 +690,6 @@ function StateInformationView() {
         >
           <Routes>
             <Route
-              path="mail-in-chart"
-              element={
-                <BubbleChart
-                  data={async () => {
-                    const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
-                    const ballotStatisticsData = await getBallotStatistics(fipsCode!);
-                    const mergedData = electionResultsData.map((e, i) => ({ ...e, ...ballotStatisticsData[i] }));
-
-                    const republicanBubbleColor = "#d73027";
-                    const democraticBubbleColor = "#4575b4";
-
-                    return mergedData.map((data) => ({
-                      x: (data.republicanVotes! / data.totalVotes!) * 100.0,
-                      y: (data.totalBallotsByMail! / data.totalBallotsCast!) * 100.0,
-                      name: data.regionName!,
-                      size: data.regionName!.length,
-                      party: "NONE",
-                      color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
-                    }));
-                  }}
-                  width={bubbleChartWidth}
-                  height={bubbleChartHeight}
-                  maxXScale={100}
-                  title="Mail Ballots by Party"
-                  xAxisLabel="Republican Votes (%)"
-                  yAxisLabel="Mail Ballot Voting (%)"
-                />
-              }
-            />
-            <Route
               path="rejected-ballots-chart"
               element={
                 <BubbleChart
@@ -786,6 +755,11 @@ function StateInformationView() {
             <Route path="ei-gingles-chart" element={<DisplayEIGinglesChart />} />
             <Route path="ei-rejected-ballots" element={<DisplayEIRejectedBallots />} />
             <Route path="ei-voting-equipment" element={<DisplayEIVotingEquipment />} />
+            {overlayViews.map((v) => 
+            <Route path={v.path}
+             element = {
+                (v.description as StateInformationViewOverlayView).element?.(fipsCode!, bubbleChartWidth, bubbleChartHeight)
+             }/>)}
           </Routes>
         </Box>
       </Grow>
