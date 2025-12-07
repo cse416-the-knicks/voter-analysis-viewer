@@ -4,16 +4,16 @@ import { STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewDataConfig
 import { ID_SELECTION_VOTER_REGISTRATION } from "./viewIds";
 
 export default {
-    [ID_SELECTION_VOTER_REGISTRATION]: {
-        path: "voter-registration",
-        description: {
-            type: STATE_INFORMATION_VIEW_TYPE_SIMPLE,
-            barGraphTitle: "Voter Affiliation Count",
-            barGraphXTitle: "Voter Party",
-            dataColumnSet: VOTER_AFFILIATION_COLUMNS,
-            barDataGenerator: bargraphDataForVoterAffiliations,
-            rowDataGenerators: [getVoterAffiliations],
-            ratioGenerator: (row: VoterAffiliationStatisticsModel) => [row.activeRegisteredVotersTotal!, row.registeredVotersTotal!]
-        }
-    } as StateInformationViewDataConfiguration
-}
+  [ID_SELECTION_VOTER_REGISTRATION]: {
+    path: "voter-registration",
+    description: {
+      type: STATE_INFORMATION_VIEW_TYPE_SIMPLE,
+      barGraphTitle: "Voter Affiliation Count",
+      barGraphXTitle: "Voter Party",
+      dataColumnSet: VOTER_AFFILIATION_COLUMNS,
+      barDataGenerator: bargraphDataForVoterAffiliations,
+      rowDataGenerators: [getVoterAffiliations],
+      ratioGenerator: (row: VoterAffiliationStatisticsModel) => [row.activeRegisteredVotersTotal!, row.registeredVotersTotal!],
+    },
+  } as StateInformationViewDataConfiguration,
+};

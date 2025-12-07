@@ -20,7 +20,6 @@ function CountyGradientSet(data: VotingEquipmentUsageStatisticsModel, colorSet: 
     colors.push(colorSet[3]);
   }
 
-
   const x1 = 25;
   const y1 = 25;
   const x2 = (x1 * 1.2) / colors.length;
@@ -96,7 +95,7 @@ function CountyGradientSet(data: VotingEquipmentUsageStatisticsModel, colorSet: 
         </linearGradient>
       );
   }
-};
+}
 
 function CountyGradientStyleClass(data: VotingEquipmentUsageStatisticsModel) {
   return (
@@ -109,29 +108,27 @@ fill-opacity: 0.55;
 `}
     </style>
   );
-};
-
-interface EquipmentGradientSetProperties {
-    dataRows: VotingEquipmentUsageStatisticsModel[]
 }
 
-function EquipmentGradientSet({
-    dataRows
-}: EquipmentGradientSetProperties) {
-    return (
-        <>
-        <svg width="0" height="0">
+interface EquipmentGradientSetProperties {
+  dataRows: VotingEquipmentUsageStatisticsModel[];
+}
+
+function EquipmentGradientSet({ dataRows }: EquipmentGradientSetProperties) {
+  return (
+    <>
+      <svg width="0" height="0">
         <defs>
-            {dataRows.map((x) =>
-                CountyGradientSet(
-                x,
-                VOTING_EQUIPMENT_TYPE_COLORS.map((c) => c.color)
-                )
-            )}
-            </defs>
-        </svg>
-        {dataRows.map(CountyGradientStyleClass)}
+          {dataRows.map((x) =>
+            CountyGradientSet(
+              x,
+              VOTING_EQUIPMENT_TYPE_COLORS.map((c) => c.color)
+            )
+          )}
+        </defs>
+      </svg>
+      {dataRows.map(CountyGradientStyleClass)}
     </>
-    );
+  );
 }
 export default EquipmentGradientSet;

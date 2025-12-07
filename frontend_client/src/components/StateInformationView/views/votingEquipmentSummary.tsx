@@ -3,15 +3,11 @@ import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfi
 import { ID_SELECTION_VOTING_EQUIPMENT_SUMMARY } from "./viewIds";
 
 export default {
-    [ID_SELECTION_VOTING_EQUIPMENT_SUMMARY]: {
-        path: "equipment-summary",
-        description: {
-            type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
-            element: (fipsCode, overlayWidth, overlayHeight) => <VotingMachineSummaryTable
-                width={overlayWidth}
-                height={overlayHeight}
-                fipsCode={fipsCode}
-            />
-        }
-    } as StateInformationViewDataConfiguration
-}
+  [ID_SELECTION_VOTING_EQUIPMENT_SUMMARY]: {
+    path: "equipment-summary",
+    description: {
+      type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
+      element: (fipsCode, overlayWidth, overlayHeight) => <VotingMachineSummaryTable width={overlayWidth} height={overlayHeight} fipsCode={fipsCode} />,
+    },
+  } as StateInformationViewDataConfiguration,
+};

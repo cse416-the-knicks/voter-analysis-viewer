@@ -3,11 +3,11 @@ import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfi
 import { ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS } from "./viewIds";
 
 export default {
-    [ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS]: {
-        path: "ei-rejected-ballots",
-        description: {
-            type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
-            element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIRejectedBallots />
-        }
-    } as StateInformationViewDataConfiguration
-}
+  [ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS]: {
+    path: "ei-rejected-ballots",
+    description: {
+      type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
+      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIRejectedBallots />,
+    },
+  } as StateInformationViewDataConfiguration,
+};

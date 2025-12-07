@@ -46,8 +46,32 @@ import ColorKeyLegend from "../ColorKeyLegend";
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import EquipmentGradientSet from "./EquipmentGradientSet";
-import { ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS } from "./views/viewIds";
-import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, STATE_INFORMATION_VIEW_TYPE_SIMPLE, type StateInformationViewSimpleFactView, type StateInformationViewOverlayView, type DataFact } from "./dataViewConfigTypes";
+import {
+  ID_SELECTION_PROVISIONAL_BALLOT,
+  ID_SELECTION_ACTIVE_VOTERS,
+  ID_SELECTION_POLLBOOK_DELETION,
+  ID_SELECTION_MAIL_BALLOT_REJECTIONS,
+  ID_SELECTION_REJECTED_BALLOTS,
+  ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE,
+  ID_SELECTION_VOTING_EQUIPMENT_BY_AGE,
+  ID_SELECTION_VOTING_EQUIPMENT_SUMMARY,
+  ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES,
+  ID_SELECTION_MAIL_IN_VOTING,
+  ID_SELECTION_VIEW_CVAP_INFO,
+  ID_SELECTION_VIEW_CVAP_PERCENTAGE,
+  ID_SELECTION_VOTER_REGISTRATION,
+  ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE,
+  ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART,
+  ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT,
+  ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS,
+} from "./views/viewIds";
+import {
+  STATE_INFORMATION_VIEW_TYPE_OVERLAY,
+  STATE_INFORMATION_VIEW_TYPE_SIMPLE,
+  type StateInformationViewSimpleFactView,
+  type StateInformationViewOverlayView,
+  type DataFact,
+} from "./dataViewConfigTypes";
 import { FACT_VIEW_CONFIGURATIONS } from "./dataViewModeConfig";
 
 const defaultDropDownSections = [
@@ -226,8 +250,8 @@ function StateInformationView() {
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-    const overlayViews = Object.values(FACT_VIEW_CONFIGURATIONS).filter(cfg => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY);
-    const shouldOpenPopup = overlayViews.some(cfg => location.pathname.includes(cfg.path));
+  const overlayViews = Object.values(FACT_VIEW_CONFIGURATIONS).filter((cfg) => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY);
+  const shouldOpenPopup = overlayViews.some((cfg) => location.pathname.includes(cfg.path));
 
   useEffect(
     function () {
@@ -242,21 +266,17 @@ function StateInformationView() {
           const rowDataSet = await Promise.all(description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: false })));
           // Aggregated data rows are exactly 1 entry
           // for uniformity in the endpoint (so that it can share the same endpoint as the per-county variant.)
-          const aggregatedDataSet = await Promise.all(
-            description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: true }))
-          );
+          const aggregatedDataSet = await Promise.all(description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: true })));
           // All EAVS "facts" have the same length, which is the amount of counties of
           // that state.
           // For each county, then for each corresponding row in each query.
-          const rowData = rowDataSet[0].map((_, i) =>
-            rowDataSet.reduce((acc, entry) => ({ ...acc, ...entry[i] }), {})
-          ).map((x: DataFact) => ({ id: x.fullRegionId, ...x }));
+          const rowData = rowDataSet[0]
+            .map((_, i) => rowDataSet.reduce((acc, entry) => ({ ...acc, ...entry[i] }), {}))
+            .map((x: DataFact) => ({ id: x.fullRegionId, ...x }));
 
-          const aggregatedData = aggregatedDataSet.reduce(
-            (acc, entry) => ({ ...acc, ...entry[0] }), {}
-          ) as DataFact;
+          const aggregatedData = aggregatedDataSet.reduce((acc, entry) => ({ ...acc, ...entry[0] }), {}) as DataFact;
 
-          rowData.push({id: aggregatedData.fullRegionId, ...aggregatedData});
+          rowData.push({ id: aggregatedData.fullRegionId, ...aggregatedData });
           setBarData(description.barDataGenerator(aggregatedData));
           setDataRows(rowData);
         }
@@ -301,7 +321,7 @@ function StateInformationView() {
 
     let colorPoint: number | null = null;
     if (row) {
-      let [dataEntry, dataEntryTotal] = viewConfig.ratioGenerator(row, cvapDemographicSelection);
+      const [dataEntry, dataEntryTotal] = viewConfig.ratioGenerator(row, cvapDemographicSelection);
       if (dataEntryTotal !== 0) {
         colorPoint = (dataEntry / dataEntryTotal) * 100;
       }
@@ -316,7 +336,7 @@ function StateInformationView() {
         left: `calc(${selectionDrawerWidth} + 1.5em)`,
       }}
     >
-      <EquipmentGradientSet dataRows={dataRows}/>
+      <EquipmentGradientSet dataRows={dataRows} />
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
         onSelection={(id) => {
@@ -450,11 +470,12 @@ function StateInformationView() {
           }}
         >
           <Routes>
-            {overlayViews.map((v) => 
-            <Route path={v.matcher || v.path}
-             element = {
-                (v.description as StateInformationViewOverlayView).element?.(fipsCode!, bubbleChartWidth, bubbleChartHeight)
-             }/>)}
+            {overlayViews.map((v) => (
+              <Route
+                path={v.matcher || v.path}
+                element={(v.description as StateInformationViewOverlayView).element?.(fipsCode!, bubbleChartWidth, bubbleChartHeight)}
+              />
+            ))}
           </Routes>
         </Box>
       </Grow>

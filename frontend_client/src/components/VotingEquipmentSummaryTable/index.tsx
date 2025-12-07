@@ -30,7 +30,7 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     valueFormatter: (value) => {
       const parsedDate = new Date(value);
       return parsedDate.toLocaleDateString(navigator.language);
-    }
+    },
   },
   {
     field: "discontinued",
@@ -87,10 +87,7 @@ interface VotingMachineSummaryTableProperties {
   height?: number;
 }
 
-function VotingMachineSummaryTable({
-  fipsCode,
-  width, height
-}: VotingMachineSummaryTableProperties) {
+function VotingMachineSummaryTable({ fipsCode, width, height }: VotingMachineSummaryTableProperties) {
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
 
   useEffect(function () {

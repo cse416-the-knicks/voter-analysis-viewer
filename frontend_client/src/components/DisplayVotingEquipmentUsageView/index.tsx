@@ -58,52 +58,44 @@ function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: Di
           title={"Equipment History"}
           xAxisLabel={"Category"}
           yAxisLabel={"Quantity"}
-          colorMap={zip(VOTING_EQUIPMENT_TYPE_COLORS.map(x => x.text), VOTING_EQUIPMENT_TYPE_COLORS.map(x => x.color))}
+          colorMap={zip(
+            VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.text),
+            VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.color)
+          )}
           data={async () => {
             const electionYears = [2016, 2018, 2020, 2022, 2024];
-            const promises = electionYears.map((year) => 
-              getDetailedVotingEquipmentUsage(stateFips.toString(), { year: year, aggregate: true }))
+            const promises = electionYears.map((year) => getDetailedVotingEquipmentUsage(stateFips.toString(), { year: year, aggregate: true }));
             const votingEquipmentUsages = (await Promise.all(promises)).map((x) => x[0]);
-            console.log(votingEquipmentUsages);
-            const scannerUsages = votingEquipmentUsages.map(
-              (e, i) => 
-                {return { 
-                  value: e?.scannerTotal! || 0,
-                  title: electionYears[i].toString(),
-                  category: "Scanner"  
-                }}
-            );
-            const bmdUsages = votingEquipmentUsages.map(
-              (e, i) => 
-                {return { 
-                  value: e?.bmdTotal! || 0,
-                  title: electionYears[i].toString(),
-                  category: "BMD"  
-                }}
-            );
-            const dreVvpatUsages = votingEquipmentUsages.map(
-              (e, i) => 
-                {return { 
-                  value: e?.dreVvpatTotal! || 0,
-                  title: electionYears[i].toString(),
-                  category: "DRE (VVPAT)"  
-                }}
-            );
-            const dreNoVvpatUsages = votingEquipmentUsages.map(
-              (e, i) => 
-                {return { 
-                  value: e?.dreNoVvpatTotal! || 0,
-                  title: electionYears[i].toString(),
-                  category: "DRE (No VVPAT)"  
-                }}
-            );
+            const scannerUsages = votingEquipmentUsages.map((e, i) => {
+              return {
+                value: (e && e.scannerTotal!) || 0,
+                title: electionYears[i].toString(),
+                category: "Scanner",
+              };
+            });
+            const bmdUsages = votingEquipmentUsages.map((e, i) => {
+              return {
+                value: (e && e.bmdTotal!) || 0,
+                title: electionYears[i].toString(),
+                category: "BMD",
+              };
+            });
+            const dreVvpatUsages = votingEquipmentUsages.map((e, i) => {
+              return {
+                value: (e && e.dreVvpatTotal!) || 0,
+                title: electionYears[i].toString(),
+                category: "DRE (VVPAT)",
+              };
+            });
+            const dreNoVvpatUsages = votingEquipmentUsages.map((e, i) => {
+              return {
+                value: (e && e.dreNoVvpatTotal!) || 0,
+                title: electionYears[i].toString(),
+                category: "DRE (No VVPAT)",
+              };
+            });
 
-            const dataEntries =  [
-              ...dreVvpatUsages,
-              ...dreNoVvpatUsages,
-              ...bmdUsages,
-              ...scannerUsages
-            ];
+            const dataEntries = [...dreVvpatUsages, ...dreNoVvpatUsages, ...bmdUsages, ...scannerUsages];
 
             return dataEntries;
           }}
@@ -128,11 +120,13 @@ function DisplayVotingMachineSummaryView() {
     })();
   }, []);
 
-  useKeyDown("Escape", () => {if (targetState) {
-    setTargetState(null);
-  } else {
-    navigate(-1)
-  }});
+  useKeyDown("Escape", () => {
+    if (targetState) {
+      setTargetState(null);
+    } else {
+      navigate(-1);
+    }
+  });
 
   return (
     <>

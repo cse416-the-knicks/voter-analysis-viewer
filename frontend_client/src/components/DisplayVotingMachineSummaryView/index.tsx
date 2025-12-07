@@ -12,12 +12,8 @@ function DisplayVotingMachineSummaryView() {
   useKeyDown("Escape", () => navigate("/"));
 
   return (
-    <WindowTitled 
-      title={"Voting Equipment Table Summary"} 
-      top={"0"} 
-      left={`calc(50vw - ${maxWidth / 2}px)`}
-      onXout={() => navigate("/")}>
-      <VotingMachineSummaryTable width={maxWidth}/>
+    <WindowTitled title={"Voting Equipment Table Summary"} top={"0"} left={`calc(50vw - ${maxWidth / 2}px)`} onXout={() => navigate("/")}>
+      <VotingMachineSummaryTable width={maxWidth} />
     </WindowTitled>
   );
 }

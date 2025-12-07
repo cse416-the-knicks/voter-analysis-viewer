@@ -128,7 +128,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
       .on("mouseover", function (_event, _d) {
         const element = this as Element;
         setShowTooltip(true);
-        setTooltipText(element.getAttribute("data-title") + ": " + (parseInt(element.getAttribute("data-value") || "0", 10)).toLocaleString(navigator.language));
+        setTooltipText(element.getAttribute("data-title") + ": " + parseInt(element.getAttribute("data-value") || "0", 10).toLocaleString(navigator.language));
       })
       .on("mouseout", function (_event, _d) {
         setShowTooltip(false);
