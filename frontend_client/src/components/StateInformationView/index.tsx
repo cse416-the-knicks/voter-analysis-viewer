@@ -840,6 +840,10 @@ function StateInformationView() {
               const geounitFipsCode = feature.properties!.COUNTYFP;
               const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
 
+              if (stateType.some((x) => x !== DETAIL_STATE_TYPE_VOTER_REGISTRATION)) {
+                return;
+              }
+
               if (activeDataState === ID_SELECTION_VOTER_REGISTRATION || activeDataState === ID_SELECTION_ACTIVE_VOTERS) {
                 navigate(`/state/${fipsCode}/voter-table/${fullyPaddedFipsCode}`);
               }
