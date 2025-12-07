@@ -3,7 +3,6 @@ import VOTING_EQUIPMENT_TYPE_COLORS from "../../helpers/votingEquipmentColorBuck
 import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
 import { PERCENTAGE_CHOROPLETH_BUCKETS, VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS } from "../../helpers/choroplethBuckets";
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
-
 import InboxIcon from "@mui/icons-material/Inbox";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import BallotIcon from "@mui/icons-material/Ballot";
@@ -13,11 +12,8 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ScannerIcon from "@mui/icons-material/Scanner";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
-
 import Stack from "@mui/material/Stack";
-
 import { Box, Paper, Typography, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
@@ -25,24 +21,18 @@ import {
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
   getDetailStateType,
   isDetailState,
-  type DetailStateType,
 } from "../FullBoundedUSMap/detailedStatesInfo";
-
 import { useState, useEffect } from "react";
-
 import styles from "./StateInformationView.module.css";
 import StateMap from "../StateMap";
-
 import { FIPS_TO_STATES_MAP } from "../FullBoundedUSMap/boundaryData";
-import { StateInformationViewDrawer } from "./StateInformationViewDrawer";
+import { StateInformationViewDrawer, type StateInformationViewDrawerSection } from "./StateInformationViewDrawer";
 import useKeyDown from "../../hooks/useKeyDown";
 import useCssCalc from "../../hooks/useCssCalc";
 import StyledDataGrid from "../StyledDataGrid";
-
 import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
-
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import EquipmentGradientSet from "./EquipmentGradientSet";
@@ -74,7 +64,7 @@ import {
 } from "./dataViewConfigTypes";
 import { FACT_VIEW_CONFIGURATIONS } from "./dataViewModeConfig";
 
-const defaultDropDownSections = [
+const DROPDOWN_SECTIONS = [
   {
     title: "Ballot Data",
     iconComponent: <BallotIcon />,
@@ -83,6 +73,12 @@ const defaultDropDownSections = [
       { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
       { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
       { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
+      {
+        id: ID_SELECTION_MAIL_IN_VOTING,
+        iconComponent: <HowToVoteIcon />,
+        textContent: "Mail-In Voting Chart",
+        requiresStateType: [DETAIL_STATE_TYPE_REPUBLICAN, DETAIL_STATE_TYPE_DEMOCRAT],
+      },
       { id: ID_SELECTION_REJECTED_BALLOTS, iconComponent: <DoNotDisturbIcon />, textContent: "Rejected Ballots vs. Equipment Quality" },
     ],
   },
@@ -96,100 +92,59 @@ const defaultDropDownSections = [
   },
   {
     title: "Voter Registration",
-    items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
-  },
-];
-
-const partyStateDropDownSections = [
-  {
-    title: "Ballot Data",
-    iconComponent: <BallotIcon />,
-    items: [
-      { id: ID_SELECTION_PROVISIONAL_BALLOT, iconComponent: <InboxIcon />, textContent: "Provisional Ballots" },
-      { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
-      { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
-      { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
-      { id: ID_SELECTION_MAIL_IN_VOTING, iconComponent: <HowToVoteIcon />, textContent: "Mail-In Voting Chart" },
-      { id: ID_SELECTION_REJECTED_BALLOTS, iconComponent: <DoNotDisturbIcon />, textContent: "Rejected Ballots vs. Equipment Quality" },
-    ],
-  },
-  {
-    title: "Voting Equipment",
-    items: [
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Type" },
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Age" },
-      { id: ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, iconComponent: <ScannerIcon />, textContent: "Summary" },
-    ],
-  },
-  {
-    title: "Voter Registration",
     items: [
       { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
-      { id: ID_SELECTION_VIEW_CVAP_INFO, iconComponent: <PersonIcon />, textContent: "CVAP Statistics" },
-      { id: ID_SELECTION_VIEW_CVAP_PERCENTAGE, iconComponent: <PersonIcon />, textContent: "CVAP Registration" },
-    ],
-  },
-];
+      {
+        id: ID_SELECTION_VOTER_REGISTRATION,
+        iconComponent: <PersonIcon />,
+        textContent: "Registration Data",
+        requiresStateType: [DETAIL_STATE_TYPE_VOTER_REGISTRATION],
+      },
+      {
+        id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE,
+        iconComponent: <PersonIcon />,
+        textContent: "Registered Voters",
+        requiresStateType: [DETAIL_STATE_TYPE_VOTER_REGISTRATION],
+      },
 
-const voterRegistrationStateDropDownSections = [
-  {
-    title: "Ballot Data",
-    iconComponent: <BallotIcon />,
-    items: [
-      { id: ID_SELECTION_PROVISIONAL_BALLOT, iconComponent: <InboxIcon />, textContent: "Provisional Ballots" },
-      { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
-      { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
-      { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
+      {
+        id: ID_SELECTION_VIEW_CVAP_INFO,
+        iconComponent: <PersonIcon />,
+        textContent: "CVAP Statistics",
+        requiresStateType: [DETAIL_STATE_TYPE_REPUBLICAN, DETAIL_STATE_TYPE_DEMOCRAT],
+      },
+      {
+        id: ID_SELECTION_VIEW_CVAP_PERCENTAGE,
+        iconComponent: <PersonIcon />,
+        textContent: "CVAP Registration",
+        requiresStateType: [DETAIL_STATE_TYPE_REPUBLICAN, DETAIL_STATE_TYPE_DEMOCRAT],
+      },
     ],
   },
-  {
-    title: "Voting Equipment",
-    items: [
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <ScannerIcon />, textContent: "By Type" },
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
-    ],
-  },
-  {
-    title: "Voter Registration",
-    items: [
-      { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
-      { id: ID_SELECTION_VOTER_REGISTRATION, iconComponent: <PersonIcon />, textContent: "Registration Data" },
-      { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
-    ],
-  },
-];
-
-const ecologicalInferenceDropDownSections = [
   {
     title: "Ecological Inference",
     items: [
-      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, iconComponent: <PersonIcon />, textContent: "Gingles Chart" },
-      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, iconComponent: <ScannerIcon />, textContent: "Equipment Accessibility" },
-      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, iconComponent: <PersonOffIcon />, textContent: "CVAP Rejections" },
+      {
+        id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART,
+        iconComponent: <PersonIcon />,
+        textContent: "Gingles Chart",
+        requiresStateType: [DETAIL_STATE_TYPE_PRECLEARANCE_STATE],
+      },
+      {
+        id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT,
+        iconComponent: <ScannerIcon />,
+        textContent: "Equipment Accessibility",
+        requiresStateType: [DETAIL_STATE_TYPE_PRECLEARANCE_STATE],
+      },
+      {
+        id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS,
+        iconComponent: <PersonOffIcon />,
+        textContent: "CVAP Rejections",
+        requiresStateType: [DETAIL_STATE_TYPE_PRECLEARANCE_STATE],
+      },
     ],
   },
-];
-
-function pickDropdownType(stateType: DetailStateType[]) {
-  const partyState = stateType.some((x) => x === DETAIL_STATE_TYPE_REPUBLICAN || x === DETAIL_STATE_TYPE_DEMOCRAT);
-  const voterRegistrationState = stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION);
-  const preclearanceState = stateType.some((x) => x === DETAIL_STATE_TYPE_PRECLEARANCE_STATE);
-  let result = [...defaultDropDownSections];
-  if (partyState || voterRegistrationState) {
-    if (partyState) {
-      result[0] = partyStateDropDownSections[0];
-      result[2] = partyStateDropDownSections[2];
-    }
-    if (voterRegistrationState) {
-      result[2] = voterRegistrationStateDropDownSections[2];
-    }
-    if (preclearanceState) {
-      result = result.concat(ecologicalInferenceDropDownSections);
-    }
-    return result;
-  }
-  return result;
-}
+] as StateInformationViewDrawerSection[];
 
 function a11yProps(index: number) {
   return {
@@ -342,7 +297,7 @@ function StateInformationView() {
         onSelection={(id) => {
           navigate(getUrlForModeId(id, fipsCode!));
         }}
-        sections={pickDropdownType(stateType)}
+        sections={DROPDOWN_SECTIONS}
         stateType={getDetailStateType(fipsCode!)}
         drawerWidth={selectionDrawerWidth}
         topMargin={boxMarginTop}

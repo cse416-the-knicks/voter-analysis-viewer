@@ -17,6 +17,7 @@ interface StateInformationViewDrawerItem {
   id: number;
   iconComponent?: ReactNode;
   textContent: string;
+  requiresStateType?: DetailStateType[];
 }
 
 interface StateInformationViewDrawerSection {
@@ -38,6 +39,7 @@ interface StateInformationViewDrawerProperties {
 interface StateInformationViewDrawerListItemProperties {
   stateHook: [number, (arg0: number) => void];
   onSelection: OnSelectionFn;
+  stateType: DetailStateType[];
   item: StateInformationViewDrawerItem;
 }
 
@@ -95,8 +97,14 @@ function StateInfoCard({ type }: StateInfoCardProperties) {
   return EAVsStateCard();
 }
 
-function StateInformationViewDrawerListItem({ item, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
+function StateInformationViewDrawerListItem({ item, stateType, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
   const [stateValue, setStateValue] = stateHook;
+
+  if (item.requiresStateType) {
+    if (!item.requiresStateType.some((x) => stateType.some((y) => x === y))) {
+      return <></>;
+    }
+  }
 
   return (
     <ListItem>
@@ -117,19 +125,27 @@ function StateInformationViewDrawerListItem({ item, onSelection, stateHook }: St
   );
 }
 
+function dropdownHasAnyItems(section: StateInformationViewDrawerSection, stateType: DetailStateType[]) {
+  return section.items.some((v) => (v.requiresStateType ? v.requiresStateType.some((x) => stateType.some((y) => y === x)) : true));
+}
+
 function StateInformationViewDrawer({ sections, stateHook, onSelection, stateType, topMargin, drawerWidth }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
-  const sectionComponents = sections.map((section) => (
-    <>
-      <ListItem>
-        {section.iconComponent && <ListItemIcon>{section.iconComponent}</ListItemIcon>}
-        <ListItemText primary={section.title} />
-      </ListItem>
-      {section.items.map((item) => (
-        <StateInformationViewDrawerListItem onSelection={onSelection} stateHook={stateHook} item={item} />
-      ))}
-    </>
-  ));
+  const sectionComponents = sections.map((section) =>
+    dropdownHasAnyItems(section, stateType) ? (
+      <>
+        <ListItem>
+          {section.iconComponent && <ListItemIcon>{section.iconComponent}</ListItemIcon>}
+          <ListItemText primary={section.title} />
+        </ListItem>
+        {section.items.map((item) => (
+          <StateInformationViewDrawerListItem stateType={stateType} onSelection={onSelection} stateHook={stateHook} item={item} />
+        ))}
+      </>
+    ) : (
+      <></>
+    )
+  );
 
   const finalComponentsWithDividers = [];
   for (let i = 0; i < sectionComponents.length; ++i) {
