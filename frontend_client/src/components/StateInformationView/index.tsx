@@ -254,8 +254,9 @@ function StateInformationView() {
 
           const aggregatedData = aggregatedDataSet.reduce(
             (acc, entry) => ({ ...acc, ...entry[0] }), {}
-          );
+          ) as DataFact;
 
+          rowData.push({id: aggregatedData.fullRegionId, ...aggregatedData});
           setBarData(description.barDataGenerator(aggregatedData));
           setDataRows(rowData);
         }
