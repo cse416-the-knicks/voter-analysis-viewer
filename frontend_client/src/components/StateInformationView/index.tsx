@@ -78,7 +78,7 @@ import ColorKeyLegend from "../ColorKeyLegend";
 
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
-import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, STATE_INFORMATION_VIEW_TYPE_SIMPLE, STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewOverlayView } from "./dataViewModeConfig";
+import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, STATE_INFORMATION_VIEW_TYPE_SIMPLE, STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewOverlayView, type StateInformationViewSimpleFactView } from "./dataViewModeConfig";
 import EquipmentGradientSet from "./EquipmentGradientSet";
 
 const defaultDropDownSections = [
@@ -452,76 +452,15 @@ function StateInformationView() {
       return null;
     }
 
+    const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState].description as StateInformationViewSimpleFactView;
+
     const { properties } = feature;
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
 
     let colorPoint: number | null = null;
     if (row) {
-      let dataEntry: number = 0;
-      let dataEntryTotal: number = 0;
-      switch (activeDataState) {
-        case ID_SELECTION_PROVISIONAL_BALLOT:
-          dataEntry = (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast!;
-          dataEntryTotal = (row as ProvisionalBallotStatisticsModel).totalBallotsCast!;
-          break;
-        case ID_SELECTION_ACTIVE_VOTERS:
-          dataEntry = (row as VoterRegistrationStatisticsModel).active!;
-          dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
-          break;
-        case ID_SELECTION_POLLBOOK_DELETION:
-          dataEntry = (row as PollbookDeletionStatisticsModel).totalRemoved!;
-          dataEntryTotal = (row as PollbookDeletionStatisticsModel).totalRegisteredVoters!;
-          console.log(dataEntry, dataEntryTotal);
-          break;
-        case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
-          dataEntry = (row as MailBallotRejectionStatisticsModel).rejectTotal!;
-          dataEntryTotal = (row as MailBallotRejectionStatisticsModel).totalBallotsByMail!;
-          break;
-        case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
-          dataEntry = (row as VotingEquipmentUsageStatisticsModel).averageAge!;
-          dataEntryTotal = 100; // HACKME(jerry): to avoid writing more special case code.
-          break;
-        case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
-          dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
-          dataEntry = (row as CVAPStatisticsModel).cvapTotal!;
-          break;
-        case ID_SELECTION_VIEW_CVAP_INFO:
-          dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
-          dataEntry = 0;
-          switch (cvapDemographicSelection) {
-            case 0:
-              {
-                dataEntry = (row as CVAPStatisticsModel).asianTotal!;
-              }
-              break;
-            case 1:
-              {
-                dataEntry = (row as CVAPStatisticsModel).blackTotal!;
-              }
-              break;
-            case 2:
-              {
-                dataEntry = (row as CVAPStatisticsModel).hispanicTotal!;
-              }
-              break;
-            case 3:
-              {
-                dataEntry = (row as CVAPStatisticsModel).whiteTotal!;
-              }
-              break;
-            case 4:
-              {
-                dataEntry = (row as CVAPStatisticsModel).otherTotal!;
-              }
-              break;
-          }
-          break;
-        case ID_SELECTION_VOTER_REGISTRATION:
-          dataEntry = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
-          dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
-          break;
-      }
+      let [dataEntry, dataEntryTotal] = viewConfig.ratioGenerator(row, cvapDemographicSelection);
       if (dataEntryTotal !== 0) {
         colorPoint = (dataEntry / dataEntryTotal) * 100;
       }
