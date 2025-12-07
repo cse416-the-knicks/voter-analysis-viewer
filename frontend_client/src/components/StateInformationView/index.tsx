@@ -4,7 +4,6 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
-  VoterRegistrationHistoryGraphDataModel,
   VotingEquipmentUsageStatisticsModel,
   VoterAffiliationStatisticsModel,
   CVAPStatisticsModel,
@@ -15,14 +14,12 @@ import {
   getMailBallotRejections,
   getVoterRegistrationCounts,
   getPollbookDeletions,
-  getDetailedVoterRegistrationDataCount,
   getVoterRegistrationHistory,
   getDetailedVotingEquipmentUsage,
   getElectionResultsSummary,
   getBallotStatistics,
   getVoterAffiliations,
   getCVAPStatisticsData,
-  getAllVotingEquipment,
 } from "../../api/client";
 
 import VOTING_EQUIPMENT_TYPE_COLORS from "../../helpers/votingEquipmentColorBuckets";
@@ -94,33 +91,12 @@ import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
 import BubbleChart from "../DataDisplays/BubbleChart";
 import LineChart from "../DataDisplays/LineChart";
-import NotImplementedYet from "../NotImplementedYetDialog";
 import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
 import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
 import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
 import VotingMachineSummaryTable from "../VotingEquipmentSummaryTable";
-
-const ID_SELECTION_PROVISIONAL_BALLOT = 0;
-const ID_SELECTION_ACTIVE_VOTERS = 1;
-const ID_SELECTION_POLLBOOK_DELETION = 2;
-const ID_SELECTION_MAIL_BALLOT_REJECTIONS = 3;
-const ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES = 10;
-
-const ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE = 4;
-const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
-const ID_SELECTION_VOTING_EQUIPMENT_SUMMARY = 16;
-
-const ID_SELECTION_REJECTED_BALLOTS = 6;
-const ID_SELECTION_MAIL_IN_VOTING = 7;
-
-const ID_SELECTION_VOTER_REGISTRATION = 8;
-const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
-const ID_SELECTION_VIEW_CVAP_INFO = 11;
-const ID_SELECTION_VIEW_CVAP_PERCENTAGE = 12;
-
-const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART = 13;
-const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT = 14;
-const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS = 15;
+import { ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS } from "./dataViewModeConfig";
+import EquipmentGradientSet from "./EquipmentGradientSet";
 
 const defaultDropDownSections = [
   {
@@ -329,120 +305,6 @@ function determineInitialStateBasedOnUrl(pathname: string) {
   }
   return ID_SELECTION_PROVISIONAL_BALLOT;
 }
-
-// NOTE(jery):
-// needed to make the patterns for the
-// voting equipment type map display.
-const CountyGradientSet = (data: VotingEquipmentUsageStatisticsModel, colorSet: string[]) => {
-  const colors = [];
-
-  if (data.dreNoVvpatTotal! > 0) {
-    colors.push(colorSet[0]);
-  }
-
-  if (data.dreVvpatTotal! > 0) {
-    colors.push(colorSet[1]);
-  }
-
-  if (data.bmdTotal! > 0) {
-    colors.push(colorSet[2]);
-  }
-
-  if (data.scannerTotal! > 0) {
-    colors.push(colorSet[3]);
-  }
-
-
-  const x1 = 25;
-  const y1 = 25;
-  const x2 = (x1 * 1.2) / colors.length;
-  const y2 = (y1 * 1.2) / colors.length;
-
-  // Colorband thresholds are repeated because linear gradient
-  // will try to interpolate between colors. So the duplicate "edge" color
-  // is to force a "hard transition" so that the colors appear striped instead
-  // of as a gradient.
-
-  switch (colors.length) {
-    case 1:
-      return (
-        <linearGradient id={`vt${data.fullRegionId}`} gradientTransform="">
-          <stop offset="0" stop-color={colors[0]} />
-          <stop offset="100%" stop-color={colors[0]} />
-        </linearGradient>
-      );
-    case 2:
-      return (
-        <linearGradient
-          id={`vt${data.fullRegionId}`}
-          gradientTransform="rotate(0)"
-          x1={x1 + "%"}
-          y1={y1 + "%"}
-          x2={x2 + "%"}
-          y2={y2 + "%"}
-          spreadMethod="repeat"
-        >
-          <stop offset="0" stop-color={colors[0]} />
-          <stop offset="50%" stop-color={colors[0]} />
-          <stop offset="50%" stop-color={colors[1]} />
-          <stop offset="100%" stop-color={colors[1]} />
-        </linearGradient>
-      );
-    case 3:
-      return (
-        <linearGradient
-          id={`vt${data.fullRegionId}`}
-          gradientTransform="rotate(0)"
-          x1={x1 + "%"}
-          y1={y1 + "%"}
-          x2={x2 + "%"}
-          y2={y2 + "%"}
-          spreadMethod="repeat"
-        >
-          <stop offset="0" stop-color={colors[0]} />
-          <stop offset="33%" stop-color={colors[0]} />
-          <stop offset="33%" stop-color={colors[1]} />
-          <stop offset="66%" stop-color={colors[1]} />
-          <stop offset="66%" stop-color={colors[2]} />
-          <stop offset="100%" stop-color={colors[2]} />
-        </linearGradient>
-      );
-    case 4:
-      return (
-        <linearGradient
-          id={`vt${data.fullRegionId}`}
-          gradientTransform="rotate(0)"
-          x1={x1 + "%"}
-          y1={y1 + "%"}
-          x2={x2 + "%"}
-          y2={y2 + "%"}
-          spreadMethod="repeat"
-        >
-          <stop offset="0" stop-color={colors[0]} />
-          <stop offset="25%" stop-color={colors[0]} />
-          <stop offset="25%" stop-color={colors[1]} />
-          <stop offset="50%" stop-color={colors[1]} />
-          <stop offset="50%" stop-color={colors[2]} />
-          <stop offset="75%" stop-color={colors[2]} />
-          <stop offset="75%" stop-color={colors[3]} />
-          <stop offset="100%" stop-color={colors[3]} />
-        </linearGradient>
-      );
-  }
-};
-
-const CountyGradientStyleClass = (data: VotingEquipmentUsageStatisticsModel) => {
-  return (
-    <style>
-      {`
-.vt${data.fullRegionId} {
-fill: url("#vt${data.fullRegionId}");
-fill-opacity: 0.55;
-}
-`}
-    </style>
-  );
-};
 
 function StateInformationView() {
   const { fipsCode } = useParams();
@@ -787,18 +649,7 @@ function StateInformationView() {
         left: `calc(${selectionDrawerWidth} + 1.5em)`,
       }}
     >
-      <svg width="0" height="0">
-        <defs>
-          {dataRows.map((x) =>
-            CountyGradientSet(
-              x,
-              VOTING_EQUIPMENT_TYPE_COLORS.map((c) => c.color)
-            )
-          )}
-        </defs>
-      </svg>
-      {dataRows.map(CountyGradientStyleClass)}
-
+      <EquipmentGradientSet dataRows={dataRows}/>
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
         onSelection={(id) => {
