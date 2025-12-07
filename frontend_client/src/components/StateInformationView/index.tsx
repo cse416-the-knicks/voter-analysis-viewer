@@ -5,18 +5,6 @@ import type {
   VoterRegistrationStatisticsModel,
   MailBallotRejectionStatisticsModel,
   VotingEquipmentUsageStatisticsModel,
-  VoterAffiliationStatisticsModel,
-  CVAPStatisticsModel,
-} from "../../api/client";
-
-import {
-  getProvisionalBallots,
-  getMailBallotRejections,
-  getVoterRegistrationCounts,
-  getPollbookDeletions,
-  getDetailedVotingEquipmentUsage,
-  getVoterAffiliations,
-  getCVAPStatisticsData,
 } from "../../api/client";
 
 import VOTING_EQUIPMENT_TYPE_COLORS from "../../helpers/votingEquipmentColorBuckets";
@@ -39,7 +27,7 @@ import HowToVoteIcon from "@mui/icons-material/HowToVote";
 
 import Stack from "@mui/material/Stack";
 
-import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { Box, Paper, Typography, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
@@ -62,23 +50,13 @@ import useKeyDown from "../../hooks/useKeyDown";
 import useCssCalc from "../../hooks/useCssCalc";
 import StyledDataGrid from "../StyledDataGrid";
 
-import {
-  bargraphDataForActiveVoterRegistrations,
-  bargraphDataForMailBallotRejections,
-  bargraphDataForPollBookDeletions,
-  bargraphDataForProvisionalBallots,
-  bargraphDataForVoterAffiliations,
-  bargraphDataForVotingEquipmentUsages,
-  bargraphDataForCVAPInfo,
-} from "./dataColumns";
-
 import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
 
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
-import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, STATE_INFORMATION_VIEW_TYPE_SIMPLE, STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewOverlayView, type StateInformationViewSimpleFactView } from "./dataViewModeConfig";
+import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, STATE_INFORMATION_VIEW_TYPE_SIMPLE, STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewOverlayView, type StateInformationViewSimpleFactView, type DataFact } from "./dataViewModeConfig";
 import EquipmentGradientSet from "./EquipmentGradientSet";
 
 const defaultDropDownSections = [
@@ -198,13 +176,6 @@ function pickDropdownType(stateType: DetailStateType[]) {
   return result;
 }
 
-type EAVsGeneralFact =
-  | ProvisionalBallotStatisticsModel
-  | PollbookDeletionStatisticsModel
-  | MailBallotRejectionStatisticsModel
-  | VoterRegistrationStatisticsModel
-  | VotingEquipmentUsageStatisticsModel;
-
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
@@ -252,8 +223,8 @@ function StateInformationView() {
   const bubbleChartHeight = useCssCalc("90vh");
 
   const activeDataState = activeDataStateHook[0];
-  const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
-  const [dataRows, setDataRows] = useState<EAVsGeneralFact[]>([]);
+  const [dataCols, setDataColumns] = useState<GridColDef<DataFact[]>[]>([]);
+  const [dataRows, setDataRows] = useState<DataFact[]>([]);
   const [barData, setBarData] = useState<BarChartDataEntry[]>([]);
   const [barGraphTitle, setBarGraphTitle] = useState<string>("");
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
@@ -277,29 +248,23 @@ function StateInformationView() {
           setBarGraphXTitle(`${description.barGraphXTitle}`);
           setDataColumns(description.dataColumnSet);
 
-          console.log(description.rowDataGenerators);
           const rowDataSet = await Promise.all(description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: false })));
-          
           // Aggregated data rows are exactly 1 entry
           // for uniformity in the endpoint (so that it can share the same endpoint as the per-county variant.)
           const aggregatedDataSet = await Promise.all(
             description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: true }))
           );
-          console.log("BEFORE PROCESS", rowDataSet, aggregatedDataSet);
-
           // All EAVS "facts" have the same length, which is the amount of counties of
           // that state.
           // For each county, then for each corresponding row in each query.
           const rowData = rowDataSet[0].map((_, i) =>
             rowDataSet.reduce((acc, entry) => ({ ...acc, ...entry[i] }), {})
-          ).map((x: EAVsGeneralFact) => ({ id: x.fullRegionId, ...x }));
+          ).map((x: DataFact) => ({ id: x.fullRegionId, ...x }));
 
           const aggregatedData = aggregatedDataSet.reduce(
-            (acc, entry) => ({ ...acc, ...entry[0] }),
-            {}
+            (acc, entry) => ({ ...acc, ...entry[0] }), {}
           );
 
-          console.log(rowData, aggregatedData);
           setBarData(description.barDataGenerator(aggregatedData));
           setDataRows(rowData);
         }
