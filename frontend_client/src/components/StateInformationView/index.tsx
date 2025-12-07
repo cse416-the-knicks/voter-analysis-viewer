@@ -98,6 +98,7 @@ import NotImplementedYet from "../NotImplementedYetDialog";
 import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
 import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
 import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
+import VotingMachineSummaryTable from "../VotingEquipmentSummaryTable";
 
 const ID_SELECTION_PROVISIONAL_BALLOT = 0;
 const ID_SELECTION_ACTIVE_VOTERS = 1;
@@ -107,6 +108,8 @@ const ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES = 10;
 
 const ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE = 4;
 const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
+const ID_SELECTION_VOTING_EQUIPMENT_SUMMARY = 16;
+
 const ID_SELECTION_REJECTED_BALLOTS = 6;
 const ID_SELECTION_MAIL_IN_VOTING = 7;
 
@@ -136,6 +139,7 @@ const defaultDropDownSections = [
     items: [
       { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <ScannerIcon />, textContent: "By Type" },
       { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, iconComponent: <ScannerIcon />, textContent: "Summary" },
     ],
   },
   {
@@ -162,6 +166,7 @@ const partyStateDropDownSections = [
     items: [
       { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Type" },
       { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Age" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, iconComponent: <ScannerIcon />, textContent: "Summary" },
     ],
   },
   {
@@ -280,6 +285,8 @@ function getUrlForModeId(id: number, fipsCode: string) {
       return `/state/${fipsCode}/ei-rejected-ballots/`;
     case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT:
       return `/state/${fipsCode}/ei-voting-equipment`;
+    case ID_SELECTION_VOTING_EQUIPMENT_SUMMARY:
+      return `/state/${fipsCode}/equipment-summary`;
   }
   return "?";
 }
@@ -313,6 +320,8 @@ function determineInitialStateBasedOnUrl(pathname: string) {
     return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS;
   } else if (pathname.includes("/ei-voting-equipment")) {
     return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT;
+  } else if (pathname.includes("/equipment-summary")) {
+    return ID_SELECTION_VOTING_EQUIPMENT_SUMMARY;
   }
   return ID_SELECTION_PROVISIONAL_BALLOT;
 }
@@ -476,6 +485,7 @@ function StateInformationView() {
     "ei-gingles-chart",
     "ei-rejected-ballots",
     "ei-voting-equipment",
+    "equipment-summary",
   ].some((x) => location.pathname.includes(x));
 
   /*
@@ -1003,6 +1013,14 @@ function StateInformationView() {
               path="voter-table/:countyCode?"
               element={<FullScreenDetailedVoterRegistrationTable pageSize={15} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
             />
+            <Route 
+            path="equipment-summary"
+            element={
+            <VotingMachineSummaryTable
+              width={bubbleChartWidth}
+              height={bubbleChartHeight}
+              fipsCode={fipsCode}
+              />}/>
             <Route path="ei-gingles-chart" element={<DisplayEIGinglesChart />} />
             <Route path="ei-rejected-ballots" element={<DisplayEIRejectedBallots />} />
             <Route path="ei-voting-equipment" element={<DisplayEIVotingEquipment />} />

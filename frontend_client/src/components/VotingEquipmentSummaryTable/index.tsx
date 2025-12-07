@@ -83,12 +83,13 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
 
 interface VotingMachineSummaryTableProperties {
   fipsCode?: string;
-  maxWidth: number;
+  width?: number;
+  height?: number;
 }
 
 function VotingMachineSummaryTable({
   fipsCode,
-  maxWidth
+  width, height
 }: VotingMachineSummaryTableProperties) {
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
 
@@ -101,8 +102,10 @@ function VotingMachineSummaryTable({
 
   return (
     <StyledDataGrid
-      width={maxWidth}
-      maxWidth={maxWidth}
+      width={width}
+      maxWidth={width}
+      height={height}
+      maxHeight={height}
       rows={rows}
       columns={columns}
       getRowId={(x) => x.modelName}

@@ -17,7 +17,7 @@ function DisplayVotingMachineSummaryView() {
       top={"0"} 
       left={`calc(50vw - ${maxWidth / 2}px)`}
       onXout={() => navigate("/")}>
-      <VotingMachineSummaryTable maxWidth={maxWidth}/>
+      <VotingMachineSummaryTable width={maxWidth}/>
     </WindowTitled>
   );
 }
