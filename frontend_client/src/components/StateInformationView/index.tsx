@@ -95,7 +95,7 @@ import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
 import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
 import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
 import VotingMachineSummaryTable from "../VotingEquipmentSummaryTable";
-import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS } from "./dataViewModeConfig";
+import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, STATE_INFORMATION_VIEW_TYPE_SIMPLE, STATE_INFORMATION_VIEW_TYPE_OVERLAY } from "./dataViewModeConfig";
 import EquipmentGradientSet from "./EquipmentGradientSet";
 
 const defaultDropDownSections = [
@@ -283,16 +283,9 @@ function StateInformationView() {
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-  const shouldOpenPopup = [
-    "mail-in-chart",
-    "rejected-ballots-chart",
-    "voter-table",
-    "compare-voter-registration-rates",
-    "ei-gingles-chart",
-    "ei-rejected-ballots",
-    "ei-voting-equipment",
-    "equipment-summary",
-  ].some((x) => location.pathname.includes(x));
+    const shouldOpenPopup = Object.values(FACT_VIEW_CONFIGURATIONS)
+      .filter(cfg => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY)
+      .some(cfg => location.pathname.includes(cfg.path));
 
   /*
     This annoyingly giant portion of code should be refactored
@@ -302,10 +295,10 @@ function StateInformationView() {
     function () {
       (async function () {
         const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
-        if (viewConfig) {
-          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - ${viewConfig.barGraphTitle}`);
-          setBarGraphXTitle(`${viewConfig.barGraphXTitle}`);
-          setDataColumns(viewConfig.dataColumnSet);
+        if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
+          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - ${viewConfig.description.barGraphTitle}`);
+          setBarGraphXTitle(`${viewConfig.description.barGraphXTitle}`);
+          setDataColumns(viewConfig.description.dataColumnSet);
         }
 
         switch (activeDataState) {
