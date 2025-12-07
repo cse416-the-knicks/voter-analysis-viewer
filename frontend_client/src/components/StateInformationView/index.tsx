@@ -14,10 +14,7 @@ import {
   getMailBallotRejections,
   getVoterRegistrationCounts,
   getPollbookDeletions,
-  getVoterRegistrationHistory,
   getDetailedVotingEquipmentUsage,
-  getElectionResultsSummary,
-  getBallotStatistics,
   getVoterAffiliations,
   getCVAPStatisticsData,
 } from "../../api/client";
@@ -66,22 +63,14 @@ import useCssCalc from "../../hooks/useCssCalc";
 import StyledDataGrid from "../StyledDataGrid";
 
 import {
-  ACTIVE_VOTER_REGISTRATION_COLUMNS,
   bargraphDataForActiveVoterRegistrations,
   bargraphDataForMailBallotRejections,
   bargraphDataForPollBookDeletions,
   bargraphDataForProvisionalBallots,
   bargraphDataForVoterAffiliations,
-  MAIL_BALLOT_REJECTION_COLUMNS,
-  PROVISIONAL_BALLOT_COLUMNS,
-  VOTING_EQUIPMENT_COLUMNS,
   bargraphDataForVotingEquipmentUsages,
-  VOTER_AFFILIATION_COLUMNS,
-  CVAP_INFO_COLUMNS,
   bargraphDataForCVAPInfo,
 } from "./dataColumns";
-
-import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
 
 import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
@@ -89,12 +78,6 @@ import ColorKeyLegend from "../ColorKeyLegend";
 
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
-import BubbleChart from "../DataDisplays/BubbleChart";
-import LineChart from "../DataDisplays/LineChart";
-import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
-import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
-import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
-import VotingMachineSummaryTable from "../VotingEquipmentSummaryTable";
 import { FACT_VIEW_CONFIGURATIONS, ID_SELECTION_PROVISIONAL_BALLOT, ID_SELECTION_ACTIVE_VOTERS, ID_SELECTION_POLLBOOK_DELETION, ID_SELECTION_MAIL_BALLOT_REJECTIONS, ID_SELECTION_REJECTED_BALLOTS, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, ID_SELECTION_MAIL_IN_VOTING, ID_SELECTION_VIEW_CVAP_INFO, ID_SELECTION_VIEW_CVAP_PERCENTAGE, ID_SELECTION_VOTER_REGISTRATION, ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, STATE_INFORMATION_VIEW_TYPE_SIMPLE, STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewOverlayView } from "./dataViewModeConfig";
 import EquipmentGradientSet from "./EquipmentGradientSet";
 
@@ -249,7 +232,6 @@ function determineInitialStateBasedOnUrl(pathname: string) {
 function StateInformationView() {
   const { fipsCode } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
   const stateType = getDetailStateType(fipsCode!);
   const location = useLocation();
   const activeDataStateHook = useState(determineInitialStateBasedOnUrl(location.pathname));
@@ -277,7 +259,6 @@ function StateInformationView() {
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
   const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
-  const [totalDataCount, setTotalDataCount] = useState(0);
   const [cvapDemographicSelection, setCvapDemographicSelection] = useState(0);
 
   const tryingToViewDetailedVoterRegistration =
@@ -689,74 +670,8 @@ function StateInformationView() {
           }}
         >
           <Routes>
-            <Route
-              path="rejected-ballots-chart"
-              element={
-                <BubbleChart
-                  data={async () => {
-                    const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
-                    const equipmentQuality = await getDetailedVotingEquipmentUsage(fipsCode!);
-                    const rejectionData = await getMailBallotRejections(fipsCode!);
-                    const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...rejectionData[i], ...electionResultsData[i] }));
-
-                    const republicanBubbleColor = "#d73027";
-                    const democraticBubbleColor = "#4575b4";
-
-                    return mergedData.map((data) => ({
-                      x: data.averageQualityScore!,
-                      y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0 || 0,
-                      name: data.countyName!,
-                      size: 10,
-                      party: data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem",
-                      color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
-                    }));
-                  }}
-                  width={bubbleChartWidth}
-                  height={bubbleChartHeight}
-                  title="Voting Equipment Quality"
-                  xAxisLabel="Quality Level"
-                  yAxisLabel="Rejected Ballots (%)"
-                  useRegression
-                />
-              }
-            />
-            <Route
-              path="compare-voter-registration-rates"
-              element={
-                <LineChart
-                  //@ts-expect-error : Error expected, orval likes generating "optional" types even though they are actually identical.
-                  data={async () => {
-                    const votingHistory = await getVoterRegistrationHistory(fipsCode!);
-                    const eavsColors = ["red", "blue", "green", "magenta", "black"];
-
-                    // Manually assign back colors on the frontend.
-                    return votingHistory.map((x, i) => ({ color: eavsColors[i], ...x }));
-                  }}
-                  width={bubbleChartWidth}
-                  height={bubbleChartHeight}
-                  title="Voter Registration By Year"
-                  xAxisLabel="EAVs Unit"
-                  yAxisLabel="Registered Voters"
-                />
-              }
-            />
-            <Route
-              path="voter-table/:countyCode?"
-              element={<FullScreenDetailedVoterRegistrationTable pageSize={15} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
-            />
-            <Route 
-            path="equipment-summary"
-            element={
-            <VotingMachineSummaryTable
-              width={bubbleChartWidth}
-              height={bubbleChartHeight}
-              fipsCode={fipsCode}
-              />}/>
-            <Route path="ei-gingles-chart" element={<DisplayEIGinglesChart />} />
-            <Route path="ei-rejected-ballots" element={<DisplayEIRejectedBallots />} />
-            <Route path="ei-voting-equipment" element={<DisplayEIVotingEquipment />} />
             {overlayViews.map((v) => 
-            <Route path={v.path}
+            <Route path={v.matcher || v.path}
              element = {
                 (v.description as StateInformationViewOverlayView).element?.(fipsCode!, bubbleChartWidth, bubbleChartHeight)
              }/>)}
