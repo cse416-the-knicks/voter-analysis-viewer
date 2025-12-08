@@ -32,7 +32,7 @@ interface SimpleLineChartLegendProperties {
 }
 
 function SimpleLineChartLegend({ data }: SimpleLineChartLegendProperties) {
-  const [legendVisibility, setLegendVisibility] = useState(true)
+  const [legendVisibility, setLegendVisibility] = useState(true);
 
   return (
     <Box
@@ -47,12 +47,12 @@ function SimpleLineChartLegend({ data }: SimpleLineChartLegendProperties) {
           variant="contained"
           size="small"
           onClick={() => setLegendVisibility(!legendVisibility)}
-          sx={{ mb: 2, borderRadius: "20px", top: "0.5em"}}
+          sx={{ mb: 2, borderRadius: "20px", top: "0.5em" }}
           color="secondary"
         >
           {legendVisibility ? "collapse legend" : "show legend"}
         </Button>
-        <Box sx={{ display: legendVisibility ? "block" : "none"}}>
+        <Box sx={{ display: legendVisibility ? "block" : "none" }}>
           {data.map((x) => (
             <>
               <span style={{ paddingLeft: "8px", paddingRight: "8px", paddingBottom: "0", margin: "auto", height: "5px", display: "flex" }}>
@@ -61,7 +61,7 @@ function SimpleLineChartLegend({ data }: SimpleLineChartLegendProperties) {
               </span>
               <br />
             </>
-            ))}
+          ))}
         </Box>
       </Paper>
     </Box>
@@ -96,7 +96,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
   );
 
   // I make a horrible assumption for GUI16 here.
-  const xAxisLabels = (actualData[0]?.points.map((x) => x.x).reverse()) || ["loading"];
+  const xAxisLabels = actualData[0]?.points.map((x) => x.x).reverse() || ["loading"];
   const xAxisScale = d3
     .scaleBand()
     .domain(xAxisLabels)
