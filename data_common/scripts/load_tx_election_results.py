@@ -20,30 +20,27 @@ cols = [
     "votes_rep",
     "votes_total"
 ]
-results_df = pd.read_csv(RESULTS_PATH, usecols=cols, dtype={
-    "GEOID": str,
-    "votes_dem": int,
-    "votes_rep": int,
-    "votes_total": int
-})
+
+precinct_df = pd.read_csv(
+    RESULTS_PATH,
+    usecols=cols,
+    dtype={
+        "GEOID": str,
+        "votes_dem": int,
+        "votes_rep": int,
+        "votes_total": int
+    }
+)
 
 # Removing "Precinct " from GEOID and trimming whitespace
 def normalize_geoid(raw):
     cleaned = re.sub(r'(?i)precinct\s*', '', raw)
-    cleaned = cleaned.strip()
-    return cleaned
-results_df["GEOID"] = results_df["GEOID"].apply(normalize_geoid)
+    return cleaned.strip()
+precinct_df["GEOID"] = precinct_df["GEOID"].apply(normalize_geoid)
 
-# Calculating the Republican/Democratic vote split
-rep_wins = 0
-dem_wins = 0
-for _, row in results_df.iterrows():
-    if row["votes_rep"] > row["votes_dem"]:
-        rep_wins += 1
-    elif row["votes_dem"] > row["votes_rep"]:
-        dem_wins += 1
-
-results_df["other_votes"] = results_df["votes_total"] - (results_df["votes_rep"] + results_df["votes_dem"])
+precinct_df["other_votes"] = (
+    precinct_df["votes_total"] - (precinct_df["votes_rep"] + precinct_df["votes_dem"])
+)
 
 rename_map = {
     "GEOID": "region_id",
@@ -51,24 +48,48 @@ rename_map = {
     "votes_dem": "dem_votes",
     "other_votes": "other_votes"
 }
-results_df = results_df[[c for c in rename_map if c in results_df.columns]]
-results_df = results_df.rename(columns=rename_map)
+precinct_df = precinct_df[list(rename_map.keys())].rename(columns=rename_map)
+precinct_df["year"] = "2024"
+precinct_df["state_id"] = 48
 
-results_df["year"] = "2024"
-results_df["state_id"] = 48
+# Creating county level results
+county_df = (
+    precinct_df
+        .assign(
+            county_fips=lambda df: df["region_id"].str.slice(0, 5),
+            region_id=lambda df: df["county_fips"] + "00000"
+        )
+        .groupby("region_id", as_index=False)
+        .agg({
+            "rep_votes": "sum",
+            "dem_votes": "sum",
+            "other_votes": "sum"
+        })
+        .assign(
+            year="2024",
+            state_id=48
+        )
+)
+
+county_rep_wins = (county_df["rep_votes"] > county_df["dem_votes"]).sum()
+county_dem_wins = (county_df["dem_votes"] > county_df["rep_votes"]).sum()
 
 print("====================Texas Election Vote Split====================")
-print(f"Republican wins: {rep_wins}")
-print(f"Democratic wins: {dem_wins}")
-print(f"Vote split: {rep_wins}/{dem_wins}")
+print(f"Republican wins: {county_rep_wins}")
+print(f"Democratic wins: {county_dem_wins}")
+print(f"Vote split: {county_rep_wins}/{county_dem_wins}")
 
-# Connecting to db
 engine = create_engine(
     f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
 )
-
-# Inserting into db
-results_df.to_sql(
+precinct_df.to_sql(
+    "election_results",
+    engine,
+    schema="app",
+    if_exists="append",
+    index=False
+)
+county_df.to_sql(
     "election_results",
     engine,
     schema="app",
@@ -76,4 +97,4 @@ results_df.to_sql(
     index=False
 )
 
-print("Finished inserting 2024 Texas election results data into the database")
+print("Finished inserting 2024 Texas election results data into the database.")
