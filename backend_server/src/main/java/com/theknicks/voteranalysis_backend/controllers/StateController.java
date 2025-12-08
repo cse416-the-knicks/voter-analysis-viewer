@@ -149,7 +149,12 @@ public class StateController {
   public List<ElectionResultsSummaryModel> getElectionResultsSummary(
       @PathVariable("fipsCode") String fipsCode,
       @PathVariable("year") int year,
-      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
+      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate,
+      @RequestParam(name = "granularity", defaultValue = "county") String dataGranularity) {
+    _logger.info("Requesting at data granularity: " + dataGranularity);
+    if (!dataGranularity.equalsIgnoreCase("county")) {
+      _logger.error("At this moment, no support for non-county granularity.");
+    }
     return _service.getElectionResultsSummaryDataForState(fipsCode, year, inAggregate);
   }
 

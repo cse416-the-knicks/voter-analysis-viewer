@@ -967,7 +967,7 @@ function StateInformationView() {
               path="voter-table/:countyCode?"
               element={<FullScreenDetailedVoterRegistrationTable pageSize={15} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
             />
-            <Route path="ei-gingles-chart" element={<DisplayEIGinglesChart />} />
+            <Route path="ei-gingles-chart" element={<DisplayEIGinglesChart fipsCode={fipsCode!} width={bubbleChartWidth} height={bubbleChartHeight} />} />
             <Route path="ei-rejected-ballots" element={<DisplayEIRejectedBallots />} />
             <Route path="ei-voting-equipment" element={<DisplayEIVotingEquipment />} />
           </Routes>
