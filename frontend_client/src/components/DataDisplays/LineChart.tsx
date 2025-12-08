@@ -36,8 +36,8 @@ function SimpleLineChartLegend({ data, chartWidth }: SimpleLineChartLegendProper
     <Box
       sx={{
         position: "absolute",
-        left: chartWidth - 120,
-        top: "2em",
+        left: chartWidth - 1445,
+        top: "0em",
       }}
     >
       <Paper elevation={4}>
@@ -84,7 +84,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
   );
 
   // I make a horrible assumption for GUI16 here.
-  const xAxisLabels = actualData[0]?.points.map((x) => x.x) || ["loading"];
+  const xAxisLabels = (actualData[0]?.points.map((x) => x.x).reverse()) || ["loading"];
   const xAxisScale = d3
     .scaleBand()
     .domain(xAxisLabels)
