@@ -6,9 +6,10 @@ import {
   DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_REPUBLICAN,
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
+  DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
 } from "../FullBoundedUSMap/detailedStatesInfo";
 
-import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Card, CardContent, Typography, Tooltip } from "@mui/material";
+import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Chip, Stack } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useNavigate } from "react-router";
 
@@ -24,29 +25,27 @@ interface StateInformationViewDrawerSection {
   items: StateInformationViewDrawerItem[];
 }
 
+type OnSelectionFn = (id: number) => void;
 interface StateInformationViewDrawerProperties {
   stateHook: [number, (arg0: number) => void];
+  onSelection: OnSelectionFn;
   sections: StateInformationViewDrawerSection[];
-  stateType: DetailStateType;
+  stateType: DetailStateType[];
   topMargin: string | number;
   drawerWidth: string | number;
 }
 
 interface StateInformationViewDrawerListItemProperties {
   stateHook: [number, (arg0: number) => void];
+  onSelection: OnSelectionFn;
   item: StateInformationViewDrawerItem;
 }
 
 function BasicStateTypeInfoCard(title: string, text: string) {
   return (
-    <Card sx={{ m: 2 }} variant="outlined">
-      <CardContent>
-        <Typography variant="h6" component="div">
-          {title}
-        </Typography>
-        <Typography sx={{ color: "text.secondary", m: 0, fontSize: 12 }}>{text}</Typography>
-      </CardContent>
-    </Card>
+    <Tooltip title={text}>
+      <Chip color="secondary" variant="outlined" label={title} />
+    </Tooltip>
   );
 }
 
@@ -68,6 +67,11 @@ const DemocratStateCard = () =>
     "Democrat Dominated State",
     "This is a selected detail state that is Democrat dominated, you can compare this against our Republican state."
   );
+const PreclearanceStateCard = () =>
+  BasicStateTypeInfoCard(
+    "Preclearance State",
+    "This is a selected detail state that is subject to 'preclearance requirements' under the Voting Rights Act, due to historical voting discrimination."
+  );
 
 interface StateInfoCardProperties {
   type: DetailStateType;
@@ -76,41 +80,35 @@ interface StateInfoCardProperties {
 function StateInfoCard({ type }: StateInfoCardProperties) {
   switch (type) {
     case DETAIL_STATE_TYPE_OPTIN:
-      {
-        return OptInStateCard();
-      }
-      break;
+      return OptInStateCard();
     case DETAIL_STATE_TYPE_OPTOUT:
-      {
-        return OptOutStateCard();
-      }
-      break;
+      return OptOutStateCard();
     case DETAIL_STATE_TYPE_DEMOCRAT:
-      {
-        return DemocratStateCard();
-      }
-      break;
+      return DemocratStateCard();
     case DETAIL_STATE_TYPE_REPUBLICAN:
-      {
-        return RepublicanStateCard();
-      }
-      break;
+      return RepublicanStateCard();
     case DETAIL_STATE_TYPE_VOTER_REGISTRATION:
-      {
-        return VoterRegistrationStateCard();
-      }
-      break;
+      return VoterRegistrationStateCard();
+    case DETAIL_STATE_TYPE_PRECLEARANCE_STATE:
+      return PreclearanceStateCard();
   }
   return EAVsStateCard();
 }
 
-function StateInformationViewDrawerListItem({ item, stateHook }: StateInformationViewDrawerListItemProperties) {
+function StateInformationViewDrawerListItem({ item, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
   const [stateValue, setStateValue] = stateHook;
 
   return (
     <ListItem>
       <Tooltip title={"View " + item.textContent} placement="right" arrow>
-        <ListItemButton key={item.id} onClick={() => setStateValue(item.id)} selected={stateValue == item.id}>
+        <ListItemButton
+          key={item.id}
+          onClick={() => {
+            setStateValue(item.id);
+            onSelection(item.id);
+          }}
+          selected={stateValue == item.id}
+        >
           {item.iconComponent && <ListItemIcon>{item.iconComponent}</ListItemIcon>}
           <ListItemText primary={item.textContent} />
         </ListItemButton>
@@ -119,7 +117,7 @@ function StateInformationViewDrawerListItem({ item, stateHook }: StateInformatio
   );
 }
 
-function StateInformationViewDrawer({ sections, stateHook, stateType, topMargin, drawerWidth }: StateInformationViewDrawerProperties) {
+function StateInformationViewDrawer({ sections, stateHook, onSelection, stateType, topMargin, drawerWidth }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
   const sectionComponents = sections.map((section) => (
     <>
@@ -128,7 +126,7 @@ function StateInformationViewDrawer({ sections, stateHook, stateType, topMargin,
         <ListItemText primary={section.title} />
       </ListItem>
       {section.items.map((item) => (
-        <StateInformationViewDrawerListItem stateHook={stateHook} item={item} />
+        <StateInformationViewDrawerListItem onSelection={onSelection} stateHook={stateHook} item={item} />
       ))}
     </>
   ));
@@ -149,15 +147,21 @@ function StateInformationViewDrawer({ sections, stateHook, stateType, topMargin,
       sx={{
         "& .MuiDrawer-paper": {
           width: drawerWidth,
-          height: "auto",
-          margin: 2,
-          marginTop: topMargin,
+          marginTop: "topMargin",
         },
       }}
     >
-      <StateInfoCard type={stateType} />
-      <List dense>{finalComponentsWithDividers}</List>
-      <Button onClick={() => navigate("/")} variant="contained" color="secondary">
+      <Stack spacing={0.5} sx={{ p: 1 }}>
+        {stateType.map((x) => (
+          <StateInfoCard type={x} />
+        ))}
+      </Stack>
+      <Divider />
+      <List disablePadding dense>
+        {finalComponentsWithDividers}
+      </List>
+      <Divider />
+      <Button sx={{ mt: 2, ml: 2, mr: 2, p: 1.5 }} onClick={() => navigate("/")} variant="contained" color="secondary">
         <HighlightOffIcon /> Exit State Display
       </Button>
     </Drawer>

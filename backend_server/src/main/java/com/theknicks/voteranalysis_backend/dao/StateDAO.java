@@ -7,46 +7,23 @@ import com.theknicks.voteranalysis_backend.models.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.Collections.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.*;
 
-enum StateCsvRecordColumnId {
-  STATE_NAME,
-  COUNTY_NAME,
-  STATE_FIPS,
-  COUNTY_FIPS,
-  COUNT
-};
-
-enum CountyGeoUnitCsvRecordColumnId {
-  STATE_FIPS,
-  COUNTY_FIPS,
-  CENTER_X,
-  CENTER_Y,
-  COUNT
-};
-
 @Component
 public class StateDAO implements IStateDAO {
   private final Logger _logger = LoggerFactory.getLogger(StateDAO.class);
   private final String preprocessedGeospatialPath = "../data_common/geospatial_processed/";
-  private final Path _localCountyCentroidsCsvDataPath =
-      Paths.get("../data_common/processed/county_centroids.csv");
-
-  // TODO(jerry): replace Dictionary with Map, apparently Map is the new thing,
-  // and Dictionary is outdated.
-  private final Map<String, GeoUnitCentroidModel> _geoUnitCentroidMap;
   private final JdbcTemplate _jdbcTemplate;
 
   public StateDAO(JdbcTemplate jdbcTemplate) throws IOException {
     _logger.info("Creating Concrete StateDAO");
     _logger.info(preprocessedGeospatialPath);
     _jdbcTemplate = jdbcTemplate;
-    _geoUnitCentroidMap = new HashMap<>();
-    populateGeoUnitCentroidTable();
   }
 
   public Optional<ObjectNode> getGeometryBoundary(String fipsCode) {
@@ -105,6 +82,46 @@ public class StateDAO implements IStateDAO {
   public List<VoterRegistrationStatisticsModel> getVoterRegistrationRows(
       String fipsCode, int year, boolean aggregated) {
     return getStateDataRows(VoterRegistrationStatisticsModel.class, fipsCode, year, aggregated);
+  }
+
+  public List<VoterAffiliationStatisticsModel> getVoterAffiliationRows(
+      String fipsCode, boolean aggregated) {
+    var queryable = new VoterAffiliationStatisticsModel.Queryable();
+    var sqlQuery =
+        queryable.QueryWhere(
+            new String[] {"eavs_data.\"year\" = 2024", "app.eavs_geounit.state_id = ?"});
+    var mapper = queryable.Mapper();
+    var queryResult = _jdbcTemplate.query(sqlQuery, mapper, Integer.parseInt(fipsCode, 10));
+
+    if (aggregated) {
+      // NOTE(jerry):
+      // The aggregation on this is kind of complicated
+      // imo, and is a different query which our ORM (and I assume many tbh),
+      // don't specifically support, so the aggregation will be done here manually.
+      int democraticTotal = 0;
+      int republicanTotal = 0;
+      int unaffiliatedTotal = 0;
+      int totalRegisteredVoters = 0;
+      int totalActiveRegisteredVoters = 0;
+
+      for (var item : queryResult) {
+        democraticTotal += item.democraticTotal();
+        republicanTotal += item.republicanTotal();
+        unaffiliatedTotal += item.unaffiliatedTotal();
+        totalRegisteredVoters += item.registeredVotersTotal();
+        totalActiveRegisteredVoters += item.activeRegisteredVotersTotal();
+      }
+
+      return Collections.singletonList(
+          new VoterAffiliationStatisticsModel(
+              democraticTotal,
+              republicanTotal,
+              unaffiliatedTotal,
+              totalRegisteredVoters,
+              totalActiveRegisteredVoters));
+    }
+
+    return queryResult;
   }
 
   public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationRowByCounty(
@@ -176,14 +193,16 @@ public class StateDAO implements IStateDAO {
   public Map<String, GeoUnitCentroidModel> getGeoUnitCentroids(String fipsCode) {
     var result = new HashMap<String, GeoUnitCentroidModel>();
 
-    if (fipsCode.length() < 2) {
-      fipsCode = "0" + fipsCode;
-    }
+    // state_id is an integer in the schema definition.
+    var fipsCodeAsInteger = Integer.parseInt(fipsCode, 10);
+    var queryable = new GeoUnitCentroidDataRowModel.Queryable();
+    var queryString = queryable.QueryWhere(new String[] {"region_boundary.state_id = ?"});
+    var queryMapper = queryable.Mapper();
+    var queryResult = _jdbcTemplate.query(queryString, queryMapper, fipsCodeAsInteger);
+    var geoUnitCentroids = queryResult.stream().map(GeoUnitCentroidModel::fromDataRow).toList();
 
-    for (var key : _geoUnitCentroidMap.keySet()) {
-      if (key.startsWith(fipsCode)) {
-        result.put(key, _geoUnitCentroidMap.get(key));
-      }
+    for (var geoUnitCentroid : geoUnitCentroids) {
+      result.put(geoUnitCentroid.fullRegionId(), geoUnitCentroid);
     }
 
     return result;
@@ -193,33 +212,5 @@ public class StateDAO implements IStateDAO {
     var queryable = AutoSqlQueryable.findQueryableNested(StateInformationDataRowModel.class);
     assert queryable != null;
     return _jdbcTemplate.query(queryable.Query(), queryable.Mapper());
-  }
-
-  private String fullPaddedFips(String stateFips, String countyFips) {
-    return stateFips + countyFips + "00000";
-  }
-
-  private void populateGeoUnitCentroidTable() throws IOException {
-    CsvHelpers.Csv(
-        _localCountyCentroidsCsvDataPath,
-        tokens -> {
-          var stateFips = tokens.get(CountyGeoUnitCsvRecordColumnId.STATE_FIPS.ordinal());
-          var countyFips = tokens.get(CountyGeoUnitCsvRecordColumnId.COUNTY_FIPS.ordinal());
-          var centerXString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_X.ordinal());
-          var centerYString = tokens.get(CountyGeoUnitCsvRecordColumnId.CENTER_Y.ordinal());
-          var fullRegionId = fullPaddedFips(stateFips, countyFips);
-          String countyName =
-              _jdbcTemplate.queryForObject(
-                  "select name from app.eavs_geounit where eavs_unit_code = ?",
-                  String.class,
-                  new Object[] {fullRegionId});
-          _geoUnitCentroidMap.put(
-              fullRegionId,
-              new GeoUnitCentroidModel(
-                  fullRegionId,
-                  countyName,
-                  Float.parseFloat(centerXString),
-                  Float.parseFloat(centerYString)));
-        });
   }
 }

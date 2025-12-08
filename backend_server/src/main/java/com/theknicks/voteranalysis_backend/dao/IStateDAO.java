@@ -67,6 +67,19 @@ public interface IStateDAO {
       String fipsCode, String countyCode, int year);
 
   /**
+   * This access point is meant to return the voter affiliation information of a state by county,
+   * allowing for the choice of aggregating to get a whole state count.
+   *
+   * @param fipsCode - A string for the fipsCode of the state.
+   * @param aggregated - A boolean asking whether to aggregate the result, will return a list of one
+   *     in that case.
+   * @return a list of VoterAffiliationStatisticsModels, or a single model containing the aggregate
+   *     for the state.
+   */
+  List<VoterAffiliationStatisticsModel> getVoterAffiliationRows(
+      String fipsCode, boolean aggregated);
+
+  /**
    * This access point is meant to return the pollbook deletion information of a state by county,
    * allowing for the choice of aggregating to get a whole state count.
    *

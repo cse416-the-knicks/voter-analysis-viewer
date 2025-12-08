@@ -4,6 +4,9 @@ import type {
   ProvisionalBallotStatisticsModel,
   VoterRegistrationStatisticsModel,
   VoterRegistrationDataModel,
+  VotingEquipmentUsageStatisticsModel,
+  VoterAffiliationStatisticsModel,
+  CVAPStatisticsModel,
 } from "../../api/client";
 import type { GridColDef } from "@mui/x-data-grid";
 import type { BarChartDataEntry } from "../DataDisplays/BarChart";
@@ -39,6 +42,18 @@ const ACTIVE_VOTER_REGISTRATION_COLUMNS: GridColDef<VoterRegistrationStatisticsM
   { field: "total", headerName: "Total Voters Registered", type: "number", width: 200 },
   { field: "active", headerName: "Active Voters", type: "number", width: 150 },
   { field: "inactive", headerName: "Inactive Voters", type: "number", width: 150 },
+];
+
+const VOTER_AFFILIATION_COLUMNS: GridColDef<VoterAffiliationStatisticsModel[]>[] = [
+  {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // This hides the "Select All" checkbox
+  },
+  { field: "countyName", headerName: "County", width: 120 },
+  { field: "democraticTotal", headerName: "Democratic", type: "number", width: 200 },
+  { field: "republicanTotal", headerName: "Republican", type: "number", width: 150 },
+  { field: "unaffiliatedTotal", headerName: "Unaffiliated", type: "number", width: 150 },
+  { field: "registeredVotersTotal", headerName: "Total Registered", type: "number", width: 150 },
 ];
 
 const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[] = [
@@ -111,6 +126,57 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
   },
 ];
 
+const CVAP_INFO_COLUMNS: GridColDef<CVAPStatisticsModel[]>[] = [
+  {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // This hides the "Select All" checkbox
+  },
+  // { field: "regionId", headerName: "RegionID", width: 120 },
+  {
+    field: "countyName",
+    headerName: "Region Name",
+    width: 120,
+    valueFormatter: titleCaseString,
+    filterable: false,
+  },
+  {
+    field: "cvapTotal",
+    headerName: "Total",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "asianTotal",
+    headerName: "Asian",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "blackTotal",
+    headerName: "Black",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "hispanicTotal",
+    headerName: "Hispanic",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "whiteTotal",
+    headerName: "White",
+    type: "number",
+    width: 120,
+  },
+  {
+    field: "otherTotal",
+    headerName: "Other",
+    type: "number",
+    width: 120,
+  },
+];
+
 const POLL_BOOK_DELETION_COLUMNS: GridColDef<PollbookDeletionStatisticsModel[]>[] = [
   {
     ...GRID_CHECKBOX_SELECTION_COL_DEF,
@@ -153,6 +219,19 @@ const MAIL_BALLOT_REJECTION_COLUMNS: GridColDef<MailBallotRejectionStatisticsMod
   { field: "rejectNotEligible", headerName: "Not Eligible", type: "number", width: 150 },
   { field: "rejectNoApplication", headerName: "No Application", type: "number", width: 160 },
   { field: "rejectOther", headerName: "Other", type: "number", width: 120 },
+];
+
+const VOTING_EQUIPMENT_COLUMNS: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
+  {
+    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+    renderHeader: () => <></>, // hides the "Select All" checkbox
+  },
+  { field: "countyName", headerName: "County", width: 120 },
+  { field: "dreNoVvpatTotal", headerName: "DRE (No VVPAT) Total", type: "number", width: 150 },
+  { field: "dreVvpatTotal", headerName: "DRE Total", type: "number", width: 120 },
+  { field: "bmdTotal", headerName: "BMD Total", type: "number", width: 130 },
+  { field: "scannerTotal", headerName: "Scanner Total", type: "number", width: 120 },
+  { field: "averageAge", headerName: "Average Age", type: "number", width: 130 },
 ];
 
 function bargraphDataForProvisionalBallots(aggregatedStatistics: ProvisionalBallotStatisticsModel): BarChartDataEntry[] {
@@ -217,14 +296,49 @@ function bargraphDataForActiveVoterRegistrations(aggregatedStatistics: VoterRegi
   ];
 }
 
+function bargraphDataForVotingEquipmentUsages(aggregatedStatistics: VotingEquipmentUsageStatisticsModel): BarChartDataEntry[] {
+  return [
+    { category: "DRE (No VVPAT)", value: aggregatedStatistics.dreNoVvpatTotal || 0 },
+    { category: "DRE (VVPAT)", value: aggregatedStatistics.dreVvpatTotal || 0 },
+    { category: "BMD", value: aggregatedStatistics.bmdTotal || 0 },
+    { category: "Scanner", value: aggregatedStatistics.scannerTotal || 0 },
+  ];
+}
+
+function bargraphDataForVoterAffiliations(aggregatedStatistics: VoterAffiliationStatisticsModel): BarChartDataEntry[] {
+  return [
+    { category: "Democratic Voters", value: aggregatedStatistics.democraticTotal || 0 },
+    { category: "Republican Voters", value: aggregatedStatistics.republicanTotal || 0 },
+    { category: "Unaffiliated Voters", value: aggregatedStatistics.unaffiliatedTotal || 0 },
+    { category: "Total Registered Voters", value: aggregatedStatistics.registeredVotersTotal || 0 },
+  ];
+}
+
+function bargraphDataForCVAPInfo(aggregatedStatistics: CVAPStatisticsModel): BarChartDataEntry[] {
+  return [
+    { category: "Total", value: aggregatedStatistics.cvapTotal || 0 },
+    { category: "Asian", value: aggregatedStatistics.asianTotal || 0 },
+    { category: "Black", value: aggregatedStatistics.blackTotal || 0 },
+    { category: "Hispanic", value: aggregatedStatistics.hispanicTotal || 0 },
+    { category: "White", value: aggregatedStatistics.whiteTotal || 0 },
+    { category: "Other", value: aggregatedStatistics.otherTotal || 0 },
+  ];
+}
+
 export {
   PROVISIONAL_BALLOT_COLUMNS,
   MAIL_BALLOT_REJECTION_COLUMNS,
   POLL_BOOK_DELETION_COLUMNS,
   ACTIVE_VOTER_REGISTRATION_COLUMNS,
   VOTER_REGISTRATION_INFO_COLUMNS,
+  VOTING_EQUIPMENT_COLUMNS,
+  VOTER_AFFILIATION_COLUMNS,
+  CVAP_INFO_COLUMNS,
   bargraphDataForProvisionalBallots,
   bargraphDataForMailBallotRejections,
   bargraphDataForPollBookDeletions,
   bargraphDataForActiveVoterRegistrations,
+  bargraphDataForVotingEquipmentUsages,
+  bargraphDataForVoterAffiliations,
+  bargraphDataForCVAPInfo,
 };

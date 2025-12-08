@@ -9,6 +9,7 @@ import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatistics
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -45,7 +46,8 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
   }
 
   @Override
-  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode) {
+  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
+      int year, String fipsCode) {
     var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
     List<VotingEquipmentUsageStatisticsEntryModel> entries;
     if (fipsCode.isEmpty()) {
@@ -53,12 +55,43 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     } else {
       entries =
           _jdbcTemplate.query(
-              queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
+              queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?", "year = ?"}),
               queryable.Mapper(),
-              Integer.parseInt(fipsCode, 10));
+              Integer.parseInt(fipsCode, 10),
+              year);
     }
 
-    return VotingEquipmentUsageStatisticsModel.fromDataRows(entries);
+    var votingEquipmentAgeMap =
+        getAllVotingEquipment().stream()
+            .collect(Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::age));
+    var votingEquipmentQualityMap =
+        getAllVotingEquipment().stream()
+            .collect(
+                Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::equipmentQuality));
+    return VotingEquipmentUsageStatisticsModel.fromDataRows(
+        entries, votingEquipmentAgeMap, votingEquipmentQualityMap);
+  }
+
+  @Override
+  public List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(
+      int year, String fipsCode) {
+    var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
+    var entries =
+        _jdbcTemplate.query(
+            queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?", "year = ?"}),
+            queryable.Mapper(),
+            Integer.parseInt(fipsCode, 10),
+            year);
+
+    var votingEquipmentAgeMap =
+        getAllVotingEquipment().stream()
+            .collect(Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::age));
+    var votingEquipmentQualityMap =
+        getAllVotingEquipment().stream()
+            .collect(
+                Collectors.toMap(VotingEquipmentModel::id, VotingEquipmentModel::equipmentQuality));
+    return VotingEquipmentUsageStatisticsModel.fromDataRowsPerCounty(
+        entries, votingEquipmentAgeMap, votingEquipmentQualityMap);
   }
 
   @Override

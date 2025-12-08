@@ -1,10 +1,9 @@
 import React from "react";
 import L from "leaflet";
 import type { MapRef } from "react-leaflet/MapContainer";
-import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
+import { GeoJSON, MapContainer, TileLayer, Pane } from "react-leaflet";
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from "./boundaryData";
-import { DETAIL_STATE_TYPE_NONE, getDetailStateType, getHumanReadableStateType, isDetailState } from "./detailedStatesInfo";
-import { useTheme } from "@mui/material";
+import { getDetailStateType, getHumanReadableStateType, isDetailState } from "./detailedStatesInfo";
 import { useState } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -21,6 +20,7 @@ const MIN_ACCEPTABLE_ZOOM = 4;
 
 type FipsCode = string; // It's really not just a string, but this is easier to keep.
 type OnStateClickFn = (fipsCode: FipsCode) => void;
+type FullBoundedUSMapStylingFn = (highlightedStateFipsId: string, feature: GeoJSON.Feature) => L.StyleFunction;
 
 interface FullBoundedUSMapProperties {
   id: string;
@@ -28,6 +28,7 @@ interface FullBoundedUSMapProperties {
   onStateClick?: OnStateClickFn;
   zoom?: number;
   children?: React.ReactNode;
+  styleFunction: FullBoundedUSMapStylingFn;
 }
 
 /**
@@ -39,8 +40,7 @@ interface FullBoundedUSMapProperties {
     Will show state names and such, and allow registering
     callbacks on click.
 **/
-function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoundedUSMapProperties) {
-  const theme = useTheme();
+function FullBoundedUSMap({ id, mapRef, zoom, children, styleFunction, onStateClick }: FullBoundedUSMapProperties) {
   const [highlightedStateFipsId, setHighlightedStateFipsId] = useState<string | null>(null);
   const useDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const onFeatureClickHandler = (event: L.LeafletMouseEvent) => {
@@ -53,7 +53,6 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoun
   const onMouseOverHandler = (event: L.LeafletMouseEvent) => {
     const target = event.target as L.FeatureGroup;
     const featureData = target.feature as GeoJSON.Feature;
-    console.log(target);
     setHighlightedStateFipsId(featureData.id! as FipsCode);
   };
   const onMouseOutHandler = (event: L.LeafletMouseEvent) => {
@@ -69,37 +68,16 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoun
       mouseout: onMouseOutHandler,
     };
 
-    if (stateType !== DETAIL_STATE_TYPE_NONE) {
-      layer.bindTooltip(stateName + " - " + getHumanReadableStateType(stateType));
+    if (isDetailState(id! as string)) {
+      layer.bindTooltip(stateName + " - " + stateType.map(getHumanReadableStateType).join(", "));
     } else {
       layer.bindTooltip(stateName);
     }
 
     layer.on(defaultHandlers);
   };
-  const styleFunction = (feature: GeoJSON.Feature) => {
-    const fipsCode = feature.id as string;
-    const result = {
-      fillColor: "#00000000",
-      fillOpacity: 0,
-      color: theme.palette.secondary.main,
-      weight: 1,
-    };
 
-    console.log(highlightedStateFipsId);
-    if (fipsCode && isDetailState(fipsCode)) {
-      result.weight = 4;
-      result.fillOpacity = 0.4;
-      result.fillColor = theme.palette.secondary.light;
-    }
-
-    if (highlightedStateFipsId === fipsCode) {
-      result.fillOpacity = 1;
-      result.fillColor = theme.palette.secondary.light;
-    }
-
-    return result;
-  };
+  const stylingFunctionWrapper = (feature: GeoJSON.Feature) => styleFunction(highlightedStateFipsId!, feature);
 
   return (
     <MapContainer
@@ -112,16 +90,31 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, onStateClick }: FullBoun
       className={"full-bounded-us-map"}
       id={id}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url={useDarkMode ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
-      />
-      <GeoJSON style={styleFunction} data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON} onEachFeature={onEachFeatureHandler} />
-      {children}
+      <style>
+        {`
+.leaflet-tile {
+  background-color: rgba(111, 45, 200, 0.1); /* Or an image */
+}
+`}
+      </style>
+      <Pane name="everythingelse" style={{ zIndex: 399 }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url={"https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"}
+        />
+        <GeoJSON style={stylingFunctionWrapper} data={STATES_BOUNDARIES_GEOMETRY as GeoJSON.GeoJSON} onEachFeature={onEachFeatureHandler} />
+        {children}
+      </Pane>
+      <Pane name="labels" style={{ zIndex: 499 }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url={"https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"}
+        />
+      </Pane>
     </MapContainer>
   );
 }
 
-export type { FipsCode, OnStateClickFn };
+export type { FipsCode, OnStateClickFn, FullBoundedUSMapStylingFn };
 
 export default FullBoundedUSMap;

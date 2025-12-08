@@ -1,4 +1,13 @@
-import type { GridColDef, GridRowClassNameParams, GridRowIdGetter, GridValidRowModel, GridSortModel } from "@mui/x-data-grid";
+import type {
+  MuiEvent,
+  GridColDef,
+  GridRowClassNameParams,
+  GridRowIdGetter,
+  GridValidRowModel,
+  GridSortModel,
+  GridRowParams,
+  GridCallbackDetails,
+} from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -6,6 +15,7 @@ import { useState, useEffect } from "react";
 type getRowClassNameFn = (r: GridRowClassNameParams<GridValidRowModel>) => string;
 type getServerSidePageFn = (pageSize: number, pageIndex: number, sortModel: GridSortModel) => Promise<object[]>;
 type getServerSideDataTotalElementsFn = () => Promise<number>;
+type onRowDoubleClickFn = (params: GridRowParams, event: MuiEvent, details: GridCallbackDetails) => void;
 
 interface ServerSidePageDataProvider {
   // pageSize is filled out by the pageSize parameter
@@ -25,6 +35,7 @@ interface StyledDataGridProperties {
   maxWidth?: number | string;
   maxHeight?: number | string;
   customCssRules?: object;
+  onRowDoubleClick?: onRowDoubleClickFn;
 }
 
 function StyledDataGrid({
@@ -38,6 +49,7 @@ function StyledDataGrid({
   maxWidth,
   maxHeight,
   customCssRules,
+  onRowDoubleClick,
 }: StyledDataGridProperties) {
   const getRowClassNameFunction: getRowClassNameFn = function (r) {
     const colorAsAlternatingRows: getRowClassNameFn = (r) => (r.indexRelativeToCurrentPage % 2 == 0 ? "oddRowStyle" : "");
@@ -115,6 +127,7 @@ function StyledDataGrid({
         paginationModel={paginationState}
         onPaginationModelChange={setPaginationState}
         pageSizeOptions={[pageSize]}
+        onRowDoubleClick={onRowDoubleClick}
         sx={{
           "& .MuiDataGrid-columnHeaderTitle": {
             fontWeight: "bolder",

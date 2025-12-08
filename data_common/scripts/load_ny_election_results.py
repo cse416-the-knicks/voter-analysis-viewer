@@ -31,10 +31,13 @@ county_dict = dict(zip(geounit["name"], geounit["eavs_unit_code"]))
 df["County"] = df["County"].str.strip()
 
 # Calculating the Republican/Democratic vote split
+rep_wins = 0
+dem_wins = 0
 for _, row in df.iterrows():
-    print(f"County: {row['County']}")
-    print(f"    Republican Vote Percentage: {row['Republican'] / row['Total Votes'] * 100 if row['Total Votes'] > 0 else 0:.2f}%")
-    print(f"    Democratic Vote Percentage: {row['Democratic'] / row['Total Votes'] * 100 if row['Total Votes'] > 0 else 0:.2f}%")
+    if row["Republican"] > row["Democratic"]:
+        rep_wins += 1
+    elif row["Democratic"] > row["Republican"]:
+        dem_wins += 1
 
 df["other_votes"] = df["Total Votes"] - (df["Republican"] + df["Democratic"])
 
@@ -50,6 +53,11 @@ df = df.rename(columns=rename_map)
 df["year"] = "2024"
 df["region_id"] = df["region_id"].map(county_dict)
 df["state_id"] = 36
+
+print("====================New York Election Vote Split====================")
+print(f"Republican wins: {rep_wins}")
+print(f"Democratic wins: {dem_wins}")
+print(f"Vote split: {rep_wins}/{dem_wins}")
 
 # Connecting to db
 engine = create_engine(

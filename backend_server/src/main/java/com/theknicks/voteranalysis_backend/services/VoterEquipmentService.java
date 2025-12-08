@@ -32,8 +32,17 @@ public class VoterEquipmentService {
     return _dao.getVotingEquipmentByManufacturer(manufacturer);
   }
 
-  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(String fipsCode) {
-    return _dao.getVotingEquipmentUsage(fipsCode);
+  public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
+      int year, String fipsCode) {
+    return _dao.getVotingEquipmentUsage(year, fipsCode);
+  }
+
+  public List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(
+      String fipsCode, int year, boolean inAggregate) {
+    if (inAggregate) {
+      return _dao.getVotingEquipmentUsage(year, fipsCode);
+    }
+    return _dao.getDetailedVotingEquipmentUsage(year, fipsCode);
   }
 
   public List<VotingEquipmentModel> getAllVotingEquipmentByType(String type) {

@@ -20,7 +20,7 @@ public class VoterRegistrationService {
   @Cacheable(
       cacheNames = "voterRegistration",
       key =
-          "{ #stateFips, #countyFips, #pageSize, #pageIndex, #partySelectionFilterId, #encodedSortParams }")
+          "{ #stateFips, #countyFips, #pageSize, #pageIndex, #partySelectionFilterId, #sortParams }")
   public List<VoterRegistrationDataModel> getDetailedVoterRegistrationData(
       String stateFips,
       String countyFips,
@@ -43,5 +43,11 @@ public class VoterRegistrationService {
         countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
     return _dao.getDetailedVoterRegistrationDataCount(
         stateFips, countyFipsParam, partySelectionFilterId);
+  }
+
+  @Cacheable(cacheNames = "voterRegistrationCvap", key = "{ #stateFips, #year, #inAggregate }")
+  public List<CVAPStatisticsModel> getCVAPStatisticsData(
+      String stateFips, int year, boolean inAggregate) {
+    return _dao.getCVAPStatisticsDataRows(stateFips, year, inAggregate);
   }
 }

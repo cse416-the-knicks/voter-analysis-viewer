@@ -57,6 +57,7 @@ public class VoterRegistrationController {
         _logger.error(jpe.getMessage());
       }
     }
+    _logger.info(encodedSortParams);
     return _service.getDetailedVoterRegistrationData(
         stateFips,
         countyFips,
@@ -64,5 +65,13 @@ public class VoterRegistrationController {
         pageIndex,
         (sortParams != null) ? Optional.of(sortParams) : Optional.empty(),
         partySelectionFilterId);
+  }
+
+  @GetMapping("/cvap/{fipsCode}")
+  public List<CVAPStatisticsModel> getCVAPStatisticsData(
+      @PathVariable(name = "fipsCode") String fipsCode,
+      @RequestParam(name = "year", defaultValue = "2023") int year,
+      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
+    return _service.getCVAPStatisticsData(fipsCode, year, inAggregate);
   }
 }

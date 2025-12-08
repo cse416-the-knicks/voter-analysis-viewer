@@ -66,7 +66,8 @@ pip install -r requirements.txt
 pip install openpyxl # ???
 
 python3 load_prelim_states_data.py
-python3 load_boundary_data.py
+python3 load_state_boundary_data.py
+python3 load_county_boundary_data.py
 python3 load_2024_eavs_data.py
 python3 load_2022_eavs_data.py
 python3 load_2020_eavs_data.py
@@ -74,7 +75,10 @@ python3 load_2018_eavs_data.py
 python3 load_2016_eavs_data.py
 python3 load_ohio_voter_reg_data.py # COMMENT OUT IF NOT NEEDED, TAKES 5 OR MORE MIN TO RUN
 python3 load_device_model.py
-python3 load_2024_equipment_usage.py
+python3 load_2018_to_2024_equipment_usage.py
+python3 load_2016_equipment_usage.py
 python3 load_ny_election_results.py
+python3 load_ok_election_results.py
+python3 load_cvap_data.py
 
 touch  /var/lib/postgresql/.lockfile

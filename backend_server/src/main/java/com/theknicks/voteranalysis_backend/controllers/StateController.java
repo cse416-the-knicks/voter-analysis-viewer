@@ -79,6 +79,13 @@ public class StateController {
     return _service.getVoterRegistrationDataForCounty(fipsCode, countyFipsCode, year);
   }
 
+  @GetMapping("/{fipsCode}/voter-affiliations")
+  public List<VoterAffiliationStatisticsModel> getVoterAffiliations(
+      @PathVariable("fipsCode") String fipsCode,
+      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
+    return _service.getVoterAffiliationData(fipsCode, inAggregate);
+  }
+
   @GetMapping("/{fipsCode}/pollbook-deletions")
   public List<PollbookDeletionStatisticsModel> getPollbookDeletions(
       @PathVariable("fipsCode") String fipsCode,
@@ -149,6 +156,77 @@ public class StateController {
   @GetMapping("/")
   public Map<String, StateInformationModel> getStateInformationTable() {
     return _service.getStateInformationTable();
+  }
+
+  @GetMapping("/{fipsCode}/voter-registration-ordered-graph/")
+  public List<VoterRegistrationHistoryGraphDataModel> getVoterRegistrationHistory(
+      @PathVariable("fipsCode") String fipsCode,
+      @RequestParam(name = "years", defaultValue = "2024,2022,2020,2018,2016")
+          List<Integer> years) {
+    // Used for sorting reference.
+    var eavs2024Data = _service.getVoterRegistrationData(fipsCode, 2024, false);
+
+    var dataPerYear =
+        years.stream()
+            .map(year -> _service.getVoterRegistrationData(fipsCode, year, false))
+            .toList();
+
+    var finalPointSets = new ArrayList<VoterRegistrationHistoryGraphDataModel>();
+    for (int i = 0; i < years.size(); ++i) {
+      int year = years.get(i);
+      var eavsYearData = dataPerYear.get(i);
+
+      var existingCountiesIn2024 =
+          eavsYearData.stream()
+              .filter(
+                  item ->
+                      eavs2024Data.stream()
+                          .anyMatch(x -> x.countyName().equalsIgnoreCase(item.countyName())));
+
+      var orderedCountiesBy2024 =
+          existingCountiesIn2024.sorted(
+              (a, b) -> {
+                var corresponding2024A =
+                    eavs2024Data.stream()
+                        .filter(item -> item.countyName().equalsIgnoreCase(a.countyName()))
+                        .findFirst();
+                var corresponding2024B =
+                    eavs2024Data.stream()
+                        .filter(item -> item.countyName().equalsIgnoreCase(b.countyName()))
+                        .findFirst();
+                int compareValueA = 0;
+                int compareValueB = 0;
+
+                if (corresponding2024A.isPresent()) {
+                  compareValueA = corresponding2024A.get().total();
+                }
+
+                if (corresponding2024B.isPresent()) {
+                  compareValueB = corresponding2024B.get().total();
+                }
+
+                return compareValueB - compareValueA;
+              });
+
+      var orderedPoints =
+          orderedCountiesBy2024
+              .map(
+                  data ->
+                      new VoterRegistrationHistoryGraphDataModel.Point(
+                          data.countyName(), data.total()))
+              .toList();
+      finalPointSets.add(
+          new VoterRegistrationHistoryGraphDataModel(String.valueOf(year), orderedPoints));
+    }
+
+    return finalPointSets;
+  }
+
+  @PostMapping("/regression-coefficients")
+  public List<Double> getRegressionCoefficients(
+      @RequestBody RegressionDataParameterModel dataPoints,
+      @RequestParam(name = "degree", defaultValue = "2") int degree) {
+    return _service.getRegressionCoefficients(dataPoints, degree);
   }
 
   @GetMapping("/{fipsCode}")
