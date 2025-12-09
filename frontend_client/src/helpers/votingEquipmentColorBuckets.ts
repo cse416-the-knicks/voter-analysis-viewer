@@ -1,19 +1,19 @@
 const VOTING_EQUIPMENT_TYPE_COLORS = [
   {
     text: "DRE (No VVPAT)",
-    color: "green",
+    color: "#1FAF6B", // bright emerald; high punch without going neon
   },
   {
     text: "DRE (VVPAT)",
-    color: "blue",
+    color: "#2F7DF6", // vivid blue; reads instantly even in tiny polygons
   },
   {
     text: "BMD",
-    color: "yellow",
+    color: "#F2C02F", // bright golden yellow; strong enough to compete with hatching
   },
   {
     text: "Scanner",
-    color: "red",
+    color: "#E15759", // bright red leaning coral; high visibility, good contrast
   },
 ];
 
