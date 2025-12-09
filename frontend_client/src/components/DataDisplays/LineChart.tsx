@@ -24,6 +24,7 @@ interface LineChartProperties {
   title: string;
   xAxisLabel: string;
   yAxisLabel: string;
+  descendingOrder?: boolean;
 }
 
 interface SimpleLineChartLegendProperties {
@@ -71,7 +72,7 @@ function SimpleLineChartLegend({ data }: SimpleLineChartLegendProperties) {
 // NOTE(jerry):
 // this is not a very general purpose line-chart
 // it was built to express the visualization for GUI 16. exclusively.
-function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineChartProperties) {
+function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel, descendingOrder }: LineChartProperties) {
   const chartMargin = { top: 60, right: 40, bottom: 60, left: 70 };
   const chartWidth = width - chartMargin.left - chartMargin.right + 125;
   const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
@@ -96,7 +97,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
   );
 
   // I make a horrible assumption for GUI16 here.
-  const xAxisLabels = actualData[0]?.points.map((x) => x.x).reverse() || ["loading"];
+  const xAxisLabels = ((descendingOrder) ? actualData[0]?.points.map((x) => x.x) : actualData[0]?.points.map((x) => x.x).reverse()) || ["loading"];
   const xAxisScale = d3
     .scaleBand()
     .domain(xAxisLabels)
