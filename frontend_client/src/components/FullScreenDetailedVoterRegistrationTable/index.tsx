@@ -13,7 +13,7 @@ import { VOTER_REGISTRATION_INFO_COLUMNS } from "../StateInformationView/dataCol
 import { useParams, useNavigate } from "react-router";
 
 interface FullScreenDetailedVoterRegistrationTableProperties {
-  pageSize: number;
+  pageSize?: number;
   width: number;
   height: number;
 }

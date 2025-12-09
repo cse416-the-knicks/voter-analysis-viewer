@@ -28,7 +28,7 @@ interface StyledDataGridProperties {
   rows: RowMaker;
   columns: readonly GridColDef[];
   getRowId?: GridRowIdGetter;
-  pageSize: number;
+  pageSize?: number;
   customGetRowClassName?: getRowClassNameFn;
   width?: number | string;
   height?: number | string;
@@ -111,36 +111,69 @@ function StyledDataGrid({
     [rows, paginationState, sortModelState, isServerSide]
   );
 
-  return (
-    <Box width={width} height={height} maxWidth={maxWidth} maxHeight={maxHeight}>
-      <DataGrid
-        loading={!isLoaded}
-        rows={actualRows}
-        rowCount={rowCount}
-        columns={columns}
-        getRowId={getRowId}
-        getRowClassName={getRowClassNameFunction}
-        paginationMode={isServerSide ? "server" : "client"}
-        sortingMode={isServerSide ? "server" : "client"} // NOTE(jerry): filtering stuff is a bit more complicated cause it's so general purpose.
-        sortModel={sortModelState}
-        onSortModelChange={setSortModelState}
-        paginationModel={paginationState}
-        onPaginationModelChange={setPaginationState}
-        pageSizeOptions={[pageSize]}
-        onRowDoubleClick={onRowDoubleClick}
-        sx={{
-          "& .MuiDataGrid-columnHeaderTitle": {
-            fontWeight: "bolder",
-          },
-          ".oddRowStyle": {
-            backgroundColor: "hsl(225, 35%, 93%)",
-          },
-          ...customCssRules,
-        }}
-        disableRowSelectionOnClick
-      />
-    </Box>
-  );
+  if (pageSize) {
+    return (
+      <Box width={width} height={height} maxWidth={maxWidth} maxHeight={maxHeight}>
+        <DataGrid
+          loading={!isLoaded}
+          rows={actualRows}
+          rowCount={rowCount}
+          columns={columns}
+          getRowId={getRowId}
+          getRowClassName={getRowClassNameFunction}
+          paginationMode={isServerSide ? "server" : "client"}
+          sortingMode={isServerSide ? "server" : "client"} // NOTE(jerry): filtering stuff is a bit more complicated cause it's so general purpose.
+          sortModel={sortModelState}
+          onSortModelChange={setSortModelState}
+          paginationModel={paginationState}
+          onPaginationModelChange={setPaginationState}
+          pageSizeOptions={[pageSize]}
+          onRowDoubleClick={onRowDoubleClick}
+          sx={{
+            "& .MuiDataGrid-columnHeaderTitle": {
+              fontWeight: "bolder",
+            },
+            ".oddRowStyle": {
+              backgroundColor: "hsl(225, 35%, 93%)",
+            },
+            ...customCssRules,
+          }}
+          disableRowSelectionOnClick
+        />
+      </Box>
+    );
+  } else {
+    return (
+      <Box width={width} height={height} maxWidth={maxWidth} maxHeight={maxHeight}>
+        <DataGrid
+          loading={!isLoaded}
+          rows={actualRows}
+          rowCount={rowCount}
+          columns={columns}
+          getRowId={getRowId}
+          getRowClassName={getRowClassNameFunction}
+          paginationMode={isServerSide ? "server" : "client"}
+          sortingMode={isServerSide ? "server" : "client"} // NOTE(jerry): filtering stuff is a bit more complicated cause it's so general purpose.
+          sortModel={sortModelState}
+          onSortModelChange={setSortModelState}
+          paginationModel={paginationState}
+          onPaginationModelChange={setPaginationState}
+          autoPageSize
+          onRowDoubleClick={onRowDoubleClick}
+          sx={{
+            "& .MuiDataGrid-columnHeaderTitle": {
+              fontWeight: "bolder",
+            },
+            ".oddRowStyle": {
+              backgroundColor: "hsl(225, 35%, 93%)",
+            },
+            ...customCssRules,
+          }}
+          disableRowSelectionOnClick
+        />
+      </Box>
+    );
+  }
 }
 
 export default StyledDataGrid;

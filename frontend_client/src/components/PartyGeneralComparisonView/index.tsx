@@ -100,7 +100,6 @@ function PartyGeneralComparisonView() {
       title={"General Comparisons"}
       width={maxWidth}
       maxWidth={maxWidth}
-      pageSize={13}
       rows={rows}
       columns={cols}
       onXout={() => navigate("/")}

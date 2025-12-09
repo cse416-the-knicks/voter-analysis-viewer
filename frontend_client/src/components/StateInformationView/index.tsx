@@ -449,7 +449,6 @@ function StateInformationView() {
           maxWidth={maxWidthForTable}
           height={maxHeightForTable}
           maxHeight={maxHeightForTable}
-          pageSize={7}
           getRowId={(r) => r.id}
         />
         <Box width={maxWidthForTable} height={500}>

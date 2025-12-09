@@ -6,6 +6,7 @@ import { getAllVotingEquipment } from "../../api/client";
 
 import styles from "../DisplayVotingMachineSummaryView/DisplayVotingMachineSummaryView.module.css";
 import StyledDataGrid from "../StyledDataGrid";
+import useCssCalc from "../../hooks/useCssCalc";
 
 const columns: GridColDef<VotingEquipmentModel[]>[] = [
   {
@@ -89,7 +90,7 @@ interface VotingMachineSummaryTableProperties {
 
 function VotingMachineSummaryTable({ fipsCode, width, height }: VotingMachineSummaryTableProperties) {
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
-
+  // Used to approximate height of a row to dynamically calculate good page size to minimize pagination
   useEffect(function () {
     (async function () {
       const equipmentList = await getAllVotingEquipment({ stateFips: fipsCode });
@@ -106,7 +107,6 @@ function VotingMachineSummaryTable({ fipsCode, width, height }: VotingMachineSum
       rows={rows}
       columns={columns}
       getRowId={(x) => x.modelName}
-      pageSize={12}
       customGetRowClassName={(r) => (rows.find((x) => x.modelName === r.id)?.discontinued ? styles.discontinuedRow : "")}
     />
   );
