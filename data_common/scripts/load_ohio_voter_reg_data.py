@@ -25,6 +25,7 @@ cols = [
     "PARTY_AFFILIATION",
     "RESIDENTIAL_ADDRESS1",
     "RESIDENTIAL_CITY",
+    "RESIDENTIAL_STATE",
     "RESIDENTIAL_ZIP",
 ]
 
@@ -36,18 +37,63 @@ unaffiliated_voters = 0
 for file in files:
     print(f"=========Processing file: {file}=========")
     data_path = f"../raw/ohio_voter_files/{file}"
-    ohio_voter_df = pd.read_csv(data_path, usecols=cols, encoding="cp1252", dtype={
-        "COUNTY_NUMBER": str,
-        "LAST_NAME": str,
-        "FIRST_NAME": str,
-        "MIDDLE_NAME": str,
-        "REGISTRATION_DATE": str,
-        "VOTER_STATUS": str,
-        "PARTY_AFFILIATION": str,
-        "RESIDENTIAL_ADDRESS_1": str,
-        "RESIDENTIAL_CITY": str,
-        "RESIDENTIAL_ZIPCODE": str,
-    })
+    ohio_voter_df = pd.read_csv(data_path, usecols=cols, encoding="cp1252", dtype=str)
+
+    # Address validation block for first 5000 rows of first file only
+    if file == "SWVF_1_22.csv":
+        print("Running address validation check on first 5000 rows...")
+
+        inferred_cols = [
+            "inputAddress",
+            "validationGranularity"
+        ]
+        inferred_addresses_df = pd.read_csv("../processed/inferred_addresses.csv", usecols=inferred_cols, dtype=str).fillna("")
+
+        sample_df = ohio_voter_df.head(5000).copy()
+
+        # Build combined address to match Google's inputAddress
+        sample_df["combined_address"] = (
+            sample_df["RESIDENTIAL_ADDRESS1"].str.strip() + " " +
+            sample_df["RESIDENTIAL_CITY"].str.strip() + " " +
+            sample_df["RESIDENTIAL_STATE"].str.strip() + " " +
+            sample_df["RESIDENTIAL_ZIP"].str.strip()
+        )
+
+        # Make sure the inferred file has the same column name
+        inferred_addresses_df = inferred_addresses_df.rename(columns={
+            "inputAddress": "combined_address",
+            "validationGranularity": "granularity"
+        })
+
+        # Merge sample with inferred
+        validated_sample_df = sample_df.merge(
+            inferred_addresses_df[["combined_address", "granularity"]],
+            on="combined_address",
+            how="left"
+        )
+        print(validated_sample_df)
+
+        # Determine which addresses are valid
+        def is_valid(granularity):
+            if pd.isna(granularity):
+                return False
+            return "PREMISE" in granularity.upper()
+
+        validated_sample_df["is_valid"] = validated_sample_df["granularity"].apply(is_valid)
+
+        # Summary of validation
+        total_checked = len(validated_sample_df)
+        valid_count = validated_sample_df["is_valid"].sum()
+        invalid_count = total_checked - valid_count
+        print(f"Validation summary for first 5000 rows:")
+        print(f"  Total checked: {total_checked}")
+        print(f"  Valid (has PREMISE granularity): {valid_count}")
+        print(f"  Invalid or unclear: {invalid_count}")
+
+        # Save invalid addresses into csv for inspection
+        invalid_rows = validated_sample_df[~validated_sample_df["is_valid"]]
+        invalid_rows.to_csv("../processed/ohio_invalid_address_check.csv", index=False)
+        print(f"Saved {invalid_count} invalid address rows to ohio_invalid_address_check.csv")
 
     ohio_voter_df["region_id"] = (OHIO_FIPS_CODE + (((ohio_voter_df["COUNTY_NUMBER"].astype(int) - 1) * 2 + 1).astype(str).str.zfill(3))).str.ljust(10, "0")
 
@@ -74,6 +120,7 @@ for file in files:
         "region_id": "region_id",
     }
     ohio_voter_df = ohio_voter_df.rename(columns=rename_map)
+    ohio_voter_df = ohio_voter_df.drop("RESIDENTIAL_STATE", axis=1)
 
     ohio_voter_df["state_id"] = int(OHIO_FIPS_CODE)
 
