@@ -48,7 +48,7 @@ function SimpleLineChartLegend({ data }: SimpleLineChartLegendProperties) {
           variant="contained"
           size="small"
           onClick={() => setLegendVisibility(!legendVisibility)}
-          sx={{ mb: 2, borderRadius: "20px", top: "0.5em" }}
+          sx={{ mb: 2, borderRadius: "20px", top: "0.5em", textTransform: 'none', p: 0.15 }}
           color="secondary"
         >
           {legendVisibility ? "collapse legend" : "show legend"}

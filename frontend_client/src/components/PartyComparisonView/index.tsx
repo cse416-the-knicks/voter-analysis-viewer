@@ -65,6 +65,7 @@ function PartyComparisonView() {
       title={"Registration/Turnout Comparisons"}
       width={maxWidth}
       maxWidth={maxWidth}
+      height={"30em"}
       rows={rows}
       columns={cols}
       onXout={() => navigate("/")}

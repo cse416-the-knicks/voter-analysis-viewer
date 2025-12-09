@@ -63,8 +63,7 @@ function VoterComparisonOptInOptOutTableView() {
       );
 
       // @ts-expect-error, This is actually correctly an error
-      // because the right fix is that we should be using a union type,
-      // although this code was hacked together.
+      // because the right fix is that we should be using a union type.
       //
       // TODO(frontend): proper type annotation.
       setDataRows(transposedRows);
@@ -76,6 +75,7 @@ function VoterComparisonOptInOptOutTableView() {
       title={"Opt-in / Opt-out Voting Data Comparison"}
       width={maxWidth}
       maxWidth={maxWidth}
+      height={"50em"}
       rows={rows}
       columns={cols}
       onXout={() => navigate("/")}
