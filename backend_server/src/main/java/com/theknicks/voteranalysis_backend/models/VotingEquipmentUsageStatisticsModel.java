@@ -1,5 +1,6 @@
 package com.theknicks.voteranalysis_backend.models;
 
+import com.theknicks.voteranalysis_backend.enums.VoterEquipmentType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +56,6 @@ public record VotingEquipmentUsageStatisticsModel(
         countyName = entry.countyName();
       }
 
-      var hasVvpat = false;
-
-      assert entry.deviceType() != null;
-      if (entry.deviceType().contains("VVPAT") || entry.hasVvpat().orElse(false)) {
-        hasVvpat = true;
-      }
-
       int deviceCount = entry.totalDevices();
       var deviceAge = deviceAgeMap.get(entry.deviceId());
       var deviceQuality = deviceQualityMap.get(entry.deviceId());
@@ -78,31 +72,16 @@ public record VotingEquipmentUsageStatisticsModel(
         totalQualityScore += deviceQuality.get() * deviceCount;
       }
 
-      switch (entry.deviceType()) {
-        case "DRE Dial":
-        case "DRE with VVPAT":
-        case "DRE Touchscreen":
-        case "DRE Push Button":
-          if (hasVvpat) {
-            dreVvpatCount += deviceCount;
-          } else {
-            dreCount += deviceCount;
-          }
-          break;
-        case "Hybrid Optical Scanner/BMD":
-          // NOTE(jerry): intentional fall-through.
-          bmdCount += deviceCount;
-        case "Batch-Fed Optical Scanner":
-        case "Scanner":
-        case "Hand-Fed Optical Scanner":
-        case "Batch-Fed Optical Scan Tabulator":
-          scannerCount += deviceCount;
-          break;
-        case "BMD/Tabulator":
-        case "BMD":
-        case "Ballot Marking Device":
-          bmdCount += deviceCount;
-          break;
+      var types = entry.types();
+      if (VoterEquipmentType.isA(types, VoterEquipmentType.DRE_WITH_VVPAT)) {
+        dreCount += deviceCount;
+        dreVvpatCount += deviceCount;
+      } else if (VoterEquipmentType.isA(types, VoterEquipmentType.DRE_NO_VVPAT)) {
+        dreCount += deviceCount;
+      } else if (VoterEquipmentType.isA(types, VoterEquipmentType.BMD)) {
+        bmdCount += deviceCount;
+      } else if (VoterEquipmentType.isA(types, VoterEquipmentType.SCANNER)) {
+        scannerCount += deviceCount;
       }
     }
 

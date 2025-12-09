@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/voter-registration")
 public class VoterRegistrationController {
-  private final Logger _logger = LoggerFactory.getLogger(VoterRegistrationController.class);
-  private final ObjectMapper _objectMapper = new ObjectMapper();
-  private final VoterRegistrationService _service;
+  private final Logger logger = LoggerFactory.getLogger(VoterRegistrationController.class);
+  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final VoterRegistrationService service;
 
   public VoterRegistrationController(VoterRegistrationService service) {
-    _logger.info("Created VoterRegistrationController.");
-    _service = service;
+    logger.info("Created VoterRegistrationController.");
+    this.service = service;
   }
 
   @GetMapping("/count")
@@ -35,7 +35,7 @@ public class VoterRegistrationController {
       @RequestParam(name = "party", defaultValue = "0") int partySelectionFilterId) {
     // NOTE(jerry):
     // this end-point exists to help support pagination on the frontend.
-    return _service.getDetailedVoterRegistrationDataCount(
+    return service.getDetailedVoterRegistrationDataCount(
         stateFips, countyFips, partySelectionFilterId);
   }
 
@@ -51,14 +51,14 @@ public class VoterRegistrationController {
     if (!encodedSortParams.isEmpty()) {
       var decodedSortParams = URLDecoder.decode(encodedSortParams, StandardCharsets.UTF_8);
       try {
-        sortParams = _objectMapper.readValue(decodedSortParams, CollectionSortParamModel.class);
+        sortParams = objectMapper.readValue(decodedSortParams, CollectionSortParamModel.class);
       } catch (JsonProcessingException jpe) {
-        _logger.error("Error processing sort params?");
-        _logger.error(jpe.getMessage());
+        logger.error("Error processing sort params?");
+        logger.error(jpe.getMessage());
       }
     }
-    _logger.info(encodedSortParams);
-    return _service.getDetailedVoterRegistrationData(
+    logger.info(encodedSortParams);
+    return service.getDetailedVoterRegistrationData(
         stateFips,
         countyFips,
         pageSize,
@@ -73,10 +73,10 @@ public class VoterRegistrationController {
       @RequestParam(name = "year", defaultValue = "2023") int year,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate,
       @RequestParam(name = "granularity", defaultValue = "county") String dataGranularity) {
-    _logger.info("Requesting at data granularity: " + dataGranularity);
+    logger.info("Requesting at data granularity: " + dataGranularity);
     if (!dataGranularity.equalsIgnoreCase("county")) {
-      _logger.error("At this moment, no support for non-county granularity.");
+      logger.error("At this moment, no support for non-county granularity.");
     }
-    return _service.getCVAPStatisticsData(fipsCode, year, inAggregate);
+    return service.getCVAPStatisticsData(fipsCode, year, inAggregate);
   }
 }

@@ -18,42 +18,42 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/votingequipment")
 public class VoterEquipmentController {
-  private final Logger _logger = LoggerFactory.getLogger(VoterEquipmentController.class);
-  private final VoterEquipmentService _service;
+  private final Logger logger = LoggerFactory.getLogger(VoterEquipmentController.class);
+  private final VoterEquipmentService service;
 
   public VoterEquipmentController(VoterEquipmentService service) {
-    _logger.info("Created VoterEquipmentController.");
-    _service = service;
+    logger.info("Created VoterEquipmentController.");
+    this.service = service;
   }
 
   @GetMapping("/")
   public List<VotingEquipmentModel> getAllVotingEquipment(
       @RequestParam(value = "stateFips", defaultValue = "") String stateFips) {
-    return _service.getAllVotingEquipment(
+    return service.getAllVotingEquipment(
         stateFips.isEmpty() ? Optional.empty() : Optional.of(stateFips));
   }
 
   @GetMapping("/by-manufacturer/{manufacturer}")
   public List<VotingEquipmentModel> getAllVotingEquipmentByManufacturer(
       @PathVariable("manufacturer") String manufacturer) {
-    return _service.getAllVotingEquipmentByManufacturer(manufacturer);
+    return service.getAllVotingEquipmentByManufacturer(manufacturer);
   }
 
   @GetMapping("/by-type/{type}")
   public List<VotingEquipmentModel> getAllVotingEquipmentByType(@PathVariable("type") String type) {
-    return _service.getAllVotingEquipmentByType(type);
+    return service.getAllVotingEquipmentByType(type);
   }
 
   @GetMapping("/{manufacturer}/{model}")
   public Optional<VotingEquipmentModel> getVotingEquipment(
       @PathVariable("manufacturer") String manufacturer, @PathVariable("model") String model) {
-    return _service.getVotingEquipment(manufacturer, model);
+    return service.getVotingEquipment(manufacturer, model);
   }
 
   @GetMapping("/usages/")
   public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
       @RequestParam(name = "year", defaultValue = "2024") int year) {
-    return _service.getVotingEquipmentUsage(year, "");
+    return service.getVotingEquipmentUsage(year, "");
   }
 
   @GetMapping("/usages/{fipsCode}")
@@ -61,6 +61,6 @@ public class VoterEquipmentController {
       @PathVariable("fipsCode") String fipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
-    return _service.getDetailedVotingEquipmentUsage(fipsCode, year, inAggregate);
+    return service.getDetailedVotingEquipmentUsage(fipsCode, year, inAggregate);
   }
 }

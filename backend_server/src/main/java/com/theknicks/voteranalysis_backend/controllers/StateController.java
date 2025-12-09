@@ -6,7 +6,10 @@ import com.theknicks.voteranalysis_backend.services.StateService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +21,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/state")
 public class StateController {
-  private final Logger _logger = LoggerFactory.getLogger(StateController.class);
-  private final StateService _service;
+  private final Logger logger = LoggerFactory.getLogger(StateController.class);
+  private final StateService service;
 
   public StateController(StateService service) {
-    _logger.info("Created StateController.");
-    _service = service;
+    logger.info("Created StateController.");
+    this.service = service;
   }
 
   @GetMapping("/{fipsCode}/geometry")
@@ -38,13 +41,13 @@ public class StateController {
                       ref = "../openapi-ext/geojson.yaml#/components/schema/GeoJsonObject",
                       nullable = true)))
   public Optional<ObjectNode> getStateGeometry(@PathVariable("fipsCode") String fipsCode) {
-    return _service.getBoundaryGeometry(fipsCode);
+    return service.getBoundaryGeometry(fipsCode);
   }
 
   @GetMapping("/{fipsCode}/centroids")
   public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(
       @PathVariable("fipsCode") String fipsCode) {
-    return _service.getCountyGeoUnitCentroids(fipsCode);
+    return service.getCountyGeoUnitCentroids(fipsCode);
   }
 
   @GetMapping("/{fipsCode}/provisional-ballots")
@@ -52,7 +55,7 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
-    return _service.getProvisionalBallotData(fipsCode, year, inAggregate);
+    return service.getProvisionalBallotData(fipsCode, year, inAggregate);
   }
 
   @GetMapping("/{fipsCode}/{countyFipsCode}/provisional-ballots")
@@ -60,7 +63,7 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @PathVariable("countyFipsCode") String countyFipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year) {
-    return _service.getProvisionalBallotDataForCounty(fipsCode, countyFipsCode, year);
+    return service.getProvisionalBallotDataForCounty(fipsCode, countyFipsCode, year);
   }
 
   @GetMapping("/{fipsCode}/voter-registration-count")
@@ -68,7 +71,7 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
-    return _service.getVoterRegistrationData(fipsCode, year, inAggregate);
+    return service.getVoterRegistrationData(fipsCode, year, inAggregate);
   }
 
   @GetMapping("/{fipsCode}/{countyFipsCode}/voter-registration-count")
@@ -76,14 +79,14 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @PathVariable("countyFipsCode") String countyFipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year) {
-    return _service.getVoterRegistrationDataForCounty(fipsCode, countyFipsCode, year);
+    return service.getVoterRegistrationDataForCounty(fipsCode, countyFipsCode, year);
   }
 
   @GetMapping("/{fipsCode}/voter-affiliations")
   public List<VoterAffiliationStatisticsModel> getVoterAffiliations(
       @PathVariable("fipsCode") String fipsCode,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
-    return _service.getVoterAffiliationData(fipsCode, inAggregate);
+    return service.getVoterAffiliationData(fipsCode, inAggregate);
   }
 
   @GetMapping("/{fipsCode}/pollbook-deletions")
@@ -91,7 +94,7 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
-    return _service.getPollbookDeletionData(fipsCode, year, inAggregate);
+    return service.getPollbookDeletionData(fipsCode, year, inAggregate);
   }
 
   @GetMapping("/{fipsCode}/{countyFipsCode}/pollbook-deletions")
@@ -99,7 +102,7 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @PathVariable("countyFipsCode") String countyFipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year) {
-    return _service.getPollbookDeletionDataForCounty(fipsCode, countyFipsCode, year);
+    return service.getPollbookDeletionDataForCounty(fipsCode, countyFipsCode, year);
   }
 
   @GetMapping("/{fipsCode}/mail-ballot-rejections")
@@ -107,7 +110,7 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
-    return _service.getMailBallotRejectionData(fipsCode, year, inAggregate);
+    return service.getMailBallotRejectionData(fipsCode, year, inAggregate);
   }
 
   @GetMapping("/{fipsCode}/{countyFipsCode}/mail-ballot-rejections")
@@ -115,14 +118,14 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @PathVariable("countyFipsCode") String countyFipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year) {
-    return _service.getMailBallotRejectionDataForCounty(fipsCode, countyFipsCode, year);
+    return service.getMailBallotRejectionDataForCounty(fipsCode, countyFipsCode, year);
   }
 
   @GetMapping("/{fipsCode}/ballot-statistics")
   public List<BallotStatisticsModel> getBallotStatistics(
       @PathVariable("fipsCode") String fipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year) {
-    return _service.getBallotStatistics(fipsCode, year);
+    return service.getBallotStatistics(fipsCode, year);
   }
 
   @GetMapping("/{fipsCode}/{countyFipsCode}/ballot-statistics")
@@ -130,19 +133,19 @@ public class StateController {
       @PathVariable("fipsCode") String fipsCode,
       @PathVariable("countyFipsCode") String countyFipsCode,
       @RequestParam(name = "year", defaultValue = "2024") int year) {
-    return _service.getBallotStatisticsForCounty(fipsCode, countyFipsCode, year);
+    return service.getBallotStatisticsForCounty(fipsCode, countyFipsCode, year);
   }
 
   @GetMapping("/{fipsCode}/year-summary")
   public List<ViewStateYearSummaryModel> getViewStateYearSummaryByState(
       @PathVariable("fipsCode") String fipsCode) {
-    return _service.getViewStateYearSummaryDataForState(fipsCode);
+    return service.getViewStateYearSummaryDataForState(fipsCode);
   }
 
   @GetMapping("/{fipsCode}/year-summary/{year}")
   public Optional<ViewStateYearSummaryModel> getViewStateYearSummaryByStateForYear(
       @PathVariable("fipsCode") String fipsCode, @PathVariable("year") int year) {
-    return _service.getViewStateYearSummaryDataForStateByYear(fipsCode, year);
+    return service.getViewStateYearSummaryDataForStateByYear(fipsCode, year);
   }
 
   @GetMapping("/{fipsCode}/election-year-results/{year}")
@@ -151,16 +154,16 @@ public class StateController {
       @PathVariable("year") int year,
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate,
       @RequestParam(name = "granularity", defaultValue = "county") String dataGranularity) {
-    _logger.info("Requesting at data granularity: " + dataGranularity);
+    logger.info("Requesting at data granularity: " + dataGranularity);
     if (!dataGranularity.equalsIgnoreCase("county")) {
-      _logger.error("At this moment, no support for non-county granularity.");
+      logger.error("At this moment, no support for non-county granularity.");
     }
-    return _service.getElectionResultsSummaryDataForState(fipsCode, year, inAggregate);
+    return service.getElectionResultsSummaryDataForState(fipsCode, year, inAggregate);
   }
 
   @GetMapping("/")
   public Map<String, StateInformationModel> getStateInformationTable() {
-    return _service.getStateInformationTable();
+    return service.getStateInformationTable();
   }
 
   @GetMapping("/{fipsCode}/voter-registration-ordered-graph/")
@@ -169,11 +172,11 @@ public class StateController {
       @RequestParam(name = "years", defaultValue = "2024,2022,2020,2018,2016")
           List<Integer> years) {
     // Used for sorting reference.
-    var eavs2024Data = _service.getVoterRegistrationData(fipsCode, 2024, false);
+    var eavs2024Data = service.getVoterRegistrationData(fipsCode, 2024, false);
 
     var dataPerYear =
         years.stream()
-            .map(year -> _service.getVoterRegistrationData(fipsCode, year, false))
+            .map(year -> service.getVoterRegistrationData(fipsCode, year, false))
             .toList();
 
     var finalPointSets = new ArrayList<VoterRegistrationHistoryGraphDataModel>();
@@ -231,7 +234,7 @@ public class StateController {
   public List<Double> getRegressionCoefficients(
       @RequestBody RegressionDataParameterModel dataPoints,
       @RequestParam(name = "degree", defaultValue = "2") int degree) {
-    return _service.getRegressionCoefficients(dataPoints, degree);
+    return service.getRegressionCoefficients(dataPoints, degree);
   }
 
   @GetMapping("/{fipsCode}")

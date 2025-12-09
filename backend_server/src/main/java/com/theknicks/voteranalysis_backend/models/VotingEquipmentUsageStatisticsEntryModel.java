@@ -2,7 +2,9 @@ package com.theknicks.voteranalysis_backend.models;
 
 import com.theknicks.voteranalysis_backend.annotations.AutoSql;
 import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
+import com.theknicks.voteranalysis_backend.enums.VoterEquipmentType;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
+import java.util.List;
 import java.util.Optional;
 
 /*
@@ -41,7 +43,8 @@ public record VotingEquipmentUsageStatisticsEntryModel(
     @SqlColumnName(name = "certification") String certification,
     // currently DNE
     /*@SqlColumnName(name = "device_model.vvpat")*/ Optional<Boolean> hasVvpat,
-    @SqlColumnName(name = "sum(quantity)") int totalDevices) {
+    @SqlColumnName(name = "sum(quantity)") int totalDevices,
+    List<VoterEquipmentType> types) {
   public VotingEquipmentUsageStatisticsEntryModel(
       int deviceId,
       String stateName,
@@ -60,7 +63,8 @@ public record VotingEquipmentUsageStatisticsEntryModel(
         deviceType,
         certification,
         Optional.of(false),
-        totalDevices);
+        totalDevices,
+        VoterEquipmentType.determineClass(deviceType, false));
   }
 
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentUsageStatisticsEntryModel> {

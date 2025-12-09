@@ -5,30 +5,27 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.theknicks.voteranalysis_backend.helpers.*;
 import com.theknicks.voteranalysis_backend.models.*;
 import java.io.*;
-import java.nio.file.*;
 import java.util.*;
-import java.util.Collections.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.*;
 
 @Component
 public class StateDAO implements IStateDAO {
-  private final Logger _logger = LoggerFactory.getLogger(StateDAO.class);
+  private final Logger logger = LoggerFactory.getLogger(StateDAO.class);
   private final String preprocessedGeospatialPath = "../data_common/geospatial_processed/";
-  private final JdbcTemplate _jdbcTemplate;
+  private final JdbcTemplate jdbcTemplate;
 
   public StateDAO(JdbcTemplate jdbcTemplate) throws IOException {
-    _logger.info("Creating Concrete StateDAO");
-    _logger.info(preprocessedGeospatialPath);
-    _jdbcTemplate = jdbcTemplate;
+    logger.info("Creating Concrete StateDAO");
+    logger.info(preprocessedGeospatialPath);
+    this.jdbcTemplate = jdbcTemplate;
   }
 
   public Optional<ObjectNode> getGeometryBoundary(String fipsCode) {
     var mapper = new ObjectMapper();
-    _logger.info("Reading state with fips code: " + fipsCode);
+    logger.info("Reading state with fips code: " + fipsCode);
     try (Reader reader =
         new FileReader(preprocessedGeospatialPath + "stateByFips/" + fipsCode + ".json")) {
       var node = mapper.readValue(reader, ObjectNode.class);
@@ -44,7 +41,7 @@ public class StateDAO implements IStateDAO {
       Class<T> type, String fipsCode, int year, boolean aggregated) {
     var queryable = AutoSqlQueryable.findQueryableNested(type);
     assert queryable != null;
-    return _jdbcTemplate.query(
+    return jdbcTemplate.query(
         queryable.Query(aggregated)
             + " where substring(eavs_data.region_id, 1, 2) = ? and year = ?",
         queryable.Mapper(aggregated),
@@ -59,7 +56,7 @@ public class StateDAO implements IStateDAO {
     assert queryable != null;
     var queryResult =
         (List<T>)
-            _jdbcTemplate.query(
+            jdbcTemplate.query(
                 queryable.Query(false) + " where eavs_data.region_id = ? and year = ?",
                 queryable.Mapper(false),
                 fullPaddedFipsCode,
@@ -91,7 +88,7 @@ public class StateDAO implements IStateDAO {
         queryable.QueryWhere(
             new String[] {"eavs_data.\"year\" = 2024", "app.eavs_geounit.state_id = ?"});
     var mapper = queryable.Mapper();
-    var queryResult = _jdbcTemplate.query(sqlQuery, mapper, Integer.parseInt(fipsCode, 10));
+    var queryResult = jdbcTemplate.query(sqlQuery, mapper, Integer.parseInt(fipsCode, 10));
 
     if (aggregated) {
       // NOTE(jerry):
@@ -163,7 +160,7 @@ public class StateDAO implements IStateDAO {
 
   public List<ViewStateYearSummaryModel> getStateYearSummaryRows(String fipsCode) {
     var queryable = new ViewStateYearSummaryModel.Queryable();
-    return _jdbcTemplate.query(
+    return jdbcTemplate.query(
         queryable.Query() + " where state_id = ?",
         queryable.Mapper(),
         Integer.parseInt(fipsCode, 10));
@@ -173,7 +170,7 @@ public class StateDAO implements IStateDAO {
       String fipsCode, int year) {
     var queryable = new ViewStateYearSummaryModel.Queryable();
     return ListHelpers.getFirst(
-        _jdbcTemplate.query(
+        jdbcTemplate.query(
             queryable.Query() + " where state_id = ? and year = ?",
             queryable.Mapper(),
             Integer.parseInt(fipsCode, 10),
@@ -183,7 +180,7 @@ public class StateDAO implements IStateDAO {
   public List<ElectionResultsSummaryModel> getStateElectionResultsSummaryRows(
       String fipsCode, int year, boolean aggregated) {
     var queryable = new ElectionResultsSummaryModel.Queryable();
-    return _jdbcTemplate.query(
+    return jdbcTemplate.query(
         queryable.Query(aggregated) + " where election_results.state_id = ? and year = ?",
         queryable.Mapper(aggregated),
         Integer.parseInt(fipsCode, 10),
@@ -198,7 +195,7 @@ public class StateDAO implements IStateDAO {
     var queryable = new GeoUnitCentroidDataRowModel.Queryable();
     var queryString = queryable.QueryWhere(new String[] {"region_boundary.state_id = ?"});
     var queryMapper = queryable.Mapper();
-    var queryResult = _jdbcTemplate.query(queryString, queryMapper, fipsCodeAsInteger);
+    var queryResult = jdbcTemplate.query(queryString, queryMapper, fipsCodeAsInteger);
     var geoUnitCentroids = queryResult.stream().map(GeoUnitCentroidModel::fromDataRow).toList();
 
     for (var geoUnitCentroid : geoUnitCentroids) {
@@ -211,6 +208,6 @@ public class StateDAO implements IStateDAO {
   public List<StateInformationDataRowModel> getStateInformationDataRowModels() {
     var queryable = AutoSqlQueryable.findQueryableNested(StateInformationDataRowModel.class);
     assert queryable != null;
-    return _jdbcTemplate.query(queryable.Query(), queryable.Mapper());
+    return jdbcTemplate.query(queryable.Query(), queryable.Mapper());
   }
 }

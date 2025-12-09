@@ -6,6 +6,7 @@ import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatistics
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.*;
 
 /**
@@ -16,40 +17,47 @@ import org.springframework.stereotype.*;
  */
 @Service
 public class VoterEquipmentService {
-  private final Logger _logger = LoggerFactory.getLogger(VoterEquipmentService.class);
-  private IVoterEquipmentDAO _dao;
+  private final Logger logger = LoggerFactory.getLogger(VoterEquipmentService.class);
+  private IVoterEquipmentDAO dao;
 
   public VoterEquipmentService(IVoterEquipmentDAO dao) {
-    _logger.info("Creating VoterEquipmentService...");
-    _dao = dao;
+    logger.info("Creating VoterEquipmentService...");
+    this.dao = dao;
   }
 
+  @Cacheable(value = "allVotingEquipment", key = "#stateFips.orElse('ALL')")
   public List<VotingEquipmentModel> getAllVotingEquipment(Optional<String> stateFips) {
-    return _dao.getAllVotingEquipment(stateFips);
+    return dao.getAllVotingEquipment(stateFips);
   }
 
+  @Cacheable(value = "equipmentByManufacturer", key = "#manufacturer")
   public List<VotingEquipmentModel> getAllVotingEquipmentByManufacturer(String manufacturer) {
-    return _dao.getVotingEquipmentByManufacturer(manufacturer);
+    return dao.getVotingEquipmentByManufacturer(manufacturer);
   }
 
+  @Cacheable(value = "usage", key = "{#year, #fipsCode}")
   public List<VotingEquipmentUsageStatisticsModel> getVotingEquipmentUsage(
       int year, String fipsCode) {
-    return _dao.getVotingEquipmentUsage(year, fipsCode);
+    return dao.getVotingEquipmentUsage(year, fipsCode);
   }
 
+  @Cacheable(value = "detailedUsage", key = "{#fipsCode, #year, #inAggregate}")
   public List<VotingEquipmentUsageStatisticsModel> getDetailedVotingEquipmentUsage(
       String fipsCode, int year, boolean inAggregate) {
+
     if (inAggregate) {
-      return _dao.getVotingEquipmentUsage(year, fipsCode);
+      return dao.getVotingEquipmentUsage(year, fipsCode);
     }
-    return _dao.getDetailedVotingEquipmentUsage(year, fipsCode);
+    return dao.getDetailedVotingEquipmentUsage(year, fipsCode);
   }
 
+  @Cacheable(value = "equipmentByType", key = "#type")
   public List<VotingEquipmentModel> getAllVotingEquipmentByType(String type) {
-    return _dao.getVotingEquipmentByType(type);
+    return dao.getVotingEquipmentByType(type);
   }
 
+  @Cacheable(value = "equipmentModel", key = "{#manufacturer, #model}")
   public Optional<VotingEquipmentModel> getVotingEquipment(String manufacturer, String model) {
-    return _dao.getVotingEquipmentModel(manufacturer, model);
+    return dao.getVotingEquipmentModel(manufacturer, model);
   }
 }

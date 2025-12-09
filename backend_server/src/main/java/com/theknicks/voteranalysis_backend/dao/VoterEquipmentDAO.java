@@ -1,8 +1,5 @@
 package com.theknicks.voteranalysis_backend.dao;
 
-import static com.theknicks.voteranalysis_backend.helpers.CsvHelpers.*;
-
-import com.theknicks.voteranalysis_backend.helpers.*;
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentModel;
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsEntryModel;
 import com.theknicks.voteranalysis_backend.models.VotingEquipmentUsageStatisticsModel;
@@ -17,12 +14,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class VoterEquipmentDAO implements IVoterEquipmentDAO {
-  private final Logger _logger = LoggerFactory.getLogger(VoterEquipmentDAO.class);
-  private final JdbcTemplate _jdbcTemplate;
+  private final Logger logger = LoggerFactory.getLogger(VoterEquipmentDAO.class);
+  private final JdbcTemplate jdbcTemplate;
 
   public VoterEquipmentDAO(JdbcTemplate jdbcTemplate) throws IOException {
-    _logger.info("Creating VoterEquipmentDAO - JDBC Persistence");
-    _jdbcTemplate = jdbcTemplate;
+    logger.info("Creating VoterEquipmentDAO - JDBC Persistence");
+    this.jdbcTemplate = jdbcTemplate;
   }
 
   @Override
@@ -39,21 +36,21 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
       params = new Object[] {};
     }
 
-    return _jdbcTemplate.query(
+    return jdbcTemplate.query(
         sql + " order by device_model.device_model_id", params, queryable.Mapper(false));
   }
 
   @Override
   public List<VotingEquipmentModel> getVotingEquipmentByType(String type) {
     var queryable = new VotingEquipmentModel.Queryable();
-    return _jdbcTemplate.query(
+    return jdbcTemplate.query(
         queryable.Query(false) + " where equipment_type = ?", queryable.Mapper(false), type);
   }
 
   @Override
   public List<VotingEquipmentModel> getVotingEquipmentByManufacturer(String manufacturer) {
     var queryable = new VotingEquipmentModel.Queryable();
-    return _jdbcTemplate.query(
+    return jdbcTemplate.query(
         queryable.Query(false) + " where manufacturer = ?", queryable.Mapper(false), manufacturer);
   }
 
@@ -63,10 +60,10 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
     List<VotingEquipmentUsageStatisticsEntryModel> entries;
     if (fipsCode.isEmpty()) {
-      entries = _jdbcTemplate.query(queryable.Query(), queryable.Mapper());
+      entries = jdbcTemplate.query(queryable.Query(), queryable.Mapper());
     } else {
       entries =
-          _jdbcTemplate.query(
+          jdbcTemplate.query(
               queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?", "year = ?"}),
               queryable.Mapper(),
               Integer.parseInt(fipsCode, 10),
@@ -89,7 +86,7 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
       int year, String fipsCode) {
     var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
     var entries =
-        _jdbcTemplate.query(
+        jdbcTemplate.query(
             queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?", "year = ?"}),
             queryable.Mapper(),
             Integer.parseInt(fipsCode, 10),
@@ -110,7 +107,7 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
   public Optional<VotingEquipmentModel> getVotingEquipmentModel(String manufacturer, String model) {
     var queryable = new VotingEquipmentModel.Queryable();
     return Optional.ofNullable(
-        _jdbcTemplate.queryForObject(
+        jdbcTemplate.queryForObject(
             queryable.Query(false) + " where manufacturer = ? and model = ?",
             queryable.Mapper(false),
             manufacturer,

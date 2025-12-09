@@ -3,8 +3,10 @@ package com.theknicks.voteranalysis_backend.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.theknicks.voteranalysis_backend.annotations.AutoSql;
 import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
+import com.theknicks.voteranalysis_backend.enums.VoterEquipmentType;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -41,6 +43,7 @@ public record VotingEquipmentModel(
     // Mostly VVSG
     @SqlColumnName(name = "certification") Optional<String> certificationLevel,
     Optional<Integer> age,
+    List<VoterEquipmentType> types,
     @SqlColumnName(name = "quality_score") Optional<Double> equipmentQuality,
     @SqlColumnName(name = "scan_rate") Optional<Double> scanRate,
     @SqlColumnName(name = "error_rate") Optional<Double> errorRate,
@@ -85,6 +88,7 @@ public record VotingEquipmentModel(
                   return Optional.of(currentYear - yearManufactured);
                 })
             .orElse(Optional.empty()),
+        VoterEquipmentType.determineClass(equipmentType, false),
         equipmentQuality,
         scanRate,
         errorRate,
