@@ -18,7 +18,7 @@ OUT_PATH = "../processed/equipment_usage_2016.csv"
 
 # Helpers for normalization and parsing
 
-def normalize_text(s: str) -> str:
+def normalize_text(s):
     if s is None:
         return ""
     s = str(s).lower()
@@ -26,7 +26,7 @@ def normalize_text(s: str) -> str:
     s = re.sub(r"\(.*?\)", "", s)
     return s.strip()
 
-def parse_quantity(val: str):
+def parse_quantity(val):
     if val is None:
         return False, 0
     s = str(val).strip()
