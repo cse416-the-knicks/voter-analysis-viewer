@@ -574,8 +574,13 @@ function StateInformationView() {
           case ID_SELECTION_VIEW_CVAP_INFO:
             {
               const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
+              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
               const [aggregatedData, data] = await Promise.all(promises);
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition`);
+              const [_activeVoterAggregatedData, activeVoterData] = await Promise.all(activeVoterPromises);
+              let eavsRegisteredVoters = _activeVoterAggregatedData[0].total!
+              let cvapTotals = aggregatedData[0].cvapTotal!
+
+              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition (${(eavsRegisteredVoters/cvapTotals * 100).toPrecision(4)}% of CVAP voters eligible to vote)`);
               setBarGraphXTitle("Race");
               setDataRows(
                 data.map((x) => {
