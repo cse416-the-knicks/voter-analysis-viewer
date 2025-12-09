@@ -19,12 +19,6 @@ OUT_PATH = "../processed/equipment_usage_2016.csv"
 # Helpers for normalization and parsing
 
 def normalize_text(s: str) -> str:
-    """
-    Lowercase, remove parentheses and their contents, and strip.
-    Examples:
-      "DS450 (ES&S)" -> "ds450"
-      "ImageCast Evolution (Dominion)" -> "imagecast evolution"
-    """
     if s is None:
         return ""
     s = str(s).lower()
@@ -33,10 +27,6 @@ def normalize_text(s: str) -> str:
     return s.strip()
 
 def parse_quantity(val: str):
-    """
-    Parse F7@_Number; any non-numeric or negative is treated as invalid.
-    Returns (is_valid_section, quantity_int)
-    """
     if val is None:
         return False, 0
     s = str(val).strip()
