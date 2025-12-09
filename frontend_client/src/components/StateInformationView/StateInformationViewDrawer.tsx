@@ -60,11 +60,11 @@ function EAVsDataQualityInfoCard(title: string, text: string) {
 const EAVsStateCard = () => BasicStateTypeInfoCard("EAVS-Only State", "This is not a detail state, so information will be limited compared to select states.");
 
 function qualityScore(value: number) {
-  return ((value/(value+15))).toPrecision(2);
+  return (value / (value + 14)).toPrecision(2);
 }
 const EAVSQualityCard = (qualityValue: number) => {
   return EAVsDataQualityInfoCard(`EAVS Data Measure: ${qualityScore(qualityValue)}`, "EAVs data quality score");
-}
+};
 
 const VoterRegistrationStateCard = () =>
   BasicStateTypeInfoCard(
@@ -173,11 +173,9 @@ function StateInformationViewDrawer({ sections, stateHook, onSelection, stateTyp
     >
       <Stack spacing={0.5} sx={{ p: 1 }}>
         {stateType.map((x) => (
-          <>
-            <StateInfoCard type={x} />
-            <StateEAVsInfoCard type={x} />
-          </>
+          <StateInfoCard type={x} />
         ))}
+        <StateEAVsInfoCard type={stateType[0]} />
       </Stack>
       <Divider />
       <List disablePadding dense>
