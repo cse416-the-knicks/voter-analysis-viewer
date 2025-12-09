@@ -49,7 +49,23 @@ function BasicStateTypeInfoCard(title: string, text: string) {
   );
 }
 
+function EAVsDataQualityInfoCard(title: string, text: string) {
+  return (
+    <Tooltip title={text}>
+      <Chip color="info" variant="outlined" label={title} />
+    </Tooltip>
+  );
+}
+
 const EAVsStateCard = () => BasicStateTypeInfoCard("EAVS-Only State", "This is not a detail state, so information will be limited compared to select states.");
+
+function qualityScore(value: number) {
+  return ((value/(value+15))).toPrecision(2);
+}
+const EAVSQualityCard = (qualityValue: number) => {
+  return EAVsDataQualityInfoCard(`EAVS Data Measure: ${qualityScore(qualityValue)}`, "EAVs data quality score");
+}
+
 const VoterRegistrationStateCard = () =>
   BasicStateTypeInfoCard(
     "Voter Registration State",
@@ -93,6 +109,10 @@ function StateInfoCard({ type }: StateInfoCardProperties) {
       return PreclearanceStateCard();
   }
   return EAVsStateCard();
+}
+
+function StateEAVsInfoCard({ type }: StateInfoCardProperties) {
+  return EAVSQualityCard(type.length);
 }
 
 function StateInformationViewDrawerListItem({ item, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
@@ -153,7 +173,10 @@ function StateInformationViewDrawer({ sections, stateHook, onSelection, stateTyp
     >
       <Stack spacing={0.5} sx={{ p: 1 }}>
         {stateType.map((x) => (
-          <StateInfoCard type={x} />
+          <>
+            <StateInfoCard type={x} />
+            <StateEAVsInfoCard type={x} />
+          </>
         ))}
       </Stack>
       <Divider />
