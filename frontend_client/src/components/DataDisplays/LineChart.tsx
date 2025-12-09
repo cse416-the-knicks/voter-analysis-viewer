@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import SimpleTooltip from "../SimpleTooltip";
 
 import { useState, useEffect, useRef } from "react";
-import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab } from "@mui/material";
+import { Box, Paper, Typography, Button } from "@mui/material";
 
 interface LineChartDataPoint {
   x: string; // label county
@@ -31,26 +31,38 @@ interface SimpleLineChartLegendProperties {
   chartWidth: number;
 }
 
-function SimpleLineChartLegend({ data, chartWidth }: SimpleLineChartLegendProperties) {
+function SimpleLineChartLegend({ data }: SimpleLineChartLegendProperties) {
+  const [legendVisibility, setLegendVisibility] = useState(true);
+
   return (
     <Box
       sx={{
         position: "absolute",
-        left: chartWidth - 120,
-        top: "2em",
+        left: "90px",
+        top: "0.5em",
       }}
     >
       <Paper elevation={4}>
-        <b>Chart Key</b>
-        {data.map((x) => (
-          <>
-            <span style={{ paddingLeft: "8px", paddingRight: "8px", paddingBottom: "0", margin: "auto", height: "5px", display: "flex" }}>
-              <i style={{ background: x.color, width: "18px", height: "18px", display: "inline-block", marginRight: "8px", border: "1.5px solid black" }}></i>
-              <Typography>{x.label}</Typography>
-            </span>
-            <br />
-          </>
-        ))}
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => setLegendVisibility(!legendVisibility)}
+          sx={{ mb: 2, borderRadius: "20px", top: "0.5em" }}
+          color="secondary"
+        >
+          {legendVisibility ? "collapse legend" : "show legend"}
+        </Button>
+        <Box sx={{ display: legendVisibility ? "block" : "none" }}>
+          {data.map((x) => (
+            <>
+              <span style={{ paddingLeft: "8px", paddingRight: "8px", paddingBottom: "0", margin: "auto", height: "5px", display: "flex" }}>
+                <i style={{ background: x.color, width: "18px", height: "18px", display: "inline-block", marginRight: "8px", border: "1.5px solid black" }}></i>
+                <Typography>{x.label}</Typography>
+              </span>
+              <br />
+            </>
+          ))}
+        </Box>
       </Paper>
     </Box>
   );
@@ -84,7 +96,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel }: LineC
   );
 
   // I make a horrible assumption for GUI16 here.
-  const xAxisLabels = actualData[0]?.points.map((x) => x.x) || ["loading"];
+  const xAxisLabels = actualData[0]?.points.map((x) => x.x).reverse() || ["loading"];
   const xAxisScale = d3
     .scaleBand()
     .domain(xAxisLabels)
