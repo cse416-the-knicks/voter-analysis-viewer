@@ -7,7 +7,7 @@ export default {
     path: "ei-gingles-chart",
     description: {
       type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
-      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIGinglesChart />,
+      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIGinglesChart fipsCode={fipsCode} width={overlayWidth} height={overlayHeight} />,
     },
   } as StateInformationViewDataConfiguration,
 };

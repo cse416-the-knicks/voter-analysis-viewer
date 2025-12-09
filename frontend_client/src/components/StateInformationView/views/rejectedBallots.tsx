@@ -28,6 +28,7 @@ export default {
               color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
             }));
           }}
+          maxXScale={1}
           width={overlayWidth}
           height={overlayHeight}
           title="Voting Equipment Quality"
