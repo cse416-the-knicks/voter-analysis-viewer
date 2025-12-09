@@ -2,7 +2,7 @@
 -- CVAP (Citizen Voting Age Population) data
 -- ===========================================
 CREATE TABLE app.cvap_data (
-    region_id     VARCHAR(10) NOT NULL,                    -- jurisdiction
+    region_id     VARCHAR(20) NOT NULL,                    -- jurisdiction
     state_id      INT NOT NULL
                   REFERENCES app.states(state_id),         -- state of registration
 

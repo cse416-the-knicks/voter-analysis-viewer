@@ -42,6 +42,13 @@ precinct_df["other_votes"] = (
     precinct_df["votes_total"] - (precinct_df["votes_rep"] + precinct_df["votes_dem"])
 )
 
+# Export precinct region_ids for use by CVAP script
+precinct_df["county_fips"] = precinct_df["GEOID"].str.slice(0, 5)
+precinct_df[["county_fips", "GEOID"]].to_csv(
+    "../processed/tx_precinct_region_ids.csv",
+    index=False
+)
+
 rename_map = {
     "GEOID": "region_id",
     "votes_rep": "rep_votes",
