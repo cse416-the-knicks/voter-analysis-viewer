@@ -71,7 +71,12 @@ public class VoterRegistrationController {
   public List<CVAPStatisticsModel> getCVAPStatisticsData(
       @PathVariable(name = "fipsCode") String fipsCode,
       @RequestParam(name = "year", defaultValue = "2023") int year,
-      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate) {
+      @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate,
+      @RequestParam(name = "granularity", defaultValue = "county") String dataGranularity) {
+    _logger.info("Requesting at data granularity: " + dataGranularity);
+    if (!dataGranularity.equalsIgnoreCase("county")) {
+      _logger.error("At this moment, no support for non-county granularity.");
+    }
     return _service.getCVAPStatisticsData(fipsCode, year, inAggregate);
   }
 }
