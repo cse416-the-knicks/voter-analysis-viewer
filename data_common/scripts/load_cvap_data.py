@@ -18,12 +18,12 @@ cols = [
     "cvap_est"
 ]
 
-df = pd.read_csv(CVAP_PATH, usecols=cols, encoding="latin-1", dtype={
+raw_cvap_df = pd.read_csv(CVAP_PATH, usecols=cols, encoding="latin-1", dtype={
     "geoid": str,
     "cvap_est": int
 })
 
-df_filtered = df[df["geoid"].str.contains(r"^0500000US(36|40|48)")]
+cvap_df = raw_cvap_df[raw_cvap_df["geoid"].str.contains(r"^0500000US(36|40|48)")]
 
 # Load Texas precinct region IDs (produced by election script)
 tx_precinct_list = pd.read_csv("../processed/tx_precinct_region_ids.csv", dtype=str)
@@ -33,8 +33,8 @@ tx_precinct_counts = (
 
 n = 13
 records = []
-for i in range(0, len(df_filtered), n):
-    chunk = df_filtered.iloc[i:i+n]
+for i in range(0, len(cvap_df), n):
+    chunk = cvap_df.iloc[i:i+n]
 
     geoid = chunk["geoid"].iloc[0]
     state_id = geoid[9:11]
@@ -90,8 +90,8 @@ for i in range(0, len(df_filtered), n):
                 "cvap_other": cvap_other_p
             })
 
-df_final = pd.DataFrame(records)
-df_final["estimate_year"] = 2023
+agg_cvap_df = pd.DataFrame(records)
+agg_cvap_df["estimate_year"] = 2023
 
 # Connecting to db
 engine = create_engine(
@@ -99,7 +99,7 @@ engine = create_engine(
 )
 
 # Inserting into db
-df_final.to_sql(
+agg_cvap_df.to_sql(
     "cvap_data",
     engine,
     schema="app",

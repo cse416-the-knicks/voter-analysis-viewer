@@ -36,7 +36,7 @@ unaffiliated_voters = 0
 for file in files:
     print(f"=========Processing file: {file}=========")
     data_path = f"../raw/ohio_voter_files/{file}"
-    df = pd.read_csv(data_path, usecols=cols, encoding="cp1252", dtype={
+    ohio_voter_df = pd.read_csv(data_path, usecols=cols, encoding="cp1252", dtype={
         "COUNTY_NUMBER": str,
         "LAST_NAME": str,
         "FIRST_NAME": str,
@@ -49,17 +49,17 @@ for file in files:
         "RESIDENTIAL_ZIPCODE": str,
     })
 
-    df["region_id"] = (OHIO_FIPS_CODE + (((df["COUNTY_NUMBER"].astype(int) - 1) * 2 + 1).astype(str).str.zfill(3))).str.ljust(10, "0")
+    ohio_voter_df["region_id"] = (OHIO_FIPS_CODE + (((ohio_voter_df["COUNTY_NUMBER"].astype(int) - 1) * 2 + 1).astype(str).str.zfill(3))).str.ljust(10, "0")
 
-    df = df.drop(columns=["COUNTY_NUMBER"])
+    ohio_voter_df = ohio_voter_df.drop(columns=["COUNTY_NUMBER"])
 
     # Normalize PARTY_AFFILIATION to uppercase and replace NaN with empty string
-    df["PARTY_AFFILIATION"] = df["PARTY_AFFILIATION"].fillna("").str.upper().str.strip()
+    ohio_voter_df["PARTY_AFFILIATION"] = ohio_voter_df["PARTY_AFFILIATION"].fillna("").str.upper().str.strip()
 
-    total_voters += len(df)
+    total_voters += len(ohio_voter_df)
 
-    republican_voters += (df["PARTY_AFFILIATION"].str.upper() == "R").sum()
-    democratic_voters += (df["PARTY_AFFILIATION"].str.upper() == "D").sum()
+    republican_voters += (ohio_voter_df["PARTY_AFFILIATION"].str.upper() == "R").sum()
+    democratic_voters += (ohio_voter_df["PARTY_AFFILIATION"].str.upper() == "D").sum()
 
     rename_map = {
         "LAST_NAME": "last_name",
@@ -73,16 +73,16 @@ for file in files:
         "RESIDENTIAL_ZIP": "zip_code",
         "region_id": "region_id",
     }
-    df = df.rename(columns=rename_map)
+    ohio_voter_df = ohio_voter_df.rename(columns=rename_map)
 
-    df["state_id"] = int(OHIO_FIPS_CODE)
+    ohio_voter_df["state_id"] = int(OHIO_FIPS_CODE)
 
     # Connecting to db
     engine = create_engine(
         f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
     )
 
-    df.to_sql(
+    ohio_voter_df.to_sql(
         "voter_registration",
         engine,
         schema="app",

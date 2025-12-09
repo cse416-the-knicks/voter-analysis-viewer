@@ -15,16 +15,16 @@ port = os.getenv("DB_PORT")
 database = os.getenv("DB_NAME")
 
 geojson_path = "../geospatial_processed/filtered_county_boundaries.geojson"
-gdf = gpd.read_file(geojson_path)
+county_boundaries_gdf = gpd.read_file(geojson_path)
 
 # Re projecting to a projected CRS (NAD83 / Conus Albers) for accurate centroid
-gdf_proj = gdf.to_crs(epsg=5070)
+gdf_proj = county_boundaries_gdf.to_crs(epsg=5070)
 
 # Computing centroids in meters then converting back to lat long
 centroids = gdf_proj.geometry.centroid.to_crs(epsg=4326)
 
 records = []
-for idx, row in gdf.iterrows():
+for idx, row in county_boundaries_gdf.iterrows():
     state_id = row["STATEFP"]
     county_id = row["COUNTYFP"]
 
@@ -47,7 +47,7 @@ for idx, row in gdf.iterrows():
         "geom_center": centroid_geojson
     })
 
-df = pd.DataFrame(records)
+county_geojsons_df = pd.DataFrame(records)
 
 # Connecting to db
 engine = create_engine(
@@ -55,7 +55,7 @@ engine = create_engine(
 )
 
 # Inserting into db
-df.to_sql(
+county_geojsons_df.to_sql(
     "region_boundary",
     engine,
     schema="app",

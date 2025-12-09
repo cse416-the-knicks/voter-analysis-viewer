@@ -11,8 +11,8 @@ host = os.getenv("DB_HOST")
 port = os.getenv("DB_PORT")
 database = os.getenv("DB_NAME")
 
-df = pd.read_csv("../processed/voting_machine_full.csv")
-df = df.drop(columns=["device_model_id"])
+voting_machine_df = pd.read_csv("../processed/voting_machine_full.csv")
+voting_machine_df = voting_machine_df.drop(columns=["device_model_id"])
 
 rename_map = {
     "Manufacturer": "vendor",
@@ -25,8 +25,8 @@ rename_map = {
     "Discontinued": "is_discontinued",
     "Quality Score tentative": "quality_score",
 }
-df = df[[c for c in rename_map if c in df.columns]]
-df = df.rename(columns=rename_map)
+voting_machine_df = voting_machine_df[[c for c in rename_map if c in voting_machine_df.columns]]
+voting_machine_df = voting_machine_df.rename(columns=rename_map)
 
 
 # Connecting to db
@@ -35,7 +35,7 @@ engine = create_engine(
 )
 
 # Inserting into db
-df.to_sql(
+voting_machine_df.to_sql(
     "device_model",
     engine,
     schema="app",
