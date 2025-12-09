@@ -62,7 +62,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
 
   const xAxisScale = d3
     .scaleLinear()
-    .domain([0, maxXScale || d3.max(actualData, (x) => x.x)! + 5])
+    .domain([0, maxXScale || d3.max(actualData, (x) => x.x)! * 1.015])
     .range([chartMargin.left, chartWidth - chartMargin.right]);
   const yAxisScale = d3
     .scaleLinear()

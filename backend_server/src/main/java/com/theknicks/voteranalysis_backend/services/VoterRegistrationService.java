@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 /** This service wraps around the IVoterRegistrationDAO. */
 @Service
 public class VoterRegistrationService {
-  private final Logger _logger = LoggerFactory.getLogger(VoterRegistrationService.class);
-  private final IVoterRegistrationDAO _dao;
+  private final Logger logger = LoggerFactory.getLogger(VoterRegistrationService.class);
+  private final IVoterRegistrationDAO dao;
 
   public VoterRegistrationService(IVoterRegistrationDAO dao) {
-    _dao = dao;
+    this.dao = dao;
   }
 
   @Cacheable(
@@ -30,7 +30,7 @@ public class VoterRegistrationService {
       int partySelectionFilterId) {
     Optional<String> countyFipsParam =
         countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
-    return _dao.getDetailedVoterRegistrationDataRows(
+    return dao.getDetailedVoterRegistrationDataRows(
         stateFips, countyFipsParam, pageSize, pageIndex, sortParams, partySelectionFilterId);
   }
 
@@ -41,13 +41,13 @@ public class VoterRegistrationService {
       String stateFips, String countyFips, int partySelectionFilterId) {
     Optional<String> countyFipsParam =
         countyFips.isEmpty() ? Optional.empty() : Optional.of(countyFips);
-    return _dao.getDetailedVoterRegistrationDataCount(
+    return dao.getDetailedVoterRegistrationDataCount(
         stateFips, countyFipsParam, partySelectionFilterId);
   }
 
   @Cacheable(cacheNames = "voterRegistrationCvap", key = "{ #stateFips, #year, #inAggregate }")
   public List<CVAPStatisticsModel> getCVAPStatisticsData(
       String stateFips, int year, boolean inAggregate) {
-    return _dao.getCVAPStatisticsDataRows(stateFips, year, inAggregate);
+    return dao.getCVAPStatisticsDataRows(stateFips, year, inAggregate);
   }
 }

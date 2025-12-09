@@ -2,7 +2,10 @@ package com.theknicks.voteranalysis_backend.models;
 
 import com.theknicks.voteranalysis_backend.annotations.AutoSql;
 import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
+import com.theknicks.voteranalysis_backend.enums.VoterEquipmentType;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
+import java.util.List;
+import java.util.Optional;
 
 /*
    This holds the overall usage statistics of a voting equipment model
@@ -38,11 +41,32 @@ public record VotingEquipmentUsageStatisticsEntryModel(
     @SqlColumnName(name = "eavs_geounit.name") String countyName,
     @SqlColumnName(name = "device_type") String deviceType,
     @SqlColumnName(name = "certification") String certification,
-    // NOTE(jerry):
-    // I think this query is incorrect, but fortunately it's not used anywhere
-    // right now I don't remember why I put this or thought it would be helpful.
-    @SqlColumnName(name = "count(distinct equipment_usage.region_id)") int uniqueModels,
-    @SqlColumnName(name = "sum(quantity)") int totalDevices) {
+    // currently DNE
+    /*@SqlColumnName(name = "device_model.vvpat")*/ Optional<Boolean> hasVvpat,
+    @SqlColumnName(name = "sum(quantity)") int totalDevices,
+    List<VoterEquipmentType> types) {
+  public VotingEquipmentUsageStatisticsEntryModel(
+      int deviceId,
+      String stateName,
+      int stateId,
+      String fullRegionId,
+      String countyName,
+      String deviceType,
+      String certification,
+      int totalDevices) {
+    this(
+        deviceId,
+        stateName,
+        stateId,
+        fullRegionId,
+        countyName,
+        deviceType,
+        certification,
+        Optional.of(false),
+        totalDevices,
+        VoterEquipmentType.determineClass(deviceType, false));
+  }
+
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentUsageStatisticsEntryModel> {
     public Queryable() {
       super(VotingEquipmentUsageStatisticsEntryModel.class);

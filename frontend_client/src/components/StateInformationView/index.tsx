@@ -1,38 +1,8 @@
 import type { GridColDef } from "@mui/x-data-grid";
-import type {
-  PollbookDeletionStatisticsModel,
-  ProvisionalBallotStatisticsModel,
-  VoterRegistrationStatisticsModel,
-  MailBallotRejectionStatisticsModel,
-  VoterRegistrationHistoryGraphDataModel,
-  VotingEquipmentUsageStatisticsModel,
-  VoterAffiliationStatisticsModel,
-  CVAPStatisticsModel,
-} from "../../api/client";
-
-import {
-  getProvisionalBallots,
-  getMailBallotRejections,
-  getVoterRegistrationCounts,
-  getPollbookDeletions,
-  getDetailedVoterRegistrationDataCount,
-  getVoterRegistrationHistory,
-  getDetailedVotingEquipmentUsage,
-  getElectionResultsSummary,
-  getBallotStatistics,
-  getVoterAffiliations,
-  getCVAPStatisticsData,
-  getAllVotingEquipment,
-} from "../../api/client";
-
 import VOTING_EQUIPMENT_TYPE_COLORS from "../../helpers/votingEquipmentColorBuckets";
-
 import useChoroplethStylingFunction from "../../hooks/useChoroplethStylingFunction";
-
 import { PERCENTAGE_CHOROPLETH_BUCKETS, VOTING_EQUIPMENT_AGE_CHOROPLETH_BUCKETS } from "../../helpers/choroplethBuckets";
-
 import { useLocation, useParams, useNavigate, Routes, Route } from "react-router";
-
 import InboxIcon from "@mui/icons-material/Inbox";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import BallotIcon from "@mui/icons-material/Ballot";
@@ -42,11 +12,8 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ScannerIcon from "@mui/icons-material/Scanner";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
-
 import Stack from "@mui/material/Stack";
-
-import { Box, Paper, Typography, useTheme, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-
+import { Box, Paper, Typography, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
@@ -54,72 +21,50 @@ import {
   DETAIL_STATE_TYPE_VOTER_REGISTRATION,
   getDetailStateType,
   isDetailState,
-  type DetailStateType,
 } from "../FullBoundedUSMap/detailedStatesInfo";
-
 import { useState, useEffect } from "react";
-
 import styles from "./StateInformationView.module.css";
 import StateMap from "../StateMap";
-
 import { FIPS_TO_STATES_MAP } from "../FullBoundedUSMap/boundaryData";
-import { StateInformationViewDrawer } from "./StateInformationViewDrawer";
+import { StateInformationViewDrawer, type StateInformationViewDrawerSection } from "./StateInformationViewDrawer";
 import useKeyDown from "../../hooks/useKeyDown";
 import useCssCalc from "../../hooks/useCssCalc";
 import StyledDataGrid from "../StyledDataGrid";
-
-import {
-  ACTIVE_VOTER_REGISTRATION_COLUMNS,
-  bargraphDataForActiveVoterRegistrations,
-  bargraphDataForMailBallotRejections,
-  bargraphDataForPollBookDeletions,
-  bargraphDataForProvisionalBallots,
-  bargraphDataForVoterAffiliations,
-  MAIL_BALLOT_REJECTION_COLUMNS,
-  PROVISIONAL_BALLOT_COLUMNS,
-  VOTING_EQUIPMENT_COLUMNS,
-  bargraphDataForVotingEquipmentUsages,
-  VOTER_AFFILIATION_COLUMNS,
-  CVAP_INFO_COLUMNS,
-  bargraphDataForCVAPInfo,
-} from "./dataColumns";
-
-import FullScreenDetailedVoterRegistrationTable from "../FullScreenDetailedVoterRegistrationTable";
-
 import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
-
 import BarChart, { type BarChartDataEntry } from "../DataDisplays/BarChart";
 import GeoUnitBubbleChart from "../DataDisplays/GeoUnitBubbleChart";
-import BubbleChart from "../DataDisplays/BubbleChart";
-import LineChart from "../DataDisplays/LineChart";
-import NotImplementedYet from "../NotImplementedYetDialog";
-import DisplayEIGinglesChart from "../DisplayEIGinglesChart";
-import DisplayEIRejectedBallots from "../DisplayEIRejectedBallots";
-import DisplayEIVotingEquipment from "../DisplayEIVotingEquipment";
+import EquipmentGradientSet from "./EquipmentGradientSet";
+import {
+  ID_SELECTION_PROVISIONAL_BALLOT,
+  ID_SELECTION_ACTIVE_VOTERS,
+  ID_SELECTION_POLLBOOK_DELETION,
+  ID_SELECTION_MAIL_BALLOT_REJECTIONS,
+  ID_SELECTION_REJECTED_BALLOTS,
+  ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE,
+  ID_SELECTION_VOTING_EQUIPMENT_BY_AGE,
+  ID_SELECTION_VOTING_EQUIPMENT_SUMMARY,
+  ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES,
+  ID_SELECTION_MAIL_IN_VOTING,
+  ID_SELECTION_VIEW_CVAP_INFO,
+  ID_SELECTION_VIEW_CVAP_PERCENTAGE,
+  ID_SELECTION_VOTER_REGISTRATION,
+  ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE,
+  ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART,
+  ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT,
+  ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS,
+} from "./views/viewIds";
+import {
+  STATE_INFORMATION_VIEW_TYPE_OVERLAY,
+  STATE_INFORMATION_VIEW_TYPE_SIMPLE,
+  type StateInformationViewSimpleFactView,
+  type StateInformationViewOverlayView,
+  type DataFact,
+} from "./dataViewConfigTypes";
+import { FACT_VIEW_CONFIGURATIONS } from "./dataViewModeConfig";
 
-const ID_SELECTION_PROVISIONAL_BALLOT = 0;
-const ID_SELECTION_ACTIVE_VOTERS = 1;
-const ID_SELECTION_POLLBOOK_DELETION = 2;
-const ID_SELECTION_MAIL_BALLOT_REJECTIONS = 3;
-const ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES = 10;
-
-const ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE = 4;
-const ID_SELECTION_VOTING_EQUIPMENT_BY_AGE = 5;
-const ID_SELECTION_REJECTED_BALLOTS = 6;
-const ID_SELECTION_MAIL_IN_VOTING = 7;
-
-const ID_SELECTION_VOTER_REGISTRATION = 8;
-const ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE = 9;
-const ID_SELECTION_VIEW_CVAP_INFO = 11;
-const ID_SELECTION_VIEW_CVAP_PERCENTAGE = 12;
-
-const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART = 13;
-const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT = 14;
-const ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS = 15;
-
-const defaultDropDownSections = [
+const DROPDOWN_SECTIONS = [
   {
     title: "Ballot Data",
     iconComponent: <BallotIcon />,
@@ -128,6 +73,13 @@ const defaultDropDownSections = [
       { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
       { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
       { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
+      {
+        id: ID_SELECTION_MAIL_IN_VOTING,
+        iconComponent: <HowToVoteIcon />,
+        textContent: "Mail-In Voting Chart",
+        requiresStateType: [DETAIL_STATE_TYPE_REPUBLICAN, DETAIL_STATE_TYPE_DEMOCRAT],
+      },
+      { id: ID_SELECTION_REJECTED_BALLOTS, iconComponent: <DoNotDisturbIcon />, textContent: "Rejected Ballots vs. Equipment Quality" },
     ],
   },
   {
@@ -135,110 +87,64 @@ const defaultDropDownSections = [
     items: [
       { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <ScannerIcon />, textContent: "By Type" },
       { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
-    ],
-  },
-  {
-    title: "Voter Registration",
-    items: [{ id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" }],
-  },
-];
-
-const partyStateDropDownSections = [
-  {
-    title: "Ballot Data",
-    iconComponent: <BallotIcon />,
-    items: [
-      { id: ID_SELECTION_PROVISIONAL_BALLOT, iconComponent: <InboxIcon />, textContent: "Provisional Ballots" },
-      { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
-      { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
-      { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
-      { id: ID_SELECTION_MAIL_IN_VOTING, iconComponent: <HowToVoteIcon />, textContent: "Mail-In Voting" },
-      { id: ID_SELECTION_REJECTED_BALLOTS, iconComponent: <DoNotDisturbIcon />, textContent: "Rejected Ballots" },
-    ],
-  },
-  {
-    title: "Voting Equipment",
-    items: [
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <AccessTimeIcon />, textContent: "By Type" },
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <ScannerIcon />, textContent: "By Age" },
+      { id: ID_SELECTION_VOTING_EQUIPMENT_SUMMARY, iconComponent: <ScannerIcon />, textContent: "Summary" },
     ],
   },
   {
     title: "Voter Registration",
     items: [
       { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
-      { id: ID_SELECTION_VIEW_CVAP_INFO, iconComponent: <PersonIcon />, textContent: "CVAP Statistics" },
-      { id: ID_SELECTION_VIEW_CVAP_PERCENTAGE, iconComponent: <PersonIcon />, textContent: "CVAP Registration" },
-    ],
-  },
-];
+      {
+        id: ID_SELECTION_VOTER_REGISTRATION,
+        iconComponent: <PersonIcon />,
+        textContent: "Registration Data",
+        requiresStateType: [DETAIL_STATE_TYPE_VOTER_REGISTRATION],
+      },
+      {
+        id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE,
+        iconComponent: <PersonIcon />,
+        textContent: "Registered Voters",
+        requiresStateType: [DETAIL_STATE_TYPE_VOTER_REGISTRATION],
+      },
 
-const voterRegistrationStateDropDownSections = [
-  {
-    title: "Ballot Data",
-    iconComponent: <BallotIcon />,
-    items: [
-      { id: ID_SELECTION_PROVISIONAL_BALLOT, iconComponent: <InboxIcon />, textContent: "Provisional Ballots" },
-      { id: ID_SELECTION_ACTIVE_VOTERS, iconComponent: <PersonIcon />, textContent: "Active Voters" },
-      { id: ID_SELECTION_POLLBOOK_DELETION, iconComponent: <DeleteForeverIcon />, textContent: "Pollbook Deletions" },
-      { id: ID_SELECTION_MAIL_BALLOT_REJECTIONS, iconComponent: <PersonOffIcon />, textContent: "Mail Ballot Rejections" },
+      {
+        id: ID_SELECTION_VIEW_CVAP_INFO,
+        iconComponent: <PersonIcon />,
+        textContent: "CVAP Statistics",
+        requiresStateType: [DETAIL_STATE_TYPE_REPUBLICAN, DETAIL_STATE_TYPE_DEMOCRAT],
+      },
+      {
+        id: ID_SELECTION_VIEW_CVAP_PERCENTAGE,
+        iconComponent: <PersonIcon />,
+        textContent: "CVAP Registration",
+        requiresStateType: [DETAIL_STATE_TYPE_REPUBLICAN, DETAIL_STATE_TYPE_DEMOCRAT],
+      },
     ],
   },
-  {
-    title: "Voting Equipment",
-    items: [
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE, iconComponent: <ScannerIcon />, textContent: "By Type" },
-      { id: ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, iconComponent: <AccessTimeIcon />, textContent: "By Age" },
-    ],
-  },
-  {
-    title: "Voter Registration",
-    items: [
-      { id: ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES, iconComponent: <PersonIcon />, textContent: "Registration by Year" },
-      { id: ID_SELECTION_VOTER_REGISTRATION, iconComponent: <PersonIcon />, textContent: "Registration Data" },
-      { id: ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE, iconComponent: <PersonIcon />, textContent: "Registered Voters" },
-    ],
-  },
-];
-
-const ecologicalInferenceDropDownSections = [
   {
     title: "Ecological Inference",
     items: [
-      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART, iconComponent: <PersonIcon />, textContent: "Gingles Chart" },
-      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT, iconComponent: <ScannerIcon />, textContent: "Equipment Accessibility" },
-      { id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS, iconComponent: <PersonOffIcon />, textContent: "CVAP Rejections" },
+      {
+        id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART,
+        iconComponent: <PersonIcon />,
+        textContent: "Gingles Chart",
+        requiresStateType: [DETAIL_STATE_TYPE_PRECLEARANCE_STATE],
+      },
+      {
+        id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT,
+        iconComponent: <ScannerIcon />,
+        textContent: "Equipment Accessibility",
+        requiresStateType: [DETAIL_STATE_TYPE_PRECLEARANCE_STATE],
+      },
+      {
+        id: ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS,
+        iconComponent: <PersonOffIcon />,
+        textContent: "CVAP Rejections",
+        requiresStateType: [DETAIL_STATE_TYPE_PRECLEARANCE_STATE],
+      },
     ],
   },
-];
-
-function pickDropdownType(stateType: DetailStateType[]) {
-  const partyState = stateType.some((x) => x === DETAIL_STATE_TYPE_REPUBLICAN || x === DETAIL_STATE_TYPE_DEMOCRAT);
-  const voterRegistrationState = stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION);
-  const preclearanceState = stateType.some((x) => x === DETAIL_STATE_TYPE_PRECLEARANCE_STATE);
-  let result = [...defaultDropDownSections];
-  if (partyState || voterRegistrationState) {
-    if (partyState) {
-      result[0] = partyStateDropDownSections[0];
-      result[2] = partyStateDropDownSections[2];
-    }
-    if (voterRegistrationState) {
-      result[2] = voterRegistrationStateDropDownSections[2];
-    }
-    if (preclearanceState) {
-      result = result.concat(ecologicalInferenceDropDownSections);
-    }
-    return result;
-  }
-  return result;
-}
-
-type EAVsGeneralFact =
-  | ProvisionalBallotStatisticsModel
-  | PollbookDeletionStatisticsModel
-  | MailBallotRejectionStatisticsModel
-  | VoterRegistrationStatisticsModel
-  | VotingEquipmentUsageStatisticsModel;
+] as StateInformationViewDrawerSection[];
 
 function a11yProps(index: number) {
   return {
@@ -248,191 +154,25 @@ function a11yProps(index: number) {
 }
 
 function getUrlForModeId(id: number, fipsCode: string) {
-  switch (id) {
-    case ID_SELECTION_PROVISIONAL_BALLOT:
-      return `/state/${fipsCode}/provisional-ballots`;
-    case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
-      return `/state/${fipsCode}/mail-ballot-rejections`;
-    case ID_SELECTION_ACTIVE_VOTERS:
-      return `/state/${fipsCode}/active-voters`;
-    case ID_SELECTION_POLLBOOK_DELETION:
-      return `/state/${fipsCode}/pollbook-deletions`;
-    case ID_SELECTION_VOTER_REGISTRATION:
-      return `/state/${fipsCode}/voter-registration`;
-    case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
-      return `/state/${fipsCode}/cvap-registration`;
-    case ID_SELECTION_VIEW_CVAP_INFO:
-      return `/state/${fipsCode}/cvap`;
-    case ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES:
-      return `/state/${fipsCode}/compare-voter-registration-rates/`;
-    case ID_SELECTION_REJECTED_BALLOTS:
-      return `/state/${fipsCode}/rejected-ballots-chart/`;
-    case ID_SELECTION_MAIL_IN_VOTING:
-      return `/state/${fipsCode}/mail-in-chart/`;
-    case ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE:
-      return `/state/${fipsCode}/voter-table/`;
-    case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
-      return `/state/${fipsCode}/equipment-by-type/`;
-    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART:
-      return `/state/${fipsCode}/ei-gingles-chart/`;
-    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS:
-      return `/state/${fipsCode}/ei-rejected-ballots/`;
-    case ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT:
-      return `/state/${fipsCode}/ei-voting-equipment`;
+  const configuration = FACT_VIEW_CONFIGURATIONS[id];
+  if (configuration) {
+    return `/state/${fipsCode}/${configuration.path}`;
   }
   return "?";
 }
 
 function determineInitialStateBasedOnUrl(pathname: string) {
-  if (pathname.includes("/provisional-ballots")) {
-    return ID_SELECTION_PROVISIONAL_BALLOT;
-  } else if (pathname.includes("/mail-ballot-rejections")) {
-    return ID_SELECTION_MAIL_BALLOT_REJECTIONS;
-  } else if (pathname.includes("/active-voters")) {
-    return ID_SELECTION_ACTIVE_VOTERS;
-  } else if (pathname.includes("/pollbook-deletions")) {
-    return ID_SELECTION_POLLBOOK_DELETION;
-  } else if (pathname.includes("/voter-registration")) {
-    return ID_SELECTION_VOTER_REGISTRATION;
-  } else if (pathname.includes("/rejected-ballots-chart")) {
-    return ID_SELECTION_REJECTED_BALLOTS;
-  } else if (pathname.includes("/mail-in-chart/")) {
-    return ID_SELECTION_MAIL_IN_VOTING;
-  } else if (pathname.includes("/voter-table/")) {
-    return ID_SELECTION_VOTER_REGISTRATION_SHOW_VOTER_TABLE;
-  } else if (pathname.includes("/equipment-by-type/")) {
-    return ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE;
-  } else if (pathname.includes("/cvap-registration")) {
-    return ID_SELECTION_VIEW_CVAP_PERCENTAGE;
-  } else if (pathname.includes("/cvap")) {
-    return ID_SELECTION_VIEW_CVAP_INFO;
-  } else if (pathname.includes("/ei-gingles-chart")) {
-    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_GINGLES_CHART;
-  } else if (pathname.includes("/ei-rejected-ballots")) {
-    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS;
-  } else if (pathname.includes("/ei-voting-equipment")) {
-    return ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT;
+  for (const [id, config] of Object.entries(FACT_VIEW_CONFIGURATIONS)) {
+    if (pathname.includes(config.path)) {
+      return Number(id);
+    }
   }
   return ID_SELECTION_PROVISIONAL_BALLOT;
 }
 
-// NOTE(jery):
-// needed to make the patterns for the
-// voting equipment type map display.
-const CountyGradientSet = (data: VotingEquipmentUsageStatisticsModel, colorSet: string[]) => {
-  const colors = [];
-
-  if (data.dreNoVvpatTotal! > 0) {
-    colors.push(colorSet[0]);
-  }
-
-  if (data.dreVvpatTotal! > 0) {
-    colors.push(colorSet[1]);
-  }
-
-  if (data.bmdTotal! > 0) {
-    colors.push(colorSet[2]);
-  }
-
-  if (data.scannerTotal! > 0) {
-    colors.push(colorSet[3]);
-  }
-
-  // NOTE(jerry):
-  // While there is absolutely a programmatic
-  // way to do this, I'm not going to be very
-  // clever about this.
-
-  const x1 = 25;
-  const y1 = 25;
-  const x2 = (x1 * 1.2) / colors.length;
-  const y2 = (y1 * 1.2) / colors.length;
-
-  switch (colors.length) {
-    case 1:
-      return (
-        <linearGradient id={`vt${data.fullRegionId}`} gradientTransform="">
-          <stop offset="0" stop-color={colors[0]} />
-          <stop offset="100%" stop-color={colors[0]} />
-        </linearGradient>
-      );
-    case 2:
-      return (
-        <linearGradient
-          id={`vt${data.fullRegionId}`}
-          gradientTransform="rotate(0)"
-          x1={x1 + "%"}
-          y1={y1 + "%"}
-          x2={x2 + "%"}
-          y2={y2 + "%"}
-          spreadMethod="repeat"
-        >
-          <stop offset="0" stop-color={colors[0]} />
-          <stop offset="50%" stop-color={colors[0]} />
-          <stop offset="50%" stop-color={colors[1]} />
-          <stop offset="100%" stop-color={colors[1]} />
-        </linearGradient>
-      );
-    case 3:
-      return (
-        <linearGradient
-          id={`vt${data.fullRegionId}`}
-          gradientTransform="rotate(0)"
-          x1={x1 + "%"}
-          y1={y1 + "%"}
-          x2={x2 + "%"}
-          y2={y2 + "%"}
-          spreadMethod="repeat"
-        >
-          <stop offset="0" stop-color={colors[0]} />
-          <stop offset="33%" stop-color={colors[0]} />
-          <stop offset="33%" stop-color={colors[1]} />
-          <stop offset="66%" stop-color={colors[1]} />
-          <stop offset="66%" stop-color={colors[2]} />
-          <stop offset="100%" stop-color={colors[2]} />
-        </linearGradient>
-      );
-    case 4:
-      return (
-        <linearGradient
-          id={`vt${data.fullRegionId}`}
-          gradientTransform="rotate(0)"
-          x1={x1 + "%"}
-          y1={y1 + "%"}
-          x2={x2 + "%"}
-          y2={y2 + "%"}
-          spreadMethod="repeat"
-        >
-          <stop offset="0" stop-color={colors[0]} />
-          <stop offset="25%" stop-color={colors[0]} />
-          <stop offset="25%" stop-color={colors[1]} />
-          <stop offset="50%" stop-color={colors[1]} />
-          <stop offset="50%" stop-color={colors[2]} />
-          <stop offset="75%" stop-color={colors[2]} />
-          <stop offset="75%" stop-color={colors[3]} />
-          <stop offset="100%" stop-color={colors[3]} />
-        </linearGradient>
-      );
-  }
-};
-
-const CountyGradientStyleClass = (data: VotingEquipmentUsageStatisticsModel) => {
-  return (
-    <style>
-      {`
-.vt${data.fullRegionId} {
-fill: url("#vt${data.fullRegionId}");
-fill-opacity: 0.55;
-}
-`}
-    </style>
-  );
-};
-
 function StateInformationView() {
   const { fipsCode } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
   const stateType = getDetailStateType(fipsCode!);
   const location = useLocation();
   const activeDataStateHook = useState(determineInitialStateBasedOnUrl(location.pathname));
@@ -453,183 +193,47 @@ function StateInformationView() {
   const bubbleChartHeight = useCssCalc("90vh");
 
   const activeDataState = activeDataStateHook[0];
-  const [dataCols, setDataColumns] = useState<GridColDef<EAVsGeneralFact[]>[]>([]);
-  const [dataRows, setDataRows] = useState<EAVsGeneralFact[]>([]);
+  const [dataCols, setDataColumns] = useState<GridColDef<DataFact[]>[]>([]);
+  const [dataRows, setDataRows] = useState<DataFact[]>([]);
   const [barData, setBarData] = useState<BarChartDataEntry[]>([]);
   const [barGraphTitle, setBarGraphTitle] = useState<string>("");
   const [barGraphXTitle, setBarGraphXTitle] = useState<string>("");
   const [gradientMap, setGradientMap] = useState<GradientMap>([]);
   const [viewDetailedVoterRegistrationBubbleChart, setViewDetailedVoterRegistrationBubbleChart] = useState(false);
-  const [totalDataCount, setTotalDataCount] = useState(0);
   const [cvapDemographicSelection, setCvapDemographicSelection] = useState(0);
 
   const tryingToViewDetailedVoterRegistration =
     stateType.some((x) => x === DETAIL_STATE_TYPE_VOTER_REGISTRATION) && activeDataState === ID_SELECTION_VOTER_REGISTRATION;
 
-  const shouldOpenPopup = [
-    "mail-in-chart",
-    "rejected-ballots-chart",
-    "voter-table",
-    "compare-voter-registration-rates",
-    "ei-gingles-chart",
-    "ei-rejected-ballots",
-    "ei-voting-equipment",
-  ].some((x) => location.pathname.includes(x));
+  const overlayViews = Object.values(FACT_VIEW_CONFIGURATIONS).filter((cfg) => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY);
+  const shouldOpenPopup = overlayViews.some((cfg) => location.pathname.includes(cfg.path));
 
   useEffect(
     function () {
       (async function () {
-        switch (activeDataState) {
-          case ID_SELECTION_PROVISIONAL_BALLOT:
-            {
-              const promises = [true, false].map((v) => getProvisionalBallots(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Provisional Ballots`);
-              setBarGraphXTitle("Ballots Cast");
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                })
-              );
-              setDataColumns(PROVISIONAL_BALLOT_COLUMNS);
-              setBarData(bargraphDataForProvisionalBallots(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
-            {
-              const promises = [true, false].map((v) => getMailBallotRejections(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Mail Ballots Rejection`);
-              setBarGraphXTitle("Rejection Reasons");
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                })
-              );
-              setDataColumns(MAIL_BALLOT_REJECTION_COLUMNS);
-              setBarData(bargraphDataForMailBallotRejections(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_ACTIVE_VOTERS:
-            {
-              const promises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Registration Count`);
-              setBarGraphXTitle("Voter Categories");
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                })
-              );
-              setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
-              setBarData(bargraphDataForActiveVoterRegistrations(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VOTER_REGISTRATION:
-            {
-              const promises = [true, false].map((v) => getVoterAffiliations(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voter Affiliation Count`);
-              setBarGraphXTitle("Voter Party");
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                })
-              );
-              setDataColumns(VOTER_AFFILIATION_COLUMNS);
-              setBarData(bargraphDataForVoterAffiliations(aggregatedData[0]));
-              // TODO: finish this for GUI17 completion.
-            }
-            break;
-          case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
-            {
-              const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voting Equipment Type Count`);
-              setBarGraphXTitle("Equipment Type");
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                })
-              );
-              setDataColumns(VOTING_EQUIPMENT_COLUMNS);
-              setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE:
-            {
-              const promises = [true, false].map((v) => getDetailedVotingEquipmentUsage(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Voting Equipment Type Count`);
-              setBarGraphXTitle("Equipment Type");
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                })
-              );
-              setDataColumns(VOTING_EQUIPMENT_COLUMNS);
-              setBarData(bargraphDataForVotingEquipmentUsages(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VIEW_CVAP_INFO:
-            {
-              const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
-              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              const [_activeVoterAggregatedData, activeVoterData] = await Promise.all(activeVoterPromises);
-              let eavsRegisteredVoters = _activeVoterAggregatedData[0].total!
-              let cvapTotals = aggregatedData[0].cvapTotal!
+        const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
+        if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
+          const description = viewConfig.description;
+          setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - ${description.barGraphTitle}`);
+          setBarGraphXTitle(`${description.barGraphXTitle}`);
+          setDataColumns(description.dataColumnSet);
 
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition (${(eavsRegisteredVoters/cvapTotals * 100).toPrecision(4)}% of CVAP voters eligible to vote)`);
-              setBarGraphXTitle("Race");
-              setDataRows(
-                data.map((x) => {
-                  return { id: x.fullRegionId, ...x };
-                })
-              );
-              setDataColumns(CVAP_INFO_COLUMNS);
-              setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
-            {
-              const promises = [true, false].map((v) => getCVAPStatisticsData(fipsCode!, { aggregate: v }));
-              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              const [_activeVoterAggregatedData, activeVoterData] = await Promise.all(activeVoterPromises);
+          const rowDataSet = await Promise.all(description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: false })));
+          // Aggregated data rows are exactly 1 entry
+          // for uniformity in the endpoint (so that it can share the same endpoint as the per-county variant.)
+          const aggregatedDataSet = await Promise.all(description.rowDataGenerators.map((f) => f(fipsCode!, { aggregate: true })));
+          // All EAVS "facts" have the same length, which is the amount of counties of
+          // that state.
+          // For each county, then for each corresponding row in each query.
+          const rowData = rowDataSet[0]
+            .map((_, i) => rowDataSet.reduce((acc, entry) => ({ ...acc, ...entry[i] }), {}))
+            .map((x: DataFact) => ({ id: x.fullRegionId, ...x }));
 
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - CVAP Composition`);
-              setBarGraphXTitle("Race");
-              setDataRows(
-                data.map((x, i) => {
-                  return { id: x.fullRegionId, ...x, ...activeVoterData[i] };
-                })
-              );
-              setDataColumns(CVAP_INFO_COLUMNS);
-              setBarData(bargraphDataForCVAPInfo(aggregatedData[0]));
-            }
-            break;
-          case ID_SELECTION_POLLBOOK_DELETION:
-            {
-              const promises = [true, false].map((v) => getPollbookDeletions(fipsCode!, { aggregate: v }));
-              const activeVoterPromises = [true, false].map((v) => getVoterRegistrationCounts(fipsCode!, { aggregate: v }));
-              const [aggregatedData, data] = await Promise.all(promises);
-              setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - Poll Book Deletions`);
-              setBarGraphXTitle("Deletion Reasons");
-              setDataRows(
-                (await activeVoterPromises[1]).map((x, i) => {
-                  return { id: x.fullRegionId, ...x, ...data[i] };
-                })
-              );
-              setDataColumns(ACTIVE_VOTER_REGISTRATION_COLUMNS);
-              setBarData(bargraphDataForPollBookDeletions(aggregatedData[0]));
-            }
-            break;
-          default:
-            {
-              // not handled yet.
-            }
-            break;
+          const aggregatedData = aggregatedDataSet.reduce((acc, entry) => ({ ...acc, ...entry[0] }), {}) as DataFact;
+
+          rowData.push({ id: aggregatedData.fullRegionId, ...aggregatedData });
+          setBarData(description.barDataGenerator(aggregatedData));
+          setDataRows(rowData);
         }
 
         if (activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_AGE) {
@@ -661,77 +265,18 @@ function StateInformationView() {
     if (!isDetailState(fipsCode!) || (tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart)) {
       return null;
     }
+    if (FACT_VIEW_CONFIGURATIONS[activeDataState].description.type != STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
+      return null;
+    }
 
+    const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState].description as StateInformationViewSimpleFactView;
     const { properties } = feature;
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const row = dataRows.find((r) => r.fullRegionId === fullRegionId);
 
     let colorPoint: number | null = null;
     if (row) {
-      let dataEntry: number = 0;
-      let dataEntryTotal: number = 0;
-      switch (activeDataState) {
-        case ID_SELECTION_PROVISIONAL_BALLOT:
-          dataEntry = (row as ProvisionalBallotStatisticsModel).totalProvisionalBallotsCast!;
-          dataEntryTotal = (row as ProvisionalBallotStatisticsModel).totalBallotsCast!;
-          break;
-        case ID_SELECTION_ACTIVE_VOTERS:
-          dataEntry = (row as VoterRegistrationStatisticsModel).active!;
-          dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
-          break;
-        case ID_SELECTION_POLLBOOK_DELETION:
-          dataEntry = (row as PollbookDeletionStatisticsModel).totalRemoved!;
-          dataEntryTotal = (row as PollbookDeletionStatisticsModel).totalRegisteredVoters!;
-          console.log(dataEntry, dataEntryTotal);
-          break;
-        case ID_SELECTION_MAIL_BALLOT_REJECTIONS:
-          dataEntry = (row as MailBallotRejectionStatisticsModel).rejectTotal!;
-          dataEntryTotal = (row as MailBallotRejectionStatisticsModel).totalBallotsByMail!;
-          break;
-        case ID_SELECTION_VOTING_EQUIPMENT_BY_AGE:
-          dataEntry = (row as VotingEquipmentUsageStatisticsModel).averageAge!;
-          dataEntryTotal = 100; // HACKME(jerry): to avoid writing more special case code.
-          break;
-        case ID_SELECTION_VIEW_CVAP_PERCENTAGE:
-          dataEntryTotal = (row as VoterRegistrationStatisticsModel).total!;
-          dataEntry = (row as CVAPStatisticsModel).cvapTotal!;
-          break;
-        case ID_SELECTION_VIEW_CVAP_INFO:
-          dataEntryTotal = (row as CVAPStatisticsModel).cvapTotal!;
-          dataEntry = 0;
-          switch (cvapDemographicSelection) {
-            case 0:
-              {
-                dataEntry = (row as CVAPStatisticsModel).asianTotal!;
-              }
-              break;
-            case 1:
-              {
-                dataEntry = (row as CVAPStatisticsModel).blackTotal!;
-              }
-              break;
-            case 2:
-              {
-                dataEntry = (row as CVAPStatisticsModel).hispanicTotal!;
-              }
-              break;
-            case 3:
-              {
-                dataEntry = (row as CVAPStatisticsModel).whiteTotal!;
-              }
-              break;
-            case 4:
-              {
-                dataEntry = (row as CVAPStatisticsModel).otherTotal!;
-              }
-              break;
-          }
-          break;
-        case ID_SELECTION_VOTER_REGISTRATION:
-          dataEntry = (row as VoterAffiliationStatisticsModel).activeRegisteredVotersTotal!;
-          dataEntryTotal = (row as VoterAffiliationStatisticsModel).registeredVotersTotal!;
-          break;
-      }
+      const [dataEntry, dataEntryTotal] = viewConfig.ratioGenerator(row, cvapDemographicSelection);
       if (dataEntryTotal !== 0) {
         colorPoint = (dataEntry / dataEntryTotal) * 100;
       }
@@ -746,24 +291,14 @@ function StateInformationView() {
         left: `calc(${selectionDrawerWidth} + 1.5em)`,
       }}
     >
-      <svg width="0" height="0">
-        <defs>
-          {dataRows.map((x) =>
-            CountyGradientSet(
-              x,
-              VOTING_EQUIPMENT_TYPE_COLORS.map((c) => c.color)
-            )
-          )}
-        </defs>
-      </svg>
-      {dataRows.map(CountyGradientStyleClass)}
-
+      <EquipmentGradientSet dataRows={dataRows} />
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
+        fipsCode={fipsCode!}
         onSelection={(id) => {
           navigate(getUrlForModeId(id, fipsCode!));
         }}
-        sections={pickDropdownType(stateType)}
+        sections={DROPDOWN_SECTIONS}
         stateType={getDetailStateType(fipsCode!)}
         drawerWidth={selectionDrawerWidth}
         topMargin={boxMarginTop}
@@ -812,6 +347,10 @@ function StateInformationView() {
             onFeatureClick={function (feature: GeoJSON.Feature) {
               const geounitFipsCode = feature.properties!.COUNTYFP;
               const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
+
+              if (stateType.some((x) => x !== DETAIL_STATE_TYPE_VOTER_REGISTRATION)) {
+                return;
+              }
 
               if (activeDataState === ID_SELECTION_VOTER_REGISTRATION || activeDataState === ID_SELECTION_ACTIVE_VOTERS) {
                 navigate(`/state/${fipsCode}/voter-table/${fullyPaddedFipsCode}`);
@@ -887,94 +426,12 @@ function StateInformationView() {
           }}
         >
           <Routes>
-            <Route
-              path="mail-in-chart"
-              element={
-                <BubbleChart
-                  data={async () => {
-                    const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
-                    const ballotStatisticsData = await getBallotStatistics(fipsCode!);
-                    const mergedData = electionResultsData.map((e, i) => ({ ...e, ...ballotStatisticsData[i] }));
-
-                    const republicanBubbleColor = "#d73027";
-                    const democraticBubbleColor = "#4575b4";
-
-                    return mergedData.map((data) => ({
-                      x: (data.republicanVotes! / data.totalVotes!) * 100.0,
-                      y: (data.totalBallotsByMail! / data.totalBallotsCast!) * 100.0,
-                      name: data.regionName!,
-                      size: data.regionName!.length,
-                      party: "NONE",
-                      color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
-                    }));
-                  }}
-                  width={bubbleChartWidth}
-                  height={bubbleChartHeight}
-                  maxXScale={100}
-                  title="Mail Ballots by Party"
-                  xAxisLabel="Republican Votes (%)"
-                  yAxisLabel="Mail Ballot Voting (%)"
-                />
-              }
-            />
-            <Route
-              path="rejected-ballots-chart"
-              element={
-                <BubbleChart
-                  data={async () => {
-                    const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
-                    const equipmentQuality = await getDetailedVotingEquipmentUsage(fipsCode!);
-                    const rejectionData = await getMailBallotRejections(fipsCode!);
-                    const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...rejectionData[i], ...electionResultsData[i] }));
-
-                    const republicanBubbleColor = "#d73027";
-                    const democraticBubbleColor = "#4575b4";
-
-                    return mergedData.map((data) => ({
-                      x: data.averageQualityScore!,
-                      y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0 || 0,
-                      name: data.countyName!,
-                      size: 10,
-                      party: data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem",
-                      color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
-                    }));
-                  }}
-                  width={bubbleChartWidth}
-                  height={bubbleChartHeight}
-                  title="Voting Equipment Quality"
-                  xAxisLabel="Quality Level"
-                  yAxisLabel="Rejected Ballots (%)"
-                  useRegression
-                />
-              }
-            />
-            <Route
-              path="compare-voter-registration-rates"
-              element={
-                <LineChart
-                  //@ts-expect-error : Error expected, orval likes generating "optional" types even though they are actually identical.
-                  data={async () => {
-                    const votingHistory = await getVoterRegistrationHistory(fipsCode!);
-                    const eavsColors = ["red", "blue", "green", "magenta", "black"];
-
-                    // Manually assign back colors on the frontend.
-                    return votingHistory.map((x, i) => ({ color: eavsColors[i], ...x }));
-                  }}
-                  width={bubbleChartWidth}
-                  height={bubbleChartHeight}
-                  title="Voter Registration By Year"
-                  xAxisLabel="EAVs Unit"
-                  yAxisLabel="Registered Voters"
-                />
-              }
-            />
-            <Route
-              path="voter-table/:countyCode?"
-              element={<FullScreenDetailedVoterRegistrationTable pageSize={15} width={bubbleChartWidth} height={bubbleChartHeight * 0.9} />}
-            />
-            <Route path="ei-gingles-chart" element={<DisplayEIGinglesChart fipsCode={fipsCode!} width={bubbleChartWidth} height={bubbleChartHeight} />} />
-            <Route path="ei-rejected-ballots" element={<DisplayEIRejectedBallots />} />
-            <Route path="ei-voting-equipment" element={<DisplayEIVotingEquipment />} />
+            {overlayViews.map((v) => (
+              <Route
+                path={v.matcher || v.path}
+                element={(v.description as StateInformationViewOverlayView).element?.(fipsCode!, bubbleChartWidth, bubbleChartHeight)}
+              />
+            ))}
           </Routes>
         </Box>
       </Grow>
@@ -992,7 +449,6 @@ function StateInformationView() {
           maxWidth={maxWidthForTable}
           height={maxHeightForTable}
           maxHeight={maxHeightForTable}
-          pageSize={7}
           getRowId={(r) => r.id}
         />
         <Box width={maxWidthForTable} height={500}>

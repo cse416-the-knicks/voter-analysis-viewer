@@ -16,15 +16,15 @@ import org.springframework.jdbc.core.RowMapper;
  */
 public class AutoSqlQueryable<T> {
   private static class SqlQueryableInvocationHandler implements InvocationHandler {
-    private final Class<?> _mappableClass;
-    private boolean _isAggregateSumQuery = false;
+    private final Class<?> mappableClass;
+    private boolean isAggregateSumQuery = false;
 
     public SqlQueryableInvocationHandler(Class<?> mappableClass) {
-      _mappableClass = mappableClass;
+      this.mappableClass = mappableClass;
     }
 
     public void setIsAggregateSumQuery(boolean v) {
-      _isAggregateSumQuery = v;
+      isAggregateSumQuery = v;
     }
 
     private static Constructor<?> firstMatchingArityConstructor(
@@ -44,7 +44,7 @@ public class AutoSqlQueryable<T> {
        * int rowNumber
        */
       if (method.getName().equals("mapRow")) {
-        var allConstructors = _mappableClass.getDeclaredConstructors();
+        var allConstructors = mappableClass.getDeclaredConstructors();
 
         if (args.length != 2) {
           throw new IllegalArgumentException("mapRow only has two arguments.");
@@ -57,7 +57,7 @@ public class AutoSqlQueryable<T> {
         var callingArguments = new ArrayList<Object>();
         var qualifyingFields =
             AutoSqlQueryable.filterForAllQueryableFields(
-                _mappableClass.getDeclaredFields(), _isAggregateSumQuery);
+                mappableClass.getDeclaredFields(), isAggregateSumQuery);
         int columnNumber = 1;
 
         if (constructor == null) {
@@ -167,7 +167,6 @@ public class AutoSqlQueryable<T> {
   }
 
   private static Field[] filterForAllQueryableFields(Field[] fieldsList, boolean asSumAggregate) {
-    // TIL(jerry): Java syntax? Method Reference Syntax
     return Arrays.stream(fieldsList)
         .filter(
             (field) -> {

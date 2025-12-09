@@ -20,22 +20,22 @@ import org.springframework.stereotype.*;
  */
 @Service
 public class StateService {
-  private final Logger _logger = LoggerFactory.getLogger(StateService.class);
-  private final IStateDAO _dao;
+  private final Logger logger = LoggerFactory.getLogger(StateService.class);
+  private final IStateDAO dao;
 
   public StateService(IStateDAO dao) {
-    _logger.info("Creating StateService...");
-    _dao = dao;
+    logger.info("Creating StateService...");
+    this.dao = dao;
   }
 
   public Optional<ObjectNode> getBoundaryGeometry(String fipsCode) {
-    return _dao.getGeometryBoundary(fipsCode);
+    return dao.getGeometryBoundary(fipsCode);
   }
 
   @Cacheable(cacheNames = "provisionalBallotsByCounty", key = "{ #fipsCode, #year, #inAggregate }")
   public Optional<ProvisionalBallotStatisticsModel> getProvisionalBallotDataForCounty(
       String fipsCode, String countyCode, int year) {
-    return _dao.getProvisionBallotRowByCounty(fipsCode, countyCode, year);
+    return dao.getProvisionBallotRowByCounty(fipsCode, countyCode, year);
   }
 
   @Cacheable(
@@ -43,13 +43,13 @@ public class StateService {
       key = "{ #fipsCode, #countyCode, #year, #inAggregate }")
   public List<ProvisionalBallotStatisticsModel> getProvisionalBallotData(
       String fipsCode, int year, boolean inAggregate) {
-    return _dao.getProvisionBallotRows(fipsCode, year, inAggregate);
+    return dao.getProvisionBallotRows(fipsCode, year, inAggregate);
   }
 
   @Cacheable(cacheNames = "voterRegistrationStatistics", key = "{ #fipsCode, #year, #inAggregate }")
   public List<VoterRegistrationStatisticsModel> getVoterRegistrationData(
       String fipsCode, int year, boolean inAggregate) {
-    return _dao.getVoterRegistrationRows(fipsCode, year, inAggregate);
+    return dao.getVoterRegistrationRows(fipsCode, year, inAggregate);
   }
 
   @Cacheable(
@@ -57,71 +57,74 @@ public class StateService {
       key = "{ #fipsCode, #countyCode, #year }")
   public Optional<VoterRegistrationStatisticsModel> getVoterRegistrationDataForCounty(
       String fipsCode, String countyCode, int year) {
-    return _dao.getVoterRegistrationRowByCounty(fipsCode, countyCode, year);
+    return dao.getVoterRegistrationRowByCounty(fipsCode, countyCode, year);
   }
 
   @Cacheable(cacheNames = "voterAffiliationStatistics", key = "{ #fipsCode, #inAggregate }")
   public List<VoterAffiliationStatisticsModel> getVoterAffiliationData(
       String fipsCode, boolean inAggregate) {
-    return _dao.getVoterAffiliationRows(fipsCode, inAggregate);
+    return dao.getVoterAffiliationRows(fipsCode, inAggregate);
   }
 
   @Cacheable(cacheNames = "pollBookDeletions", key = "{ #fipsCode, #year, #inAggregate }")
   public List<PollbookDeletionStatisticsModel> getPollbookDeletionData(
       String fipsCode, int year, boolean inAggregate) {
-    return _dao.getPollbookDeletionRows(fipsCode, year, inAggregate);
+    return dao.getPollbookDeletionRows(fipsCode, year, inAggregate);
   }
 
   @Cacheable(cacheNames = "pollBookDeletionsByCounty", key = "{ #fipsCode, #countyCode, #year }")
   public Optional<PollbookDeletionStatisticsModel> getPollbookDeletionDataForCounty(
       String fipsCode, String countyCode, int year) {
-    return _dao.getPollbookDeletionRowByCounty(fipsCode, countyCode, year);
+    return dao.getPollbookDeletionRowByCounty(fipsCode, countyCode, year);
   }
 
   @Cacheable(cacheNames = "mailBallotRejections", key = "{ #fipsCode, #year, #inAggregate }")
   public List<MailBallotRejectionStatisticsModel> getMailBallotRejectionData(
       String fipsCode, int year, boolean inAggregate) {
-    return _dao.getMailBallotRejectionRows(fipsCode, year, inAggregate);
+    return dao.getMailBallotRejectionRows(fipsCode, year, inAggregate);
   }
 
   @Cacheable(cacheNames = "mailBallotRejectionsByCounty", key = "{ #fipsCode, #countyCode, #year }")
   public Optional<MailBallotRejectionStatisticsModel> getMailBallotRejectionDataForCounty(
       String fipsCode, String countyCode, int year) {
-    return _dao.getMailBallotRejectionRowByCounty(fipsCode, countyCode, year);
+    return dao.getMailBallotRejectionRowByCounty(fipsCode, countyCode, year);
   }
 
   @Cacheable(cacheNames = "viewStateYearSummary", key = "{ #fipsCode }")
   public List<ViewStateYearSummaryModel> getViewStateYearSummaryDataForState(String fipsCode) {
-    return _dao.getStateYearSummaryRows(fipsCode);
+    return dao.getStateYearSummaryRows(fipsCode);
   }
 
   @Cacheable(cacheNames = "electionResults", key = "{ #fipsCode, #year, #aggregated }")
   public List<ElectionResultsSummaryModel> getElectionResultsSummaryDataForState(
       String fipsCode, int year, boolean aggregated) {
-    return _dao.getStateElectionResultsSummaryRows(fipsCode, year, aggregated);
+    return dao.getStateElectionResultsSummaryRows(fipsCode, year, aggregated);
   }
 
   @Cacheable(cacheNames = "viewStateYearSummaryByCounty", key = "{ #fipsCode, #year }")
   public Optional<ViewStateYearSummaryModel> getViewStateYearSummaryDataForStateByYear(
       String fipsCode, int year) {
-    return _dao.getStateYearSummaryRowByYear(fipsCode, year);
+    return dao.getStateYearSummaryRowByYear(fipsCode, year);
   }
 
   @Cacheable(cacheNames = "ballotStatistics", key = "{ #fipsCode, #year }")
   public List<BallotStatisticsModel> getBallotStatistics(String fipsCode, int year) {
-    return _dao.getBallotStatisticsRows(fipsCode, year);
+    return dao.getBallotStatisticsRows(fipsCode, year);
   }
 
   @Cacheable(cacheNames = "ballotStatisticsByCounty", key = "{ #fipsCode, #year, #countyFipsCode }")
   public Optional<BallotStatisticsModel> getBallotStatisticsForCounty(
       String fipsCode, String countyFipsCode, int year) {
-    return _dao.getBallotStatisticsRowByCounty(fipsCode, countyFipsCode, year);
+    return dao.getBallotStatisticsRowByCounty(fipsCode, countyFipsCode, year);
   }
 
+  @Cacheable(
+      value = "regressionCoefficients",
+      key = "T(java.util.Objects).hash(#dataPoints.xs(), #dataPoints.ys(), #degree)")
   public List<Double> getRegressionCoefficients(
       RegressionDataParameterModel dataPoints, int degree) {
     List<WeightedObservedPoint> points = new ArrayList<>();
-    _logger.info("Received " + dataPoints.pointsCount() + " points.");
+    logger.info("Received " + dataPoints.pointsCount() + " points.");
     assert dataPoints.pointsCount() == dataPoints.xs().size()
         : "Point Xs does not match the pointsCount data.";
     assert dataPoints.pointsCount() == dataPoints.ys().size()
@@ -141,13 +144,14 @@ public class StateService {
     return new ArrayList(DoubleStream.of(bestFitCoefficients).boxed().toList());
   }
 
+  @Cacheable(value = "countyGeoCentroids", key = "#fipsCode")
   public Map<String, GeoUnitCentroidModel> getCountyGeoUnitCentroids(String fipsCode) {
-    return _dao.getGeoUnitCentroids(fipsCode);
+    return dao.getGeoUnitCentroids(fipsCode);
   }
 
   @Cacheable(cacheNames = "stateInformation")
   public Map<String, StateInformationModel> getStateInformationTable() {
-    var stateInformation = _dao.getStateInformationDataRowModels();
+    var stateInformation = dao.getStateInformationDataRowModels();
     var result = new HashMap<String, StateInformationModel>();
 
     for (var state : stateInformation) {

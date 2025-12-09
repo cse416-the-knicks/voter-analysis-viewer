@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import useKeyDown from "../../hooks/useKeyDown";
 
 import {
+  getCVAPStatisticsData,
   getStateInformationTableForState,
   getViewStateYearSummaryByStateForYear,
   StateInformationModelFelonyDisenfranchisement,
@@ -52,8 +53,11 @@ function PartyGeneralComparisonView() {
   useKeyDown("Escape", () => navigate("/"));
   useEffect(function () {
     (async function () {
-      const stateSummary = await Promise.all(["36", "40"].map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
-      const stateInfo = await Promise.all(["36", "40"].map((fips) => getStateInformationTableForState(fips)));
+      const targetStates = ["36", "40"];
+
+      const stateSummary = await Promise.all(targetStates.map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
+      const stateInfo = await Promise.all(targetStates.map((fips) => getStateInformationTableForState(fips)));
+      const cvapInfo = await Promise.all(targetStates.map((fips) => getCVAPStatisticsData(fips, { aggregate: true })));
 
       setColumnRows([
         {
@@ -78,18 +82,15 @@ function PartyGeneralComparisonView() {
       const transposedRows = [];
       transposedRows.push(
         comparisonRow("Type", "Democrat", "Republican"),
-        comparisonRow("Felony Disenfranchisement", ...stateInfo.map((x) => felonyDisenfranchisementReadableString(x.felonyDisenfranchisement))),
-        comparisonRow("Registration Method", ...stateInfo.map((x) => registrationMethodReadableString(x.registrationMethod))),
-        comparisonRow("Total Population", ...stateInfo.map((x) => x.populationTotal)),
-        comparisonRow("Voting Age Population", ...stateInfo.map((x) => x.cvapTotal)),
+        comparisonRow("Felony Disenfranchisement", ...stateInfo.map((x) => felonyDisenfranchisementReadableString(x.felonyDisenfranchisement!))),
+        comparisonRow("Registration Method", ...stateInfo.map((x) => registrationMethodReadableString(x.registrationMethod!))),
+        comparisonRow("Voting Age Population", ...cvapInfo.map((x) => x[0].cvapTotal)),
         comparisonRow("Total Registered", ...stateSummary.map((x) => x.totalRegistered))
       );
 
       // @ts-expect-error, This is actually correctly an error
       // because the right fix is that we should be using a union type,
       // although this code was hacked together.
-      //
-      // TODO(frontend): proper type annotation.
       setDataRows(transposedRows);
     })();
   }, []);
@@ -99,7 +100,6 @@ function PartyGeneralComparisonView() {
       title={"General Comparisons"}
       width={maxWidth}
       maxWidth={maxWidth}
-      pageSize={13}
       rows={rows}
       columns={cols}
       onXout={() => navigate("/")}

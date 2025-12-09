@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { DetailStateType } from "../FullBoundedUSMap/detailedStatesInfo";
 import {
   DETAIL_STATE_TYPE_OPTIN,
@@ -12,11 +12,13 @@ import {
 import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Chip, Stack } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useNavigate } from "react-router";
+import { getCVAPStatisticsData, getVoterRegistrationCounts } from "../../api/client";
 
 interface StateInformationViewDrawerItem {
   id: number;
   iconComponent?: ReactNode;
   textContent: string;
+  requiresStateType?: DetailStateType[];
 }
 
 interface StateInformationViewDrawerSection {
@@ -28,6 +30,7 @@ interface StateInformationViewDrawerSection {
 type OnSelectionFn = (id: number) => void;
 interface StateInformationViewDrawerProperties {
   stateHook: [number, (arg0: number) => void];
+  fipsCode: string;
   onSelection: OnSelectionFn;
   sections: StateInformationViewDrawerSection[];
   stateType: DetailStateType[];
@@ -38,6 +41,7 @@ interface StateInformationViewDrawerProperties {
 interface StateInformationViewDrawerListItemProperties {
   stateHook: [number, (arg0: number) => void];
   onSelection: OnSelectionFn;
+  stateType: DetailStateType[];
   item: StateInformationViewDrawerItem;
 }
 
@@ -62,6 +66,7 @@ const EAVsStateCard = () => BasicStateTypeInfoCard("EAVS-Only State", "This is n
 function qualityScore(value: number) {
   return (value / (value + 14)).toPrecision(2);
 }
+
 const EAVSQualityCard = (qualityValue: number) => {
   return EAVsDataQualityInfoCard(`EAVS Data Measure: ${qualityScore(qualityValue)}`, "EAVs data quality score");
 };
@@ -90,6 +95,7 @@ const PreclearanceStateCard = () =>
   );
 
 interface StateInfoCardProperties {
+  fipsCode: string;
   type: DetailStateType;
 }
 
@@ -115,8 +121,32 @@ function StateEAVsInfoCard({ type }: StateInfoCardProperties) {
   return EAVSQualityCard(type.length);
 }
 
-function StateInformationViewDrawerListItem({ item, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
+function StateCVAPInfoCard({ fipsCode, type }: StateInfoCardProperties) {
+  const [cvapPercent, setCvapPercent] = useState(0.0);
+
+  useEffect(function () {
+    (async function () {
+      const cvapData = await getCVAPStatisticsData(fipsCode, { aggregate: true });
+      const voterStatistics = await getVoterRegistrationCounts(fipsCode, { aggregate: true });
+      setCvapPercent(voterStatistics[0].active! / cvapData[0].cvapTotal!);
+    })();
+  });
+
+  if (!(type === DETAIL_STATE_TYPE_REPUBLICAN || type === DETAIL_STATE_TYPE_DEMOCRAT)) {
+    return <></>;
+  }
+
+  return EAVsDataQualityInfoCard(`Active CVAP: ${(cvapPercent * 100).toPrecision(4)}%`, "Ratio of active registered voters against 2023 ACS CVAP");
+}
+
+function StateInformationViewDrawerListItem({ item, stateType, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
   const [stateValue, setStateValue] = stateHook;
+
+  if (item.requiresStateType) {
+    if (!item.requiresStateType.some((x) => stateType.some((y) => x === y))) {
+      return <></>;
+    }
+  }
 
   return (
     <ListItem>
@@ -137,19 +167,27 @@ function StateInformationViewDrawerListItem({ item, onSelection, stateHook }: St
   );
 }
 
-function StateInformationViewDrawer({ sections, stateHook, onSelection, stateType, topMargin, drawerWidth }: StateInformationViewDrawerProperties) {
+function dropdownHasAnyItems(section: StateInformationViewDrawerSection, stateType: DetailStateType[]) {
+  return section.items.some((v) => (v.requiresStateType ? v.requiresStateType.some((x) => stateType.some((y) => y === x)) : true));
+}
+
+function StateInformationViewDrawer({ fipsCode, sections, stateHook, onSelection, stateType, topMargin, drawerWidth }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
-  const sectionComponents = sections.map((section) => (
-    <>
-      <ListItem>
-        {section.iconComponent && <ListItemIcon>{section.iconComponent}</ListItemIcon>}
-        <ListItemText primary={section.title} />
-      </ListItem>
-      {section.items.map((item) => (
-        <StateInformationViewDrawerListItem onSelection={onSelection} stateHook={stateHook} item={item} />
-      ))}
-    </>
-  ));
+  const sectionComponents = sections.map((section) =>
+    dropdownHasAnyItems(section, stateType) ? (
+      <>
+        <ListItem>
+          {section.iconComponent && <ListItemIcon>{section.iconComponent}</ListItemIcon>}
+          <ListItemText primary={section.title} />
+        </ListItem>
+        {section.items.map((item) => (
+          <StateInformationViewDrawerListItem stateType={stateType} onSelection={onSelection} stateHook={stateHook} item={item} />
+        ))}
+      </>
+    ) : (
+      <></>
+    )
+  );
 
   const finalComponentsWithDividers = [];
   for (let i = 0; i < sectionComponents.length; ++i) {
@@ -173,9 +211,13 @@ function StateInformationViewDrawer({ sections, stateHook, onSelection, stateTyp
     >
       <Stack spacing={0.5} sx={{ p: 1 }}>
         {stateType.map((x) => (
-          <StateInfoCard type={x} />
+          <StateInfoCard fipsCode={fipsCode} type={x} />
         ))}
-        <StateEAVsInfoCard type={stateType[0]} />
+        <StateEAVsInfoCard fipsCode={fipsCode} type={stateType[0]} />
+        {/* conditional rendering logic, means it will only show up exactly once for the party states. */}
+        {stateType.map((x) => (
+          <StateCVAPInfoCard fipsCode={fipsCode} type={x} />
+        ))}
       </Stack>
       <Divider />
       <List disablePadding dense>

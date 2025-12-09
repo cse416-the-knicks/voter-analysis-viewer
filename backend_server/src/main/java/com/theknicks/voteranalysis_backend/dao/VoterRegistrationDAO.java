@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class VoterRegistrationDAO implements IVoterRegistrationDAO {
-  private final Logger _logger = LoggerFactory.getLogger(VoterRegistrationDAO.class);
-  private final JdbcTemplate _jdbcTemplate;
+  private final Logger logger = LoggerFactory.getLogger(VoterRegistrationDAO.class);
+  private final JdbcTemplate jdbcTemplate;
 
   public VoterRegistrationDAO(JdbcTemplate jdbcTemplate) {
-    _logger.info("Creating Concrete VoterRegistrationDAO");
-    _jdbcTemplate = jdbcTemplate;
+    logger.info("Creating Concrete VoterRegistrationDAO");
+    this.jdbcTemplate = jdbcTemplate;
   }
 
   private static String getFilterClauseForPartySelection(int partySelectionFilterId) {
@@ -58,7 +58,7 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     params.add(pageSize);
     params.add(pageIndex * pageSize);
 
-    return _jdbcTemplate.query(sql.toString(), mapper, params.toArray());
+    return jdbcTemplate.query(sql.toString(), mapper, params.toArray());
   }
 
   public int getDetailedVoterRegistrationDataCount(
@@ -75,8 +75,8 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
       params.add(countyFips.get());
     }
     sql.append(getFilterClauseForPartySelection(partySelectionFilterId));
-    _logger.info(sql.toString());
-    Integer count = _jdbcTemplate.queryForObject(sql.toString(), Integer.class, params.toArray());
+    logger.info(sql.toString());
+    Integer count = jdbcTemplate.queryForObject(sql.toString(), Integer.class, params.toArray());
     return count != null ? count : 0;
   }
 
@@ -85,7 +85,7 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
     var queryable = new CVAPStatisticsModel.Queryable();
     var mapper = queryable.Mapper(inAggregate);
     var selectQuery = queryable.QueryWhere(new String[] {"cvap_data.state_id = ?"}, inAggregate);
-    return _jdbcTemplate.query(
+    return jdbcTemplate.query(
         selectQuery.toString(), mapper, new Object[] {Integer.parseInt(stateFips, 10)});
   }
 }

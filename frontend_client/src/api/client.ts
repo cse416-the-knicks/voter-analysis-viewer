@@ -4,35 +4,35 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import getRegressionCoefficientsMutator from '../helpers/backendConnectorAxiosInstance';
-import getVotingEquipmentMutator from '../helpers/backendConnectorAxiosInstance';
-import getDetailedVotingEquipmentUsageMutator from '../helpers/backendConnectorAxiosInstance';
-import getVotingEquipmentUsageMutator from '../helpers/backendConnectorAxiosInstance';
-import getAllVotingEquipmentByTypeMutator from '../helpers/backendConnectorAxiosInstance';
-import getAllVotingEquipmentByManufacturerMutator from '../helpers/backendConnectorAxiosInstance';
-import getAllVotingEquipmentMutator from '../helpers/backendConnectorAxiosInstance';
-import getCVAPStatisticsDataMutator from '../helpers/backendConnectorAxiosInstance';
-import getDetailedVoterRegistrationDataCountMutator from '../helpers/backendConnectorAxiosInstance';
-import getDetailedVoterRegistrationDataMutator from '../helpers/backendConnectorAxiosInstance';
-import getStateInformationTableForStateMutator from '../helpers/backendConnectorAxiosInstance';
-import getVoterRegistrationCountsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
-import getProvisionalBallotsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
-import getPollbookDeletionsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
-import getMailBallotRejectionsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
-import getBallotStatisticsByCountyMutator from '../helpers/backendConnectorAxiosInstance';
-import getViewStateYearSummaryByStateMutator from '../helpers/backendConnectorAxiosInstance';
-import getViewStateYearSummaryByStateForYearMutator from '../helpers/backendConnectorAxiosInstance';
-import getVoterRegistrationHistoryMutator from '../helpers/backendConnectorAxiosInstance';
-import getVoterRegistrationCountsMutator from '../helpers/backendConnectorAxiosInstance';
-import getVoterAffiliationsMutator from '../helpers/backendConnectorAxiosInstance';
-import getProvisionalBallotsMutator from '../helpers/backendConnectorAxiosInstance';
-import getPollbookDeletionsMutator from '../helpers/backendConnectorAxiosInstance';
-import getMailBallotRejectionsMutator from '../helpers/backendConnectorAxiosInstance';
-import getStateGeometryMutator from '../helpers/backendConnectorAxiosInstance';
-import getElectionResultsSummaryMutator from '../helpers/backendConnectorAxiosInstance';
-import getCountyGeoUnitCentroidsMutator from '../helpers/backendConnectorAxiosInstance';
-import getBallotStatisticsMutator from '../helpers/backendConnectorAxiosInstance';
-import getStateInformationTableMutator from '../helpers/backendConnectorAxiosInstance';
+import getRegressionCoefficientsMutator from "../helpers/backendConnectorAxiosInstance";
+import getVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
+import getDetailedVotingEquipmentUsageMutator from "../helpers/backendConnectorAxiosInstance";
+import getVotingEquipmentUsageMutator from "../helpers/backendConnectorAxiosInstance";
+import getAllVotingEquipmentByTypeMutator from "../helpers/backendConnectorAxiosInstance";
+import getAllVotingEquipmentByManufacturerMutator from "../helpers/backendConnectorAxiosInstance";
+import getAllVotingEquipmentMutator from "../helpers/backendConnectorAxiosInstance";
+import getCVAPStatisticsDataMutator from "../helpers/backendConnectorAxiosInstance";
+import getDetailedVoterRegistrationDataCountMutator from "../helpers/backendConnectorAxiosInstance";
+import getDetailedVoterRegistrationDataMutator from "../helpers/backendConnectorAxiosInstance";
+import getStateInformationTableForStateMutator from "../helpers/backendConnectorAxiosInstance";
+import getVoterRegistrationCountsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
+import getProvisionalBallotsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
+import getPollbookDeletionsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
+import getMailBallotRejectionsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
+import getBallotStatisticsByCountyMutator from "../helpers/backendConnectorAxiosInstance";
+import getViewStateYearSummaryByStateMutator from "../helpers/backendConnectorAxiosInstance";
+import getViewStateYearSummaryByStateForYearMutator from "../helpers/backendConnectorAxiosInstance";
+import getVoterRegistrationHistoryMutator from "../helpers/backendConnectorAxiosInstance";
+import getVoterRegistrationCountsMutator from "../helpers/backendConnectorAxiosInstance";
+import getVoterAffiliationsMutator from "../helpers/backendConnectorAxiosInstance";
+import getProvisionalBallotsMutator from "../helpers/backendConnectorAxiosInstance";
+import getPollbookDeletionsMutator from "../helpers/backendConnectorAxiosInstance";
+import getMailBallotRejectionsMutator from "../helpers/backendConnectorAxiosInstance";
+import getStateGeometryMutator from "../helpers/backendConnectorAxiosInstance";
+import getElectionResultsSummaryMutator from "../helpers/backendConnectorAxiosInstance";
+import getCountyGeoUnitCentroidsMutator from "../helpers/backendConnectorAxiosInstance";
+import getBallotStatisticsMutator from "../helpers/backendConnectorAxiosInstance";
+import getStateInformationTableMutator from "../helpers/backendConnectorAxiosInstance";
 export interface RegressionDataParameterModel {
   pointsCount?: number;
   xs?: number[];
@@ -49,6 +49,10 @@ export interface VotingEquipmentModel {
   certificationLevel?: string;
   age?: number;
   equipmentQuality?: number;
+  scanRate?: number;
+  errorRate?: number;
+  reliabilityScore?: number;
+  quantity?: number;
 }
 
 export interface VotingEquipmentUsageStatisticsModel {
@@ -84,39 +88,34 @@ export interface VoterRegistrationDataModel {
   status?: string;
 }
 
-export type StateInformationModelRegistrationMethod = typeof StateInformationModelRegistrationMethod[keyof typeof StateInformationModelRegistrationMethod];
+export type StateInformationModelRegistrationMethod = (typeof StateInformationModelRegistrationMethod)[keyof typeof StateInformationModelRegistrationMethod];
 
-
- 
 export const StateInformationModelRegistrationMethod = {
-  NONE: 'NONE',
-  OPT_IN: 'OPT_IN',
-  OPT_OUT: 'OPT_OUT',
-  COUNT: 'COUNT',
+  NONE: "NONE",
+  OPT_IN: "OPT_IN",
+  OPT_OUT: "OPT_OUT",
+  COUNT: "COUNT",
 } as const;
 
-export type StateInformationModelFelonyDisenfranchisement = typeof StateInformationModelFelonyDisenfranchisement[keyof typeof StateInformationModelFelonyDisenfranchisement];
+export type StateInformationModelFelonyDisenfranchisement =
+  (typeof StateInformationModelFelonyDisenfranchisement)[keyof typeof StateInformationModelFelonyDisenfranchisement];
 
-
- 
 export const StateInformationModelFelonyDisenfranchisement = {
-  UNKNOWN: 'UNKNOWN',
-  NO_DENIAL_OF_VOTING: 'NO_DENIAL_OF_VOTING',
-  RESTORATION_UPON_RELEASE_FROM_PRISON: 'RESTORATION_UPON_RELEASE_FROM_PRISON',
-  RESTORATION_AFTER_PAROLE_AND_PROBATION: 'RESTORATION_AFTER_PAROLE_AND_PROBATION',
-  ADDITIONAL_ACTION_FOR_RESTORATION: 'ADDITIONAL_ACTION_FOR_RESTORATION',
-  COUNT: 'COUNT',
+  UNKNOWN: "UNKNOWN",
+  NO_DENIAL_OF_VOTING: "NO_DENIAL_OF_VOTING",
+  RESTORATION_UPON_RELEASE_FROM_PRISON: "RESTORATION_UPON_RELEASE_FROM_PRISON",
+  RESTORATION_AFTER_PAROLE_AND_PROBATION: "RESTORATION_AFTER_PAROLE_AND_PROBATION",
+  ADDITIONAL_ACTION_FOR_RESTORATION: "ADDITIONAL_ACTION_FOR_RESTORATION",
+  COUNT: "COUNT",
 } as const;
 
-export type StateInformationModelAffiliation = typeof StateInformationModelAffiliation[keyof typeof StateInformationModelAffiliation];
+export type StateInformationModelAffiliation = (typeof StateInformationModelAffiliation)[keyof typeof StateInformationModelAffiliation];
 
-
- 
 export const StateInformationModelAffiliation = {
-  UNAFFILIATED: 'UNAFFILIATED',
-  DEMOCRAT: 'DEMOCRAT',
-  REPUBLICAN: 'REPUBLICAN',
-  COUNT: 'COUNT',
+  UNAFFILIATED: "UNAFFILIATED",
+  DEMOCRAT: "DEMOCRAT",
+  REPUBLICAN: "REPUBLICAN",
+  COUNT: "COUNT",
 } as const;
 
 export interface StateInformationModel {
@@ -258,114 +257,116 @@ export interface GeoUnitCentroidModel {
 }
 
 export type GetRegressionCoefficientsParams = {
-degree?: number;
+  degree?: number;
 };
 
 export type GetDetailedVotingEquipmentUsageParams = {
-year?: number;
-aggregate?: boolean;
+  year?: number;
+  aggregate?: boolean;
 };
 
 export type GetVotingEquipmentUsageParams = {
-year?: number;
+  year?: number;
+};
+
+export type GetAllVotingEquipmentParams = {
+  stateFips?: string;
 };
 
 export type GetCVAPStatisticsDataParams = {
-year?: number;
-aggregate?: boolean;
-granularity?: string;
+  year?: number;
+  aggregate?: boolean;
+  granularity?: string;
 };
 
 export type GetDetailedVoterRegistrationDataCountParams = {
-state?: string;
-county?: string;
-party?: number;
+  state?: string;
+  county?: string;
+  party?: number;
 };
 
 export type GetDetailedVoterRegistrationDataParams = {
-state?: string;
-county?: string;
-pageSize?: number;
-pageIndex?: number;
-party?: number;
-sort?: string;
+  state?: string;
+  county?: string;
+  pageSize?: number;
+  pageIndex?: number;
+  party?: number;
+  sort?: string;
 };
 
 export type GetVoterRegistrationCountsByCountyParams = {
-year?: number;
+  year?: number;
 };
 
 export type GetProvisionalBallotsByCountyParams = {
-year?: number;
+  year?: number;
 };
 
 export type GetPollbookDeletionsByCountyParams = {
-year?: number;
+  year?: number;
 };
 
 export type GetMailBallotRejectionsByCountyParams = {
-year?: number;
+  year?: number;
 };
 
 export type GetBallotStatisticsByCountyParams = {
-year?: number;
+  year?: number;
 };
 
 export type GetVoterRegistrationHistoryParams = {
-years?: number[];
+  years?: number[];
 };
 
 export type GetVoterRegistrationCountsParams = {
-year?: number;
-aggregate?: boolean;
+  year?: number;
+  aggregate?: boolean;
 };
 
 export type GetVoterAffiliationsParams = {
-aggregate?: boolean;
+  aggregate?: boolean;
 };
 
 export type GetProvisionalBallotsParams = {
-year?: number;
-aggregate?: boolean;
+  year?: number;
+  aggregate?: boolean;
 };
 
 export type GetPollbookDeletionsParams = {
-year?: number;
-aggregate?: boolean;
+  year?: number;
+  aggregate?: boolean;
 };
 
 export type GetMailBallotRejectionsParams = {
-year?: number;
-aggregate?: boolean;
+  year?: number;
+  aggregate?: boolean;
 };
 
 export type GetElectionResultsSummaryParams = {
-aggregate?: boolean;
-granularity?: string;
+  aggregate?: boolean;
+  granularity?: string;
 };
 
-export type GetCountyGeoUnitCentroids200 = {[key: string]: GeoUnitCentroidModel};
+export type GetCountyGeoUnitCentroids200 = { [key: string]: GeoUnitCentroidModel };
 
 export type GetBallotStatisticsParams = {
-year?: number;
+  year?: number;
 };
 
-export type GetStateInformationTable200 = {[key: string]: StateInformationModel};
+export type GetStateInformationTable200 = { [key: string]: StateInformationModel };
 
-export type GeoJsonObjectType = typeof GeoJsonObjectType[keyof typeof GeoJsonObjectType];
+export type GeoJsonObjectType = (typeof GeoJsonObjectType)[keyof typeof GeoJsonObjectType];
 
-
- 
 export const GeoJsonObjectType = {
-  Feature: 'Feature',
-  FeatureCollection: 'FeatureCollection',
-  Point: 'Point',
-  MultiPoint: 'MultiPoint',
-  LineString: 'LineString',
-  MultiLineString: 'MultiLineString',
-  Polygon: 'Polygon',
-  MultiPolygon: 'MultiPolygon',
-  GeometryCollection: 'GeometryCollection',
+  Feature: "Feature",
+  FeatureCollection: "FeatureCollection",
+  Point: "Point",
+  MultiPoint: "MultiPoint",
+  LineString: "LineString",
+  MultiLineString: "MultiLineString",
+  Polygon: "Polygon",
+  MultiPolygon: "MultiPolygon",
+  GeometryCollection: "GeometryCollection",
 } as const;
 
 /**
@@ -376,22 +377,20 @@ The coordinate reference system for all GeoJSON coordinates is a geographic coor
 export interface GeoJsonObject {
   type: GeoJsonObjectType;
   /** A GeoJSON object MAY have a member named "bbox" to include information on the coordinate range for its Geometries, Features, or FeatureCollections. The value of the bbox member MUST be an array of length 2*n where n is the number of dimensions represented in the contained geometries, with all axes of the most southwesterly point followed by all axes of the more northeasterly point. The axes order of a bbox follows the axes order of geometries.
- */
+   */
   bbox?: number[];
 }
 
-export type GeometryAllOfType = typeof GeometryAllOfType[keyof typeof GeometryAllOfType];
+export type GeometryAllOfType = (typeof GeometryAllOfType)[keyof typeof GeometryAllOfType];
 
-
- 
 export const GeometryAllOfType = {
-  Point: 'Point',
-  MultiPoint: 'MultiPoint',
-  LineString: 'LineString',
-  MultiLineString: 'MultiLineString',
-  Polygon: 'Polygon',
-  MultiPolygon: 'MultiPolygon',
-  GeometryCollection: 'GeometryCollection',
+  Point: "Point",
+  MultiPoint: "MultiPoint",
+  LineString: "LineString",
+  MultiLineString: "MultiLineString",
+  Polygon: "Polygon",
+  MultiPolygon: "MultiPolygon",
+  GeometryCollection: "GeometryCollection",
 } as const;
 
 export type GeometryAllOf = {
@@ -404,17 +403,15 @@ export type GeometryAllOf = {
  */
 export type Geometry = GeoJsonObject & GeometryAllOf;
 
-export type GeometryElementAllOfType = typeof GeometryElementAllOfType[keyof typeof GeometryElementAllOfType];
+export type GeometryElementAllOfType = (typeof GeometryElementAllOfType)[keyof typeof GeometryElementAllOfType];
 
-
- 
 export const GeometryElementAllOfType = {
-  Point: 'Point',
-  MultiPoint: 'MultiPoint',
-  LineString: 'LineString',
-  MultiLineString: 'MultiLineString',
-  Polygon: 'Polygon',
-  MultiPolygon: 'MultiPolygon',
+  Point: "Point",
+  MultiPoint: "MultiPoint",
+  LineString: "LineString",
+  MultiLineString: "MultiLineString",
+  Polygon: "Polygon",
+  MultiPolygon: "MultiPolygon",
 } as const;
 
 export type GeometryElementAllOf = {
@@ -489,12 +486,10 @@ A linear ring MUST follow the right-hand rule with respect to the area it bounds
  */
 export type LinearRing = Position[];
 
-export type PointAllOfType = typeof PointAllOfType[keyof typeof PointAllOfType];
+export type PointAllOfType = (typeof PointAllOfType)[keyof typeof PointAllOfType];
 
-
- 
 export const PointAllOfType = {
-  Point: 'Point',
+  Point: "Point",
 } as const;
 
 export type PointAllOf = {
@@ -564,20 +559,16 @@ GeometryCollections composed of a single part or a number of parts of a single t
  */
 export type GeometryCollection = Geometry & GeometryCollectionAllOf;
 
-export type Error400BadRequestResponseStatusCode = typeof Error400BadRequestResponseStatusCode[keyof typeof Error400BadRequestResponseStatusCode];
+export type Error400BadRequestResponseStatusCode = (typeof Error400BadRequestResponseStatusCode)[keyof typeof Error400BadRequestResponseStatusCode];
 
-
- 
 export const Error400BadRequestResponseStatusCode = {
   NUMBER_400: 400,
 } as const;
 
-export type Error400BadRequestResponseMessage = typeof Error400BadRequestResponseMessage[keyof typeof Error400BadRequestResponseMessage];
+export type Error400BadRequestResponseMessage = (typeof Error400BadRequestResponseMessage)[keyof typeof Error400BadRequestResponseMessage];
 
-
- 
 export const Error400BadRequestResponseMessage = {
-  The_JSON_is_not_valid: 'The JSON is not valid.',
+  The_JSON_is_not_valid: "The JSON is not valid.",
 } as const;
 
 export type Error400BadRequestResponse = {
@@ -585,20 +576,16 @@ export type Error400BadRequestResponse = {
   message?: Error400BadRequestResponseMessage;
 };
 
-export type Error401UnauthorizedResponseStatusCode = typeof Error401UnauthorizedResponseStatusCode[keyof typeof Error401UnauthorizedResponseStatusCode];
+export type Error401UnauthorizedResponseStatusCode = (typeof Error401UnauthorizedResponseStatusCode)[keyof typeof Error401UnauthorizedResponseStatusCode];
 
-
- 
 export const Error401UnauthorizedResponseStatusCode = {
   NUMBER_401: 401,
 } as const;
 
-export type Error401UnauthorizedResponseMessage = typeof Error401UnauthorizedResponseMessage[keyof typeof Error401UnauthorizedResponseMessage];
+export type Error401UnauthorizedResponseMessage = (typeof Error401UnauthorizedResponseMessage)[keyof typeof Error401UnauthorizedResponseMessage];
 
-
- 
 export const Error401UnauthorizedResponseMessage = {
-  The_request_requires_an_user_authentication: 'The request requires an user authentication.',
+  The_request_requires_an_user_authentication: "The request requires an user authentication.",
 } as const;
 
 export type Error401UnauthorizedResponse = {
@@ -606,20 +593,16 @@ export type Error401UnauthorizedResponse = {
   message?: Error401UnauthorizedResponseMessage;
 };
 
-export type Error403ForbiddenResponseStatusCode = typeof Error403ForbiddenResponseStatusCode[keyof typeof Error403ForbiddenResponseStatusCode];
+export type Error403ForbiddenResponseStatusCode = (typeof Error403ForbiddenResponseStatusCode)[keyof typeof Error403ForbiddenResponseStatusCode];
 
-
- 
 export const Error403ForbiddenResponseStatusCode = {
   NUMBER_403: 403,
 } as const;
 
-export type Error403ForbiddenResponseMessage = typeof Error403ForbiddenResponseMessage[keyof typeof Error403ForbiddenResponseMessage];
+export type Error403ForbiddenResponseMessage = (typeof Error403ForbiddenResponseMessage)[keyof typeof Error403ForbiddenResponseMessage];
 
-
- 
 export const Error403ForbiddenResponseMessage = {
-  The_access_is_not_allowed: 'The access is not allowed.',
+  The_access_is_not_allowed: "The access is not allowed.",
 } as const;
 
 export type Error403ForbiddenResponse = {
@@ -627,20 +610,16 @@ export type Error403ForbiddenResponse = {
   message?: Error403ForbiddenResponseMessage;
 };
 
-export type Error404NotFoundResponseStatusCode = typeof Error404NotFoundResponseStatusCode[keyof typeof Error404NotFoundResponseStatusCode];
+export type Error404NotFoundResponseStatusCode = (typeof Error404NotFoundResponseStatusCode)[keyof typeof Error404NotFoundResponseStatusCode];
 
-
- 
 export const Error404NotFoundResponseStatusCode = {
   NUMBER_404: 404,
 } as const;
 
-export type Error404NotFoundResponseMessage = typeof Error404NotFoundResponseMessage[keyof typeof Error404NotFoundResponseMessage];
+export type Error404NotFoundResponseMessage = (typeof Error404NotFoundResponseMessage)[keyof typeof Error404NotFoundResponseMessage];
 
-
- 
 export const Error404NotFoundResponseMessage = {
-  The_resource_was_not_found: 'The resource was not found.',
+  The_resource_was_not_found: "The resource was not found.",
 } as const;
 
 export type Error404NotFoundResponse = {
@@ -648,20 +627,17 @@ export type Error404NotFoundResponse = {
   message?: Error404NotFoundResponseMessage;
 };
 
-export type Error405MethodNotAllowedResponseStatusCode = typeof Error405MethodNotAllowedResponseStatusCode[keyof typeof Error405MethodNotAllowedResponseStatusCode];
+export type Error405MethodNotAllowedResponseStatusCode =
+  (typeof Error405MethodNotAllowedResponseStatusCode)[keyof typeof Error405MethodNotAllowedResponseStatusCode];
 
-
- 
 export const Error405MethodNotAllowedResponseStatusCode = {
   NUMBER_405: 405,
 } as const;
 
-export type Error405MethodNotAllowedResponseMessage = typeof Error405MethodNotAllowedResponseMessage[keyof typeof Error405MethodNotAllowedResponseMessage];
+export type Error405MethodNotAllowedResponseMessage = (typeof Error405MethodNotAllowedResponseMessage)[keyof typeof Error405MethodNotAllowedResponseMessage];
 
-
- 
 export const Error405MethodNotAllowedResponseMessage = {
-  Request_method_is_not_supported_for_the_requested_resource: 'Request method is not supported for the requested resource.',
+  Request_method_is_not_supported_for_the_requested_resource: "Request method is not supported for the requested resource.",
 } as const;
 
 export type Error405MethodNotAllowedResponse = {
@@ -669,20 +645,16 @@ export type Error405MethodNotAllowedResponse = {
   message?: Error405MethodNotAllowedResponseMessage;
 };
 
-export type Error406NotAcceptableResponseStatusCode = typeof Error406NotAcceptableResponseStatusCode[keyof typeof Error406NotAcceptableResponseStatusCode];
+export type Error406NotAcceptableResponseStatusCode = (typeof Error406NotAcceptableResponseStatusCode)[keyof typeof Error406NotAcceptableResponseStatusCode];
 
-
- 
 export const Error406NotAcceptableResponseStatusCode = {
   NUMBER_406: 406,
 } as const;
 
-export type Error406NotAcceptableResponseMessage = typeof Error406NotAcceptableResponseMessage[keyof typeof Error406NotAcceptableResponseMessage];
+export type Error406NotAcceptableResponseMessage = (typeof Error406NotAcceptableResponseMessage)[keyof typeof Error406NotAcceptableResponseMessage];
 
-
- 
 export const Error406NotAcceptableResponseMessage = {
-  Headers_sent_in_the_request_are_not_compatible_with_the_service: 'Headers sent in the request are not compatible with the service.',
+  Headers_sent_in_the_request_are_not_compatible_with_the_service: "Headers sent in the request are not compatible with the service.",
 } as const;
 
 export type Error406NotAcceptableResponse = {
@@ -690,20 +662,17 @@ export type Error406NotAcceptableResponse = {
   message?: Error406NotAcceptableResponseMessage;
 };
 
-export type Error408RequestTimeoutResponseStatusCode = typeof Error408RequestTimeoutResponseStatusCode[keyof typeof Error408RequestTimeoutResponseStatusCode];
+export type Error408RequestTimeoutResponseStatusCode = (typeof Error408RequestTimeoutResponseStatusCode)[keyof typeof Error408RequestTimeoutResponseStatusCode];
 
-
- 
 export const Error408RequestTimeoutResponseStatusCode = {
   NUMBER_408: 408,
 } as const;
 
-export type Error408RequestTimeoutResponseMessage = typeof Error408RequestTimeoutResponseMessage[keyof typeof Error408RequestTimeoutResponseMessage];
+export type Error408RequestTimeoutResponseMessage = (typeof Error408RequestTimeoutResponseMessage)[keyof typeof Error408RequestTimeoutResponseMessage];
 
-
- 
 export const Error408RequestTimeoutResponseMessage = {
-  The_client_did_not_produce_a_request_within_the_time_that_the_server_was_prepared_to_wait_The_client_may_repeat_the_request_without_modifications_at_any_later_time: 'The client did not produce a request within the time that the server was prepared to wait. The client may repeat the request without modifications at any later time.',
+  The_client_did_not_produce_a_request_within_the_time_that_the_server_was_prepared_to_wait_The_client_may_repeat_the_request_without_modifications_at_any_later_time:
+    "The client did not produce a request within the time that the server was prepared to wait. The client may repeat the request without modifications at any later time.",
 } as const;
 
 export type Error408RequestTimeoutResponse = {
@@ -711,20 +680,17 @@ export type Error408RequestTimeoutResponse = {
   message?: Error408RequestTimeoutResponseMessage;
 };
 
-export type Error410GoneResponseStatusCode = typeof Error410GoneResponseStatusCode[keyof typeof Error410GoneResponseStatusCode];
+export type Error410GoneResponseStatusCode = (typeof Error410GoneResponseStatusCode)[keyof typeof Error410GoneResponseStatusCode];
 
-
- 
 export const Error410GoneResponseStatusCode = {
   NUMBER_410: 410,
 } as const;
 
-export type Error410GoneResponseMessage = typeof Error410GoneResponseMessage[keyof typeof Error410GoneResponseMessage];
+export type Error410GoneResponseMessage = (typeof Error410GoneResponseMessage)[keyof typeof Error410GoneResponseMessage];
 
-
- 
 export const Error410GoneResponseMessage = {
-  The_requested_resource_is_no_longer_available_and_will_not_be_available_again_The_resource_should_be_purged_from_the_client_system: 'The requested resource is no longer available and will not be available again. The resource should be purged from the client system.',
+  The_requested_resource_is_no_longer_available_and_will_not_be_available_again_The_resource_should_be_purged_from_the_client_system:
+    "The requested resource is no longer available and will not be available again. The resource should be purged from the client system.",
 } as const;
 
 export type Error410GoneResponse = {
@@ -732,20 +698,16 @@ export type Error410GoneResponse = {
   message?: Error410GoneResponseMessage;
 };
 
-export type Error423LockedResponseStatusCode = typeof Error423LockedResponseStatusCode[keyof typeof Error423LockedResponseStatusCode];
+export type Error423LockedResponseStatusCode = (typeof Error423LockedResponseStatusCode)[keyof typeof Error423LockedResponseStatusCode];
 
-
- 
 export const Error423LockedResponseStatusCode = {
   NUMBER_423: 423,
 } as const;
 
-export type Error423LockedResponseMessage = typeof Error423LockedResponseMessage[keyof typeof Error423LockedResponseMessage];
+export type Error423LockedResponseMessage = (typeof Error423LockedResponseMessage)[keyof typeof Error423LockedResponseMessage];
 
-
- 
 export const Error423LockedResponseMessage = {
-  The_resource_that_is_being_accessed_is_locked: 'The resource that is being accessed is locked.',
+  The_resource_that_is_being_accessed_is_locked: "The resource that is being accessed is locked.",
 } as const;
 
 export type Error423LockedResponse = {
@@ -753,20 +715,17 @@ export type Error423LockedResponse = {
   message?: Error423LockedResponseMessage;
 };
 
-export type Error429TooManyRequestsResponseStatusCode = typeof Error429TooManyRequestsResponseStatusCode[keyof typeof Error429TooManyRequestsResponseStatusCode];
+export type Error429TooManyRequestsResponseStatusCode =
+  (typeof Error429TooManyRequestsResponseStatusCode)[keyof typeof Error429TooManyRequestsResponseStatusCode];
 
-
- 
 export const Error429TooManyRequestsResponseStatusCode = {
   NUMBER_429: 429,
 } as const;
 
-export type Error429TooManyRequestsResponseMessage = typeof Error429TooManyRequestsResponseMessage[keyof typeof Error429TooManyRequestsResponseMessage];
+export type Error429TooManyRequestsResponseMessage = (typeof Error429TooManyRequestsResponseMessage)[keyof typeof Error429TooManyRequestsResponseMessage];
 
-
- 
 export const Error429TooManyRequestsResponseMessage = {
-  The_user_has_sent_too_many_requests_in_a_short_period: 'The user has sent too many requests in a short period.',
+  The_user_has_sent_too_many_requests_in_a_short_period: "The user has sent too many requests in a short period.",
 } as const;
 
 export type Error429TooManyRequestsResponse = {
@@ -774,20 +733,18 @@ export type Error429TooManyRequestsResponse = {
   message?: Error429TooManyRequestsResponseMessage;
 };
 
-export type Error500InternalServerErrorResponseStatusCode = typeof Error500InternalServerErrorResponseStatusCode[keyof typeof Error500InternalServerErrorResponseStatusCode];
+export type Error500InternalServerErrorResponseStatusCode =
+  (typeof Error500InternalServerErrorResponseStatusCode)[keyof typeof Error500InternalServerErrorResponseStatusCode];
 
-
- 
 export const Error500InternalServerErrorResponseStatusCode = {
   NUMBER_500: 500,
 } as const;
 
-export type Error500InternalServerErrorResponseMessage = typeof Error500InternalServerErrorResponseMessage[keyof typeof Error500InternalServerErrorResponseMessage];
+export type Error500InternalServerErrorResponseMessage =
+  (typeof Error500InternalServerErrorResponseMessage)[keyof typeof Error500InternalServerErrorResponseMessage];
 
-
- 
 export const Error500InternalServerErrorResponseMessage = {
-  An_unexpected_error_occured: 'An unexpected error occured.',
+  An_unexpected_error_occured: "An unexpected error occured.",
 } as const;
 
 export type Error500InternalServerErrorResponse = {
@@ -795,20 +752,18 @@ export type Error500InternalServerErrorResponse = {
   message?: Error500InternalServerErrorResponseMessage;
 };
 
-export type Error503ServiceUnavailableResponseStatusCode = typeof Error503ServiceUnavailableResponseStatusCode[keyof typeof Error503ServiceUnavailableResponseStatusCode];
+export type Error503ServiceUnavailableResponseStatusCode =
+  (typeof Error503ServiceUnavailableResponseStatusCode)[keyof typeof Error503ServiceUnavailableResponseStatusCode];
 
-
- 
 export const Error503ServiceUnavailableResponseStatusCode = {
   NUMBER_503: 503,
 } as const;
 
-export type Error503ServiceUnavailableResponseMessage = typeof Error503ServiceUnavailableResponseMessage[keyof typeof Error503ServiceUnavailableResponseMessage];
+export type Error503ServiceUnavailableResponseMessage =
+  (typeof Error503ServiceUnavailableResponseMessage)[keyof typeof Error503ServiceUnavailableResponseMessage];
 
-
- 
 export const Error503ServiceUnavailableResponseMessage = {
-  The_server_is_currently_unable_to_handle_the_request: 'The server is currently unable to handle the request.',
+  The_server_is_currently_unable_to_handle_the_request: "The server is currently unable to handle the request.",
 } as const;
 
 export type Error503ServiceUnavailableResponse = {
@@ -818,339 +773,252 @@ export type Error503ServiceUnavailableResponse = {
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
+export const getRegressionCoefficients = (
+  regressionDataParameterModel: RegressionDataParameterModel,
+  params?: GetRegressionCoefficientsParams,
+  options?: SecondParameter<typeof getRegressionCoefficientsMutator>
+) => {
+  return getRegressionCoefficientsMutator<number[]>(
+    { url: `/state/regression-coefficients`, method: "POST", headers: { "Content-Type": "application/json" }, data: regressionDataParameterModel, params },
+    options
+  );
+};
 
-  export const getRegressionCoefficients = (
-    regressionDataParameterModel: RegressionDataParameterModel,
-    params?: GetRegressionCoefficientsParams,
- options?: SecondParameter<typeof getRegressionCoefficientsMutator>,) => {
-      return getRegressionCoefficientsMutator<number[]>(
-      {url: `/state/regression-coefficients`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: regressionDataParameterModel,
-        params
-    },
-      options);
-    }
-  
-export const getVotingEquipment = (
-    manufacturer: string,
-    model: string,
- options?: SecondParameter<typeof getVotingEquipmentMutator>,) => {
-      return getVotingEquipmentMutator<VotingEquipmentModel>(
-      {url: `/votingequipment/${manufacturer}/${model}`, method: 'GET'
-    },
-      options);
-    }
-  
+export const getVotingEquipment = (manufacturer: string, model: string, options?: SecondParameter<typeof getVotingEquipmentMutator>) => {
+  return getVotingEquipmentMutator<VotingEquipmentModel>({ url: `/votingequipment/${manufacturer}/${model}`, method: "GET" }, options);
+};
+
 export const getDetailedVotingEquipmentUsage = (
-    fipsCode: string,
-    params?: GetDetailedVotingEquipmentUsageParams,
- options?: SecondParameter<typeof getDetailedVotingEquipmentUsageMutator>,) => {
-      return getDetailedVotingEquipmentUsageMutator<VotingEquipmentUsageStatisticsModel[]>(
-      {url: `/votingequipment/usages/${fipsCode}`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getVotingEquipmentUsage = (
-    params?: GetVotingEquipmentUsageParams,
- options?: SecondParameter<typeof getVotingEquipmentUsageMutator>,) => {
-      return getVotingEquipmentUsageMutator<VotingEquipmentUsageStatisticsModel[]>(
-      {url: `/votingequipment/usages/`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getAllVotingEquipmentByType = (
-    type: string,
- options?: SecondParameter<typeof getAllVotingEquipmentByTypeMutator>,) => {
-      return getAllVotingEquipmentByTypeMutator<VotingEquipmentModel[]>(
-      {url: `/votingequipment/by-type/${type}`, method: 'GET'
-    },
-      options);
-    }
-  
-export const getAllVotingEquipmentByManufacturer = (
-    manufacturer: string,
- options?: SecondParameter<typeof getAllVotingEquipmentByManufacturerMutator>,) => {
-      return getAllVotingEquipmentByManufacturerMutator<VotingEquipmentModel[]>(
-      {url: `/votingequipment/by-manufacturer/${manufacturer}`, method: 'GET'
-    },
-      options);
-    }
-  
-export const getAllVotingEquipment = (
-    
- options?: SecondParameter<typeof getAllVotingEquipmentMutator>,) => {
-      return getAllVotingEquipmentMutator<VotingEquipmentModel[]>(
-      {url: `/votingequipment/`, method: 'GET'
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  params?: GetDetailedVotingEquipmentUsageParams,
+  options?: SecondParameter<typeof getDetailedVotingEquipmentUsageMutator>
+) => {
+  return getDetailedVotingEquipmentUsageMutator<VotingEquipmentUsageStatisticsModel[]>(
+    { url: `/votingequipment/usages/${fipsCode}`, method: "GET", params },
+    options
+  );
+};
+
+export const getVotingEquipmentUsage = (params?: GetVotingEquipmentUsageParams, options?: SecondParameter<typeof getVotingEquipmentUsageMutator>) => {
+  return getVotingEquipmentUsageMutator<VotingEquipmentUsageStatisticsModel[]>({ url: `/votingequipment/usages/`, method: "GET", params }, options);
+};
+
+export const getAllVotingEquipmentByType = (type: string, options?: SecondParameter<typeof getAllVotingEquipmentByTypeMutator>) => {
+  return getAllVotingEquipmentByTypeMutator<VotingEquipmentModel[]>({ url: `/votingequipment/by-type/${type}`, method: "GET" }, options);
+};
+
+export const getAllVotingEquipmentByManufacturer = (manufacturer: string, options?: SecondParameter<typeof getAllVotingEquipmentByManufacturerMutator>) => {
+  return getAllVotingEquipmentByManufacturerMutator<VotingEquipmentModel[]>(
+    { url: `/votingequipment/by-manufacturer/${manufacturer}`, method: "GET" },
+    options
+  );
+};
+
+export const getAllVotingEquipment = (params?: GetAllVotingEquipmentParams, options?: SecondParameter<typeof getAllVotingEquipmentMutator>) => {
+  return getAllVotingEquipmentMutator<VotingEquipmentModel[]>({ url: `/votingequipment/`, method: "GET", params }, options);
+};
+
 export const getCVAPStatisticsData = (
-    fipsCode: string,
-    params?: GetCVAPStatisticsDataParams,
- options?: SecondParameter<typeof getCVAPStatisticsDataMutator>,) => {
-      return getCVAPStatisticsDataMutator<CVAPStatisticsModel[]>(
-      {url: `/voter-registration/cvap/${fipsCode}`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  params?: GetCVAPStatisticsDataParams,
+  options?: SecondParameter<typeof getCVAPStatisticsDataMutator>
+) => {
+  return getCVAPStatisticsDataMutator<CVAPStatisticsModel[]>({ url: `/voter-registration/cvap/${fipsCode}`, method: "GET", params }, options);
+};
+
 export const getDetailedVoterRegistrationDataCount = (
-    params?: GetDetailedVoterRegistrationDataCountParams,
- options?: SecondParameter<typeof getDetailedVoterRegistrationDataCountMutator>,) => {
-      return getDetailedVoterRegistrationDataCountMutator<number>(
-      {url: `/voter-registration/count`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  params?: GetDetailedVoterRegistrationDataCountParams,
+  options?: SecondParameter<typeof getDetailedVoterRegistrationDataCountMutator>
+) => {
+  return getDetailedVoterRegistrationDataCountMutator<number>({ url: `/voter-registration/count`, method: "GET", params }, options);
+};
+
 export const getDetailedVoterRegistrationData = (
-    params?: GetDetailedVoterRegistrationDataParams,
- options?: SecondParameter<typeof getDetailedVoterRegistrationDataMutator>,) => {
-      return getDetailedVoterRegistrationDataMutator<VoterRegistrationDataModel[]>(
-      {url: `/voter-registration/`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getStateInformationTableForState = (
-    fipsCode: string,
- options?: SecondParameter<typeof getStateInformationTableForStateMutator>,) => {
-      return getStateInformationTableForStateMutator<StateInformationModel>(
-      {url: `/state/${fipsCode}`, method: 'GET'
-    },
-      options);
-    }
-  
+  params?: GetDetailedVoterRegistrationDataParams,
+  options?: SecondParameter<typeof getDetailedVoterRegistrationDataMutator>
+) => {
+  return getDetailedVoterRegistrationDataMutator<VoterRegistrationDataModel[]>({ url: `/voter-registration/`, method: "GET", params }, options);
+};
+
+export const getStateInformationTableForState = (fipsCode: string, options?: SecondParameter<typeof getStateInformationTableForStateMutator>) => {
+  return getStateInformationTableForStateMutator<StateInformationModel>({ url: `/state/${fipsCode}`, method: "GET" }, options);
+};
+
 export const getVoterRegistrationCountsByCounty = (
-    fipsCode: string,
-    countyFipsCode: string,
-    params?: GetVoterRegistrationCountsByCountyParams,
- options?: SecondParameter<typeof getVoterRegistrationCountsByCountyMutator>,) => {
-      return getVoterRegistrationCountsByCountyMutator<VoterRegistrationStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/voter-registration-count`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  countyFipsCode: string,
+  params?: GetVoterRegistrationCountsByCountyParams,
+  options?: SecondParameter<typeof getVoterRegistrationCountsByCountyMutator>
+) => {
+  return getVoterRegistrationCountsByCountyMutator<VoterRegistrationStatisticsModel>(
+    { url: `/state/${fipsCode}/${countyFipsCode}/voter-registration-count`, method: "GET", params },
+    options
+  );
+};
+
 export const getProvisionalBallotsByCounty = (
-    fipsCode: string,
-    countyFipsCode: string,
-    params?: GetProvisionalBallotsByCountyParams,
- options?: SecondParameter<typeof getProvisionalBallotsByCountyMutator>,) => {
-      return getProvisionalBallotsByCountyMutator<ProvisionalBallotStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/provisional-ballots`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  countyFipsCode: string,
+  params?: GetProvisionalBallotsByCountyParams,
+  options?: SecondParameter<typeof getProvisionalBallotsByCountyMutator>
+) => {
+  return getProvisionalBallotsByCountyMutator<ProvisionalBallotStatisticsModel>(
+    { url: `/state/${fipsCode}/${countyFipsCode}/provisional-ballots`, method: "GET", params },
+    options
+  );
+};
+
 export const getPollbookDeletionsByCounty = (
-    fipsCode: string,
-    countyFipsCode: string,
-    params?: GetPollbookDeletionsByCountyParams,
- options?: SecondParameter<typeof getPollbookDeletionsByCountyMutator>,) => {
-      return getPollbookDeletionsByCountyMutator<PollbookDeletionStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/pollbook-deletions`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  countyFipsCode: string,
+  params?: GetPollbookDeletionsByCountyParams,
+  options?: SecondParameter<typeof getPollbookDeletionsByCountyMutator>
+) => {
+  return getPollbookDeletionsByCountyMutator<PollbookDeletionStatisticsModel>(
+    { url: `/state/${fipsCode}/${countyFipsCode}/pollbook-deletions`, method: "GET", params },
+    options
+  );
+};
+
 export const getMailBallotRejectionsByCounty = (
-    fipsCode: string,
-    countyFipsCode: string,
-    params?: GetMailBallotRejectionsByCountyParams,
- options?: SecondParameter<typeof getMailBallotRejectionsByCountyMutator>,) => {
-      return getMailBallotRejectionsByCountyMutator<MailBallotRejectionStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/mail-ballot-rejections`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  countyFipsCode: string,
+  params?: GetMailBallotRejectionsByCountyParams,
+  options?: SecondParameter<typeof getMailBallotRejectionsByCountyMutator>
+) => {
+  return getMailBallotRejectionsByCountyMutator<MailBallotRejectionStatisticsModel>(
+    { url: `/state/${fipsCode}/${countyFipsCode}/mail-ballot-rejections`, method: "GET", params },
+    options
+  );
+};
+
 export const getBallotStatisticsByCounty = (
-    fipsCode: string,
-    countyFipsCode: string,
-    params?: GetBallotStatisticsByCountyParams,
- options?: SecondParameter<typeof getBallotStatisticsByCountyMutator>,) => {
-      return getBallotStatisticsByCountyMutator<BallotStatisticsModel>(
-      {url: `/state/${fipsCode}/${countyFipsCode}/ballot-statistics`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getViewStateYearSummaryByState = (
-    fipsCode: string,
- options?: SecondParameter<typeof getViewStateYearSummaryByStateMutator>,) => {
-      return getViewStateYearSummaryByStateMutator<ViewStateYearSummaryModel[]>(
-      {url: `/state/${fipsCode}/year-summary`, method: 'GET'
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  countyFipsCode: string,
+  params?: GetBallotStatisticsByCountyParams,
+  options?: SecondParameter<typeof getBallotStatisticsByCountyMutator>
+) => {
+  return getBallotStatisticsByCountyMutator<BallotStatisticsModel>(
+    { url: `/state/${fipsCode}/${countyFipsCode}/ballot-statistics`, method: "GET", params },
+    options
+  );
+};
+
+export const getViewStateYearSummaryByState = (fipsCode: string, options?: SecondParameter<typeof getViewStateYearSummaryByStateMutator>) => {
+  return getViewStateYearSummaryByStateMutator<ViewStateYearSummaryModel[]>({ url: `/state/${fipsCode}/year-summary`, method: "GET" }, options);
+};
+
 export const getViewStateYearSummaryByStateForYear = (
-    fipsCode: string,
-    year: number,
- options?: SecondParameter<typeof getViewStateYearSummaryByStateForYearMutator>,) => {
-      return getViewStateYearSummaryByStateForYearMutator<ViewStateYearSummaryModel>(
-      {url: `/state/${fipsCode}/year-summary/${year}`, method: 'GET'
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  year: number,
+  options?: SecondParameter<typeof getViewStateYearSummaryByStateForYearMutator>
+) => {
+  return getViewStateYearSummaryByStateForYearMutator<ViewStateYearSummaryModel>({ url: `/state/${fipsCode}/year-summary/${year}`, method: "GET" }, options);
+};
+
 export const getVoterRegistrationHistory = (
-    fipsCode: string,
-    params?: GetVoterRegistrationHistoryParams,
- options?: SecondParameter<typeof getVoterRegistrationHistoryMutator>,) => {
-      return getVoterRegistrationHistoryMutator<VoterRegistrationHistoryGraphDataModel[]>(
-      {url: `/state/${fipsCode}/voter-registration-ordered-graph/`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  params?: GetVoterRegistrationHistoryParams,
+  options?: SecondParameter<typeof getVoterRegistrationHistoryMutator>
+) => {
+  return getVoterRegistrationHistoryMutator<VoterRegistrationHistoryGraphDataModel[]>(
+    { url: `/state/${fipsCode}/voter-registration-ordered-graph/`, method: "GET", params },
+    options
+  );
+};
+
 export const getVoterRegistrationCounts = (
-    fipsCode: string,
-    params?: GetVoterRegistrationCountsParams,
- options?: SecondParameter<typeof getVoterRegistrationCountsMutator>,) => {
-      return getVoterRegistrationCountsMutator<VoterRegistrationStatisticsModel[]>(
-      {url: `/state/${fipsCode}/voter-registration-count`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getVoterAffiliations = (
-    fipsCode: string,
-    params?: GetVoterAffiliationsParams,
- options?: SecondParameter<typeof getVoterAffiliationsMutator>,) => {
-      return getVoterAffiliationsMutator<VoterAffiliationStatisticsModel[]>(
-      {url: `/state/${fipsCode}/voter-affiliations`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  params?: GetVoterRegistrationCountsParams,
+  options?: SecondParameter<typeof getVoterRegistrationCountsMutator>
+) => {
+  return getVoterRegistrationCountsMutator<VoterRegistrationStatisticsModel[]>(
+    { url: `/state/${fipsCode}/voter-registration-count`, method: "GET", params },
+    options
+  );
+};
+
+export const getVoterAffiliations = (fipsCode: string, params?: GetVoterAffiliationsParams, options?: SecondParameter<typeof getVoterAffiliationsMutator>) => {
+  return getVoterAffiliationsMutator<VoterAffiliationStatisticsModel[]>({ url: `/state/${fipsCode}/voter-affiliations`, method: "GET", params }, options);
+};
+
 export const getProvisionalBallots = (
-    fipsCode: string,
-    params?: GetProvisionalBallotsParams,
- options?: SecondParameter<typeof getProvisionalBallotsMutator>,) => {
-      return getProvisionalBallotsMutator<ProvisionalBallotStatisticsModel[]>(
-      {url: `/state/${fipsCode}/provisional-ballots`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getPollbookDeletions = (
-    fipsCode: string,
-    params?: GetPollbookDeletionsParams,
- options?: SecondParameter<typeof getPollbookDeletionsMutator>,) => {
-      return getPollbookDeletionsMutator<PollbookDeletionStatisticsModel[]>(
-      {url: `/state/${fipsCode}/pollbook-deletions`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  params?: GetProvisionalBallotsParams,
+  options?: SecondParameter<typeof getProvisionalBallotsMutator>
+) => {
+  return getProvisionalBallotsMutator<ProvisionalBallotStatisticsModel[]>({ url: `/state/${fipsCode}/provisional-ballots`, method: "GET", params }, options);
+};
+
+export const getPollbookDeletions = (fipsCode: string, params?: GetPollbookDeletionsParams, options?: SecondParameter<typeof getPollbookDeletionsMutator>) => {
+  return getPollbookDeletionsMutator<PollbookDeletionStatisticsModel[]>({ url: `/state/${fipsCode}/pollbook-deletions`, method: "GET", params }, options);
+};
+
 export const getMailBallotRejections = (
-    fipsCode: string,
-    params?: GetMailBallotRejectionsParams,
- options?: SecondParameter<typeof getMailBallotRejectionsMutator>,) => {
-      return getMailBallotRejectionsMutator<MailBallotRejectionStatisticsModel[]>(
-      {url: `/state/${fipsCode}/mail-ballot-rejections`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getStateGeometry = (
-    fipsCode: string,
- options?: SecondParameter<typeof getStateGeometryMutator>,) => {
-      return getStateGeometryMutator<GeoJsonObject>(
-      {url: `/state/${fipsCode}/geometry`, method: 'GET'
-    },
-      options);
-    }
-  
+  fipsCode: string,
+  params?: GetMailBallotRejectionsParams,
+  options?: SecondParameter<typeof getMailBallotRejectionsMutator>
+) => {
+  return getMailBallotRejectionsMutator<MailBallotRejectionStatisticsModel[]>(
+    { url: `/state/${fipsCode}/mail-ballot-rejections`, method: "GET", params },
+    options
+  );
+};
+
+export const getStateGeometry = (fipsCode: string, options?: SecondParameter<typeof getStateGeometryMutator>) => {
+  return getStateGeometryMutator<GeoJsonObject>({ url: `/state/${fipsCode}/geometry`, method: "GET" }, options);
+};
+
 export const getElectionResultsSummary = (
-    fipsCode: string,
-    year: number,
-    params?: GetElectionResultsSummaryParams,
- options?: SecondParameter<typeof getElectionResultsSummaryMutator>,) => {
-      return getElectionResultsSummaryMutator<ElectionResultsSummaryModel[]>(
-      {url: `/state/${fipsCode}/election-year-results/${year}`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getCountyGeoUnitCentroids = (
-    fipsCode: string,
- options?: SecondParameter<typeof getCountyGeoUnitCentroidsMutator>,) => {
-      return getCountyGeoUnitCentroidsMutator<GetCountyGeoUnitCentroids200>(
-      {url: `/state/${fipsCode}/centroids`, method: 'GET'
-    },
-      options);
-    }
-  
-export const getBallotStatistics = (
-    fipsCode: string,
-    params?: GetBallotStatisticsParams,
- options?: SecondParameter<typeof getBallotStatisticsMutator>,) => {
-      return getBallotStatisticsMutator<BallotStatisticsModel[]>(
-      {url: `/state/${fipsCode}/ballot-statistics`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-export const getStateInformationTable = (
-    
- options?: SecondParameter<typeof getStateInformationTableMutator>,) => {
-      return getStateInformationTableMutator<GetStateInformationTable200>(
-      {url: `/state/`, method: 'GET'
-    },
-      options);
-    }
-  
-export type GetRegressionCoefficientsResult = NonNullable<Awaited<ReturnType<typeof getRegressionCoefficients>>>
-export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipment>>>
-export type GetDetailedVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getDetailedVotingEquipmentUsage>>>
-export type GetVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipmentUsage>>>
-export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>
-export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>
-export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>
-export type GetCVAPStatisticsDataResult = NonNullable<Awaited<ReturnType<typeof getCVAPStatisticsData>>>
-export type GetDetailedVoterRegistrationDataCountResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationDataCount>>>
-export type GetDetailedVoterRegistrationDataResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationData>>>
-export type GetStateInformationTableForStateResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTableForState>>>
-export type GetVoterRegistrationCountsByCountyResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCountsByCounty>>>
-export type GetProvisionalBallotsByCountyResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallotsByCounty>>>
-export type GetPollbookDeletionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletionsByCounty>>>
-export type GetMailBallotRejectionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejectionsByCounty>>>
-export type GetBallotStatisticsByCountyResult = NonNullable<Awaited<ReturnType<typeof getBallotStatisticsByCounty>>>
-export type GetViewStateYearSummaryByStateResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByState>>>
-export type GetViewStateYearSummaryByStateForYearResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByStateForYear>>>
-export type GetVoterRegistrationHistoryResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationHistory>>>
-export type GetVoterRegistrationCountsResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCounts>>>
-export type GetVoterAffiliationsResult = NonNullable<Awaited<ReturnType<typeof getVoterAffiliations>>>
-export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallots>>>
-export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletions>>>
-export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>
-export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>
-export type GetElectionResultsSummaryResult = NonNullable<Awaited<ReturnType<typeof getElectionResultsSummary>>>
-export type GetCountyGeoUnitCentroidsResult = NonNullable<Awaited<ReturnType<typeof getCountyGeoUnitCentroids>>>
-export type GetBallotStatisticsResult = NonNullable<Awaited<ReturnType<typeof getBallotStatistics>>>
-export type GetStateInformationTableResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTable>>>
+  fipsCode: string,
+  year: number,
+  params?: GetElectionResultsSummaryParams,
+  options?: SecondParameter<typeof getElectionResultsSummaryMutator>
+) => {
+  return getElectionResultsSummaryMutator<ElectionResultsSummaryModel[]>(
+    { url: `/state/${fipsCode}/election-year-results/${year}`, method: "GET", params },
+    options
+  );
+};
+
+export const getCountyGeoUnitCentroids = (fipsCode: string, options?: SecondParameter<typeof getCountyGeoUnitCentroidsMutator>) => {
+  return getCountyGeoUnitCentroidsMutator<GetCountyGeoUnitCentroids200>({ url: `/state/${fipsCode}/centroids`, method: "GET" }, options);
+};
+
+export const getBallotStatistics = (fipsCode: string, params?: GetBallotStatisticsParams, options?: SecondParameter<typeof getBallotStatisticsMutator>) => {
+  return getBallotStatisticsMutator<BallotStatisticsModel[]>({ url: `/state/${fipsCode}/ballot-statistics`, method: "GET", params }, options);
+};
+
+export const getStateInformationTable = (options?: SecondParameter<typeof getStateInformationTableMutator>) => {
+  return getStateInformationTableMutator<GetStateInformationTable200>({ url: `/state/`, method: "GET" }, options);
+};
+
+export type GetRegressionCoefficientsResult = NonNullable<Awaited<ReturnType<typeof getRegressionCoefficients>>>;
+export type GetVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipment>>>;
+export type GetDetailedVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getDetailedVotingEquipmentUsage>>>;
+export type GetVotingEquipmentUsageResult = NonNullable<Awaited<ReturnType<typeof getVotingEquipmentUsage>>>;
+export type GetAllVotingEquipmentByTypeResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByType>>>;
+export type GetAllVotingEquipmentByManufacturerResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipmentByManufacturer>>>;
+export type GetAllVotingEquipmentResult = NonNullable<Awaited<ReturnType<typeof getAllVotingEquipment>>>;
+export type GetCVAPStatisticsDataResult = NonNullable<Awaited<ReturnType<typeof getCVAPStatisticsData>>>;
+export type GetDetailedVoterRegistrationDataCountResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationDataCount>>>;
+export type GetDetailedVoterRegistrationDataResult = NonNullable<Awaited<ReturnType<typeof getDetailedVoterRegistrationData>>>;
+export type GetStateInformationTableForStateResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTableForState>>>;
+export type GetVoterRegistrationCountsByCountyResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCountsByCounty>>>;
+export type GetProvisionalBallotsByCountyResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallotsByCounty>>>;
+export type GetPollbookDeletionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletionsByCounty>>>;
+export type GetMailBallotRejectionsByCountyResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejectionsByCounty>>>;
+export type GetBallotStatisticsByCountyResult = NonNullable<Awaited<ReturnType<typeof getBallotStatisticsByCounty>>>;
+export type GetViewStateYearSummaryByStateResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByState>>>;
+export type GetViewStateYearSummaryByStateForYearResult = NonNullable<Awaited<ReturnType<typeof getViewStateYearSummaryByStateForYear>>>;
+export type GetVoterRegistrationHistoryResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationHistory>>>;
+export type GetVoterRegistrationCountsResult = NonNullable<Awaited<ReturnType<typeof getVoterRegistrationCounts>>>;
+export type GetVoterAffiliationsResult = NonNullable<Awaited<ReturnType<typeof getVoterAffiliations>>>;
+export type GetProvisionalBallotsResult = NonNullable<Awaited<ReturnType<typeof getProvisionalBallots>>>;
+export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof getPollbookDeletions>>>;
+export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>;
+export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>;
+export type GetElectionResultsSummaryResult = NonNullable<Awaited<ReturnType<typeof getElectionResultsSummary>>>;
+export type GetCountyGeoUnitCentroidsResult = NonNullable<Awaited<ReturnType<typeof getCountyGeoUnitCentroids>>>;
+export type GetBallotStatisticsResult = NonNullable<Awaited<ReturnType<typeof getBallotStatistics>>>;
+export type GetStateInformationTableResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTable>>>;
