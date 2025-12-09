@@ -124,21 +124,19 @@ function StateEAVsInfoCard({ type }: StateInfoCardProperties) {
 function StateCVAPInfoCard({ fipsCode, type }: StateInfoCardProperties) {
   const [cvapPercent, setCvapPercent] = useState(0.0);
 
-  useEffect(
-    function () {
-      (async function() {
-        const cvapData = await getCVAPStatisticsData(fipsCode, { aggregate: true });
-        const voterStatistics = await getVoterRegistrationCounts(fipsCode, { aggregate: true });
-        setCvapPercent(voterStatistics[0].active! / cvapData[0].cvapTotal!);
-      })();
-    }
-  );
+  useEffect(function () {
+    (async function () {
+      const cvapData = await getCVAPStatisticsData(fipsCode, { aggregate: true });
+      const voterStatistics = await getVoterRegistrationCounts(fipsCode, { aggregate: true });
+      setCvapPercent(voterStatistics[0].active! / cvapData[0].cvapTotal!);
+    })();
+  });
 
   if (!(type === DETAIL_STATE_TYPE_REPUBLICAN || type === DETAIL_STATE_TYPE_DEMOCRAT)) {
     return <></>;
   }
 
-  return EAVsDataQualityInfoCard(`Active CVAP: ${(cvapPercent*100).toPrecision(4)}%`, "Ratio of active registered voters against 2023 ACS CVAP");
+  return EAVsDataQualityInfoCard(`Active CVAP: ${(cvapPercent * 100).toPrecision(4)}%`, "Ratio of active registered voters against 2023 ACS CVAP");
 }
 
 function StateInformationViewDrawerListItem({ item, stateType, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
@@ -217,7 +215,9 @@ function StateInformationViewDrawer({ fipsCode, sections, stateHook, onSelection
         ))}
         <StateEAVsInfoCard fipsCode={fipsCode} type={stateType[0]} />
         {/* conditional rendering logic, means it will only show up exactly once for the party states. */}
-        {stateType.map((x) => (<StateCVAPInfoCard fipsCode={fipsCode} type={x} />))}
+        {stateType.map((x) => (
+          <StateCVAPInfoCard fipsCode={fipsCode} type={x} />
+        ))}
       </Stack>
       <Divider />
       <List disablePadding dense>

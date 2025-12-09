@@ -97,7 +97,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel, descend
   );
 
   // I make a horrible assumption for GUI16 here.
-  const xAxisLabels = ((descendingOrder) ? actualData[0]?.points.map((x) => x.x) : actualData[0]?.points.map((x) => x.x).reverse()) || ["loading"];
+  const xAxisLabels = (descendingOrder ? actualData[0]?.points.map((x) => x.x) : actualData[0]?.points.map((x) => x.x).reverse()) || ["loading"];
   const xAxisScale = d3
     .scaleBand()
     .domain(xAxisLabels)

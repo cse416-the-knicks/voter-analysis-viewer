@@ -11,19 +11,20 @@ interface DisplayEIGinglesChartProperties {
 
 const CVAP_KEYS = ["asianTotal", "blackTotal", "hispanicTotal", "whiteTotal", "otherTotal"] as const;
 
-function DisplayEIGinglesChart({
-  fipsCode,
-  width,
-  height
-}: DisplayEIGinglesChartProperties) {
+function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChartProperties) {
   const [cvapDemographicSelection, setCvapDemographicSelection] = useState(0);
   const races = ["Asian", "Black", "Hispanic", "White", "Other"];
   return (
     <>
       <Paper>
-        <FormControl sx={{m:1.2, position: "absolute", right:"2em", width:"10em", zIndex:9999}}>
+        <FormControl sx={{ m: 1.2, position: "absolute", right: "2em", width: "10em", zIndex: 9999 }}>
           <InputLabel>CVAP Demographic</InputLabel>
-          <Select onChange={(event) => setCvapDemographicSelection(event.target.value)} value={cvapDemographicSelection} label="CVAP Demographic" variant="standard">
+          <Select
+            onChange={(event) => setCvapDemographicSelection(event.target.value)}
+            value={cvapDemographicSelection}
+            label="CVAP Demographic"
+            variant="standard"
+          >
             {races.map((x, i) => (
               <MenuItem value={i}>{x}</MenuItem>
             ))}
@@ -44,8 +45,8 @@ function DisplayEIGinglesChart({
               name: data.countyName!,
               size: 10,
               party: "Rep",
-              color: republicanBubbleColor
-            }))
+              color: republicanBubbleColor,
+            }));
 
             const democratBubbles = mergedData.map((data) => ({
               x: (data[CVAP_KEYS[cvapDemographicSelection]]! / data.cvapTotal!) * 100,
@@ -53,7 +54,7 @@ function DisplayEIGinglesChart({
               name: data.countyName!,
               size: 10,
               party: "Dem",
-              color: democraticBubbleColor
+              color: democraticBubbleColor,
             }));
 
             return republicanBubbles.concat(democratBubbles);
