@@ -23,6 +23,7 @@ rename_map = {
     "Scanning Rate": "scan_rate",
     "Certification Level": "certification",
     "Discontinued": "is_discontinued",
+    "Quality Score tentative": "quality_score",
 }
 df = df[[c for c in rename_map if c in df.columns]]
 df = df.rename(columns=rename_map)
