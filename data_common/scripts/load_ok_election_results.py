@@ -14,7 +14,7 @@ database = os.getenv("DB_NAME")
 RESULTS_PATH = "../processed/pres_ok_results.csv"
 GEOUNIT_PATH = "../processed/2024_eavs_geounit.csv"
 
-df = pd.read_csv(RESULTS_PATH, dtype={
+ok_elec_results_df = pd.read_csv(RESULTS_PATH, dtype={
     "county": str,
     "cand_party": str,
     "cand_tot_votes": int
@@ -27,15 +27,15 @@ geounit = geounit[geounit["state_id"] == "40"]
 # Mapping dict for quick lookup of county name to FIPS code
 county_dict = dict(zip(geounit["name"], geounit["eavs_unit_code"]))
 
-df["county"] = df["county"].str.strip()
+ok_elec_results_df["county"] = ok_elec_results_df["county"].str.strip()
 
 # Finding vote splits by every 5 rows since csv has multiple rows per county, and building new DataFrame from that
 rep_wins = 0
 dem_wins = 0
 n = 5
 records = []
-for i in range(0, len(df), n):
-    chunk = df.iloc[i:i+n]
+for i in range(0, len(ok_elec_results_df), n):
+    chunk = ok_elec_results_df.iloc[i:i+n]
     county_name = chunk["county"].iloc[0].title()
     fips_code = county_dict.get(county_name, None)
     if county_name == "Leflore":

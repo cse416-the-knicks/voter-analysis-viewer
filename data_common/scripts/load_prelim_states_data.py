@@ -65,15 +65,15 @@ STATE_TO_POSTAL = {
     "Wyoming": "WY",
 }
 
-df = pd.DataFrame([
+states_df = pd.DataFrame([
     {"state_id": fips, "name": name, "code": STATE_TO_POSTAL.get(name, "??")}
     for fips, name in FIPS_TO_STATES_MAP.items()
 ])
 
-df["map_zoom_level"] = 0
-df["registration_method"] = None
-df["same_day_registration"] = None
-df["felony_disenfranchisement"] = None
+states_df["map_zoom_level"] = 0
+states_df["registration_method"] = None
+states_df["same_day_registration"] = None
+states_df["felony_disenfranchisement"] = None
 
 # Source: https://www.ncsl.org/elections-and-campaigns/automatic-voter-registration
 REG_METHOD = {
@@ -237,9 +237,9 @@ FEL = {
     "WY": 4,  # Wyoming
 }
 
-df["registration_method"] = df["code"].map(REG_METHOD)
-df["same_day_registration"] = df["code"].map(SAME_DAY)
-df["felony_disenfranchisement"] = df["code"].map(FEL)
+states_df["registration_method"] = states_df["code"].map(REG_METHOD)
+states_df["same_day_registration"] = states_df["code"].map(SAME_DAY)
+states_df["felony_disenfranchisement"] = states_df["code"].map(FEL)
 
 # Connecting to db
 engine = create_engine(
@@ -247,7 +247,7 @@ engine = create_engine(
 )
 
 # Inserting into db
-df.to_sql(
+states_df.to_sql(
     "states",
     engine,
     schema="app",

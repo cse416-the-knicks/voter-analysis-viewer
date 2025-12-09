@@ -56,43 +56,43 @@ raw = pd.read_excel(
     data_path,
     dtype={"FIPSCode": str, "State_Abbr": str, "Jurisdiction_Name": str}
 )
-eavs = raw[use_columns].copy()
+eavs_df = raw[use_columns].copy()
 
 # Fixing FIPS codes, especially for Wisconsin
 # Each Wisconsin row is by Townships, which needs to be padded differently
-is_wi = eavs["State_Abbr"] == "WI"
+is_wi = eavs_df["State_Abbr"] == "WI"
 not_wi = ~is_wi
 valid_lengths = [5, 9, 10]
-eavs = eavs[(not_wi & eavs["FIPSCode"].str.len().isin(valid_lengths)) | is_wi]
-eavs.loc[(not_wi) & (eavs["FIPSCode"].str.len() == 9), "FIPSCode"] = (
-    eavs["FIPSCode"].str.rjust(10, "0")
+eavs_df = eavs_df[(not_wi & eavs_df["FIPSCode"].str.len().isin(valid_lengths)) | is_wi]
+eavs_df.loc[(not_wi) & (eavs_df["FIPSCode"].str.len() == 9), "FIPSCode"] = (
+    eavs_df["FIPSCode"].str.rjust(10, "0")
 )
-eavs.loc[(not_wi) & (eavs["FIPSCode"].str.len() == 5), "FIPSCode"] = (
-    eavs["FIPSCode"].str.ljust(10, "0")
+eavs_df.loc[(not_wi) & (eavs_df["FIPSCode"].str.len() == 5), "FIPSCode"] = (
+    eavs_df["FIPSCode"].str.ljust(10, "0")
 )
-eavs.loc[is_wi, "FIPSCode"] = eavs.loc[is_wi, "FIPSCode"].apply(pad_wisconsin_fips)
+eavs_df.loc[is_wi, "FIPSCode"] = eavs_df.loc[is_wi, "FIPSCode"].apply(pad_wisconsin_fips)
 
 # Numeric conversion for appropriate columns
 for c in use_columns[3:]:
-    eavs[c] = eavs[c].apply(safe_int)
+    eavs_df[c] = eavs_df[c].apply(safe_int)
 
 # Derived fields for Other, Totals, and State IDs
-eavs["mail_reject_total"] = eavs[["C9a", "B24a"]].sum(axis=1, skipna=True, min_count=1)
-eavs["removed_other"] = eavs[["A12i", "A12j", "A12k"]].sum(axis=1, min_count=1)
-eavs["prov_other"] = eavs[["E2j", "E2k", "E2l"]].sum(axis=1, min_count=1)
-eavs["mail_reject_other"] = eavs[["C9r", "C9s", "C9t"]].sum(axis=1, min_count=1)
+eavs_df["mail_reject_total"] = eavs_df[["C9a", "B24a"]].sum(axis=1, skipna=True, min_count=1)
+eavs_df["removed_other"] = eavs_df[["A12i", "A12j", "A12k"]].sum(axis=1, min_count=1)
+eavs_df["prov_other"] = eavs_df[["E2j", "E2k", "E2l"]].sum(axis=1, min_count=1)
+eavs_df["mail_reject_other"] = eavs_df[["C9r", "C9s", "C9t"]].sum(axis=1, min_count=1)
 
-eavs["total_ballots_cast"] = eavs[
+eavs_df["total_ballots_cast"] = eavs_df[
     ["C8a", "B18a", "F1f", "F1b", "E1a"]
 ].sum(axis=1, min_count=1)
 
-eavs["year"] = 2024
-eavs["state_id"] = eavs["FIPSCode"].str[:2].astype(int)
+eavs_df["year"] = 2024
+eavs_df["state_id"] = eavs_df["FIPSCode"].str[:2].astype(int)
 
 # Removing territories and states we don't need
 territories = {11, 60, 66, 69, 72, 78}
-eavs = eavs[~eavs["state_id"].isin(territories)]
-eavs = eavs[eavs["State_Abbr"] != "AS"]
+eavs_df = eavs_df[~eavs_df["state_id"].isin(territories)]
+eavs_df = eavs_df[eavs_df["State_Abbr"] != "AS"]
 
 # Renaming to database schema column names
 rename_map = {
@@ -146,8 +146,8 @@ rename_map = {
     "mail_reject_other": "mail_reject_other",
     "state_id": "state_id",
 }
-eavs = eavs.rename(columns=rename_map)
-eavs = eavs.drop(columns=[
+eavs_df = eavs_df.rename(columns=rename_map)
+eavs_df = eavs_df.drop(columns=[
     "A12i","A12j","A12k",
     "E2j","E2k","E2l",
     "C9r","C9s","C9t",
@@ -216,23 +216,23 @@ def compute_missingness(row):
 
     return score
 
-eavs["missing_data_score"] = eavs.apply(compute_missingness, axis=1)
+eavs_df["missing_data_score"] = eavs_df.apply(compute_missingness, axis=1)
 
 # Building the geounits dataframe
 geounits = pd.DataFrame({
-    "state_id": eavs["state_id"],
-    "eavs_unit_name": raw.loc[eavs.index, "Jurisdiction_Name"],
-    "eavs_unit_code": eavs["region_id"],
-    "name": eavs.apply(
+    "state_id": eavs_df["state_id"],
+    "eavs_unit_name": raw.loc[eavs_df.index, "Jurisdiction_Name"],
+    "eavs_unit_code": eavs_df["region_id"],
+    "name": eavs_df.apply(
         lambda row: extract_jurisdiction_name(row["Jurisdiction_Name"], row["state_id"]),
         axis=1
     )
 })
-eavs = eavs.drop(columns=["Jurisdiction_Name"])
+eavs_df = eavs_df.drop(columns=["Jurisdiction_Name"])
 
 # Inserting into database
 engine = create_engine(f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}")
-eavs.to_sql("eavs_data", engine, schema="app", if_exists="append", index=False)
+eavs_df.to_sql("eavs_data", engine, schema="app", if_exists="append", index=False)
 geounits.to_sql("eavs_geounit", engine, schema="app", if_exists="append", index=False)
 
 print("Finished inserting 2024 EAVS data into the database.")
