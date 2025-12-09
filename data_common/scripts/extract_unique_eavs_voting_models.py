@@ -3,7 +3,7 @@ import pandas as pd
 EAVS_PATH = "../raw/2024_EAVS_for_Public_Release_V1_xlsx.xlsx"
 OUT_PATH = "../raw/device_model_manual_mapping.csv"
 
-df = pd.read_excel(EAVS_PATH, dtype=str).fillna("")
+eavs_df = pd.read_excel(EAVS_PATH, dtype=str).fillna("")
 
 groups = {
     "DRE no VVPAT": ("F3a", ["F3b_1", "F3b_2", "F3b_3"]),
@@ -15,20 +15,20 @@ groups = {
 records = []
 
 for device_type, (flag_col, cols) in groups.items():
-    if flag_col not in df.columns:
+    if flag_col not in eavs_df.columns:
         continue
-    for _, row in df.iterrows():
+    for _, row in eavs_df.iterrows():
         # Only process if the jurisdiction uses this device type
         if str(row[flag_col]).strip().lower() != "yes":
             continue
         for col in cols:
-            if col not in df.columns:
+            if col not in eavs_df.columns:
                 continue
             val = str(row[col]).strip()
             if not val:
                 continue
             # Handling Other column
-            if val.lower().startswith("other") and f"{col}other" in df.columns:
+            if val.lower().startswith("other") and f"{col}other" in eavs_df.columns:
                 val = str(row[f"{col}other"]).strip()
             if not val:
                 continue

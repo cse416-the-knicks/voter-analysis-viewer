@@ -14,7 +14,7 @@ database = os.getenv("DB_NAME")
 
 # Loading 2022 EAVS data
 data_path = "../raw/2020_EAVS_for_Public_Release_V1.2.xlsx"
-df = pd.read_excel(data_path, dtype={"FIPSCode": str})
+eavs_df = pd.read_excel(data_path, dtype={"FIPSCode": str})
 
 # Columns to pull from the spreadsheet
 cols = ["FIPSCode", "State_Abbr",
@@ -26,19 +26,19 @@ cols = ["FIPSCode", "State_Abbr",
         "B14a","B18a",
         "C4a","C4b","C4c","C4d","C4e","C4g","C4h","C4k","C4i","C4j","C4l","C4m","C4n","C4o",
         "C4p","C4q","C4r"]
-df = df[cols]
+eavs_df = eavs_df[cols]
 
-is_wi = df["State_Abbr"] == "WI"
+is_wi = eavs_df["State_Abbr"] == "WI"
 not_wi = ~is_wi
 
 # Keep everything that either has a valid FIPS length OR is Wisconsin
-df = df[(not_wi & df["FIPSCode"].str.len().isin([5, 9, 10])) | is_wi]
+eavs_df = eavs_df[(not_wi & eavs_df["FIPSCode"].str.len().isin([5, 9, 10])) | is_wi]
 
 # Fix 9-digit rows
-df.loc[(~is_wi) & (df["FIPSCode"].str.len() == 9), "FIPSCode"] = df["FIPSCode"].str.rjust(10, "0")
+eavs_df.loc[(~is_wi) & (eavs_df["FIPSCode"].str.len() == 9), "FIPSCode"] = eavs_df["FIPSCode"].str.rjust(10, "0")
 
 # Fix 5-digit rows
-df.loc[(~is_wi) & (df["FIPSCode"].str.len() == 5), "FIPSCode"] = df["FIPSCode"].str.ljust(10, "0")
+eavs_df.loc[(~is_wi) & (eavs_df["FIPSCode"].str.len() == 5), "FIPSCode"] = eavs_df["FIPSCode"].str.ljust(10, "0")
 
 def pad_wi_code(code):
     c = str(code)
@@ -46,7 +46,7 @@ def pad_wi_code(code):
     return ("55" + county_part).ljust(10, "0")
 
 # Wisconsin handled separately with custom prefix logic
-df.loc[is_wi, "FIPSCode"] = df.loc[is_wi, "FIPSCode"].apply(pad_wi_code)
+eavs_df.loc[is_wi, "FIPSCode"] = eavs_df.loc[is_wi, "FIPSCode"].apply(pad_wi_code)
 
 
 # Numeric conversion
@@ -57,32 +57,32 @@ def to_int(val):
         return np.nan
 
 for c in cols[1:]:
-    df[c] = df[c].apply(to_int)
+    eavs_df[c] = eavs_df[c].apply(to_int)
 
 # Computing total absentee rejections
-df["mail_reject_total"] = df[["C4a","B18a"]].sum(axis=1, skipna=True, min_count=1)
+eavs_df["mail_reject_total"] = eavs_df[["C4a","B18a"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute removed_other as A9h + A9i + A9j (skipping NaN)
-df["removed_other"] = df[["A9h","A9i","A9j"]].sum(axis=1, skipna=True, min_count=1)
+eavs_df["removed_other"] = eavs_df[["A9h","A9i","A9j"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute prov_other as E2k + E2l + E2m (skipping NaN)
-df["prov_other"] = df[["E2k","E2l","E2m"]].sum(axis=1, skipna=True, min_count=1)
+eavs_df["prov_other"] = eavs_df[["E2k","E2l","E2m"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute mail_reject_other as C4p + C4q + C4r (skipping NaN)
-df["mail_reject_other"] = df[["C4p","C4q","C4r"]].sum(axis=1, skipna=True, min_count=1)
+eavs_df["mail_reject_other"] = eavs_df[["C4p","C4q","C4r"]].sum(axis=1, skipna=True, min_count=1)
 
 # Compute total_ballots_cast as the sum of absentee, early, eday, and provisional
-df["total_ballots_cast"] = df[["C3a","B14a","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
+eavs_df["total_ballots_cast"] = eavs_df[["C3a","B14a","F1f","F1b","E1a"]].sum(axis=1, skipna=True, min_count=1)
 
-df["year"] = 2020
+eavs_df["year"] = 2020
 
-df["state_id"] = df["FIPSCode"].str[:2].astype(int)
+eavs_df["state_id"] = eavs_df["FIPSCode"].str[:2].astype(int)
 
 # Dropping random american samoa row
-df.drop(df[df["State_Abbr"] == "AS"].index, inplace=True)
+eavs_df.drop(eavs_df[eavs_df["State_Abbr"] == "AS"].index, inplace=True)
 
 # Dropping the unused other columns before writing
-df = df.drop(columns=["A9h","A9i","A9j","E2k","E2l","E2m","C4p","C4q","C4r","State_Abbr","B18a","C4a","B14a"])
+eavs_df = eavs_df.drop(columns=["A9h","A9i","A9j","E2k","E2l","E2m","C4p","C4q","C4r","State_Abbr","B18a","C4a","B14a"])
 
 # Mapping each code to the actual schema column names
 rename_map = {
@@ -136,23 +136,23 @@ rename_map = {
     "mail_reject_other" : "mail_reject_other",
     "state_id" : "state_id"
 }
-df = df.rename(columns=rename_map)
+eavs_df = eavs_df.rename(columns=rename_map)
 
 # Removing random territories
-df = df[df["state_id"] != 60]
-df = df[df["state_id"] != 11]
-df = df[df["state_id"] != 66]
-df = df[df["state_id"] != 69]
-df = df[df["state_id"] != 72]
-df = df[df["state_id"] != 78]
+eavs_df = eavs_df[eavs_df["state_id"] != 60]
+eavs_df = eavs_df[eavs_df["state_id"] != 11]
+eavs_df = eavs_df[eavs_df["state_id"] != 66]
+eavs_df = eavs_df[eavs_df["state_id"] != 69]
+eavs_df = eavs_df[eavs_df["state_id"] != 72]
+eavs_df = eavs_df[eavs_df["state_id"] != 78]
 
-print(df)
+print(eavs_df)
 
 # Fixing entries with same FIPS code (Wisconsin county aggregate)
-dupes = df["region_id"][df["region_id"].duplicated()].unique()
+dupes = eavs_df["region_id"][eavs_df["region_id"].duplicated()].unique()
 for target in dupes:
-    print(df[df["region_id"] == target])
-    subset = df[df["region_id"] == target]
+    print(eavs_df[eavs_df["region_id"] == target])
+    subset = eavs_df[eavs_df["region_id"] == target]
     def safe_sum(series):
         if series.isna().all():
             return np.nan
@@ -161,7 +161,7 @@ for target in dupes:
     summed["region_id"] = target
     summed["year"] = 2020
     summed["state_id"] = subset["state_id"].iloc[0]
-    df = pd.concat([df[df["region_id"] != target], pd.DataFrame([summed])], ignore_index=True)
+    eavs_df = pd.concat([eavs_df[eavs_df["region_id"] != target], pd.DataFrame([summed])], ignore_index=True)
 
 # Connecting to db
 engine = create_engine(
@@ -169,7 +169,7 @@ engine = create_engine(
 )
 
 # Inserting into db
-df.to_sql(
+eavs_df.to_sql(
     "eavs_data",
     engine,
     schema="app",

@@ -66,37 +66,37 @@ function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: Di
             const electionYears = [2016, 2018, 2020, 2022, 2024];
             const promises = electionYears.map((year) => getDetailedVotingEquipmentUsage(stateFips.toString(), { year: year, aggregate: true }));
             const votingEquipmentUsages = (await Promise.all(promises)).map((x) => x[0]);
+
             const scannerUsages = votingEquipmentUsages.map((e, i) => {
               return {
-                value: (e && e.scannerTotal!) || 0,
+                value: e?.scannerTotal ?? 0,
                 title: electionYears[i].toString(),
                 category: "Scanner",
               };
             });
             const bmdUsages = votingEquipmentUsages.map((e, i) => {
               return {
-                value: (e && e.bmdTotal!) || 0,
+                value: e?.bmdTotal ?? 0,
                 title: electionYears[i].toString(),
                 category: "BMD",
               };
             });
             const dreVvpatUsages = votingEquipmentUsages.map((e, i) => {
               return {
-                value: (e && e.dreVvpatTotal!) || 0,
+                value: e?.dreVvpatTotal ?? 0,
                 title: electionYears[i].toString(),
                 category: "DRE (VVPAT)",
               };
             });
             const dreNoVvpatUsages = votingEquipmentUsages.map((e, i) => {
               return {
-                value: (e && e.dreNoVvpatTotal!) || 0,
+                value: e?.dreNoVvpatTotal ?? 0,
                 title: electionYears[i].toString(),
                 category: "DRE (No VVPAT)",
               };
             });
 
             const dataEntries = [...dreVvpatUsages, ...dreNoVvpatUsages, ...bmdUsages, ...scannerUsages];
-
             return dataEntries;
           }}
           width={maxWidth}

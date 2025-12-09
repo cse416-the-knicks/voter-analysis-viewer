@@ -51,9 +51,7 @@ for idx, row in gdf.iterrows():
         "geom_center": centroid_geojson
     })
 
-df = pd.DataFrame(records)
-
-print(df)
+state_boundary_df = pd.DataFrame(records)
 
 # Connecting to db
 engine = create_engine(
@@ -61,7 +59,7 @@ engine = create_engine(
 )
 
 # Inserting into db
-df.to_sql(
+state_boundary_df.to_sql(
     "region_boundary",
     engine,
     schema="app",
