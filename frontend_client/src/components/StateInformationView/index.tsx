@@ -294,6 +294,7 @@ function StateInformationView() {
       <EquipmentGradientSet dataRows={dataRows} />
       <StateInformationViewDrawer
         stateHook={activeDataStateHook}
+        fipsCode={fipsCode!}
         onSelection={(id) => {
           navigate(getUrlForModeId(id, fipsCode!));
         }}
