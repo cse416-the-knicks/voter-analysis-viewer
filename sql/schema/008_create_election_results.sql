@@ -2,7 +2,7 @@
 -- Presidential election results by region and year
 -- ===========================================
 CREATE TABLE app.election_results (
-    region_id   VARCHAR(10) NOT NULL,                     -- region / jurisdiction
+    region_id   VARCHAR(20) NOT NULL,                     -- region / jurisdiction
     state_id    INT NOT NULL
                 REFERENCES app.states(state_id),         -- state of registration
 

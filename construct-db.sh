@@ -79,6 +79,7 @@ python3 load_2018_to_2024_equipment_usage.py
 python3 load_2016_equipment_usage.py
 python3 load_ny_election_results.py
 python3 load_ok_election_results.py
+python3 load_tx_election_results.py
 python3 load_cvap_data.py
 
 touch  /var/lib/postgresql/.lockfile
