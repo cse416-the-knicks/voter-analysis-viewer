@@ -188,6 +188,10 @@ public interface IStateDAO {
   List<ElectionResultsSummaryModel> getStateElectionResultsSummaryRows(
       String fipsCode, int year, boolean aggregated);
 
+  List<EIXYPoint> getDeviceAccessibilityProbabilityByDemographicPDF(String fipsCode, int race);
+
+  List<EIXYPoint> getRejectionProbabilitiesByDemographicPDF(String fipsCode, int race);
+
   /**
    * This access point is meant to return the centroids for all the significant GeoUnits of a state.
    *

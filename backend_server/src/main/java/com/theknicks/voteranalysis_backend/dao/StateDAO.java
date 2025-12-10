@@ -187,6 +187,41 @@ public class StateDAO implements IStateDAO {
         year);
   }
 
+  public List<EIXYPoint> getDeviceAccessibilityProbabilityByDemographicPDF(
+      String fipsCode, int race) {
+    EIXYPoint[] pts = {
+      new EIXYPoint(-3.0, 0.00443),
+      new EIXYPoint(-2.0, 0.05399),
+      new EIXYPoint(-1.5, 0.12952),
+      new EIXYPoint(-1.0, 0.24197),
+      new EIXYPoint(-0.5, 0.35207),
+      new EIXYPoint(0.0, 0.39894),
+      new EIXYPoint(0.5, 0.35207),
+      new EIXYPoint(1.0, 0.24197),
+      new EIXYPoint(1.5, 0.12952),
+      new EIXYPoint(2.0, 0.05399)
+    };
+
+    return new ArrayList<>(Arrays.asList(pts));
+  }
+
+  public List<EIXYPoint> getRejectionProbabilitiesByDemographicPDF(String fipsCode, int race) {
+    EIXYPoint[] pts = {
+      new EIXYPoint(-3.0, 0.00443),
+      new EIXYPoint(-2.0, 0.05399),
+      new EIXYPoint(-1.5, 0.12952),
+      new EIXYPoint(-1.0, 0.24197),
+      new EIXYPoint(-0.5, 0.35207),
+      new EIXYPoint(0.0, 0.39894),
+      new EIXYPoint(0.5, 0.35207),
+      new EIXYPoint(1.0, 0.24197),
+      new EIXYPoint(1.5, 0.12952),
+      new EIXYPoint(2.0, 0.05399)
+    };
+
+    return new ArrayList<>(Arrays.asList(pts));
+  }
+
   public Map<String, GeoUnitCentroidModel> getGeoUnitCentroids(String fipsCode) {
     var result = new HashMap<String, GeoUnitCentroidModel>();
 

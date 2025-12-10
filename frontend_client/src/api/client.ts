@@ -30,6 +30,8 @@ import getPollbookDeletionsMutator from "../helpers/backendConnectorAxiosInstanc
 import getMailBallotRejectionsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateGeometryMutator from "../helpers/backendConnectorAxiosInstance";
 import getElectionResultsSummaryMutator from "../helpers/backendConnectorAxiosInstance";
+import getRejectionProbabilitiesByDemographicPDFMutator from "../helpers/backendConnectorAxiosInstance";
+import getDeviceAccessibilityProbabilityByDemographicPDFMutator from "../helpers/backendConnectorAxiosInstance";
 import getCountyGeoUnitCentroidsMutator from "../helpers/backendConnectorAxiosInstance";
 import getBallotStatisticsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateInformationTableMutator from "../helpers/backendConnectorAxiosInstance";
@@ -38,6 +40,18 @@ export interface RegressionDataParameterModel {
   xs?: number[];
   ys?: number[];
 }
+
+export type VotingEquipmentModelTypesItem = (typeof VotingEquipmentModelTypesItem)[keyof typeof VotingEquipmentModelTypesItem];
+
+export const VotingEquipmentModelTypesItem = {
+  DRE_NO_VVPAT: "DRE_NO_VVPAT",
+  DRE_WITH_VVPAT: "DRE_WITH_VVPAT",
+  SCANNER: "SCANNER",
+  BMD: "BMD",
+  HANDCOUNT: "HANDCOUNT",
+  OTHER: "OTHER",
+  COUNT: "COUNT",
+} as const;
 
 export interface VotingEquipmentModel {
   manufacturer?: string;
@@ -48,6 +62,7 @@ export interface VotingEquipmentModel {
   operatingSystem?: string;
   certificationLevel?: string;
   age?: number;
+  types?: VotingEquipmentModelTypesItem[];
   equipmentQuality?: number;
   scanRate?: number;
   errorRate?: number;
@@ -249,6 +264,11 @@ export interface ElectionResultsSummaryModel {
   totalVotes?: number;
 }
 
+export interface EIXYPoint {
+  x?: number;
+  y?: number;
+}
+
 export interface GeoUnitCentroidModel {
   fullRegionId?: string;
   countyName?: string;
@@ -345,6 +365,14 @@ export type GetMailBallotRejectionsParams = {
 export type GetElectionResultsSummaryParams = {
   aggregate?: boolean;
   granularity?: string;
+};
+
+export type GetRejectionProbabilitiesByDemographicPDFParams = {
+  race?: number;
+};
+
+export type GetDeviceAccessibilityProbabilityByDemographicPDFParams = {
+  race?: number;
 };
 
 export type GetCountyGeoUnitCentroids200 = { [key: string]: GeoUnitCentroidModel };
@@ -981,6 +1009,28 @@ export const getElectionResultsSummary = (
   );
 };
 
+export const getRejectionProbabilitiesByDemographicPDF = (
+  fipsCode: string,
+  params?: GetRejectionProbabilitiesByDemographicPDFParams,
+  options?: SecondParameter<typeof getRejectionProbabilitiesByDemographicPDFMutator>
+) => {
+  return getRejectionProbabilitiesByDemographicPDFMutator<EIXYPoint[]>(
+    { url: `/state/${fipsCode}/ei-rejection-by-demographic`, method: "GET", params },
+    options
+  );
+};
+
+export const getDeviceAccessibilityProbabilityByDemographicPDF = (
+  fipsCode: string,
+  params?: GetDeviceAccessibilityProbabilityByDemographicPDFParams,
+  options?: SecondParameter<typeof getDeviceAccessibilityProbabilityByDemographicPDFMutator>
+) => {
+  return getDeviceAccessibilityProbabilityByDemographicPDFMutator<EIXYPoint[]>(
+    { url: `/state/${fipsCode}/ei-device-accessibility-by-demographic`, method: "GET", params },
+    options
+  );
+};
+
 export const getCountyGeoUnitCentroids = (fipsCode: string, options?: SecondParameter<typeof getCountyGeoUnitCentroidsMutator>) => {
   return getCountyGeoUnitCentroidsMutator<GetCountyGeoUnitCentroids200>({ url: `/state/${fipsCode}/centroids`, method: "GET" }, options);
 };
@@ -1019,6 +1069,10 @@ export type GetPollbookDeletionsResult = NonNullable<Awaited<ReturnType<typeof g
 export type GetMailBallotRejectionsResult = NonNullable<Awaited<ReturnType<typeof getMailBallotRejections>>>;
 export type GetStateGeometryResult = NonNullable<Awaited<ReturnType<typeof getStateGeometry>>>;
 export type GetElectionResultsSummaryResult = NonNullable<Awaited<ReturnType<typeof getElectionResultsSummary>>>;
+export type GetRejectionProbabilitiesByDemographicPDFResult = NonNullable<Awaited<ReturnType<typeof getRejectionProbabilitiesByDemographicPDF>>>;
+export type GetDeviceAccessibilityProbabilityByDemographicPDFResult = NonNullable<
+  Awaited<ReturnType<typeof getDeviceAccessibilityProbabilityByDemographicPDF>>
+>;
 export type GetCountyGeoUnitCentroidsResult = NonNullable<Awaited<ReturnType<typeof getCountyGeoUnitCentroids>>>;
 export type GetBallotStatisticsResult = NonNullable<Awaited<ReturnType<typeof getBallotStatistics>>>;
 export type GetStateInformationTableResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTable>>>;
