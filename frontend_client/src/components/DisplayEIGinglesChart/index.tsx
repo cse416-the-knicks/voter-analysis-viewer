@@ -38,12 +38,14 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
 
             const republicanBubbleColor = "#d73027";
             const democraticBubbleColor = "#4575b4";
+            
+            const maxCvap = Math.max(...cvapData.map((x) => x.cvapTotal!));
 
             const republicanBubbles = mergedData.map((data) => ({
               x: (data[CVAP_KEYS[cvapDemographicSelection]]! / data.cvapTotal!) * 100,
               y: (data.republicanVotes! / data.totalVotes!) * 100.0 || 0,
               name: data.countyName!,
-              size: 10,
+              size: Math.max((data.cvapTotal! / maxCvap) * 10, 3),
               party: "Rep",
               color: republicanBubbleColor,
             }));
@@ -52,7 +54,7 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
               x: (data[CVAP_KEYS[cvapDemographicSelection]]! / data.cvapTotal!) * 100,
               y: (data.democratVotes! / data.totalVotes!) * 100.0 || 0,
               name: data.countyName!,
-              size: 10,
+              size: Math.max((data.cvapTotal! / maxCvap) * 10, 3),
               party: "Dem",
               color: democraticBubbleColor,
             }));
@@ -64,6 +66,7 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
           title="Racially Polarized Voting"
           xAxisLabel={`${races[cvapDemographicSelection]} Population (%)`}
           yAxisLabel="Party Vote (%)"
+          degree={3}
           useRegression
         />
       </Paper>

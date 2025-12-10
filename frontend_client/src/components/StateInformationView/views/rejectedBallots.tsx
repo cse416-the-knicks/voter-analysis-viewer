@@ -1,4 +1,4 @@
-import { getElectionResultsSummary, getDetailedVotingEquipmentUsage, getMailBallotRejections } from "../../../api/client";
+import { getElectionResultsSummary, getDetailedVotingEquipmentUsage, getMailBallotRejections, getCVAPStatisticsData } from "../../../api/client";
 import BubbleChart from "../../DataDisplays/BubbleChart";
 import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_REJECTED_BALLOTS } from "./viewIds";
@@ -19,11 +19,14 @@ export default {
             const republicanBubbleColor = "#d73027";
             const democraticBubbleColor = "#4575b4";
 
-            return mergedData.map((data) => ({
+            const cvapData = await getCVAPStatisticsData(fipsCode!);
+            const maxCvap = Math.max(...cvapData.map((x) => x.cvapTotal!));
+
+            return mergedData.map((data, i) => ({
               x: data.averageQualityScore!,
               y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0 || 0,
               name: data.countyName!,
-              size: 10,
+              size: Math.max((cvapData[i].cvapTotal! / maxCvap) * 40, 5),
               party: data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem",
               color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
             }));
@@ -34,6 +37,7 @@ export default {
           title="Voting Equipment Quality"
           xAxisLabel="Quality Level"
           yAxisLabel="Rejected Ballots (%)"
+          degree={3}
           useRegression
         />
       ),
