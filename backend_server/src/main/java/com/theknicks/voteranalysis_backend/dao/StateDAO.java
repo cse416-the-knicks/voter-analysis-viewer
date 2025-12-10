@@ -191,8 +191,11 @@ public class StateDAO implements IStateDAO {
       var selectQuery =
           queryable.QueryWhere(new String[] {"election_results.state_id = ? and year = ?"});
       var mapper = queryable.Mapper();
-      var precinctDataRows = jdbcTemplate.query(selectQuery, mapper, Integer.parseInt(fipsCode, 10), year);
-      return precinctDataRows.stream().map(PrecinctElectionResultsSummaryModel::toElectionResultsSummaryModel).toList();
+      var precinctDataRows =
+          jdbcTemplate.query(selectQuery, mapper, Integer.parseInt(fipsCode, 10), year);
+      return precinctDataRows.stream()
+          .map(PrecinctElectionResultsSummaryModel::toElectionResultsSummaryModel)
+          .toList();
     }
   }
 
