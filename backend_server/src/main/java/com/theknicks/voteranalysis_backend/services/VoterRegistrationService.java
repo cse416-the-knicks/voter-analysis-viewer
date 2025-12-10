@@ -45,9 +45,11 @@ public class VoterRegistrationService {
         stateFips, countyFipsParam, partySelectionFilterId);
   }
 
-  @Cacheable(cacheNames = "voterRegistrationCvap", key = "{ #stateFips, #year, #inAggregate }")
+  @Cacheable(
+      cacheNames = "voterRegistrationCvap",
+      key = "{ #stateFips, #year, #inAggregate, #dataGranularity }")
   public List<CVAPStatisticsModel> getCVAPStatisticsData(
-      String stateFips, int year, boolean inAggregate) {
-    return dao.getCVAPStatisticsDataRows(stateFips, year, inAggregate);
+      String stateFips, int year, boolean inAggregate, String dataGranularity) {
+    return dao.getCVAPStatisticsDataRows(stateFips, year, inAggregate, dataGranularity);
   }
 }

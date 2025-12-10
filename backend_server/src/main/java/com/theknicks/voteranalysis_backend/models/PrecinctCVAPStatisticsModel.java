@@ -11,7 +11,8 @@ import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
  */
 @AutoSql(collection = "app.cvap_data")
 public record PrecinctCVAPStatisticsModel(
-    @SqlColumnName(name = "region_id") String fullRegionId,
+    @SqlColumnName(name = "region_id", cond = "SUBSTRING(region_id, 6, 1) = '-'")
+        String fullRegionId,
     @SqlColumnName(name = "cvap_total") int cvapTotal,
     @SqlColumnName(name = "cvap_asian") int asianTotal,
     @SqlColumnName(name = "cvap_black") int blackTotal,

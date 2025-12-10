@@ -77,6 +77,6 @@ public class VoterRegistrationController {
     if (!dataGranularity.equalsIgnoreCase("county")) {
       logger.error("At this moment, no support for non-county granularity.");
     }
-    return service.getCVAPStatisticsData(fipsCode, year, inAggregate);
+    return service.getCVAPStatisticsData(fipsCode, year, inAggregate, dataGranularity);
   }
 }

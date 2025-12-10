@@ -5,15 +5,10 @@ import com.theknicks.voteranalysis_backend.annotations.SqlColumnName;
 import com.theknicks.voteranalysis_backend.helpers.AutoSqlQueryable;
 
 /** See PrecinctCVAPStatisticsModel.java for the reasoning of this record definition. */
-@AutoSql(
-    collection = "election_results",
-    joining = "app.eavs_geounit",
-    joinMethod = {"inner"},
-    joinOn = {"app.eavs_geounit.eavs_unit_code = app.election_results.region_id"})
+@AutoSql(collection = "election_results")
 public record PrecinctElectionResultsSummaryModel(
-    @SqlColumnName(name = "election_results.region_id", omitFromAggregate = true)
+    @SqlColumnName(name = "region_id", cond = "SUBSTRING(region_id, 6, 1) = '-'")
         String fullRegionId,
-    @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String regionName,
     @SqlColumnName(name = "rep_votes") int republicanVotes,
     @SqlColumnName(name = "dem_votes") int democratVotes,
     @SqlColumnName(name = "other_votes") int otherVotes,

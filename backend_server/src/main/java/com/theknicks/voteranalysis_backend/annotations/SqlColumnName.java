@@ -11,5 +11,8 @@ import java.lang.annotation.Target;
 public @interface SqlColumnName {
   public String name() default "";
 
+  // Query condition requirement.
+  public String cond() default "";
+
   public boolean omitFromAggregate() default false;
 }
