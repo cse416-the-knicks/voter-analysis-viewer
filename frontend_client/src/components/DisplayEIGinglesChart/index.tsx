@@ -38,7 +38,7 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
 
             const republicanBubbleColor = "#d73027";
             const democraticBubbleColor = "#4575b4";
-            
+
             const maxCvap = Math.max(...cvapData.map((x) => x.cvapTotal!));
 
             const republicanBubbles = mergedData.map((data) => ({

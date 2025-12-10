@@ -17,7 +17,7 @@ export default {
 
             const republicanBubbleColor = "#d73027";
             const democraticBubbleColor = "#4575b4";
-            
+
             const cvapData = await getCVAPStatisticsData(fipsCode!);
             const maxCvap = Math.max(...cvapData.map((x) => x.cvapTotal!));
 

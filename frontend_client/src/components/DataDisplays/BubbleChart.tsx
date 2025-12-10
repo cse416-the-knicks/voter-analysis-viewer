@@ -161,7 +161,12 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
       <svg ref={svgRef} width={width} height={height} style={{ background: "#ffff", borderRadius: "8px" }}>
         <defs>
           <clipPath id="svg-clip-rect">
-            <rect x={xAxisScale(0)} y={chartMargin.top} width={chartWidth - chartMargin.right - xAxisScale(0)} height={chartHeight - chartMargin.top - chartMargin.bottom} />
+            <rect
+              x={xAxisScale(0)}
+              y={chartMargin.top}
+              width={chartWidth - chartMargin.right - xAxisScale(0)}
+              height={chartHeight - chartMargin.top - chartMargin.bottom}
+            />
           </clipPath>
         </defs>
         {/* Bubble Chart Title */}
@@ -209,8 +214,9 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
 
         {/* Bubble Chart Linear Regression */}
         {useRegression &&
-          regressionLines.map((lines) => <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} clip-path="url(#svg-clip-rect)" />)}
-
+          regressionLines.map((lines) => (
+            <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} clip-path="url(#svg-clip-rect)" />
+          ))}
       </svg>
       {/* Tooltip when moused over. */}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
