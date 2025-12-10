@@ -178,13 +178,22 @@ public class StateDAO implements IStateDAO {
   }
 
   public List<ElectionResultsSummaryModel> getStateElectionResultsSummaryRows(
-      String fipsCode, int year, boolean aggregated) {
-    var queryable = new ElectionResultsSummaryModel.Queryable();
-    return jdbcTemplate.query(
-        queryable.Query(aggregated) + " where election_results.state_id = ? and year = ?",
-        queryable.Mapper(aggregated),
-        Integer.parseInt(fipsCode, 10),
-        year);
+      String fipsCode, int year, boolean aggregated, String granularity) {
+    if (granularity.equalsIgnoreCase("county")) {
+      var queryable = new ElectionResultsSummaryModel.Queryable();
+      return jdbcTemplate.query(
+          queryable.Query(aggregated) + " where election_results.state_id = ? and year = ?",
+          queryable.Mapper(aggregated),
+          Integer.parseInt(fipsCode, 10),
+          year);
+    } else {
+      var queryable = new PrecinctElectionResultsSummaryModel.Queryable();
+      var selectQuery =
+          queryable.QueryWhere(new String[] {"election_results.state_id = ? and year = ?"});
+      var mapper = queryable.Mapper();
+      var precinctDataRows = jdbcTemplate.query(selectQuery, mapper, Integer.parseInt(fipsCode, 10), year);
+      return precinctDataRows.stream().map(PrecinctElectionResultsSummaryModel::toElectionResultsSummaryModel).toList();
+    }
   }
 
   public Map<String, GeoUnitCentroidModel> getGeoUnitCentroids(String fipsCode) {

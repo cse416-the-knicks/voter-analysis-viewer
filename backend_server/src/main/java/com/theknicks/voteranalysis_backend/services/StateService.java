@@ -95,10 +95,12 @@ public class StateService {
     return dao.getStateYearSummaryRows(fipsCode);
   }
 
-  @Cacheable(cacheNames = "electionResults", key = "{ #fipsCode, #year, #aggregated }")
+  @Cacheable(
+      cacheNames = "electionResults",
+      key = "{ #fipsCode, #year, #aggregated, #granularity }")
   public List<ElectionResultsSummaryModel> getElectionResultsSummaryDataForState(
-      String fipsCode, int year, boolean aggregated) {
-    return dao.getStateElectionResultsSummaryRows(fipsCode, year, aggregated);
+      String fipsCode, int year, boolean aggregated, String granularity) {
+    return dao.getStateElectionResultsSummaryRows(fipsCode, year, aggregated, granularity);
   }
 
   @Cacheable(cacheNames = "viewStateYearSummaryByCounty", key = "{ #fipsCode, #year }")
