@@ -58,8 +58,16 @@ export interface VotingEquipmentModel {
   equipmentType?: string;
   modelName?: string;
   discontinued?: boolean;
+  shortDescription?: string;
+  securityRisks?: string;
+  notesMisc?: string;
   firstManufactured?: string;
+  lastManufactured?: string;
   operatingSystem?: string;
+  firmwareVersion?: string;
+  paperCapacity?: number;
+  batteryLife?: number;
+  vvpat?: boolean;
   certificationLevel?: string;
   age?: number;
   types?: VotingEquipmentModelTypesItem[];
