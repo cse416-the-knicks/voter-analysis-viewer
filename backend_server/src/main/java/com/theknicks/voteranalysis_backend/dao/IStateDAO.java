@@ -182,11 +182,12 @@ public interface IStateDAO {
    *     endpoint uniformity.
    * @param aggregated - A boolean asking whether to aggregate the result, will return a list of one
    *     in that case.
+   * @param granularity - The data level of granularity (only supports 'county' and 'precinct')
    * @return a list of getStateElectionResultsSummaryModels, or a single model containing the
    *     aggregate for the state.
    */
   List<ElectionResultsSummaryModel> getStateElectionResultsSummaryRows(
-      String fipsCode, int year, boolean aggregated);
+      String fipsCode, int year, boolean aggregated, String granularity);
 
   List<EIXYPoint> getDeviceAccessibilityProbabilityByDemographicPDF(String fipsCode, int race);
 

@@ -2,6 +2,7 @@ package com.theknicks.voteranalysis_backend.dao;
 
 import com.theknicks.voteranalysis_backend.models.CVAPStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.CollectionSortParamModel;
+import com.theknicks.voteranalysis_backend.models.PrecinctCVAPStatisticsModel;
 import com.theknicks.voteranalysis_backend.models.VoterRegistrationDataModel;
 import java.util.*;
 import org.slf4j.*;
@@ -81,11 +82,27 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
   }
 
   public List<CVAPStatisticsModel> getCVAPStatisticsDataRows(
-      String stateFips, int year, boolean inAggregate) {
-    var queryable = new CVAPStatisticsModel.Queryable();
-    var mapper = queryable.Mapper(inAggregate);
-    var selectQuery = queryable.QueryWhere(new String[] {"cvap_data.state_id = ?"}, inAggregate);
-    return jdbcTemplate.query(
-        selectQuery.toString(), mapper, new Object[] {Integer.parseInt(stateFips, 10)});
+      String stateFips, int year, boolean inAggregate, String granularity) {
+    // This would be a great place to use the Strategy Design Pattern.
+    if (granularity.equalsIgnoreCase("precinct")) {
+      var queryable = new PrecinctCVAPStatisticsModel.Queryable();
+      var mapper = queryable.Mapper(inAggregate);
+      var selectQuery = queryable.QueryWhere(new String[] {"cvap_data.state_id = ?"}, inAggregate);
+
+      var precinctDataModels =
+          jdbcTemplate.query(
+              selectQuery.toString(), mapper, new Object[] {Integer.parseInt(stateFips, 10)});
+
+      return precinctDataModels.stream()
+          .map(PrecinctCVAPStatisticsModel::toCVAPStatisticsModel)
+          .toList();
+    } else {
+      var queryable = new CVAPStatisticsModel.Queryable();
+      var mapper = queryable.Mapper(inAggregate);
+      var selectQuery = queryable.QueryWhere(new String[] {"cvap_data.state_id = ?"}, inAggregate);
+
+      return jdbcTemplate.query(
+          selectQuery.toString(), mapper, new Object[] {Integer.parseInt(stateFips, 10)});
+    }
   }
 }

@@ -152,10 +152,8 @@ public class StateController {
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate,
       @RequestParam(name = "granularity", defaultValue = "county") String dataGranularity) {
     logger.info("Requesting at data granularity: " + dataGranularity);
-    if (!dataGranularity.equalsIgnoreCase("county")) {
-      logger.error("At this moment, no support for non-county granularity.");
-    }
-    return service.getElectionResultsSummaryDataForState(fipsCode, year, inAggregate);
+    return service.getElectionResultsSummaryDataForState(
+        fipsCode, year, inAggregate, dataGranularity);
   }
 
   @GetMapping("/{fipsCode}/ei-device-accessibility-by-demographic")

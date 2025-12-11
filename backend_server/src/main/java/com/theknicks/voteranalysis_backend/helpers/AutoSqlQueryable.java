@@ -166,6 +166,19 @@ public class AutoSqlQueryable<T> {
     }
   }
 
+  private static Optional<String> getFieldQueryCondition(Field field) {
+    var columnNameAnnotation = field.getAnnotation(SqlColumnName.class);
+    if (columnNameAnnotation == null) {
+      return Optional.empty();
+    }
+
+    if (columnNameAnnotation.cond().isEmpty()) {
+      return Optional.empty();
+    } else {
+      return Optional.of(columnNameAnnotation.cond());
+    }
+  }
+
   private static Field[] filterForAllQueryableFields(Field[] fieldsList, boolean asSumAggregate) {
     return Arrays.stream(fieldsList)
         .filter(
@@ -206,11 +219,18 @@ public class AutoSqlQueryable<T> {
     var fieldsToWrite = filterForAllQueryableFields(selfClass.getDeclaredFields(), asSumAggregate);
     var joinClausesToAdd = autoSqlAnnotation.joining().length;
     var groupByClausesToAdd = autoSqlAnnotation.groupBy().length;
-    var whereClausesToAdd = whereClauses.length;
+
+    var whereClausesList = new ArrayList(Arrays.asList(whereClauses));
 
     for (int i = 0; i < fieldsToWrite.length; ++i) {
       var field = fieldsToWrite[i];
       var queryName = getSqlName(field);
+      var queryCondition = getFieldQueryCondition(field);
+
+      if (queryCondition.isPresent()) {
+        whereClausesList.add(queryCondition.get());
+      }
+
       if (queryName.isPresent()) {
         if (asSumAggregate) {
           result.append("sum(");
@@ -229,6 +249,8 @@ public class AutoSqlQueryable<T> {
 
     result.append("\nfrom ");
     result.append(autoSqlAnnotation.collection());
+    result.append("\n");
+
     for (int i = 0; i < joinClausesToAdd; ++i) {
       result.append(" ");
       result.append(autoSqlAnnotation.joinMethod()[i]);
@@ -239,9 +261,9 @@ public class AutoSqlQueryable<T> {
       result.append("\n");
     }
 
-    if (whereClausesToAdd > 0) {
+    if (!whereClausesList.isEmpty()) {
       result.append("where ");
-      var queryClauses = String.join(" and ", whereClauses);
+      var queryClauses = String.join(" and ", whereClausesList);
       result.append(queryClauses);
       result.append("\n");
     }

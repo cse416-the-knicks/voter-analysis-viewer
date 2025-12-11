@@ -26,6 +26,7 @@ interface BubbleChartProperties {
   useRegression?: boolean;
   maxXScale?: number;
   maxYScale?: number;
+  degree?: number;
 }
 
 interface RegressionLine {
@@ -36,7 +37,7 @@ interface RegressionLine {
 
 import { useState, useEffect, useRef, act } from "react";
 
-function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale }: BubbleChartProperties) {
+function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale, degree }: BubbleChartProperties) {
   const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
   const chartWidth = width - chartMargin.left - chartMargin.right + 125;
   const chartHeight = height - chartMargin.top - chartMargin.bottom + 100;
@@ -119,7 +120,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
               xs: xVals,
               ys: yVals,
             },
-            { degree: 8 }
+            { degree: degree ?? 8 }
           ); // best fitting degree
           const regressionFunction = makePolynomial(regressionCoefficients);
 
@@ -127,7 +128,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           const maxXVal = Math.max(...xVals);
 
           const regressionPoints: [number, number][] = [];
-          for (let i = 0; i <= 100; i++) {
+          for (let i = -400; i <= 400; i++) {
             const setValX = minXVal + (i / 100) * (maxXVal - minXVal);
             const setValY = regressionFunction(setValX);
             regressionPoints.push([setValX, setValY]);
@@ -158,6 +159,16 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
   return (
     <>
       <svg ref={svgRef} width={width} height={height} style={{ background: "#ffff", borderRadius: "8px" }}>
+        <defs>
+          <clipPath id="svg-clip-rect">
+            <rect
+              x={xAxisScale(0)}
+              y={chartMargin.top}
+              width={chartWidth - chartMargin.right - xAxisScale(0)}
+              height={chartHeight - chartMargin.top - chartMargin.bottom}
+            />
+          </clipPath>
+        </defs>
         {/* Bubble Chart Title */}
         <text x={width / 2} y={30} textAnchor="middle" fontSize={20}>
           {title}
@@ -196,14 +207,16 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           {yAxisLabel}
         </text>
 
-        {/* Bubble Chart Linear Regression */}
-        {useRegression &&
-          regressionLines.map((lines) => <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} />)}
-
         {/* Bubble Chart Bubbles */}
         {actualData.map((x, y) => (
-          <circle key={y} data-title={x.name} cx={xAxisScale(x.x)} cy={yAxisScale(x.y)} r={chartScale(x.size)} fill={x.color} opacity={0.5} stroke="#000" />
+          <circle key={y} data-title={x.name} cx={xAxisScale(x.x)} cy={yAxisScale(x.y)} r={x.size} fill={x.color} opacity={0.55} />
         ))}
+
+        {/* Bubble Chart Linear Regression */}
+        {useRegression &&
+          regressionLines.map((lines) => (
+            <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} clip-path="url(#svg-clip-rect)" />
+          ))}
       </svg>
       {/* Tooltip when moused over. */}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>

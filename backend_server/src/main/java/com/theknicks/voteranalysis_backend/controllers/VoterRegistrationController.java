@@ -74,9 +74,6 @@ public class VoterRegistrationController {
       @RequestParam(name = "aggregate", defaultValue = "false") boolean inAggregate,
       @RequestParam(name = "granularity", defaultValue = "county") String dataGranularity) {
     logger.info("Requesting at data granularity: " + dataGranularity);
-    if (!dataGranularity.equalsIgnoreCase("county")) {
-      logger.error("At this moment, no support for non-county granularity.");
-    }
-    return service.getCVAPStatisticsData(fipsCode, year, inAggregate);
+    return service.getCVAPStatisticsData(fipsCode, year, inAggregate, dataGranularity);
   }
 }
