@@ -1,6 +1,6 @@
 import { getDeviceAccessibilityProbabilityByDemographicPDF } from "../../api/client";
 import { useState, useEffect, } from "react";
-import { Box, Paper, Typography, Button } from "@mui/material";
+import { Box, Paper, Typography, Checkbox, ListItemText } from "@mui/material";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import PDFChart from "../DataDisplays/PDFChart.tsx";
 
@@ -11,7 +11,7 @@ interface DisplayEIVotingEquipmentProperties {
 }
 
 function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEquipmentProperties) {
-  const [selectedRaces, setSelectedRaces] = useState([0, 1, 2, 3, 4]);
+  const [selectedRaces, setSelectedRaces] = useState([0]);
   const races = ["Asian", "Black", "Hispanic", "White", "Other"];
   const raceColorMap = {
     "Asian": "red",
@@ -21,22 +21,35 @@ function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEq
     "Other": "orange",
   };
 
+  function handleChange(event: SelectChangeEvent<typeof selectedRaces>) {
+    const {
+      target: { value },
+    } = event;
+    setSelectedRaces(value);
+  }
+
   return (
     <>
       <Paper>
-    {/* <FormControl sx={{ m: 1.2, position: "absolute", right: "2em", width: "10em", zIndex: 9999 }}>
+        <FormControl sx={{ m: 1.2, position: "absolute", right: "2em", width: "10em", zIndex: 9999 }}>
         <InputLabel>CVAP Demographic</InputLabel>
         <Select
-        onChange={(event) => setCvapDemographicSelection(event.target.value)}
-        value={0}
+        onChange={handleChange}
+          color="secondary"
+        value={selectedRaces}
+          renderValue={(selection) => selection.map((s) => races[s]).join(', ') }
+          multiple
         label="CVAP Demographic"
         variant="standard"
         >
         {races.map((x, i) => (
-        <MenuItem value={i}>{x}</MenuItem>
+          <MenuItem key={i} value={i}>
+            <Checkbox color="secondary" checked={selectedRaces.some((x) => x===i)} />
+            <ListItemText primary={x} />
+          </MenuItem>
         ))}
         </Select>
-        </FormControl> */}
+        </FormControl>
         <PDFChart
           width={width}
           height={height}
