@@ -6,10 +6,7 @@ import com.theknicks.voteranalysis_backend.services.StateService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -159,6 +156,20 @@ public class StateController {
       logger.error("At this moment, no support for non-county granularity.");
     }
     return service.getElectionResultsSummaryDataForState(fipsCode, year, inAggregate);
+  }
+
+  @GetMapping("/{fipsCode}/ei-device-accessibility-by-demographic")
+  public List<EIXYPoint> getDeviceAccessibilityProbabilityByDemographicPDF(
+      @PathVariable("fipsCode") String fipsCode,
+      @RequestParam(value = "race", defaultValue = "0") int race) {
+    return service.getDeviceAccessibilityProbabilityByDemographicPDF(fipsCode, race);
+  }
+
+  @GetMapping("/{fipsCode}/ei-rejection-by-demographic")
+  public List<EIXYPoint> getRejectionProbabilitiesByDemographicPDF(
+      @PathVariable("fipsCode") String fipsCode,
+      @RequestParam(value = "race", defaultValue = "0") int race) {
+    return service.getRejectionProbabilitiesByDemographicPDF(fipsCode, race);
   }
 
   @GetMapping("/")
