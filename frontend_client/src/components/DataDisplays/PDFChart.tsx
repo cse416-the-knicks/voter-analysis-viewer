@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { useState, useEffect, useRef, } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Box, Paper, Typography, Button } from "@mui/material";
 import SimpleTooltip from "../SimpleTooltip";
 
@@ -209,6 +209,4 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
 }
 
 export default PDFChart;
-export type {
-  PDFSample
-};
+export type { PDFSample };

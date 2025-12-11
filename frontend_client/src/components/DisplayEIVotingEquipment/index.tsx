@@ -1,5 +1,5 @@
 import { getDeviceAccessibilityProbabilityByDemographicPDF } from "../../api/client";
-import { useState, useEffect, } from "react";
+import { useState, useEffect } from "react";
 import { Box, Paper, Typography, Checkbox, ListItemText } from "@mui/material";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { RACES, RACE_COLOR_MAP } from "../../helpers/ecologicalInferenceChartColors.ts";
@@ -25,8 +25,12 @@ function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEq
   return (
     <>
       <Paper>
-        <EIRaceSelector hook={[selectedRaces, setSelectedRaces]}/>
-        {(selectedRaces.length === 0) && (<Typography variant="h4" sx={{position: 'absolute', width: '100%', top: '50%', textAlign: 'center'}}>No Demographic Selected.</Typography>)}
+        <EIRaceSelector hook={[selectedRaces, setSelectedRaces]} />
+        {selectedRaces.length === 0 && (
+          <Typography variant="h4" sx={{ position: "absolute", width: "100%", top: "50%", textAlign: "center" }}>
+            No Demographic Selected.
+          </Typography>
+        )}
         <PDFChart
           width={width}
           height={height}
@@ -38,8 +42,9 @@ function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEq
               selectedRaces.map(async (r, i) => ({
                 title: RACES[r],
                 fillColor: RACE_COLOR_MAP[RACES[r]],
-                samples: await getDeviceAccessibilityProbabilityByDemographicPDF(fipsCode, { race: r })
-            })));
+                samples: await getDeviceAccessibilityProbabilityByDemographicPDF(fipsCode, { race: r }),
+              }))
+            );
           }}
         />
       </Paper>
