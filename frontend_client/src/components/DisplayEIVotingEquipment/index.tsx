@@ -11,7 +11,7 @@ interface DisplayEIVotingEquipmentProperties {
 }
 
 function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEquipmentProperties) {
-  const [selectedRaces, setSelectedRaces] = useState([0]);
+  const [selectedRaces, setSelectedRaces] = useState([]);
   const races = ["Asian", "Black", "Hispanic", "White", "Other"];
   const raceColorMap = {
     "Asian": "red",
@@ -50,6 +50,7 @@ function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEq
         ))}
         </Select>
         </FormControl>
+        {(selectedRaces.length === 0) && (<Typography variant="h4" sx={{position: 'absolute', width: '100%', top: '50%', textAlign: 'center'}}>No Demographic Selected.</Typography>)}
         <PDFChart
           width={width}
           height={height}
