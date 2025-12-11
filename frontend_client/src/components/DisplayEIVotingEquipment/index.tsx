@@ -11,25 +11,32 @@ interface DisplayEIVotingEquipmentProperties {
 }
 
 function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEquipmentProperties) {
-  const [cvapDemographicSelection, setCvapDemographicSelection] = useState(0);
+  const [selectedRaces, setSelectedRaces] = useState([0, 1, 2, 3, 4]);
   const races = ["Asian", "Black", "Hispanic", "White", "Other"];
+  const raceColorMap = {
+    "Asian": "red",
+    "Black": "blue",
+    "Hispanic": "purple",
+    "White": "green",
+    "Other": "orange",
+  };
 
   return (
     <>
       <Paper>
-        <FormControl sx={{ m: 1.2, position: "absolute", right: "2em", width: "10em", zIndex: 9999 }}>
-          <InputLabel>CVAP Demographic</InputLabel>
-          <Select
-            onChange={(event) => setCvapDemographicSelection(event.target.value)}
-            value={cvapDemographicSelection}
-            label="CVAP Demographic"
-            variant="standard"
-          >
-            {races.map((x, i) => (
-              <MenuItem value={i}>{x}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+    {/* <FormControl sx={{ m: 1.2, position: "absolute", right: "2em", width: "10em", zIndex: 9999 }}>
+        <InputLabel>CVAP Demographic</InputLabel>
+        <Select
+        onChange={(event) => setCvapDemographicSelection(event.target.value)}
+        value={0}
+        label="CVAP Demographic"
+        variant="standard"
+        >
+        {races.map((x, i) => (
+        <MenuItem value={i}>{x}</MenuItem>
+        ))}
+        </Select>
+        </FormControl> */}
         <PDFChart
           width={width}
           height={height}
@@ -37,19 +44,12 @@ function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEq
           xAxisLabel="Device Probability"
           yAxisLabel="Device Quality"
           data={async () => {
-            const points1 = await getDeviceAccessibilityProbabilityByDemographicPDF(fipsCode, { race: 0 });
-            return [
-              {
-                title: "White",
-                fillColor: "red",
-                samples: points1.map(({ x, y }) => ({ x: x, y: Math.max(0, y - 0.15) })),
-              },
-              {
-                title: "Black",
-                fillColor: "blue",
-                samples: points1.map(({ x, y }) => ({ x: x + 0.25, y: Math.max(0, y - 0.25) })),
-              },
-            ];
+            return await Promise.all(
+              selectedRaces.map(async (r, i) => ({
+                title: races[r],
+                fillColor: raceColorMap[races[r]],
+                samples: await getDeviceAccessibilityProbabilityByDemographicPDF(fipsCode, { race: r })
+            })));
           }}
         />
       </Paper>
