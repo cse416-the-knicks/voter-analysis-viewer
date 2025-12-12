@@ -143,7 +143,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           partyLines.push({
             party,
             data: regressionLine(regressionPoints),
-            color: party === "Dem" ? "blue" : "red",
+            color: party === "Dem" ? ("blue") : (party === "Rep" ? "red" : actualData[0].color),
           });
         }
 
