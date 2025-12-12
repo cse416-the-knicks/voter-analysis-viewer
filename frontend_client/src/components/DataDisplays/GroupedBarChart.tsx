@@ -92,12 +92,17 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
 
   const maxValue = d3.max(actualData, (d) => d.value) || 0;
 
+  // If we have no usage data for a state, then the max will be zero.
+  // We'll also handle that if there are any years with no data, we'll put No Data
+  // text instead of nothing.
+  const emptyData = maxValue === 0;
+
   const y = d3
     .scaleLinear()
-    .domain([0, maxValue + maxValue * 0.1])
+    .domain([0, maxValue + maxValue * 0.1 || 1])
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
 
-  const yTicks = y.ticks(5);
+  const yTicks = y.ticks((emptyData ? 0 : 1) * 10);
 
   return (
     <>
@@ -163,6 +168,11 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
         <text x={-height / 2} y={20} transform="rotate(-90)" textAnchor="middle" fontSize={15} fontWeight="bold">
           {yAxisLabel}
         </text>
+        {emptyData && (
+          <text x={width / 2} y={height / 2} textAnchor="middle" fontSize={45}>
+            No data available.
+          </text>
+        )}
       </svg>
 
       {isLoaded && <SimpleD3Legend left={"0.5em"} top={"3.5em"} colorMap={colorMap} />}
