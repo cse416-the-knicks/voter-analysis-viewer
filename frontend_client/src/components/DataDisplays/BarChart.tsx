@@ -37,7 +37,7 @@ function BarChart({ title, xTitle, data, width, height, margins }: BarChartPrope
 
   const horizontalAxis = d3
     .scaleLinear()
-    .domain([0, d3.max(data, (x) => x.value)!])
+    .domain([0, d3.max(data, (x) => x.value)! || 1])
     .range([0, barWidth]);
   const verticalAxis = d3
     .scaleBand()
