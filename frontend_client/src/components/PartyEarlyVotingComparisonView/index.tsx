@@ -17,7 +17,7 @@ function PartyEarlyVotingComparisonTableView() {
   useKeyDown("Escape", () => navigate("/"));
   useEffect(function () {
     (async function () {
-      const awaited = await Promise.all(["36", "40"].map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
+      const awaited = await Promise.all(["36", "40", "48"].map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
 
       setColumnRows([
         {
@@ -38,10 +38,16 @@ function PartyEarlyVotingComparisonTableView() {
           type: "number",
           width: 160,
         },
+        {
+          field: "c",
+          headerName: awaited[2].stateName,
+          type: "number",
+          width: 160,
+        },
       ]);
       const transposedRows = [];
       transposedRows.push(
-        comparisonRow("Type", "Democrat", "Republican"),
+        comparisonRow("Type", "Democrat", "Republican", "Republican"),
         comparisonRow("Early Voting Total", ...awaited.map((x) => x.earlyVotingTotal)),
         comparisonRow("Ballots By Mail", ...awaited.map((x) => x.ballotsByMail)),
         comparisonRow("Ballots By Dropbox", ...awaited.map((x) => x.ballotsByDropbox)),
@@ -49,7 +55,7 @@ function PartyEarlyVotingComparisonTableView() {
         comparisonRow("Provisional Ballots", ...awaited.map((x) => x.totalProvisionalBallotsCast)),
         comparisonRow("Early Voting Share %", ...awaited.map((x) => (x.earlyVotingShareRate! * 100).toFixed(1) + "%")),
         comparisonRow("Mail-in Ballot Share %", ...awaited.map((x) => (x.mailinBallotVotingShareRate! * 100).toFixed(1) + "%")),
-        comparisonRow("Mail-in Ballot Share %", ...awaited.map((x) => (x.dropboxBallotVotingShareRate! * 100).toFixed(2) + "%"))
+        comparisonRow("Drop box Ballot Share %", ...awaited.map((x) => (x.dropboxBallotVotingShareRate! * 100).toFixed(2) + "%"))
       );
 
       // @ts-expect-error, This is actually correctly an error
@@ -66,7 +72,7 @@ function PartyEarlyVotingComparisonTableView() {
       title={"Early Voting Comparisons"}
       width={maxWidth}
       maxWidth={maxWidth}
-      height={"30em"}
+      height={"40em"}
       rows={rows}
       columns={cols}
       onXout={() => navigate("/")}

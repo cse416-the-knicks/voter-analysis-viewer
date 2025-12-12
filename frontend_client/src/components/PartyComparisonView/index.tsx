@@ -18,7 +18,7 @@ function PartyComparisonView() {
   useKeyDown("Escape", () => navigate("/"));
   useEffect(function () {
     (async function () {
-      const awaited = await Promise.all(["36", "40"].map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
+      const awaited = await Promise.all(["36", "40", "48"].map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
 
       setColumnRows([
         {
@@ -39,10 +39,16 @@ function PartyComparisonView() {
           type: "number",
           width: 160,
         },
+        {
+          field: "c",
+          headerName: awaited[2].stateName,
+          type: "number",
+          width: 160,
+        },
       ]);
       const transposedRows = [];
       transposedRows.push(
-        comparisonRow("Type", "Democrat", "Republican"),
+        comparisonRow("Type", "Democrat", "Republican", "Republican"),
         comparisonRow("Active Registered", ...awaited.map((x) => x.activeRegistered)),
         comparisonRow("Inactive Registered", ...awaited.map((x) => x.inactiveRegistered)),
         comparisonRow("Total Registered", ...awaited.map((x) => x.totalRegistered)),

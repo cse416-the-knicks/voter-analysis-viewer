@@ -13,6 +13,7 @@ import {
 
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { comparisonRow } from "../../helpers/comparisonRow";
+import useCssCalc from "../../hooks/useCssCalc";
 
 type PartyStateData = ViewStateYearSummaryModel | StateInformationModel;
 
@@ -48,12 +49,13 @@ function PartyGeneralComparisonView() {
   const navigate = useNavigate();
   const [rows, setDataRows] = useState<PartyStateData[]>([]);
   const [cols, setColumnRows] = useState<any>([]);
-  const maxWidth = 950;
+  const maxWidth = 1150;
+  const rowWidth = 300;
 
   useKeyDown("Escape", () => navigate("/"));
   useEffect(function () {
     (async function () {
-      const targetStates = ["36", "40"];
+      const targetStates = ["36", "40", "48"];
 
       const stateSummary = await Promise.all(targetStates.map((fips) => getViewStateYearSummaryByStateForYear(fips, 2024)));
       const stateInfo = await Promise.all(targetStates.map((fips) => getStateInformationTableForState(fips)));
@@ -70,18 +72,24 @@ function PartyGeneralComparisonView() {
           field: "a",
           headerName: stateSummary[0].stateName,
           type: "number",
-          width: 360,
+          width: rowWidth,
         },
         {
           field: "b",
           headerName: stateSummary[1].stateName,
           type: "number",
-          width: 360,
+          width: rowWidth,
+        },
+        {
+          field: "c",
+          headerName: stateSummary[2].stateName,
+          type: "number",
+          width: rowWidth,
         },
       ]);
       const transposedRows = [];
       transposedRows.push(
-        comparisonRow("Type", "Democrat", "Republican"),
+        comparisonRow("Type", "Democrat", "Republican", "Republican"),
         comparisonRow("Felony Disenfranchisement", ...stateInfo.map((x) => felonyDisenfranchisementReadableString(x.felonyDisenfranchisement!))),
         comparisonRow("Registration Method", ...stateInfo.map((x) => registrationMethodReadableString(x.registrationMethod!))),
         comparisonRow("Voting Age Population", ...cvapInfo.map((x) => x[0].cvapTotal)),
