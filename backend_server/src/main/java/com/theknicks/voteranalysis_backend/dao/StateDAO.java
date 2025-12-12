@@ -423,4 +423,11 @@ public class StateDAO implements IStateDAO {
     assert queryable != null;
     return jdbcTemplate.query(queryable.Query(), queryable.Mapper());
   }
+
+  public Double getEAVSDataQualityScore(String fipsCode) {
+    return jdbcTemplate.queryForObject(
+        "select avg(missing_data_score) from eavs_data where state_id = ?",
+        Double.class,
+        Integer.parseInt(fipsCode, 10));
+  }
 }

@@ -205,4 +205,6 @@ public interface IStateDAO {
 
   /** This access point is meant to return the list of all state information in the database. */
   List<StateInformationDataRowModel> getStateInformationDataRowModels();
+
+  Double getEAVSDataQualityScore(String fipsCode);
 }
