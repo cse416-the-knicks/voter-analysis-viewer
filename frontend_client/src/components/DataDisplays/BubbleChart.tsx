@@ -45,6 +45,8 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
   const [actualData, setActualData] = useState<readonly BubbleChartDataPoint[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const emptyData = actualData.length === 0;
+
   useEffect(
     function () {
       if (typeof data === "function") {
@@ -74,8 +76,8 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     .domain([d3.min(actualData, (x) => x.size)!, d3.max(actualData, (x) => x.size)!])
     .range([5, 25]);
 
-  const xAxisTicks = xAxisScale.ticks(16);
-  const yAxisTicks = yAxisScale.ticks(16);
+  const xAxisTicks = xAxisScale.ticks(emptyData ? 0 : 1 * 16);
+  const yAxisTicks = yAxisScale.ticks(emptyData ? 0 : 1 * 16);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
@@ -143,7 +145,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           partyLines.push({
             party,
             data: regressionLine(regressionPoints),
-            color: party === "Dem" ? "blue" : "red",
+            color: party === "Dem" ? "blue" : party === "Rep" ? "red" : actualData[0].color,
           });
         }
 
@@ -215,9 +217,15 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
         {/* Bubble Chart Linear Regression */}
         {useRegression &&
           regressionLines.map((lines) => (
-            <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} clip-path="url(#svg-clip-rect)" />
+            <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} clipPath="url(#svg-clip-rect)" />
           ))}
+        {emptyData && (
+          <text x={chartWidth / 2} y={chartHeight / 2} textAnchor="middle" fontSize={45}>
+            No data available.
+          </text>
+        )}
       </svg>
+
       {/* Tooltip when moused over. */}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
