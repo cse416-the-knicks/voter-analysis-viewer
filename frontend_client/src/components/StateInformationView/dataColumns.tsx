@@ -39,7 +39,7 @@ const ACTIVE_VOTER_REGISTRATION_COLUMNS: GridColDef<VoterRegistrationStatisticsM
     renderHeader: () => <></>, // This hides the "Select All" checkbox
   },
   { field: "countyName", headerName: "County", width: 120 },
-  { field: "total", headerName: "Total Voters Registered", type: "number", width: 200 },
+  { field: "total", headerName: "Total Voters", type: "number", width: 200 },
   { field: "active", headerName: "Active Voters", type: "number", width: 150 },
   { field: "inactive", headerName: "Inactive Voters", type: "number", width: 150 },
 ];
