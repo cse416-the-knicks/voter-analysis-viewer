@@ -22,7 +22,7 @@ import java.util.Optional;
     joinMethod = {"inner", "left", "left"},
     joinOn = {
       "states.state_id = eavs_geounit.state_id",
-      "equipment_usage.state_id = states.state_id and (year = ?)",
+      "equipment_usage.state_id = states.state_id and equipment_usage.region_id = eavs_geounit.eavs_unit_code  and (year = ?)",
       "device_model.device_model_id = equipment_usage.device_model_id"
     },
     groupBy = {
