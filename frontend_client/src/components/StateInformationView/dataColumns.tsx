@@ -124,6 +124,37 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
     ],
     filterable: false,
   },
+  {
+    field: "city",
+    headerName: "City",
+    width: 150,
+    valueFormatter: titleCaseString,
+    filterable: false,
+  },
+  {
+    field: "zipCode",
+    headerName: "Zip",
+    type: 'number',
+    width: 90,
+    filterable: false,
+  },
+  {
+    field: "residentialAddress",
+    headerName: "Address",
+    width: 250,
+    valueFormatter: titleCaseString,
+    filterable: false,
+  },
+  {
+    field: "registrationDate",
+    headerName: "Registration Date",
+    width: 200,
+    valueFormatter: (value) => {
+      const parsedDate = new Date(value);
+      return parsedDate.toLocaleDateString(navigator.language);
+    },
+    filterable: false,
+  },
 ];
 
 const CVAP_INFO_COLUMNS: GridColDef<CVAPStatisticsModel[]>[] = [
@@ -131,7 +162,6 @@ const CVAP_INFO_COLUMNS: GridColDef<CVAPStatisticsModel[]>[] = [
     ...GRID_CHECKBOX_SELECTION_COL_DEF,
     renderHeader: () => <></>, // This hides the "Select All" checkbox
   },
-  // { field: "regionId", headerName: "RegionID", width: 120 },
   {
     field: "countyName",
     headerName: "Region Name",

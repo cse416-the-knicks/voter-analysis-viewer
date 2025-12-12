@@ -101,6 +101,10 @@ export interface VoterRegistrationDataModel {
   lastName?: string;
   partyAffiliation?: string;
   status?: string;
+  city?: string;
+  zipCode?: string;
+  residentialAddress?: string;
+  registrationDate?: string;
 }
 
 export type StateInformationModelRegistrationMethod = (typeof StateInformationModelRegistrationMethod)[keyof typeof StateInformationModelRegistrationMethod];

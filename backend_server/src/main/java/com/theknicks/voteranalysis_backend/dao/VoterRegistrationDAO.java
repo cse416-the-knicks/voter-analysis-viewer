@@ -27,6 +27,10 @@ public class VoterRegistrationDAO implements IVoterRegistrationDAO {
         return " AND party_affiliation = 'D'";
       case 2:
         return " AND party_affiliation = 'R'";
+      case 3:
+        return " AND party_affiliation is NULL or party_affiliation = ''";
+      case 4:
+        return " AND party_affiliation = 'D' or party_affiliation = 'R'";
     }
     return " AND party_affiliation is NULL or party_affiliation = ''";
   }

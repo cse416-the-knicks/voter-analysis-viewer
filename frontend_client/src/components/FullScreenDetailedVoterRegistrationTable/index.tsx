@@ -76,7 +76,8 @@ function FullScreenDetailedVoterRegistrationTable({ pageSize, width, height }: F
         <Tab label={"All"} {...a11yProps(0)} />
         <Tab label={"Democrat"} {...a11yProps(1)} />
         <Tab label={"Republican"} {...a11yProps(2)} />
-        <Tab label={"Unaffiliated"} {...a11yProps(3)} />
+        <Tab label={"Unaffiliated"} {...a11yProps(4)} />
+        <Tab label={"Affiliated"} {...a11yProps(3)} />
       </Tabs>
       {countyCode != null ? (
         <WindowTitledDataGrid
