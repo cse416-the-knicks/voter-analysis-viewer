@@ -1,41 +1,30 @@
--- ===========================================
--- Voting device catalog
--- ===========================================
 CREATE TABLE app.device_model (
-    device_model_id SERIAL PRIMARY KEY,          -- unique model key
+    device_model_id      SERIAL PRIMARY KEY,
 
-    vendor          VARCHAR(50),        -- manufacturer
-    model_name      VARCHAR(50) NOT NULL,        -- model identifier
+    manufacturer         VARCHAR(100) NOT NULL,
+    equipment_type       VARCHAR(50)  NOT NULL,
+    model_name           VARCHAR(100) NOT NULL,
 
-    device_type     VARCHAR(50) NOT NULL,        -- category
-    description     TEXT,                        -- short description
+    first_manufactured   DATE,
+    last_manufactured    DATE,
 
-    first_manufactured DATE,                    -- year introduced
+    os                   VARCHAR(100),
+    firmware_version     VARCHAR(100),
 
-    certification   VARCHAR(50),                 -- VVSG certification version
-    underlying_os   VARCHAR(50),                 -- operating system
+    battery_life         NUMERIC(4,1),   -- hours (averaged)
+    scanning_rate        INT,            -- pages/min or ballots/min
+    paper_capacity       INT,            -- averaged capacity
 
-    scan_rate       VARCHAR(50),                    -- ballots per unit time
-    error_rate      DECIMAL(4,3),                -- observed error rate
-    reliability     DECIMAL(3,1),                -- reliability score
-    quality_score   DECIMAL(3,2),                -- quality measure
+    vvpatt               BOOLEAN,
+    certification_level  VARCHAR(100),
 
-    is_discontinued BOOLEAN DEFAULT FALSE,       -- true if discontinued
+    security_risks       TEXT,
+    notes_misc           TEXT,
 
-    CONSTRAINT uq_device_vendor_model UNIQUE (vendor, model_name)
+    discontinued         BOOLEAN,
+    short_description    TEXT,
+
+    error_rate           NUMERIC(4,3),
+    reliability          NUMERIC(4,2),
+    quality_score        NUMERIC(4,2)
 );
-
--- ================
--- Indexes
--- ================
--- Fast lookups by vendor
-CREATE INDEX IF NOT EXISTS idx_device_model_vendor
-    ON app.device_model (vendor);
-
--- Filtering by device_type
-CREATE INDEX IF NOT EXISTS idx_device_model_type
-    ON app.device_model (device_type);
-
--- Filtering by certification
-CREATE INDEX IF NOT EXISTS idx_device_model_certification
-    ON app.device_model (certification);
