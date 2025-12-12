@@ -227,12 +227,14 @@ export interface ViewStateYearSummaryModel {
   totalBallotsCast?: number;
   earlyVotingTotal?: number;
   ballotsByMail?: number;
+  ballotsByDropbox?: number;
   totalProvisionalBallotsCast?: number;
   activeVoterRate?: number;
   inactiveVoterRate?: number;
   turnOutRate?: number;
   earlyVotingShareRate?: number;
   mailinBallotVotingShareRate?: number;
+  dropboxBallotVotingShareRate?: number;
 }
 
 export interface Point {
