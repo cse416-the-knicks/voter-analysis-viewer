@@ -32,6 +32,7 @@ import getStateGeometryMutator from "../helpers/backendConnectorAxiosInstance";
 import getElectionResultsSummaryMutator from "../helpers/backendConnectorAxiosInstance";
 import getRejectionProbabilitiesByDemographicPDFMutator from "../helpers/backendConnectorAxiosInstance";
 import getDeviceAccessibilityProbabilityByDemographicPDFMutator from "../helpers/backendConnectorAxiosInstance";
+import getEAVSDataQualityScoreMutator from "../helpers/backendConnectorAxiosInstance";
 import getCountyGeoUnitCentroidsMutator from "../helpers/backendConnectorAxiosInstance";
 import getBallotStatisticsMutator from "../helpers/backendConnectorAxiosInstance";
 import getStateInformationTableMutator from "../helpers/backendConnectorAxiosInstance";
@@ -1031,6 +1032,10 @@ export const getDeviceAccessibilityProbabilityByDemographicPDF = (
   );
 };
 
+export const getEAVSDataQualityScore = (fipsCode: string, options?: SecondParameter<typeof getEAVSDataQualityScoreMutator>) => {
+  return getEAVSDataQualityScoreMutator<number>({ url: `/state/${fipsCode}/eavs-quality`, method: "GET" }, options);
+};
+
 export const getCountyGeoUnitCentroids = (fipsCode: string, options?: SecondParameter<typeof getCountyGeoUnitCentroidsMutator>) => {
   return getCountyGeoUnitCentroidsMutator<GetCountyGeoUnitCentroids200>({ url: `/state/${fipsCode}/centroids`, method: "GET" }, options);
 };
@@ -1073,6 +1078,7 @@ export type GetRejectionProbabilitiesByDemographicPDFResult = NonNullable<Awaite
 export type GetDeviceAccessibilityProbabilityByDemographicPDFResult = NonNullable<
   Awaited<ReturnType<typeof getDeviceAccessibilityProbabilityByDemographicPDF>>
 >;
+export type GetEAVSDataQualityScoreResult = NonNullable<Awaited<ReturnType<typeof getEAVSDataQualityScore>>>;
 export type GetCountyGeoUnitCentroidsResult = NonNullable<Awaited<ReturnType<typeof getCountyGeoUnitCentroids>>>;
 export type GetBallotStatisticsResult = NonNullable<Awaited<ReturnType<typeof getBallotStatistics>>>;
 export type GetStateInformationTableResult = NonNullable<Awaited<ReturnType<typeof getStateInformationTable>>>;

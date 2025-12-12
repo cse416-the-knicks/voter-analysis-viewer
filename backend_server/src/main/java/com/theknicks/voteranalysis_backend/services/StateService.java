@@ -174,4 +174,9 @@ public class StateService {
 
     return result;
   }
+
+  @Cacheable(value = "getEAVSDataQualityScore", key = "#fipsCode")
+  public Double getEAVSDataQualityScore(String fipsCode) {
+    return dao.getEAVSDataQualityScore(fipsCode);
+  }
 }

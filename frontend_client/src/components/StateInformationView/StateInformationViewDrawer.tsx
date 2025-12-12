@@ -12,7 +12,7 @@ import {
 import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Chip, Stack } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useNavigate } from "react-router";
-import { getCVAPStatisticsData, getVoterRegistrationCounts } from "../../api/client";
+import { getCVAPStatisticsData, getEAVSDataQualityScore, getVoterRegistrationCounts } from "../../api/client";
 
 interface StateInformationViewDrawerItem {
   id: number;
@@ -63,14 +63,6 @@ function EAVsDataQualityInfoCard(title: string, text: string) {
 
 const EAVsStateCard = () => BasicStateTypeInfoCard("EAVS-Only State", "This is not a detail state, so information will be limited compared to select states.");
 
-function qualityScore(value: number) {
-  return (value / (value + 14)).toPrecision(2);
-}
-
-const EAVSQualityCard = (qualityValue: number) => {
-  return EAVsDataQualityInfoCard(`EAVS Data Measure: ${qualityScore(qualityValue)}`, "EAVs data quality score");
-};
-
 const VoterRegistrationStateCard = () =>
   BasicStateTypeInfoCard(
     "Voter Registration State",
@@ -117,8 +109,17 @@ function StateInfoCard({ type }: StateInfoCardProperties) {
   return EAVsStateCard();
 }
 
-function StateEAVsInfoCard({ type }: StateInfoCardProperties) {
-  return EAVSQualityCard(type.length);
+function StateEAVsInfoCard({ type, fipsCode }: StateInfoCardProperties) {
+  const [score, setScore] = useState(0.0);
+
+  useEffect(function () {
+    (async function () {
+      const score = await getEAVSDataQualityScore(fipsCode);
+      setScore(score);
+    })();
+  });
+
+  return EAVsDataQualityInfoCard(`EAVS Data Score: ${score.toPrecision(4)}`, "Measure of present EAVS 2024 data");
 }
 
 function StateCVAPInfoCard({ fipsCode, type }: StateInfoCardProperties) {

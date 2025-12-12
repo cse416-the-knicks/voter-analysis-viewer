@@ -246,6 +246,11 @@ public class StateController {
     return service.getRegressionCoefficients(dataPoints, degree);
   }
 
+  @GetMapping("/{fipsCode}/eavs-quality")
+  public Double getEAVSDataQualityScore(@PathVariable("fipsCode") String fipsCode) {
+    return service.getEAVSDataQualityScore(fipsCode);
+  }
+
   @GetMapping("/{fipsCode}")
   public Optional<StateInformationModel> getStateInformationTableForState(
       @PathVariable("fipsCode") String fipsCode) {
