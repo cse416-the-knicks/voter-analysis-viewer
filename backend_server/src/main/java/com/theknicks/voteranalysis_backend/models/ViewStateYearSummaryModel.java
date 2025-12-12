@@ -17,12 +17,14 @@ public record ViewStateYearSummaryModel(
     @SqlColumnName int totalBallotsCast,
     @SqlColumnName int earlyVotingTotal,
     @SqlColumnName int ballotsByMail,
+    @SqlColumnName int ballotsByDropbox,
     @SqlColumnName int totalProvisionalBallotsCast,
     @SqlColumnName double activeVoterRate,
     @SqlColumnName double inactiveVoterRate,
     @SqlColumnName double turnOutRate,
     @SqlColumnName double earlyVotingShareRate,
-    @SqlColumnName double mailinBallotVotingShareRate) {
+    @SqlColumnName double mailinBallotVotingShareRate,
+    @SqlColumnName double dropboxBallotVotingShareRate) {
   public static class Queryable extends AutoSqlQueryable<ViewStateYearSummaryModel> {
     public Queryable() {
       super(ViewStateYearSummaryModel.class);
