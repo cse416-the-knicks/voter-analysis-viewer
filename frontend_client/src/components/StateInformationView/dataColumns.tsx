@@ -134,7 +134,7 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
   {
     field: "zipCode",
     headerName: "Zip",
-    type: 'number',
+    type: "number",
     width: 90,
     filterable: false,
   },
