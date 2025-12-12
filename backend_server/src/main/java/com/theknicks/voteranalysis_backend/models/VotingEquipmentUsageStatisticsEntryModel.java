@@ -28,7 +28,7 @@ import java.util.Optional;
     groupBy = {
       "eavs_geounit.state_id",
       "eavs_geounit.region_id",
-            "eavs_geounit.name",
+      "eavs_geounit.name",
       "device_model.device_model_id",
       "states.name",
       "device_type",
@@ -65,8 +65,9 @@ public record VotingEquipmentUsageStatisticsEntryModel(
         certification,
         Optional.of(false),
         totalDevices,
-            (deviceType.isPresent()) ? VoterEquipmentType.determineClass(deviceType.get(), false) : List.of()
-        );
+        (deviceType.isPresent())
+            ? VoterEquipmentType.determineClass(deviceType.get(), false)
+            : List.of());
   }
 
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentUsageStatisticsEntryModel> {

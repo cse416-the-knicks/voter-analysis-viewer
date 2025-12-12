@@ -56,7 +56,7 @@ public record VotingEquipmentUsageStatisticsModel(
         countyName = entry.countyName();
       }
 
-      if(entry.deviceId().isEmpty()) continue;
+      if (entry.deviceId().isEmpty()) continue;
 
       int deviceCount = entry.totalDevices();
       var deviceAge = deviceAgeMap.get(entry.deviceId().get());
@@ -96,8 +96,8 @@ public record VotingEquipmentUsageStatisticsModel(
         dreVvpatCount,
         bmdCount,
         scannerCount,
-            (totalDeviceCount>0) ? totalYears / totalDeviceCount : 0,
-            (totalDeviceCount>0) ? totalQualityScore / totalDeviceCount : 0);
+        (totalDeviceCount > 0) ? totalYears / totalDeviceCount : 0,
+        (totalDeviceCount > 0) ? totalQualityScore / totalDeviceCount : 0);
   }
 
   public static List<VotingEquipmentUsageStatisticsModel> fromDataRows(

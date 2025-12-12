@@ -248,7 +248,7 @@ function StateInformationView() {
   );
 
   useKeyDown("Escape", () => navigate("/"));
-  
+
   const votingEquipmentMapStylingFunction = (feature: GeoJSON.Feature) => {
     const { properties } = feature;
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
