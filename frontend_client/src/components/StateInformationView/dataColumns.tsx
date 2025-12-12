@@ -29,7 +29,7 @@ const PROVISIONAL_BALLOT_COLUMNS: GridColDef<ProvisionalBallotStatisticsModel[]>
   { field: "ballotReasonNotUpdatedAddress", headerName: "Not Updated Address", type: "number", width: 200 },
   { field: "ballotReasonDidNotSurrender", headerName: "Did Not Surrender", type: "number", width: 190 },
   { field: "ballotReasonExtendedVotingHours", headerName: "Extended Voter Hours", type: "number", width: 200 },
-  { field: "balloReasonSameDayRegistration", headerName: "Used SDR", type: "number", width: 140 },
+  { field: "ballotReasonSameDayRegistration", headerName: "Used SDR", type: "number", width: 140 },
   { field: "ballotReasonOther", headerName: "Other", type: "number", width: 120 },
 ];
 
