@@ -50,7 +50,14 @@ interface DisplayVotingEquipmentHistoryChartProperties {
 function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: DisplayVotingEquipmentHistoryChartProperties) {
   const maxWidth = useCssCalc("75vw"); // pixels
   const maxHeight = useCssCalc("80vh");
-
+  const electionYears = [2016, 2018, 2020, 2022, 2024];
+  const electionYearColors = {
+    2016: "#1f77b4ff", // 2016
+    2018: "#ff7f0eff", // 2018
+    2020: "#2ca02cff", // 2020
+    2022: "#d62728ff", // 2022
+    2024: "#9467bdff", // 2024
+  };
   return (
     <>
       <WindowTitled title={`${stateName} Voting Equipment History`} width={maxWidth} maxWidth={maxWidth} onXout={onXout}>
@@ -58,12 +65,8 @@ function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: Di
           title={"Equipment History"}
           xAxisLabel={"Category"}
           yAxisLabel={"Quantity"}
-          colorMap={zip(
-            VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.text),
-            VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.color)
-          )}
+          colorMap={electionYearColors}
           data={async () => {
-            const electionYears = [2016, 2018, 2020, 2022, 2024];
             const promises = electionYears.map((year) => getDetailedVotingEquipmentUsage(stateFips.toString(), { year: year, aggregate: true }));
             const votingEquipmentUsages = (await Promise.all(promises)).map((x) => x[0]);
 
@@ -101,6 +104,7 @@ function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: Di
           }}
           width={maxWidth}
           height={maxHeight}
+          transpose
         />
       </WindowTitled>
     </>
