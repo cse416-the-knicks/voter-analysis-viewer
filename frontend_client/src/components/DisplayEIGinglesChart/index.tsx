@@ -24,6 +24,7 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
             value={cvapDemographicSelection}
             label="CVAP Demographic"
             variant="standard"
+            color="secondary"
           >
             {races.map((x, i) => (
               <MenuItem value={i}>{x}</MenuItem>

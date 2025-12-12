@@ -7,7 +7,7 @@ export default {
     path: "ei-voting-equipment",
     description: {
       type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
-      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIVotingEquipment />,
+      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIVotingEquipment fipsCode={fipsCode} width={overlayWidth} height={overlayHeight} />,
     },
   } as StateInformationViewDataConfiguration,
 };

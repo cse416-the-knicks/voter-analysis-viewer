@@ -400,7 +400,12 @@ function StateInformationView() {
                 <Paper>
                   <FormControl fullWidth>
                     <InputLabel>CVAP Demographic</InputLabel>
-                    <Select onChange={(event) => setCvapDemographicSelection(event.target.value)} value={cvapDemographicSelection} label="CVAP Demographic">
+                    <Select
+                      color="secondary"
+                      onChange={(event) => setCvapDemographicSelection(event.target.value)}
+                      value={cvapDemographicSelection}
+                      label="CVAP Demographic"
+                    >
                       {["Asian", "Black", "Hispanic", "White", "Other"].map((x, i) => (
                         <MenuItem value={i}>{x}</MenuItem>
                       ))}

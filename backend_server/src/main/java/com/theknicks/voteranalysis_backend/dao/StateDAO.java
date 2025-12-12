@@ -201,35 +201,201 @@ public class StateDAO implements IStateDAO {
 
   public List<EIXYPoint> getDeviceAccessibilityProbabilityByDemographicPDF(
       String fipsCode, int race) {
-    EIXYPoint[] pts = {
-      new EIXYPoint(-3.0, 0.00443),
-      new EIXYPoint(-2.0, 0.05399),
-      new EIXYPoint(-1.5, 0.12952),
-      new EIXYPoint(-1.0, 0.24197),
-      new EIXYPoint(-0.5, 0.35207),
-      new EIXYPoint(0.0, 0.39894),
-      new EIXYPoint(0.5, 0.35207),
-      new EIXYPoint(1.0, 0.24197),
-      new EIXYPoint(1.5, 0.12952),
-      new EIXYPoint(2.0, 0.05399)
-    };
+    EIXYPoint[] pts;
+
+    switch (race) {
+      case 0: // Asian
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.05),
+              new EIXYPoint(0.10, 0.40),
+              new EIXYPoint(0.20, 0.90),
+              new EIXYPoint(0.30, 1.35),
+              new EIXYPoint(0.40, 1.55),
+              new EIXYPoint(0.50, 1.60),
+              new EIXYPoint(0.60, 1.45),
+              new EIXYPoint(0.70, 1.10),
+              new EIXYPoint(0.80, 0.60),
+              new EIXYPoint(0.90, 0.20),
+              new EIXYPoint(1.00, 0.05)
+            };
+        break;
+
+      case 1: // Black
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.10),
+              new EIXYPoint(0.10, 0.35),
+              new EIXYPoint(0.20, 0.70),
+              new EIXYPoint(0.30, 1.05),
+              new EIXYPoint(0.40, 1.20),
+              new EIXYPoint(0.50, 1.25),
+              new EIXYPoint(0.60, 1.20),
+              new EIXYPoint(0.70, 1.00),
+              new EIXYPoint(0.80, 0.60),
+              new EIXYPoint(0.90, 0.25),
+              new EIXYPoint(1.00, 0.10)
+            };
+        break;
+
+      case 2: // Hispanic
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.15),
+              new EIXYPoint(0.10, 0.55),
+              new EIXYPoint(0.20, 1.00),
+              new EIXYPoint(0.30, 1.30),
+              new EIXYPoint(0.40, 1.35),
+              new EIXYPoint(0.50, 1.20),
+              new EIXYPoint(0.60, 0.95),
+              new EIXYPoint(0.70, 0.65),
+              new EIXYPoint(0.80, 0.35),
+              new EIXYPoint(0.90, 0.15),
+              new EIXYPoint(1.00, 0.05)
+            };
+        break;
+
+      case 3: // White
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.05),
+              new EIXYPoint(0.10, 0.25),
+              new EIXYPoint(0.20, 0.70),
+              new EIXYPoint(0.30, 1.25),
+              new EIXYPoint(0.40, 1.60),
+              new EIXYPoint(0.50, 1.75),
+              new EIXYPoint(0.60, 1.60),
+              new EIXYPoint(0.70, 1.20),
+              new EIXYPoint(0.80, 0.70),
+              new EIXYPoint(0.90, 0.25),
+              new EIXYPoint(1.00, 0.05)
+            };
+        break;
+
+      case 4: // Other
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.05),
+              new EIXYPoint(0.10, 0.20),
+              new EIXYPoint(0.20, 0.45),
+              new EIXYPoint(0.30, 0.85),
+              new EIXYPoint(0.40, 1.10),
+              new EIXYPoint(0.50, 1.00),
+              new EIXYPoint(0.60, 1.10),
+              new EIXYPoint(0.70, 0.90),
+              new EIXYPoint(0.80, 0.50),
+              new EIXYPoint(0.90, 0.20),
+              new EIXYPoint(1.00, 0.05)
+            };
+        break;
+
+      default:
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.0, 1.0) // neutral fallback
+            };
+        break;
+    }
 
     return new ArrayList<>(Arrays.asList(pts));
   }
 
   public List<EIXYPoint> getRejectionProbabilitiesByDemographicPDF(String fipsCode, int race) {
-    EIXYPoint[] pts = {
-      new EIXYPoint(-3.0, 0.00443),
-      new EIXYPoint(-2.0, 0.05399),
-      new EIXYPoint(-1.5, 0.12952),
-      new EIXYPoint(-1.0, 0.24197),
-      new EIXYPoint(-0.5, 0.35207),
-      new EIXYPoint(0.0, 0.39894),
-      new EIXYPoint(0.5, 0.35207),
-      new EIXYPoint(1.0, 0.24197),
-      new EIXYPoint(1.5, 0.12952),
-      new EIXYPoint(2.0, 0.05399)
-    };
+    EIXYPoint[] pts;
+
+    switch (race) {
+      case 0: // Asian — concentrated on very low rejection
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 1.20),
+              new EIXYPoint(0.10, 1.50),
+              new EIXYPoint(0.20, 1.40),
+              new EIXYPoint(0.30, 1.10),
+              new EIXYPoint(0.40, 0.70),
+              new EIXYPoint(0.50, 0.40),
+              new EIXYPoint(0.60, 0.20),
+              new EIXYPoint(0.70, 0.10),
+              new EIXYPoint(0.80, 0.05),
+              new EIXYPoint(0.90, 0.03),
+              new EIXYPoint(1.00, 0.01)
+            };
+        break;
+
+      case 1: // Black — heavier mid-range rejection rates
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.10),
+              new EIXYPoint(0.10, 0.40),
+              new EIXYPoint(0.20, 0.90),
+              new EIXYPoint(0.30, 1.30),
+              new EIXYPoint(0.40, 1.40),
+              new EIXYPoint(0.50, 1.30),
+              new EIXYPoint(0.60, 1.00),
+              new EIXYPoint(0.70, 0.60),
+              new EIXYPoint(0.80, 0.30),
+              new EIXYPoint(0.90, 0.10),
+              new EIXYPoint(1.00, 0.05)
+            };
+        break;
+
+      case 2: // Hispanic — slightly skewed right (higher rejection)
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.05),
+              new EIXYPoint(0.10, 0.20),
+              new EIXYPoint(0.20, 0.55),
+              new EIXYPoint(0.30, 1.00),
+              new EIXYPoint(0.40, 1.35),
+              new EIXYPoint(0.50, 1.40),
+              new EIXYPoint(0.60, 1.20),
+              new EIXYPoint(0.70, 0.80),
+              new EIXYPoint(0.80, 0.40),
+              new EIXYPoint(0.90, 0.15),
+              new EIXYPoint(1.00, 0.05)
+            };
+        break;
+
+      case 3: // White — concentrated low–mid, smoother bell
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.20),
+              new EIXYPoint(0.10, 0.60),
+              new EIXYPoint(0.20, 1.10),
+              new EIXYPoint(0.30, 1.45),
+              new EIXYPoint(0.40, 1.55),
+              new EIXYPoint(0.50, 1.40),
+              new EIXYPoint(0.60, 1.00),
+              new EIXYPoint(0.70, 0.60),
+              new EIXYPoint(0.80, 0.30),
+              new EIXYPoint(0.90, 0.10),
+              new EIXYPoint(1.00, 0.05)
+            };
+        break;
+
+      case 4: // Other — bimodal rejection distribution
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.00, 0.15),
+              new EIXYPoint(0.10, 0.50),
+              new EIXYPoint(0.20, 0.90),
+              new EIXYPoint(0.30, 1.10),
+              new EIXYPoint(0.40, 0.95),
+              new EIXYPoint(0.50, 0.80),
+              new EIXYPoint(0.60, 1.00),
+              new EIXYPoint(0.70, 1.20),
+              new EIXYPoint(0.80, 0.80),
+              new EIXYPoint(0.90, 0.35),
+              new EIXYPoint(1.00, 0.10)
+            };
+        break;
+
+      default:
+        pts =
+            new EIXYPoint[] {
+              new EIXYPoint(0.0, 1.0) // trivial fallback
+            };
+        break;
+    }
 
     return new ArrayList<>(Arrays.asList(pts));
   }
