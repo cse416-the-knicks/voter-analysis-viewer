@@ -35,8 +35,8 @@ function DisplayEIVotingEquipment({ fipsCode, width, height }: DisplayEIVotingEq
           width={width}
           height={height}
           title="Device Accessibility by CVAP Demographic"
-          xAxisLabel="Device Probability"
-          yAxisLabel="Device Quality"
+          xAxisLabel="Equipment Quality Score"
+          yAxisLabel="Relative Probability"
           data={async () => {
             return await Promise.all(
               selectedRaces.map(async (r, i) => ({

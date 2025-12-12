@@ -35,8 +35,8 @@ function DisplayEIRejectedBallots({ fipsCode, width, height }: DisplayEIRejected
           width={width}
           height={height}
           title="Ballot Rejection Probability by CVAP Demographic"
-          xAxisLabel="Rejection Probability"
-          yAxisLabel="Rejection (%)"
+          xAxisLabel="Ballot Rejection Probability"
+          yAxisLabel="Relative Probability"
           data={async () => {
             return await Promise.all(
               selectedRaces.map(async (r, i) => ({
