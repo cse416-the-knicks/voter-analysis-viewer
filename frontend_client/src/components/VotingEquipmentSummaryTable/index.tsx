@@ -34,6 +34,14 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     },
   },
   {
+    field: "age",
+    headerName: "Age",
+    width: 80,
+    valueFormatter: (value) => {
+      return value + " years";
+    },
+  },
+  {
     field: "discontinued",
     headerName: "Discontinued",
     type: "boolean",
