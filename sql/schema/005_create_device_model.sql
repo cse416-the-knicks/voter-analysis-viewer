@@ -1,7 +1,7 @@
 CREATE TABLE app.device_model (
     device_model_id      SERIAL PRIMARY KEY,
 
-    manufacturer         VARCHAR(100) NOT NULL,
+    manufacturer         VARCHAR(100),
     equipment_type       VARCHAR(50)  NOT NULL,
     model_name           VARCHAR(100) NOT NULL,
 

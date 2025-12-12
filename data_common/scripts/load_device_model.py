@@ -15,19 +15,27 @@ voting_machine_df = pd.read_csv("../processed/voting_machine_full.csv")
 voting_machine_df = voting_machine_df.drop(columns=["device_model_id"])
 
 rename_map = {
-    "Manufacturer": "vendor",
-    "Equipment Type": "device_type",
+    "Manufacturer": "manufacturer",
+    "Equipment Type": "equipment_type",
     "Model Name": "model_name",
     "First Manufactured": "first_manufactured",
-    "OS": "underlying_os",
-    "Scanning Rate": "scan_rate",
-    "Certification Level": "certification",
-    "Discontinued": "is_discontinued",
+    "Last Manufactured": "last_manufactured",
+    "OS": "os",
+    "Firmware Version": "firmware_version",
+    "Battery Life": "battery_life",
+    "Scanning Rate": "scanning_rate",
+    "Paper Capacity": "paper_capacity",
+    "VVPAT?": "vvpatt",
+    "Certification Level": "certification_level",
+    "Security Risks": "security_risks",
+    "Notes/Misc.": "notes_misc",
+    "Discontinued": "discontinued",
+    "Error Score": "error_rate",
+    "Reliability Score": "reliability",
     "Final Quality Score": "quality_score",
 }
 voting_machine_df = voting_machine_df[[c for c in rename_map if c in voting_machine_df.columns]]
 voting_machine_df = voting_machine_df.rename(columns=rename_map)
-
 
 # Connecting to db
 engine = create_engine(
