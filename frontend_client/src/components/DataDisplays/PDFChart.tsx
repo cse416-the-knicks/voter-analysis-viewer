@@ -112,18 +112,18 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
     .domain([dataMinY, dataMaxY])
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
 
-  const xAxisTicks = xAxisScale.ticks(16);
-  const yAxisTicks = yAxisScale.ticks(16);
+  const xAxisTicks = xAxisScale.ticks(32);
+  const yAxisTicks = yAxisScale.ticks(32);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
 
   const svgRef = useRef<SVGSVGElement>(null);
-
-  const curveLine = d3
-    .line()
+  const curveArea = d3
+    .area()
     .x((d) => xAxisScale(d.x))
-    .y((d) => yAxisScale(d.y))
+    .y0(() => yAxisScale(0)) // baseline — same x's, y = 0
+    .y1((d) => yAxisScale(d.y)) // upper curve
     .curve(d3.curveBasis);
 
   useEffect(() => {
@@ -198,7 +198,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
 
         {/* PDF Curves */}
         {actualData.map((x) => (
-          <path data-title={x.title} d={curveLine(x.samples)} opacity={x.opacity ?? "0.5"} fill={x.fillColor} stroke={x.strokeColor ?? "black"} />
+          <path data-title={x.title} d={curveArea(x.samples)} opacity={x.opacity ?? "0.5"} fill={x.fillColor} stroke={x.strokeColor ?? "black"} />
         ))}
       </svg>
       {/* Tooltip when moused over. */}

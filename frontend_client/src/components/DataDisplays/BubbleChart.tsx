@@ -76,8 +76,8 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     .domain([d3.min(actualData, (x) => x.size)!, d3.max(actualData, (x) => x.size)!])
     .range([5, 25]);
 
-  const xAxisTicks = xAxisScale.ticks(emptyData ? 0 : 1 * 16);
-  const yAxisTicks = yAxisScale.ticks(emptyData ? 0 : 1 * 16);
+  const xAxisTicks = xAxisScale.ticks(emptyData ? 0 : 1 * 32);
+  const yAxisTicks = yAxisScale.ticks(emptyData ? 0 : 1 * 32);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
