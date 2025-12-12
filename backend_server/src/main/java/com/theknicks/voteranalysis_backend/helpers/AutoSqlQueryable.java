@@ -113,9 +113,11 @@ public class AutoSqlQueryable<T> {
 
           // Careful recursion, since this is a little complicated.
           if (typeParameter instanceof Class<?> innerClass) {
-            return Optional.ofNullable(visitType(resultSet, innerClass, columnNumber));
+            Object v = visitType(resultSet, innerClass, columnNumber);
+            return Optional.ofNullable(resultSet.wasNull() ? null : v);
           } else if (typeParameter instanceof ParameterizedType innerParamType) {
-            return Optional.ofNullable(visitType(resultSet, innerParamType, columnNumber));
+            Object v = visitType(resultSet, innerParamType, columnNumber);
+            return Optional.ofNullable(resultSet.wasNull() ? null : v);
           }
 
           System.out.println(

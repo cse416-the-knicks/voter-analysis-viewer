@@ -13,7 +13,7 @@ import ScannerIcon from "@mui/icons-material/Scanner";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import Stack from "@mui/material/Stack";
-import { Box, Paper, Typography, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { Box, Paper, Typography, Backdrop, Grow, Tabs, Tab, Select, MenuItem, FormControl, InputLabel, useTheme } from "@mui/material";
 import {
   DETAIL_STATE_TYPE_DEMOCRAT,
   DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
@@ -176,6 +176,7 @@ function StateInformationView() {
   const stateType = getDetailStateType(fipsCode!);
   const location = useLocation();
   const activeDataStateHook = useState(determineInitialStateBasedOnUrl(location.pathname));
+  const theme = useTheme();
 
   /* NOTE(jerry): size tuning parameters */
   const boxMarginTop = "1.2vh";
@@ -252,10 +253,11 @@ function StateInformationView() {
     const { properties } = feature;
     const fullRegionId = (properties!.STATEFP as string) + (properties!.COUNTYFP as string) + "00000";
     const style = {
-      color: "black",
+      color: theme.palette.secondary.main,
+      fillColor: theme.palette.secondary.main,
       className: `vt${fullRegionId}`,
-      fillOpacity: 0.0,
-      weight: 2.5,
+      fillOpacity: 0.15,
+      weight: 1,
     };
 
     return style;
