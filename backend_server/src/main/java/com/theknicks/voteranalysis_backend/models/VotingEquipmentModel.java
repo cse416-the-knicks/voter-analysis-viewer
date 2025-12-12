@@ -27,25 +27,29 @@ import java.util.Optional;
     })
 public record VotingEquipmentModel(
     @JsonIgnore @SqlColumnName(name = "device_model.device_model_id") int id,
-    @SqlColumnName(name = "vendor") String manufacturer,
-    // No strong opinions, but this could be an enum.
-    @SqlColumnName(name = "device_type") String equipmentType,
+    @SqlColumnName(name = "manufacturer") String manufacturer,
+    @SqlColumnName(name = "equipment_type") String equipmentType,
     @SqlColumnName(name = "model_name") String modelName,
-    @SqlColumnName(name = "is_discontinued") Optional<Boolean> discontinued,
-    // Could/Should be dates, can change later.
+    @SqlColumnName(name = "discontinued") Optional<Boolean> discontinued,
+    @SqlColumnName(name = "short_description") Optional<String> shortDescription,
+    @SqlColumnName(name = "security_risks") Optional<String> securityRisks,
+    @SqlColumnName(name = "notes_misc") Optional<String> notesMisc,
     @SqlColumnName(name = "first_manufactured") Optional<Date> firstManufactured,
-    @SqlColumnName(name = "underlying_os") Optional<String> operatingSystem,
+    @SqlColumnName(name = "last_manufactured") Optional<Date> lastManufactured,
+    @SqlColumnName(name = "os") Optional<String> operatingSystem,
+    @SqlColumnName(name = "firmware_version") Optional<String> firmwareVersion,
+    @SqlColumnName(name = "paper_capacity") Optional<Integer> paperCapacity,
+    @SqlColumnName(name = "battery_life") Optional<Integer> batteryLife,
 
     // Voter Verified Paper Audit Trail
-    // DNE
-    // @SqlColumnName(name = "vvpat") Optional<Boolean> vvpat,
+    @SqlColumnName(name = "vvpatt") Optional<Boolean> vvpat,
 
     // Mostly VVSG
-    @SqlColumnName(name = "certification") Optional<String> certificationLevel,
+    @SqlColumnName(name = "certification_level") Optional<String> certificationLevel,
     Optional<Integer> age,
     List<VoterEquipmentType> types,
     @SqlColumnName(name = "quality_score") Optional<Double> equipmentQuality,
-    @SqlColumnName(name = "scan_rate") Optional<Double> scanRate,
+    @SqlColumnName(name = "scanning_rate") Optional<Integer> scanRate,
     @SqlColumnName(name = "error_rate") Optional<Double> errorRate,
     @SqlColumnName(name = "reliability") Optional<Double> reliabilityScore,
     @SqlColumnName(name = "sum(quantity)") int quantity) {
@@ -56,11 +60,19 @@ public record VotingEquipmentModel(
       String equipmentType,
       String modelName,
       Optional<Boolean> discontinued,
+      Optional<String> shortDescription,
+      Optional<String> securityRisks,
+      Optional<String> notesMisc,
       Optional<Date> firstManufactured,
+      Optional<Date> lastManufactured,
       Optional<String> operatingSystem,
+      Optional<String> firmwareVersion,
+      Optional<Integer> paperCapacity,
+      Optional<Integer> batteryLife,
+      Optional<Boolean> vvpat,
       Optional<String> certificationLevel,
       Optional<Double> equipmentQuality,
-      Optional<Double> scanRate,
+      Optional<Integer> scanRate,
       Optional<Double> errorRate,
       Optional<Double> reliabilityScore,
       int quantity) {
@@ -70,8 +82,16 @@ public record VotingEquipmentModel(
         equipmentType,
         modelName,
         discontinued,
+        shortDescription,
+        securityRisks,
+        notesMisc,
         firstManufactured,
+        lastManufactured,
         operatingSystem,
+        firmwareVersion,
+        paperCapacity,
+        batteryLife,
+        vvpat,
         certificationLevel,
         // NOTE(jerry): No flexible constructor
         // support without Java-Preview... :|
@@ -88,7 +108,7 @@ public record VotingEquipmentModel(
                   return Optional.of(currentYear - yearManufactured);
                 })
             .orElse(Optional.empty()),
-        VoterEquipmentType.determineClass(equipmentType, false),
+        VoterEquipmentType.determineClass(equipmentType, vvpat.orElse(false)),
         equipmentQuality,
         scanRate,
         errorRate,
