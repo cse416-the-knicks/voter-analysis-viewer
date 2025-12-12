@@ -12,7 +12,7 @@ export default {
         <LineChart
           //@ts-expect-error : Error expected, orval likes generating "optional" types even though they are actually identical.
           data={async () => {
-            const votingHistory = await getVoterRegistrationHistory(fipsCode!);
+            const votingHistory = await getVoterRegistrationHistory(fipsCode!, { years: [2016, 2020, 2024] });
             const eavsColors = ["red", "blue", "green", "magenta", "black"];
             // Manually assign back colors on the frontend.
             return votingHistory.map((x, i) => ({ color: eavsColors[i], ...x }));
