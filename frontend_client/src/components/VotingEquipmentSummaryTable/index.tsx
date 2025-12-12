@@ -53,6 +53,11 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     width: 160,
   },
   {
+    field: "certificationLevel",
+    headerName: "Certification",
+    width: 150,
+  },
+  {
     field: "vvpat",
     headerName: "VVPAT?",
     type: "boolean",
