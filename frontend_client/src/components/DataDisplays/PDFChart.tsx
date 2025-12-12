@@ -211,7 +211,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
         ))}
       </svg>
       {/* Tooltip when moused over. */}
-      {isLoaded && <SimplePDFChartLegend chartWidth={chartWidth} data={actualData} />}
+      {isLoaded && actualData.length>0 && <SimplePDFChartLegend chartWidth={chartWidth} data={actualData} />}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
   );

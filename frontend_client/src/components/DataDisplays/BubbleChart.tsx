@@ -193,7 +193,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
         {yAxisTicks.map((x, y) => (
           <g key={y}>
             <line x1={chartMargin.left} x2={chartWidth - chartMargin.right} y1={yAxisScale(x)} y2={yAxisScale(x)} stroke="#808080" />
-            <text x={chartMargin.left - 15} y={yAxisScale(x) + 5} textAnchor="middle" fontSize={15}>
+            <text x={chartMargin.left - 25} y={yAxisScale(x) + 5} textAnchor="middle" fontSize={15}>
               {x}
             </text>
           </g>
@@ -204,7 +204,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           textAnchor="middle"
           fontSize={15}
           fontWeight="bold"
-          transform={`rotate(-90, ${chartMargin.left - 40}, ${chartHeight / 2})`}
+          transform={`rotate(-90, ${chartMargin.left - 50}, ${chartHeight / 2})`}
         >
           {yAxisLabel}
         </text>
@@ -221,7 +221,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           ))}
         {emptyData && (
           <text x={chartWidth / 2} y={chartHeight / 2} textAnchor="middle" fontSize={45}>
-            No data available.
+            {isLoaded ? "No data available." : "Loading data." }
           </text>
         )}
       </svg>
