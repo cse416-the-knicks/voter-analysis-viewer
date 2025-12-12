@@ -46,7 +46,7 @@ use_columns = [
     "A12a","A12b","A12c","A12d","A12e","A12f","A12g","A12h","A12i","A12j","A12k",
     "C8a","C3a",
     "F1b","F1f",
-    "E1a",
+    "E1a", "E1d",
     "E2a","E2b","E2c","E2d","E2e","E2f","E2g","E2h","E2i","E2j","E2k","E2l",
     "B24a","B18a",
     "C9a","C9b","C9c","C9d","C9e","C9f","C9g","C9h","C9i","C9j","C9k","C9l","C9m","C9n",
@@ -77,7 +77,7 @@ for c in use_columns[3:]:
     eavs_df[c] = eavs_df[c].apply(safe_int)
 
 # Derived fields for Other, Totals, and State IDs
-eavs_df["mail_reject_total"] = eavs_df[["C9a", "B24a"]].sum(axis=1, skipna=True, min_count=1)
+eavs_df["mail_reject_total"] = eavs_df[["C9a", "B24a", "E1d"]].sum(axis=1, skipna=True, min_count=1)
 eavs_df["removed_other"] = eavs_df[["A12i", "A12j", "A12k"]].sum(axis=1, min_count=1)
 eavs_df["prov_other"] = eavs_df[["E2j", "E2k", "E2l"]].sum(axis=1, min_count=1)
 eavs_df["mail_reject_other"] = eavs_df[["C9r", "C9s", "C9t"]].sum(axis=1, min_count=1)
@@ -149,7 +149,7 @@ rename_map = {
 eavs_df = eavs_df.rename(columns=rename_map)
 eavs_df = eavs_df.drop(columns=[
     "A12i","A12j","A12k",
-    "E2j","E2k","E2l",
+    "E2j","E2k","E2l", "E1d",
     "C9r","C9s","C9t",
     "State_Abbr","B24a","B18a","C9a"
 ])

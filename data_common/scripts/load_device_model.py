@@ -23,7 +23,7 @@ rename_map = {
     "Scanning Rate": "scan_rate",
     "Certification Level": "certification",
     "Discontinued": "is_discontinued",
-    "Quality Score tentative": "quality_score",
+    "Final Quality Score": "quality_score",
 }
 voting_machine_df = voting_machine_df[[c for c in rename_map if c in voting_machine_df.columns]]
 voting_machine_df = voting_machine_df.rename(columns=rename_map)
