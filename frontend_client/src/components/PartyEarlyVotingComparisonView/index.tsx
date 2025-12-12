@@ -72,7 +72,7 @@ function PartyEarlyVotingComparisonTableView() {
       title={"Early Voting Comparisons"}
       width={maxWidth}
       maxWidth={maxWidth}
-      height={"40em"}
+      height={"37em"}
       rows={rows}
       columns={cols}
       onXout={() => navigate("/")}
