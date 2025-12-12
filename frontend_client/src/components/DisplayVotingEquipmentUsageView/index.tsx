@@ -56,7 +56,7 @@ function DisplayVotingEquipmentHistoryChart({ stateName, stateFips, onXout }: Di
     2018: "#ff7f0eff", // 2018
     2020: "#2ca02cff", // 2020
     2022: "#d62728ff", // 2022
-    2024: "#9467bdff"  // 2024
+    2024: "#9467bdff", // 2024
   };
   return (
     <>

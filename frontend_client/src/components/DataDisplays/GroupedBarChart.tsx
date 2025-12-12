@@ -80,8 +80,8 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
     }
   }, [data]);
 
-  const groups = (transpose) ? Array.from(new Set(actualData.map((d) => d.category))) : Array.from(new Set(actualData.map((d) => d.title)));
-  const categories = (transpose) ? Array.from(new Set(actualData.map((d) => d.title))) : Array.from(new Set(actualData.map((d) => d.category)));
+  const groups = transpose ? Array.from(new Set(actualData.map((d) => d.category))) : Array.from(new Set(actualData.map((d) => d.title)));
+  const categories = transpose ? Array.from(new Set(actualData.map((d) => d.title))) : Array.from(new Set(actualData.map((d) => d.category)));
 
   const x0 = d3
     .scaleBand()
@@ -130,7 +130,7 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
           groups.map((g, gi) => (
             <g key={g} transform={`translate(${x0(g)}, 0)`}>
               {categories.map((c, ci) => {
-                const entry = (transpose) ? actualData.find((d) => d.title === c && d.category === g) : actualData.find((d) => d.title === g && d.category === c);
+                const entry = transpose ? actualData.find((d) => d.title === c && d.category === g) : actualData.find((d) => d.title === g && d.category === c);
                 if (!entry) return null;
                 const barX = x1(c)!;
                 const barY = y(entry.value);
