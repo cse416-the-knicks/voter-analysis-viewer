@@ -122,24 +122,31 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
   const curveArea = d3
     .area()
     .x((d) => xAxisScale(d.x))
-    .y0(() => yAxisScale(0)) // baseline — same x's, y = 0
-    .y1((d) => yAxisScale(d.y)) // upper curve
+    .y0(() => yAxisScale(0))
+    .y1((d) => yAxisScale(d.y))
+    .curve(d3.curveBasis);
+  const curveLine = d3
+    .line()
+    .x((d) => xAxisScale(d.x))
+    .y((d) => yAxisScale(d.y))
     .curve(d3.curveBasis);
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
-    const circleSelector = svg.selectAll("path");
-    circleSelector
+    const pathSelector = svg.selectAll("path");
+    pathSelector
       .on("mouseover", function (_event, _d) {
         const element = this as Element;
-        setShowTooltip(true);
-        setTooltipText(element.getAttribute("data-title")!);
+        if (element.getAttribute("data-title").length > 0) {
+          setShowTooltip(true);
+          setTooltipText(element.getAttribute("data-title")!);
+        }
       })
       .on("mouseout", function (_event, _d) {
         setShowTooltip(false);
       });
     return () => {
-      circleSelector.on("mouseover", null).on("mouseout", null);
+      pathSelector.on("mouseover", null).on("mouseout", null);
     };
   }, [actualData]);
 
@@ -197,8 +204,10 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
         </text>
 
         {/* PDF Curves */}
-        {actualData.map((x) => (
-          <path data-title={x.title} d={curveArea(x.samples)} opacity={x.opacity ?? "0.5"} fill={x.fillColor} stroke={x.strokeColor ?? "black"} />
+        {actualData.map((x) => (<>
+          <path data-title={x.title} d={curveArea(x.samples)} opacity={x.opacity ?? "0.35"} fill={x.fillColor} stroke={x.strokeColor ?? x.fillColor} />
+          <path d={curveLine(x.samples)} fillOpacity={0} opacity={1.0} strokeOpacity="1.0" strokeWidth={3} stroke={x.strokeColor ?? x.fillColor} />
+          </>
         ))}
       </svg>
       {/* Tooltip when moused over. */}
