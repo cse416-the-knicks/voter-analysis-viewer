@@ -90,13 +90,6 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, styleFunction, onStateCl
       className={"full-bounded-us-map"}
       id={id}
     >
-      <style>
-        {`
-.leaflet-tile {
-  background-color: rgba(111, 45, 200, 0.1); /* Or an image */
-}
-`}
-      </style>
       <Pane name="everythingelse" style={{ zIndex: 399 }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

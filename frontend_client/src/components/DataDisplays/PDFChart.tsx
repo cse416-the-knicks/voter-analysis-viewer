@@ -98,7 +98,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
   );
 
   const dataMinX = d3.min(actualData, (x) => Math.min(...x.samples.map((x1) => x1.x)))! || 0;
-  const dataMaxX = maxXScale || d3.max(actualData, (x) => Math.max(...x.samples.map((x1) => x1.x)))! * 1.015;
+  const dataMaxX = maxXScale || d3.max(actualData, (x) => Math.max(...x.samples.map((x1) => x1.x)))!;
 
   const dataMinY = d3.min(actualData, (x) => Math.min(...x.samples.map((x1) => x1.y)))! || 0;
   const dataMaxY = maxYScale || d3.max(actualData, (x) => Math.max(...x.samples.map((x1) => x1.y)))!;
@@ -174,7 +174,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
         {xAxisTicks.map((x, y) => (
           <g key={y}>
             <line x1={xAxisScale(x)} x2={xAxisScale(x)} y1={chartMargin.top} y2={chartHeight - chartMargin.bottom} stroke="#808080" />
-            <text x={xAxisScale(x)} y={chartHeight - chartMargin.bottom + 20} textAnchor="middle" fontSize={15}>
+            <text x={xAxisScale(x)} y={chartHeight - chartMargin.bottom + 20} textAnchor="middle" fontSize={14}>
               {x}
             </text>
           </g>
@@ -187,7 +187,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
         {yAxisTicks.map((x, y) => (
           <g key={y}>
             <line x1={chartMargin.left} x2={chartWidth - chartMargin.right} y1={yAxisScale(x)} y2={yAxisScale(x)} stroke="#808080" />
-            <text x={chartMargin.left - 15} y={yAxisScale(x) + 5} textAnchor="middle" fontSize={15}>
+            <text x={chartMargin.left - 20} y={yAxisScale(x) + 5} textAnchor="middle" fontSize={14}>
               {x}
             </text>
           </g>
@@ -198,15 +198,15 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
           textAnchor="middle"
           fontSize={15}
           fontWeight="bold"
-          transform={`rotate(-90, ${chartMargin.left - 40}, ${chartHeight / 2})`}
+          transform={`rotate(-90, ${chartMargin.left - 50}, ${chartHeight / 2})`}
         >
           {yAxisLabel}
         </text>
 
         {/* PDF Curves */}
         {actualData.map((x) => (<>
+          <path d={curveLine(x.samples)} fill={"none"} pointerEvents={"none"} opacity={1.0} strokeOpacity="1.0" strokeWidth={3} stroke={x.strokeColor ?? x.fillColor} />
           <path data-title={x.title} d={curveArea(x.samples)} opacity={x.opacity ?? "0.35"} fill={x.fillColor} stroke={x.strokeColor ?? x.fillColor} />
-          <path d={curveLine(x.samples)} fillOpacity={0} opacity={1.0} strokeOpacity="1.0" strokeWidth={3} stroke={x.strokeColor ?? x.fillColor} />
           </>
         ))}
       </svg>
