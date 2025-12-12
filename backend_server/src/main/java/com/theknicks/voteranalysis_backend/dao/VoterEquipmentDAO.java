@@ -60,14 +60,14 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
     List<VotingEquipmentUsageStatisticsEntryModel> entries;
     if (fipsCode.isEmpty()) {
-      entries = jdbcTemplate.query(queryable.Query(), queryable.Mapper());
+      entries = jdbcTemplate.query(queryable.Query(), queryable.Mapper(), year);
     } else {
       entries =
           jdbcTemplate.query(
-              queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?", "year = ?"}),
+              queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
               queryable.Mapper(),
-              Integer.parseInt(fipsCode, 10),
-              year);
+              year,
+              Integer.parseInt(fipsCode, 10));
     }
 
     var votingEquipmentAgeMap =
@@ -87,10 +87,10 @@ public class VoterEquipmentDAO implements IVoterEquipmentDAO {
     var queryable = new VotingEquipmentUsageStatisticsEntryModel.Queryable();
     var entries =
         jdbcTemplate.query(
-            queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?", "year = ?"}),
+            queryable.QueryWhere(new String[] {"eavs_geounit.state_id = ?"}),
             queryable.Mapper(),
-            Integer.parseInt(fipsCode, 10),
-            year);
+            year,
+            Integer.parseInt(fipsCode, 10));
 
     var votingEquipmentAgeMap =
         getAllVotingEquipment(Optional.empty()).stream()

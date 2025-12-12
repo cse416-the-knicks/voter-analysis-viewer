@@ -17,42 +17,43 @@ import java.util.Optional;
    not suitable for tabulation without more aggregation work.
 */
 @AutoSql(
-    collection = "equipment_usage",
-    joining = {"device_model", "eavs_geounit", "states"},
-    joinMethod = {"inner", "inner", "inner"},
+    collection = "eavs_geounit",
+    joining = {"states", "equipment_usage", "device_model"},
+    joinMethod = {"inner", "left", "left"},
     joinOn = {
-      "equipment_usage.device_model_id = device_model.device_model_id",
-      "equipment_usage.region_id = eavs_geounit.eavs_unit_code",
-      "equipment_usage.state_id = states.state_id"
+      "states.state_id = eavs_geounit.state_id",
+      "equipment_usage.state_id = states.state_id and (year = ?)",
+      "device_model.device_model_id = equipment_usage.device_model_id"
     },
     groupBy = {
       "eavs_geounit.state_id",
       "eavs_geounit.region_id",
+            "eavs_geounit.name",
       "device_model.device_model_id",
       "states.name",
       "device_type",
       "certification"
     })
 public record VotingEquipmentUsageStatisticsEntryModel(
-    @SqlColumnName(name = "device_model.device_model_id") int deviceId,
+    @SqlColumnName(name = "device_model.device_model_id") Optional<Integer> deviceId,
     @SqlColumnName(name = "states.name") String stateName,
     @SqlColumnName(name = "eavs_geounit.state_id") int stateId,
     @SqlColumnName(name = "eavs_geounit.eavs_unit_code") String fullRegionId,
     @SqlColumnName(name = "eavs_geounit.name") String countyName,
-    @SqlColumnName(name = "device_type") String deviceType,
-    @SqlColumnName(name = "certification") String certification,
+    @SqlColumnName(name = "device_type") Optional<String> deviceType,
+    @SqlColumnName(name = "certification") Optional<String> certification,
     // currently DNE
     /*@SqlColumnName(name = "device_model.vvpat")*/ Optional<Boolean> hasVvpat,
-    @SqlColumnName(name = "sum(quantity)") int totalDevices,
+    @SqlColumnName(name = "coalesce(sum(equipment_usage.quantity), 0)") int totalDevices,
     List<VoterEquipmentType> types) {
   public VotingEquipmentUsageStatisticsEntryModel(
-      int deviceId,
+      Optional<Integer> deviceId,
       String stateName,
       int stateId,
       String fullRegionId,
       String countyName,
-      String deviceType,
-      String certification,
+      Optional<String> deviceType,
+      Optional<String> certification,
       int totalDevices) {
     this(
         deviceId,
@@ -64,7 +65,8 @@ public record VotingEquipmentUsageStatisticsEntryModel(
         certification,
         Optional.of(false),
         totalDevices,
-        VoterEquipmentType.determineClass(deviceType, false));
+            (deviceType.isPresent()) ? VoterEquipmentType.determineClass(deviceType.get(), false) : List.of()
+        );
   }
 
   public static class Queryable extends AutoSqlQueryable<VotingEquipmentUsageStatisticsEntryModel> {
