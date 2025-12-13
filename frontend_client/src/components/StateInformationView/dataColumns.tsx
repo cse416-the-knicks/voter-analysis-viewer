@@ -34,6 +34,7 @@ const PROVISIONAL_BALLOT_COLUMNS: GridColDef<ProvisionalBallotStatisticsModel[]>
   { field: "ballotReasonExtendedVotingHours", headerName: "Extended Voter Hours", type: "number", width: 200 },
   { field: "ballotReasonSameDayRegistration", headerName: "Used SDR", type: "number", width: 140 },
   { field: "ballotReasonOther", headerName: "Other", type: "number", width: 120 },
+  { field: "eavsDataScore", headerName: "EAVS Data Score", type: "number", width: 150 },
 ];
 
 const ACTIVE_VOTER_REGISTRATION_COLUMNS: GridColDef<VoterRegistrationStatisticsModel[]>[] = [
@@ -45,6 +46,7 @@ const ACTIVE_VOTER_REGISTRATION_COLUMNS: GridColDef<VoterRegistrationStatisticsM
   { field: "total", headerName: "Total Voters", type: "number", width: 200 },
   { field: "active", headerName: "Active Voters", type: "number", width: 150 },
   { field: "inactive", headerName: "Inactive Voters", type: "number", width: 150 },
+  { field: "eavsDataScore", headerName: "EAVS Data Score", type: "number", width: 150 },
 ];
 
 const VOTER_AFFILIATION_COLUMNS: GridColDef<VoterAffiliationStatisticsModel[]>[] = [
@@ -245,6 +247,7 @@ const POLL_BOOK_DELETION_COLUMNS: GridColDef<PollbookDeletionStatisticsModel[]>[
   { field: "removedReasonRequested", headerName: "Requested", type: "number", width: 150 },
   { field: "removedReasonDuplicate", headerName: "Duplicate", type: "number", width: 150 },
   { field: "removedOther", headerName: "Other", type: "number", width: 120 },
+  { field: "eavsDataScore", headerName: "EAVS Data Score", type: "number", width: 150 },
 ];
 
 const MAIL_BALLOT_REJECTION_COLUMNS: GridColDef<MailBallotRejectionStatisticsModel[]>[] = [
@@ -272,6 +275,7 @@ const MAIL_BALLOT_REJECTION_COLUMNS: GridColDef<MailBallotRejectionStatisticsMod
   { field: "rejectNotEligible", headerName: "Not Eligible", type: "number", width: 150 },
   { field: "rejectNoApplication", headerName: "No Application", type: "number", width: 160 },
   { field: "rejectOther", headerName: "Other", type: "number", width: 120 },
+  { field: "eavsDataScore", headerName: "EAVS Data Score", type: "number", width: 150 },
 ];
 
 const VOTING_EQUIPMENT_COLUMNS: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [

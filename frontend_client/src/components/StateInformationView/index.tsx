@@ -224,6 +224,11 @@ function StateInformationView() {
             .map((x: DataFact) => ({ id: x.fullRegionId, ...x }));
 
           const aggregatedData = aggregatedDataSet.reduce((acc, entry) => ({ ...acc, ...entry[0] }), {}) as DataFact;
+          if ("eavsDataScore" in aggregatedData) {
+            // @ts-expect-error: we know the type. It's a number.
+            // This is a bit of a hack.
+            aggregatedData.eavsDataScore /= rowData.length;
+          }
 
           rowData.push({ id: aggregatedData.fullRegionId, ...aggregatedData });
           setBarData(description.barDataGenerator(aggregatedData));

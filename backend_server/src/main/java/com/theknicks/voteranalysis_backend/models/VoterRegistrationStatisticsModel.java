@@ -15,9 +15,11 @@ public record VoterRegistrationStatisticsModel(
     @SqlColumnName(name = "eavs_geounit.name", omitFromAggregate = true) String countyName,
     @SqlColumnName(name = "total_registered") int total,
     @SqlColumnName(name = "active_registered") int active,
-    @SqlColumnName(name = "inactive_registered") int inactive) {
-  public VoterRegistrationStatisticsModel(int total, int active, int inactive) {
-    this("0000000000", "Aggregated", total, active, inactive);
+    @SqlColumnName(name = "inactive_registered") int inactive,
+    @SqlColumnName(name = "missing_data_score") double eavsDataScore) {
+  public VoterRegistrationStatisticsModel(
+      int total, int active, int inactive, double eavsDataScore) {
+    this("0000000000", "Aggregated", total, active, inactive, eavsDataScore);
   }
 
   public static class Queryable extends AutoSqlQueryable<VoterRegistrationStatisticsModel> {

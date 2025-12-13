@@ -22,7 +22,8 @@ public record PollbookDeletionStatisticsModel(
     @SqlColumnName(name = "removed_requested") int removedReasonRequested,
     @SqlColumnName(name = "removed_duplicate") int removedReasonDuplicate,
     @SqlColumnName(name = "removed_other") int removedOther,
-    @SqlColumnName(name = "total_registered") int totalRegisteredVoters) {
+    @SqlColumnName(name = "total_registered") int totalRegisteredVoters,
+    @SqlColumnName(name = "missing_data_score") double eavsDataScore) {
   public PollbookDeletionStatisticsModel(
       int totalRemoved,
       int removedReasonMoved,
@@ -33,7 +34,8 @@ public record PollbookDeletionStatisticsModel(
       int removedReasonRequested,
       int removedReasonDuplicate,
       int removedOther,
-      int totalRegisteredVoters) {
+      int totalRegisteredVoters,
+      double eavsDataScore) {
     this(
         "0000000000",
         "Aggregated",
@@ -46,7 +48,8 @@ public record PollbookDeletionStatisticsModel(
         removedReasonRequested,
         removedReasonDuplicate,
         removedOther,
-        totalRegisteredVoters);
+        totalRegisteredVoters,
+        eavsDataScore);
   }
 
   public static class Queryable extends AutoSqlQueryable<PollbookDeletionStatisticsModel> {
