@@ -102,7 +102,7 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     field: "notesMisc",
     headerName: "Notes",
     width: 500,
-  }
+  },
 ];
 
 interface VotingMachineSummaryTableProperties {
@@ -130,7 +130,7 @@ function VotingMachineSummaryTable({ fipsCode, width, height }: VotingMachineSum
       rows={rows}
       columns={columns}
       getRowId={(x) => x.modelName}
-      getRowHeight={() => 'auto'}
+      getRowHeight={() => "auto"}
       customGetRowClassName={(r) => (rows.find((x) => x.modelName === r.id)?.discontinued ? styles.discontinuedRow : "")}
     />
   );

@@ -22,14 +22,13 @@ import {
   getDetailStateType,
   isDetailState,
 } from "../FullBoundedUSMap/detailedStatesInfo";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import styles from "./StateInformationView.module.css";
 import StateMap from "../StateMap";
 import { FIPS_TO_STATES_MAP } from "../FullBoundedUSMap/boundaryData";
 import { StateInformationViewDrawer, type StateInformationViewDrawerSection } from "./StateInformationViewDrawer";
 import useKeyDown from "../../hooks/useKeyDown";
 import useCssCalc from "../../hooks/useCssCalc";
-import StyledDataGrid from "../StyledDataGrid";
 import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
@@ -63,6 +62,7 @@ import {
   type DataFact,
 } from "./dataViewConfigTypes";
 import { FACT_VIEW_CONFIGURATIONS } from "./dataViewModeConfig";
+import StateEAVSDataTable from "./StateEAVSDataTable";
 
 const DROPDOWN_SECTIONS = [
   {
@@ -145,13 +145,6 @@ const DROPDOWN_SECTIONS = [
     ],
   },
 ] as StateInformationViewDrawerSection[];
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
 
 function getUrlForModeId(id: number, fipsCode: string) {
   const configuration = FACT_VIEW_CONFIGURATIONS[id];
@@ -286,28 +279,6 @@ function StateInformationView() {
     return colorPoint;
   }, gradientMap);
 
-  const topGridRef = useRef();
-  const mainGridRef = useRef();
-
-  useEffect(() => {
-    const topGrid = topGridRef.current?.querySelector(".MuiDataGrid-virtualScroller");
-    const mainGrid = mainGridRef.current?.querySelector(".MuiDataGrid-virtualScroller");
-
-    if (!topGrid || !mainGrid) return;
-
-    const syncScroll = (source, target) => {
-      target.scrollTop = source.scrollTop;
-      target.scrollLeft = source.scrollLeft;
-    };
-
-    const onTopScroll = () => syncScroll(topGrid, mainGrid);
-    topGrid.addEventListener("scroll", onTopScroll);
-
-    return () => {
-      topGrid.removeEventListener("scroll", onTopScroll);
-    };
-  }, []);
-
   return (
     <div
       className={styles.stateInformationPopup}
@@ -355,8 +326,8 @@ function StateInformationView() {
                 indicatorColor="secondary"
                 variant="fullWidth"
               >
-                <Tab label={"Choropleth"} {...a11yProps(0)} />
-                <Tab label={"Bubblechart Overlay"} {...a11yProps(1)} />
+                <Tab label={"Choropleth"} />
+                <Tab label={"Bubblechart Overlay"} />
               </Tabs>
             </Box>
           )}
@@ -471,40 +442,7 @@ function StateInformationView() {
           ml: 0.5,
         }}
       >
-        <Box ref={mainGridRef}>
-        <StyledDataGrid
-          rows={dataRows}
-          columns={dataCols}
-          width={maxWidthForTable}
-          maxWidth={maxWidthForTable}
-          height={maxHeightForTable}
-          maxHeight={maxHeightForTable}
-          getRowHeight={() => 45}
-          getRowId={(r) => r.id}
-        />
-        </Box>
-        <Box sx={{
-          position: "fixed",
-          top: maxHeightForTable - 95,
-          zIndex: 999,
-        }} ref={topGridRef}>
-          <StyledDataGrid
-            rows={[dataRows[dataRows.length - 1]]}
-            columns={dataCols}
-            width={maxWidthForTable}
-            maxWidth={maxWidthForTable}
-            maxHeight={50}
-            getRowId={(_) => "whyNoDataGridProMui"}
-            sx={{
-              "& .MuiDataGrid-columnHeaders": {
-                opacity: "0",
-                pointerEvents: "none",
-              },
-            }}
-            columnHeaderHeight={0}
-            hideFooter={true}
-          />
-        </Box>
+        <StateEAVSDataTable dataCols={dataCols} dataRows={dataRows} maxWidthForTable={maxWidthForTable} maxHeightForTable={maxHeightForTable} />
         <Box width={maxWidthForTable} height={500}>
           <Paper elevation={5}>
             <BarChart width={maxWidthForChart} height={maxHeightForChart} data={barData} title={barGraphTitle} xTitle={barGraphXTitle} />

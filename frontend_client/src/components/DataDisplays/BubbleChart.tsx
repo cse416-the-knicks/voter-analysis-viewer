@@ -221,7 +221,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           ))}
         {emptyData && (
           <text x={chartWidth / 2} y={chartHeight / 2} textAnchor="middle" fontSize={45}>
-            {isLoaded ? "No data available." : "Loading data." }
+            {isLoaded ? "No data available." : "Loading data."}
           </text>
         )}
       </svg>

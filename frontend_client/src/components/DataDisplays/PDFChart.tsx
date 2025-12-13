@@ -204,14 +204,23 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
         </text>
 
         {/* PDF Curves */}
-        {actualData.map((x) => (<>
-          <path d={curveLine(x.samples)} fill={"none"} pointerEvents={"none"} opacity={1.0} strokeOpacity="1.0" strokeWidth={3} stroke={x.strokeColor ?? x.fillColor} />
-          <path data-title={x.title} d={curveArea(x.samples)} opacity={x.opacity ?? "0.35"} fill={x.fillColor} stroke={x.strokeColor ?? x.fillColor} />
+        {actualData.map((x) => (
+          <>
+            <path
+              d={curveLine(x.samples)}
+              fill={"none"}
+              pointerEvents={"none"}
+              opacity={1.0}
+              strokeOpacity="1.0"
+              strokeWidth={3}
+              stroke={x.strokeColor ?? x.fillColor}
+            />
+            <path data-title={x.title} d={curveArea(x.samples)} opacity={x.opacity ?? "0.35"} fill={x.fillColor} stroke={x.strokeColor ?? x.fillColor} />
           </>
         ))}
       </svg>
       {/* Tooltip when moused over. */}
-      {isLoaded && actualData.length>0 && <SimplePDFChartLegend chartWidth={chartWidth} data={actualData} />}
+      {isLoaded && actualData.length > 0 && <SimplePDFChartLegend chartWidth={chartWidth} data={actualData} />}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
   );

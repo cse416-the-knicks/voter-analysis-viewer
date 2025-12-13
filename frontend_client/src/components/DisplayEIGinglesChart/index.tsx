@@ -20,14 +20,16 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
       <Paper>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
-          value={(granularity) ? 1 : 0}
-          onChange={(_, v) => {setGranularity(v === 0 ? false : true)}}
+            value={granularity ? 1 : 0}
+            onChange={(_, v) => {
+              setGranularity(v === 0 ? false : true);
+            }}
             textColor="secondary"
             indicatorColor="secondary"
             variant="fullWidth"
           >
-            <Tab label={"By Precinct"}/>
-            <Tab label={"By EAVS Geounit"}/>
+            <Tab label={"By Precinct"} />
+            <Tab label={"By EAVS Geounit"} />
           </Tabs>
         </Box>
 
@@ -47,8 +49,8 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
         </FormControl>
         <BubbleChart
           data={async () => {
-            const cvapData = await getCVAPStatisticsData(fipsCode!, { granularity: (granularity) ? "county" : "precinct" });
-            const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024, { granularity: (granularity) ? "county" : "precinct" });
+            const cvapData = await getCVAPStatisticsData(fipsCode!, { granularity: granularity ? "county" : "precinct" });
+            const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024, { granularity: granularity ? "county" : "precinct" });
             const mergedData = electionResultsData.map((e, i) => ({ ...e, ...cvapData[i] }));
 
             const republicanBubbleColor = "#d73027";
@@ -60,7 +62,7 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
               x: (data[CVAP_KEYS[cvapDemographicSelection]]! / data.cvapTotal!) * 100,
               y: (data.republicanVotes! / data.totalVotes!) * 100.0 || 0,
               name: data.countyName!,
-              size: Math.max((data.cvapTotal! / maxCvap) * 10 * ((granularity) ? 3 : 1.5), 5),
+              size: Math.max((data.cvapTotal! / maxCvap) * 10 * (granularity ? 3 : 1.5), 5),
               party: "Rep",
               color: republicanBubbleColor,
             }));
@@ -69,7 +71,7 @@ function DisplayEIGinglesChart({ fipsCode, width, height }: DisplayEIGinglesChar
               x: (data[CVAP_KEYS[cvapDemographicSelection]]! / data.cvapTotal!) * 100,
               y: (data.democratVotes! / data.totalVotes!) * 100.0 || 0,
               name: data.countyName!,
-              size: Math.max((data.cvapTotal! / maxCvap) * 10 * ((granularity) ? 3 : 1.5), 5),
+              size: Math.max((data.cvapTotal! / maxCvap) * 10 * (granularity ? 3 : 1.5), 5),
               party: "Dem",
               color: democraticBubbleColor,
             }));
