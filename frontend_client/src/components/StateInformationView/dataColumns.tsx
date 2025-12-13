@@ -154,8 +154,15 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
     field: "registrationDate",
     headerName: "Registration Date",
     width: 200,
-    valueFormatter: (value) => {
-      const parsedDate = new Date(value);
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip label="Missing" color="error" />;
+      }
+      const parsedDate = new Date(value.value);
+      const INVALID_DATE = -2208970800000;
+      if (INVALID_DATE === parsedDate.valueOf()) {
+        return <Chip label="Missing" color="error" />;
+      }
       return parsedDate.toLocaleDateString(navigator.language);
     },
     filterable: false,

@@ -17,7 +17,7 @@ public record VoterRegistrationDataModel(
     @SqlColumnName(name = "city") String city,
     @SqlColumnName(name = "zip_code") String zipCode,
     @SqlColumnName(name = "residential_address") String residentialAddress,
-    @SqlColumnName(name = "registration_date") Date registrationDate,
+    @SqlColumnName(name = "registration_date") Optional<Date> registrationDate,
     @SqlColumnName(name = "granularity") String granularity,
     @SqlColumnName(name = "is_valid") Optional<Boolean> verifiedValid,
     @SqlColumnName(
@@ -30,6 +30,7 @@ public record VoterRegistrationDataModel(
                     + "OR zip_code IS NULL OR TRIM(zip_code) = '' "
                     + "OR residential_address IS NULL OR TRIM(residential_address) = '' "
                     + "OR registration_date IS NULL "
+                    + "OR registration_date = '1900-01-01'"
                     + "THEN FALSE ELSE TRUE END")
         boolean dataCompleted) {
   public static class Queryable extends AutoSqlQueryable<VoterRegistrationDataModel> {
