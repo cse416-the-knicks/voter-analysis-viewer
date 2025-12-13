@@ -77,7 +77,7 @@ for c in use_columns[3:]:
     eavs_df[c] = eavs_df[c].apply(safe_int)
 
 # Derived fields for Other, Totals, and State IDs
-eavs_df["mail_reject_total"] = eavs_df[["C9a", "B24a", "E1d"]].sum(axis=1, skipna=True, min_count=1)
+eavs_df["mail_reject_total"] = eavs_df[["C9a", "B24a"]].sum(axis=1, skipna=True, min_count=1)
 eavs_df["removed_other"] = eavs_df[["A12i", "A12j", "A12k"]].sum(axis=1, min_count=1)
 eavs_df["prov_other"] = eavs_df[["E2j", "E2k", "E2l"]].sum(axis=1, min_count=1)
 eavs_df["mail_reject_other"] = eavs_df[["C9r", "C9s", "C9t"]].sum(axis=1, min_count=1)
@@ -116,6 +116,7 @@ rename_map = {
     "F1b": "ballots_in_person_eday",
     "F1f": "early_voting_total",
     "E1a": "prov_cast",
+    "E1d": "prov_reject_total",
     "E2a": "prov_reason_not_in_roll",
     "E2b": "prov_reason_no_id",
     "E2c": "prov_reason_not_eligibe_official",
@@ -149,7 +150,7 @@ rename_map = {
 eavs_df = eavs_df.rename(columns=rename_map)
 eavs_df = eavs_df.drop(columns=[
     "A12i","A12j","A12k",
-    "E2j","E2k","E2l", "E1d",
+    "E2j","E2k","E2l",
     "C9r","C9s","C9t",
     "State_Abbr","B24a","B18a","C9a"
 ])
