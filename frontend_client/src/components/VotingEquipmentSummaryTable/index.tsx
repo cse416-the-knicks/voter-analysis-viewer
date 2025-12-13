@@ -7,6 +7,8 @@ import { getAllVotingEquipment } from "../../api/client";
 import styles from "../DisplayVotingMachineSummaryView/DisplayVotingMachineSummaryView.module.css";
 import StyledDataGrid from "../StyledDataGrid";
 import useCssCalc from "../../hooks/useCssCalc";
+import { Check, Close } from "@mui/icons-material";
+import { Chip } from "@mui/material";
 
 const columns: GridColDef<VotingEquipmentModel[]>[] = [
   {
@@ -46,22 +48,59 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     headerName: "Discontinued",
     type: "boolean",
     width: 120,
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip label="Untested" color="error" />;
+      }
+      return value.value ? <Check color="error" /> : <Close color="success" />;
+    },
   },
   {
     field: "operatingSystem",
     headerName: "Operating System",
-    width: 160,
+    width: 280,
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip label="N/A" color="error" />;
+      }
+
+      if (value.value.includes("Windows")) {
+        if (value.value.includes("10") || value.value.includes("11")) {
+          return <><img width={24} height={24} src="/src/assets/windows10.png" />{value.value}</>
+        } else {
+          return <><img width={24} height={24} src="/src/assets/windows.png" />{value.value}</>
+        }
+      } else if (value.value.includes("Linux")) {
+        return <><img width={24} height={24} src="/src/assets/linux.png" />{value.value}</>
+      } else if (value.value.includes("Android")) {
+        return <><img width={24} height={24} src="/src/assets/android.png" />{value.value}</>
+      }
+      return value.value;
+    },
   },
   {
     field: "certificationLevel",
     headerName: "Certification",
     width: 150,
+    renderCell: (params) => {
+      const value = params.value;
+      if (value === null || value === undefined) {
+        return <Chip label="Unknown" color="error" />;
+      }
+      return <strong>{value}</strong>;
+    },
   },
   {
     field: "vvpat",
     headerName: "VVPAT?",
     type: "boolean",
     width: 100,
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip label="Untested" color="error" />;
+      }
+      return value.value ? <Check color="success" /> : <Close color="error" />;
+    },
   },
   {
     field: "quantity",
@@ -92,6 +131,17 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     headerName: "Quality",
     type: "number",
     width: 80,
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip label="N/A" color="error" />;
+      }
+      return <Chip label={value.value.toFixed(2)} size="small" color={
+        (value.value > 0.45) ?
+          (value.value > 0.7) ? "success"
+            : "warning"
+          : "error"
+      } />;
+    },
   },
   {
     field: "securityRisks",

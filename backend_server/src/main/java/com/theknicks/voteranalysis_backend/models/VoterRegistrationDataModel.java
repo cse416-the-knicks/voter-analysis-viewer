@@ -21,16 +21,17 @@ public record VoterRegistrationDataModel(
     @SqlColumnName(name = "granularity") String granularity,
     @SqlColumnName(name = "is_valid") Optional<Boolean> verifiedValid,
     @SqlColumnName(
-            name = "CASE WHEN region_id IS NULL OR TRIM(region_id) = '' " +
-                    "OR last_name IS NULL OR TRIM(last_name) = '' " +
-                    "OR first_name IS NULL OR TRIM(first_name) = '' " +
-                    "OR status IS NULL OR TRIM(status) = '' " +
-                    "OR city IS NULL OR TRIM(city) = '' " +
-                    "OR zip_code IS NULL OR TRIM(zip_code) = '' " +
-                    "OR residential_address IS NULL OR TRIM(residential_address) = '' " +
-                    "OR registration_date IS NULL " +
-                    "THEN FALSE ELSE TRUE END"
-    ) boolean dataCompleted) {
+            name =
+                "CASE WHEN region_id IS NULL OR TRIM(region_id) = '' "
+                    + "OR last_name IS NULL OR TRIM(last_name) = '' "
+                    + "OR first_name IS NULL OR TRIM(first_name) = '' "
+                    + "OR status IS NULL OR TRIM(status) = '' "
+                    + "OR city IS NULL OR TRIM(city) = '' "
+                    + "OR zip_code IS NULL OR TRIM(zip_code) = '' "
+                    + "OR residential_address IS NULL OR TRIM(residential_address) = '' "
+                    + "OR registration_date IS NULL "
+                    + "THEN FALSE ELSE TRUE END")
+        boolean dataCompleted) {
   public static class Queryable extends AutoSqlQueryable<VoterRegistrationDataModel> {
     public Queryable() {
       super(VoterRegistrationDataModel.class);
