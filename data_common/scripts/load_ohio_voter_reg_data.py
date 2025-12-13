@@ -39,6 +39,10 @@ for file in files:
     data_path = f"../raw/ohio_voter_files/{file}"
     ohio_voter_df = pd.read_csv(data_path, usecols=cols, encoding="cp1252", dtype=str)
 
+    # Initialize validation columns (will remain null except first 5000 rows of first file)
+    ohio_voter_df["granularity"] = pd.NA
+    ohio_voter_df["is_valid"] = pd.NA
+
     # Address validation block for first 5000 rows of first file only
     if file == "SWVF_1_22.csv":
         print("Running address validation check on first 5000 rows...")
@@ -50,6 +54,7 @@ for file in files:
         inferred_addresses_df = pd.read_csv("../processed/inferred_addresses.csv", usecols=inferred_cols, dtype=str).fillna("")
 
         sample_df = ohio_voter_df.head(5000).copy()
+        sample_df = sample_df.drop(columns=["granularity", "is_valid"], errors="ignore")
 
         # Build combined address to match Google's inputAddress
         sample_df["combined_address"] = (
@@ -71,7 +76,6 @@ for file in files:
             on="combined_address",
             how="left"
         )
-        print(validated_sample_df)
 
         # Determine which addresses are valid
         def is_valid(granularity):
@@ -80,6 +84,10 @@ for file in files:
             return "PREMISE" in granularity.upper()
 
         validated_sample_df["is_valid"] = validated_sample_df["granularity"].apply(is_valid)
+
+        # Bring validation results back into main dataframe (first 5000 rows only)
+        ohio_voter_df.loc[validated_sample_df.index, "granularity"] = validated_sample_df["granularity"]
+        ohio_voter_df.loc[validated_sample_df.index, "is_valid"] = validated_sample_df["is_valid"]
 
         # Summary of validation
         total_checked = len(validated_sample_df)

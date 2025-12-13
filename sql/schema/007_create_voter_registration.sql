@@ -22,6 +22,9 @@ CREATE TABLE app.voter_registration (
 
     registration_date  DATE,                              -- optional registration date
 
+    granularity VARCHAR(20),                               -- address validation granularity
+    is_valid    BOOLEAN,                                  -- is the address valid
+
     census_block_id CHAR(15)
                     REFERENCES app.census_block(block_id) -- census block reference
 );
