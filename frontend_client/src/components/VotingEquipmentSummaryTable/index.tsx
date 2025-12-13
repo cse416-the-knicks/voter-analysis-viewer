@@ -13,12 +13,7 @@ const chipScoreRender = (value) => {
   if (value.value === null || value.value === undefined) {
     return <Chip label="N/A" size="small" color="error" />;
   }
-  return <Chip label={value.value.toFixed(2)} size="small" color={
-    (value.value > 0.45) ?
-      (value.value > 0.7) ? "success"
-        : "warning"
-      : "error"
-  } />;
+  return <Chip label={value.value.toFixed(2)} size="small" color={value.value > 0.45 ? (value.value > 0.7 ? "success" : "warning") : "error"} />;
 };
 
 const columns: GridColDef<VotingEquipmentModel[]>[] = [
@@ -68,7 +63,6 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
 
       return value.value + " years";
     },
-
   },
   {
     field: "discontinued",
@@ -93,14 +87,34 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
 
       if (value.value.includes("Windows")) {
         if (value.value.includes("10") || value.value.includes("11")) {
-          return <><img width={24} height={24} src="/src/assets/windows10.png" />{value.value}</>
+          return (
+            <>
+              <img width={24} height={24} src="/src/assets/windows10.png" />
+              {value.value}
+            </>
+          );
         } else {
-          return <><img width={24} height={24} src="/src/assets/windows.png" />{value.value}</>
+          return (
+            <>
+              <img width={24} height={24} src="/src/assets/windows.png" />
+              {value.value}
+            </>
+          );
         }
       } else if (value.value.includes("Linux")) {
-        return <><img width={24} height={24} src="/src/assets/linux.png" />{value.value}</>
+        return (
+          <>
+            <img width={24} height={24} src="/src/assets/linux.png" />
+            {value.value}
+          </>
+        );
       } else if (value.value.includes("Android")) {
-        return <><img width={24} height={24} src="/src/assets/android.png" />{value.value}</>
+        return (
+          <>
+            <img width={24} height={24} src="/src/assets/android.png" />
+            {value.value}
+          </>
+        );
       }
       return value.value;
     },

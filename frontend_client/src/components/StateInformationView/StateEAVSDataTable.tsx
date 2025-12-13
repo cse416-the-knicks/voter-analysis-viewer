@@ -51,7 +51,7 @@ function StateEAVSDataTable({ dataRows, dataCols, maxWidthForTable, maxHeightFor
     <>
       <Box ref={mainGridRef}>
         <StyledDataGrid
-          rows={dataRows.slice(0, dataRows.length-1)}
+          rows={dataRows.slice(0, dataRows.length - 1)}
           columns={dataCols}
           width={maxWidthForTable}
           maxWidth={maxWidthForTable}

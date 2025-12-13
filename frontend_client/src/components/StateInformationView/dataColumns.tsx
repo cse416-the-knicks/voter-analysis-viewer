@@ -58,6 +58,13 @@ const VOTER_AFFILIATION_COLUMNS: GridColDef<VoterAffiliationStatisticsModel[]>[]
   { field: "democraticTotal", headerName: "Democratic", type: "number", width: 200 },
   { field: "republicanTotal", headerName: "Republican", type: "number", width: 150 },
   { field: "unaffiliatedTotal", headerName: "Unaffiliated", type: "number", width: 150 },
+  { field: "completedRecords", headerName: "Completed Records", type: "number", width: 150 },
+  { field: "incompleteRecords", headerName: "Incomplete Records", type: "number", width: 150 },
+  {
+    field: "completionPercent", headerName: "Registration Completion", type: "number", width: 150,
+    valueGetter: (value, row: VoterAffiliationStatisticsModel) =>
+      `${((row?.completedRecords!)/((row?.completedRecords!)+row?.incompleteRecords!)).toFixed(5)}`,
+  },
   { field: "registeredVotersTotal", headerName: "Total Registered", type: "number", width: 150 },
 ];
 
@@ -375,6 +382,8 @@ function bargraphDataForVoterAffiliations(aggregatedStatistics: VoterAffiliation
     { category: "Republican Voters", value: aggregatedStatistics.republicanTotal || 0 },
     { category: "Unaffiliated Voters", value: aggregatedStatistics.unaffiliatedTotal || 0 },
     { category: "Total Registered Voters", value: aggregatedStatistics.registeredVotersTotal || 0 },
+    { category: "Total Complete Records", value: aggregatedStatistics.completedRecords || 0 },
+    { category: "Total Incomplete Records", value: aggregatedStatistics.incompleteRecords || 0 },
   ];
 }
 
