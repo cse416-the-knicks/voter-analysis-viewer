@@ -108,7 +108,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel, descend
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
 
   // const xAxisTicks = xAxisScale.ticks(16);
-  const yAxisTicks = yAxisScale.ticks(4);
+  const yAxisTicks = yAxisScale.ticks(16);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
@@ -181,8 +181,8 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel, descend
               <text
                 key={x}
                 x={xAxisScale(x)}
-                y={chartHeight * 0.99}
-                transform={`rotate(-45, ${xAxisScale(x)}, ${chartHeight * 0.99})`}
+                y={chartHeight * 1.0}
+                transform={`rotate(-90, ${xAxisScale(x)}, ${chartHeight * 1.0})`}
                 textAnchor="start"
                 alignmentBaseline="middle"
                 fontWeight="bold"
