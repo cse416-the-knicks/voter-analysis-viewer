@@ -31,8 +31,8 @@ import java.util.Optional;
       "eavs_geounit.name",
       "device_model.device_model_id",
       "states.name",
-      "device_type",
-      "certification"
+      "equipment_type",
+      "certification_level"
     })
 public record VotingEquipmentUsageStatisticsEntryModel(
     @SqlColumnName(name = "device_model.device_model_id") Optional<Integer> deviceId,
@@ -40,8 +40,8 @@ public record VotingEquipmentUsageStatisticsEntryModel(
     @SqlColumnName(name = "eavs_geounit.state_id") int stateId,
     @SqlColumnName(name = "eavs_geounit.eavs_unit_code") String fullRegionId,
     @SqlColumnName(name = "eavs_geounit.name") String countyName,
-    @SqlColumnName(name = "device_type") Optional<String> deviceType,
-    @SqlColumnName(name = "certification") Optional<String> certification,
+    @SqlColumnName(name = "equipment_type") Optional<String> deviceType,
+    @SqlColumnName(name = "certification_level") Optional<String> certification,
     // currently DNE
     /*@SqlColumnName(name = "device_model.vvpat")*/ Optional<Boolean> hasVvpat,
     @SqlColumnName(name = "coalesce(sum(equipment_usage.quantity), 0)") int totalDevices,
