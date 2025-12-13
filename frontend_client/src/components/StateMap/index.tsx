@@ -92,13 +92,6 @@ function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFe
           height: height,
         }}
       >
-        <style>
-          {`
-.leaflet-tile {
-  background-color: rgba(111, 45, 200, 0.1); /* Or an image */
-}
-`}
-        </style>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={"https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"}

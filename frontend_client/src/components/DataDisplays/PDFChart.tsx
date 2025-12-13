@@ -98,7 +98,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
   );
 
   const dataMinX = d3.min(actualData, (x) => Math.min(...x.samples.map((x1) => x1.x)))! || 0;
-  const dataMaxX = maxXScale || d3.max(actualData, (x) => Math.max(...x.samples.map((x1) => x1.x)))! * 1.015;
+  const dataMaxX = maxXScale || d3.max(actualData, (x) => Math.max(...x.samples.map((x1) => x1.x)))!;
 
   const dataMinY = d3.min(actualData, (x) => Math.min(...x.samples.map((x1) => x1.y)))! || 0;
   const dataMaxY = maxYScale || d3.max(actualData, (x) => Math.max(...x.samples.map((x1) => x1.y)))!;
@@ -112,14 +112,19 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
     .domain([dataMinY, dataMaxY])
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
 
-  const xAxisTicks = xAxisScale.ticks(16);
-  const yAxisTicks = yAxisScale.ticks(16);
+  const xAxisTicks = xAxisScale.ticks(32);
+  const yAxisTicks = yAxisScale.ticks(32);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
 
   const svgRef = useRef<SVGSVGElement>(null);
-
+  const curveArea = d3
+    .area()
+    .x((d) => xAxisScale(d.x))
+    .y0(() => yAxisScale(0))
+    .y1((d) => yAxisScale(d.y))
+    .curve(d3.curveBasis);
   const curveLine = d3
     .line()
     .x((d) => xAxisScale(d.x))
@@ -128,18 +133,20 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
-    const circleSelector = svg.selectAll("path");
-    circleSelector
+    const pathSelector = svg.selectAll("path");
+    pathSelector
       .on("mouseover", function (_event, _d) {
         const element = this as Element;
-        setShowTooltip(true);
-        setTooltipText(element.getAttribute("data-title")!);
+        if (element.getAttribute("data-title").length > 0) {
+          setShowTooltip(true);
+          setTooltipText(element.getAttribute("data-title")!);
+        }
       })
       .on("mouseout", function (_event, _d) {
         setShowTooltip(false);
       });
     return () => {
-      circleSelector.on("mouseover", null).on("mouseout", null);
+      pathSelector.on("mouseover", null).on("mouseout", null);
     };
   }, [actualData]);
 
@@ -167,7 +174,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
         {xAxisTicks.map((x, y) => (
           <g key={y}>
             <line x1={xAxisScale(x)} x2={xAxisScale(x)} y1={chartMargin.top} y2={chartHeight - chartMargin.bottom} stroke="#808080" />
-            <text x={xAxisScale(x)} y={chartHeight - chartMargin.bottom + 20} textAnchor="middle" fontSize={15}>
+            <text x={xAxisScale(x)} y={chartHeight - chartMargin.bottom + 20} textAnchor="middle" fontSize={14}>
               {x}
             </text>
           </g>
@@ -180,7 +187,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
         {yAxisTicks.map((x, y) => (
           <g key={y}>
             <line x1={chartMargin.left} x2={chartWidth - chartMargin.right} y1={yAxisScale(x)} y2={yAxisScale(x)} stroke="#808080" />
-            <text x={chartMargin.left - 15} y={yAxisScale(x) + 5} textAnchor="middle" fontSize={15}>
+            <text x={chartMargin.left - 20} y={yAxisScale(x) + 5} textAnchor="middle" fontSize={14}>
               {x}
             </text>
           </g>
@@ -191,18 +198,29 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
           textAnchor="middle"
           fontSize={15}
           fontWeight="bold"
-          transform={`rotate(-90, ${chartMargin.left - 40}, ${chartHeight / 2})`}
+          transform={`rotate(-90, ${chartMargin.left - 50}, ${chartHeight / 2})`}
         >
           {yAxisLabel}
         </text>
 
         {/* PDF Curves */}
         {actualData.map((x) => (
-          <path data-title={x.title} d={curveLine(x.samples)} opacity={x.opacity ?? "0.5"} fill={x.fillColor} stroke={x.strokeColor ?? "black"} />
+          <>
+            <path
+              d={curveLine(x.samples)}
+              fill={"none"}
+              pointerEvents={"none"}
+              opacity={1.0}
+              strokeOpacity="1.0"
+              strokeWidth={3}
+              stroke={x.strokeColor ?? x.fillColor}
+            />
+            <path data-title={x.title} d={curveArea(x.samples)} opacity={x.opacity ?? "0.35"} fill={x.fillColor} stroke={x.strokeColor ?? x.fillColor} />
+          </>
         ))}
       </svg>
       {/* Tooltip when moused over. */}
-      {isLoaded && <SimplePDFChartLegend chartWidth={chartWidth} data={actualData} />}
+      {isLoaded && actualData.length > 0 && <SimplePDFChartLegend chartWidth={chartWidth} data={actualData} />}
       <SimpleTooltip show={showTooltip}>{tooltipText}</SimpleTooltip>
     </>
   );

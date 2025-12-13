@@ -146,13 +146,15 @@ public class StateService {
     return new ArrayList(DoubleStream.of(bestFitCoefficients).boxed().toList());
   }
 
-  @Cacheable(value = "countyGeoCentroids", key = "{ #fipsCode, #race }")
+  @Cacheable(
+      value = "getDeviceAccessibilityProbabilityByDemographicPDF",
+      key = "{ #fipsCode, #race }")
   public List<EIXYPoint> getDeviceAccessibilityProbabilityByDemographicPDF(
       String fipsCode, int race) {
     return dao.getDeviceAccessibilityProbabilityByDemographicPDF(fipsCode, race);
   }
 
-  @Cacheable(value = "countyGeoCentroids", key = "{ #fipsCode, #race }")
+  @Cacheable(value = "getRejectionProbabilitiesByDemographicPDF", key = "{ #fipsCode, #race }")
   public List<EIXYPoint> getRejectionProbabilitiesByDemographicPDF(String fipsCode, int race) {
     return dao.getRejectionProbabilitiesByDemographicPDF(fipsCode, race);
   }

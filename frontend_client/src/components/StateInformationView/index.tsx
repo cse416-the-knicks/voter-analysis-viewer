@@ -29,7 +29,6 @@ import { FIPS_TO_STATES_MAP } from "../FullBoundedUSMap/boundaryData";
 import { StateInformationViewDrawer, type StateInformationViewDrawerSection } from "./StateInformationViewDrawer";
 import useKeyDown from "../../hooks/useKeyDown";
 import useCssCalc from "../../hooks/useCssCalc";
-import StyledDataGrid from "../StyledDataGrid";
 import { type GradientMap } from "../../helpers/GradientMap";
 import GradientMapLegend from "../GradientMapLegend";
 import ColorKeyLegend from "../ColorKeyLegend";
@@ -63,6 +62,7 @@ import {
   type DataFact,
 } from "./dataViewConfigTypes";
 import { FACT_VIEW_CONFIGURATIONS } from "./dataViewModeConfig";
+import StateEAVSDataTable from "./StateEAVSDataTable";
 
 const DROPDOWN_SECTIONS = [
   {
@@ -146,13 +146,6 @@ const DROPDOWN_SECTIONS = [
   },
 ] as StateInformationViewDrawerSection[];
 
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
 function getUrlForModeId(id: number, fipsCode: string) {
   const configuration = FACT_VIEW_CONFIGURATIONS[id];
   if (configuration) {
@@ -190,7 +183,7 @@ function StateInformationView() {
   const maxWidthForChart = maxWidthForTable;
   const maxHeightForChart = maxHeightForTable;
 
-  const bubbleChartWidth = useCssCalc("75vw");
+  const bubbleChartWidth = useCssCalc("85vw");
   const bubbleChartHeight = useCssCalc("90vh");
 
   const activeDataState = activeDataStateHook[0];
@@ -333,8 +326,8 @@ function StateInformationView() {
                 indicatorColor="secondary"
                 variant="fullWidth"
               >
-                <Tab label={"Choropleth"} {...a11yProps(0)} />
-                <Tab label={"Bubblechart Overlay"} {...a11yProps(1)} />
+                <Tab label={"Choropleth"} />
+                <Tab label={"Bubblechart Overlay"} />
               </Tabs>
             </Box>
           )}
@@ -449,15 +442,7 @@ function StateInformationView() {
           ml: 0.5,
         }}
       >
-        <StyledDataGrid
-          rows={dataRows}
-          columns={dataCols}
-          width={maxWidthForTable}
-          maxWidth={maxWidthForTable}
-          height={maxHeightForTable}
-          maxHeight={maxHeightForTable}
-          getRowId={(r) => r.id}
-        />
+        <StateEAVSDataTable dataCols={dataCols} dataRows={dataRows} maxWidthForTable={maxWidthForTable} maxHeightForTable={maxHeightForTable} />
         <Box width={maxWidthForTable} height={500}>
           <Paper elevation={5}>
             <BarChart width={maxWidthForChart} height={maxHeightForChart} data={barData} title={barGraphTitle} xTitle={barGraphXTitle} />

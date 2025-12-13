@@ -20,6 +20,11 @@ export default {
           data={async () => {
             const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
             const equipmentQuality = await getDetailedVotingEquipmentUsage(fipsCode!);
+
+            if (!equipmentQuality.some((e) => e.averageAge! > 0 && e.averageQualityScore! > 0)) {
+              return [];
+            }
+
             const rejectionData = await getMailBallotRejections(fipsCode!);
             const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...rejectionData[i], ...electionResultsData[i] }));
 
@@ -41,7 +46,7 @@ export default {
               y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0 || 0,
               name: data.countyName!,
               size: Math.max((voterData[i].total! / maxVoters) * 40, 5),
-              party: political ? (data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem") : "None",
+              party: political ? (data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem") : "NONE",
               color: political ? (data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor) : neutralBubbleColor,
             }));
           }}
