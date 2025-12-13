@@ -202,10 +202,13 @@ function StateInformationView() {
   const overlayViews = Object.values(FACT_VIEW_CONFIGURATIONS).filter((cfg) => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY);
   const shouldOpenPopup = overlayViews.some((cfg) => location.pathname.includes(cfg.path));
 
+  const [isLoaded, setLoaded] = useState(false);
+
   useEffect(
     function () {
       (async function () {
         const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
+        setLoaded(false);
         if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
           const description = viewConfig.description;
           setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - ${description.barGraphTitle}`);
@@ -240,6 +243,7 @@ function StateInformationView() {
         } else {
           setGradientMap(PERCENTAGE_CHOROPLETH_BUCKETS);
         }
+        setLoaded(true);
       })();
     },
     [activeDataState, fipsCode, navigate]
@@ -447,7 +451,7 @@ function StateInformationView() {
           ml: 0.5,
         }}
       >
-        <StateEAVSDataTable dataCols={dataCols} dataRows={dataRows} maxWidthForTable={maxWidthForTable} maxHeightForTable={maxHeightForTable} />
+        <StateEAVSDataTable isLoaded={isLoaded} dataCols={dataCols} dataRows={dataRows} maxWidthForTable={maxWidthForTable} maxHeightForTable={maxHeightForTable} />
         <Box width={maxWidthForTable} height={500}>
           <Paper elevation={5}>
             <BarChart width={maxWidthForChart} height={maxHeightForChart} data={barData} title={barGraphTitle} xTitle={barGraphXTitle} />

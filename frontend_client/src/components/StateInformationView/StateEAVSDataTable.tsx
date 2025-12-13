@@ -9,9 +9,10 @@ interface StateEAVSDataTableProperties {
   dataCols: GridColDef[];
   maxWidthForTable: number;
   maxHeightForTable: number;
+  isLoaded: boolean;
 }
 
-function StateEAVSDataTable({ dataRows, dataCols, maxWidthForTable, maxHeightForTable }: StateEAVSDataTableProperties) {
+function StateEAVSDataTable({ dataRows, dataCols, maxWidthForTable, maxHeightForTable, isLoaded }: StateEAVSDataTableProperties) {
   const topGridRef = useRef<HTMLDivElement>(null);
   const mainGridRef = useRef<HTMLDivElement>(null);
 
@@ -59,6 +60,13 @@ function StateEAVSDataTable({ dataRows, dataCols, maxWidthForTable, maxHeightFor
           maxHeight={maxHeightForTable}
           getRowHeight={() => 45}
           getRowId={(r) => r.id}
+          loading={!isLoaded}
+          slotProps={{
+            loadingOverlay: {
+              variant: 'skeleton',
+              noRowsVariant: 'skeleton',
+            },
+          }}
         />
       </Box>
       <Box
@@ -82,6 +90,7 @@ function StateEAVSDataTable({ dataRows, dataCols, maxWidthForTable, maxHeightFor
             },
           }}
           columnHeaderHeight={0}
+          loading={!isLoaded}
           hideFooter={true}
         />
       </Box>
