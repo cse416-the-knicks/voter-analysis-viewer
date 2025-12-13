@@ -21,7 +21,7 @@ export default {
             const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
             const equipmentQuality = await getDetailedVotingEquipmentUsage(fipsCode!);
 
-            if (!equipmentQuality.some((e) => e.averageAge! > 0)) {
+            if (!equipmentQuality.some((e) => e.averageAge! > 0 && e.averageQualityScore! > 0)) {
               return [];
             }
 
