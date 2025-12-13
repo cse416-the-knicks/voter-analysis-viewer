@@ -1,4 +1,5 @@
 import { getElectionResultsSummary, getBallotStatistics, getCVAPStatisticsData } from "../../../api/client";
+import useCssCalc from "../../../hooks/useCssCalc";
 import BubbleChart from "../../DataDisplays/BubbleChart";
 import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_MAIL_IN_VOTING } from "./viewIds";
@@ -30,7 +31,7 @@ export default {
               color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
             }));
           }}
-          width={overlayWidth}
+          width={useCssCalc("83.5vw")}
           height={overlayHeight}
           maxXScale={100}
           title="Mail Ballots by Party"

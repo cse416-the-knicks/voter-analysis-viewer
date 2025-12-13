@@ -1,3 +1,4 @@
+import useCssCalc from "../../../hooks/useCssCalc";
 import DisplayEIVotingEquipment from "../../DisplayEIVotingEquipment";
 import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_VOTING_EQUIPMENT } from "./viewIds";
@@ -7,7 +8,7 @@ export default {
     path: "ei-voting-equipment",
     description: {
       type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
-      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIVotingEquipment fipsCode={fipsCode} width={overlayWidth} height={overlayHeight} />,
+      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIVotingEquipment fipsCode={fipsCode} width={useCssCalc("83.5vw")} height={overlayHeight} />,
     },
   } as StateInformationViewDataConfiguration,
 };

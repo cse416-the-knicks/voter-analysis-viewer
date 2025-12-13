@@ -76,8 +76,8 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     .domain([d3.min(actualData, (x) => x.size)!, d3.max(actualData, (x) => x.size)!])
     .range([5, 25]);
 
-  const xAxisTicks = xAxisScale.ticks(emptyData ? 0 : 1 * 32);
-  const yAxisTicks = yAxisScale.ticks(emptyData ? 0 : 1 * 32);
+  const xAxisTicks = xAxisScale.ticks(emptyData ? 0 : 1 * 30);
+  const yAxisTicks = yAxisScale.ticks(emptyData ? 0 : 1 * 30);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
@@ -145,7 +145,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
           partyLines.push({
             party,
             data: regressionLine(regressionPoints),
-            color: party === "Dem" ? "blue" : party === "Rep" ? "red" : actualData[0].color,
+            color: party === "Dem" ? d3.color("blue")?.darker(1) : party === "Rep" ? d3.color("red")?.darker(1) : actualData[0].color,
           });
         }
 
@@ -217,7 +217,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
         {/* Bubble Chart Linear Regression */}
         {useRegression &&
           regressionLines.map((lines) => (
-            <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={2.5} opacity={0.85} clipPath="url(#svg-clip-rect)" />
+            <path key={lines.party} d={lines.data} stroke={lines.color} fill="none" strokeWidth={3} opacity={0.85} clipPath="url(#svg-clip-rect)" />
           ))}
         {emptyData && (
           <text x={chartWidth / 2} y={chartHeight / 2} textAnchor="middle" fontSize={45}>
