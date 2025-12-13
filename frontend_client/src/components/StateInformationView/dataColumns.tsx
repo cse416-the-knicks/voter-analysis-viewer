@@ -13,6 +13,9 @@ import type { BarChartDataEntry } from "../DataDisplays/BarChart";
 
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
 import titleCaseString from "../../helpers/titleCaseString";
+import { Chip } from "@mui/material";
+import { Check } from "@mui/icons-material";
+import Close from "@mui/icons-material/Close";
 
 const PROVISIONAL_BALLOT_COLUMNS: GridColDef<ProvisionalBallotStatisticsModel[]>[] = [
   {
@@ -152,6 +155,26 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
     valueFormatter: (value) => {
       const parsedDate = new Date(value);
       return parsedDate.toLocaleDateString(navigator.language);
+    },
+    filterable: false,
+  },
+  {
+    field: "verifiedValid",
+    headerName: "Geocoding Match",
+    width: 200,
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip label="Untested" color="error" />;
+      }
+      return value.value ? <Check color="success" /> : <Close color="error" />;
+    },
+  },
+  {
+    field: "dataCompleted",
+    headerName: "No Missing",
+    width: 150,
+    renderCell: (value) => {
+      return value.value ? <Check color="success" /> : <Close color="error" />;
     },
     filterable: false,
   },
