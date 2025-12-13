@@ -120,7 +120,7 @@ function DisplayVotingMachineSummaryView() {
   useEffect(function () {
     (async function () {
       const equipmentList = await getVotingEquipmentUsage();
-      setDataRows(equipmentList);
+      setDataRows(equipmentList.filter((x) => !(x.stateName === "Alaska" || x.stateName === "Hawaii")));
     })();
   }, []);
 

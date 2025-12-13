@@ -114,6 +114,9 @@ export interface VoterRegistrationDataModel {
   zipCode?: string;
   residentialAddress?: string;
   registrationDate?: string;
+  granularity?: string;
+  verifiedValid?: boolean;
+  dataCompleted?: boolean;
 }
 
 export type StateInformationModelRegistrationMethod = (typeof StateInformationModelRegistrationMethod)[keyof typeof StateInformationModelRegistrationMethod];
