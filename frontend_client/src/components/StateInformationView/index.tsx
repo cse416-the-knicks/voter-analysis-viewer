@@ -183,7 +183,7 @@ function StateInformationView() {
   const maxWidthForChart = maxWidthForTable;
   const maxHeightForChart = maxHeightForTable;
 
-  const bubbleChartWidth = useCssCalc("85vw");
+  const bubbleChartWidth = useCssCalc("83.5vw");
   const bubbleChartHeight = useCssCalc("90vh");
 
   const activeDataState = activeDataStateHook[0];

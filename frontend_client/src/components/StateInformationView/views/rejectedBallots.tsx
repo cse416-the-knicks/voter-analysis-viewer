@@ -5,7 +5,6 @@ import {
   getCVAPStatisticsData,
   getVoterRegistrationCounts,
 } from "../../../api/client";
-import useCssCalc from "../../../hooks/useCssCalc";
 import BubbleChart from "../../DataDisplays/BubbleChart";
 import { DETAIL_STATE_TYPE_DEMOCRAT, DETAIL_STATE_TYPE_REPUBLICAN, getDetailStateType } from "../../FullBoundedUSMap/detailedStatesInfo";
 import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
@@ -52,7 +51,7 @@ export default {
             }));
           }}
           maxXScale={1}
-          width={overlayWidth - useCssCalc("1.5vw")}
+          width={overlayWidth}
           height={overlayHeight}
           title="Voting Equipment Quality"
           xAxisLabel="Quality Level"

@@ -1,5 +1,4 @@
 import { getVoterRegistrationHistory } from "../../../api/client";
-import useCssCalc from "../../../hooks/useCssCalc";
 import LineChart from "../../DataDisplays/LineChart";
 import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_COMPARE_VOTER_REGISTRATION_RATES } from "./viewIds";
@@ -18,7 +17,7 @@ export default {
             // Manually assign back colors on the frontend.
             return votingHistory.map((x, i) => ({ color: eavsColors[i], ...x }));
           }}
-          width={overlayWidth - useCssCalc("1.5vw")}
+          width={overlayWidth}
           height={overlayHeight}
           title="Voter Registration By Year"
           xAxisLabel="EAVs Unit"

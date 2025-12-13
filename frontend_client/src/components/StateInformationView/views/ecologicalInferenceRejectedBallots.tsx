@@ -1,4 +1,3 @@
-import useCssCalc from "../../../hooks/useCssCalc";
 import DisplayEIRejectedBallots from "../../DisplayEIRejectedBallots";
 import { STATE_INFORMATION_VIEW_TYPE_OVERLAY, type StateInformationViewDataConfiguration } from "../dataViewConfigTypes";
 import { ID_SELECTION_VIEW_ECOLOGICAL_INFERENCE_REJECTED_BALLOTS } from "./viewIds";
@@ -8,7 +7,7 @@ export default {
     path: "ei-rejected-ballots",
     description: {
       type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
-      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIRejectedBallots fipsCode={fipsCode} width={overlayWidth - useCssCalc("1.5vw")} height={overlayHeight} />,
+      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIRejectedBallots fipsCode={fipsCode} width={overlayWidth} height={overlayHeight} />,
     },
   } as StateInformationViewDataConfiguration,
 };
