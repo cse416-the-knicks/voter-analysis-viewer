@@ -146,7 +146,9 @@ public class StateService {
     return new ArrayList(DoubleStream.of(bestFitCoefficients).boxed().toList());
   }
 
-  @Cacheable(value = "getDeviceAccessibilityProbabilityByDemographicPDF", key = "{ #fipsCode, #race }")
+  @Cacheable(
+      value = "getDeviceAccessibilityProbabilityByDemographicPDF",
+      key = "{ #fipsCode, #race }")
   public List<EIXYPoint> getDeviceAccessibilityProbabilityByDemographicPDF(
       String fipsCode, int race) {
     return dao.getDeviceAccessibilityProbabilityByDemographicPDF(fipsCode, race);
