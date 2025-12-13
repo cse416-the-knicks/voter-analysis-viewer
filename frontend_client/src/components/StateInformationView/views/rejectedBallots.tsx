@@ -4,6 +4,7 @@ import {
   getMailBallotRejections,
   getCVAPStatisticsData,
   getVoterRegistrationCounts,
+  getProvisionalBallots,
 } from "../../../api/client";
 import BubbleChart from "../../DataDisplays/BubbleChart";
 import { DETAIL_STATE_TYPE_DEMOCRAT, DETAIL_STATE_TYPE_REPUBLICAN, getDetailStateType } from "../../FullBoundedUSMap/detailedStatesInfo";
@@ -26,7 +27,8 @@ export default {
             }
 
             const rejectionData = await getMailBallotRejections(fipsCode!);
-            const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...rejectionData[i], ...electionResultsData[i] }));
+            const provisionalBallotsData = await getProvisionalBallots(fipsCode!);
+            const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...rejectionData[i], ...electionResultsData[i], ...provisionalBallotsData[i] }));
 
             const republicanBubbleColor = "#d73027";
             const democraticBubbleColor = "#4575b4";
@@ -43,7 +45,7 @@ export default {
 
             return mergedData.map((data, i) => ({
               x: data.averageQualityScore!,
-              y: (data.rejectTotal! / data.totalBallotsCast!) * 100.0 || 0,
+              y: ((data.rejectTotal! + data.rejectedProvisionalBallots!) / data.totalBallotsCast!) * 100.0 || 0,
               name: data.countyName!,
               size: Math.max((voterData[i].total! / maxVoters) * 40, 5),
               party: political ? (data.republicanVotes! > data.democratVotes! ? "Rep" : "Dem") : "NONE",
