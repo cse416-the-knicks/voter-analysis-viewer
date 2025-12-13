@@ -18,7 +18,7 @@ export default {
             // Manually assign back colors on the frontend.
             return votingHistory.map((x, i) => ({ color: eavsColors[i], ...x }));
           }}
-          width={useCssCalc("83.5vw")}
+          width={overlayWidth - useCssCalc("1.5vw")}
           height={overlayHeight}
           title="Voter Registration By Year"
           xAxisLabel="EAVs Unit"

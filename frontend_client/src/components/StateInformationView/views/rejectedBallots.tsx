@@ -52,7 +52,7 @@ export default {
             }));
           }}
           maxXScale={1}
-          width={useCssCalc("83.5vw")}
+          width={overlayWidth - useCssCalc("1.5vw")}
           height={overlayHeight}
           title="Voting Equipment Quality"
           xAxisLabel="Quality Level"

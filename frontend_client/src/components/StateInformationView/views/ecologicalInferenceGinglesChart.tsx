@@ -8,7 +8,7 @@ export default {
     path: "ei-gingles-chart",
     description: {
       type: STATE_INFORMATION_VIEW_TYPE_OVERLAY,
-      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIGinglesChart fipsCode={fipsCode} width={useCssCalc("83.5vw")} height={overlayHeight} />,
+      element: (fipsCode, overlayWidth, overlayHeight) => <DisplayEIGinglesChart fipsCode={fipsCode} width={overlayWidth - useCssCalc("1.5vw")} height={overlayHeight} />,
     },
   } as StateInformationViewDataConfiguration,
 };

@@ -31,7 +31,7 @@ export default {
               color: data.republicanVotes! > data.democratVotes! ? republicanBubbleColor : democraticBubbleColor,
             }));
           }}
-          width={useCssCalc("83.5vw")}
+          width={overlayWidth - useCssCalc("1.5vw")}
           height={overlayHeight}
           maxXScale={100}
           title="Mail Ballots by Party"
