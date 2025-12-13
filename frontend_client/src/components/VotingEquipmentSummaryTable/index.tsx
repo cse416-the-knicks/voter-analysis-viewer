@@ -6,9 +6,20 @@ import { getAllVotingEquipment } from "../../api/client";
 
 import styles from "../DisplayVotingMachineSummaryView/DisplayVotingMachineSummaryView.module.css";
 import StyledDataGrid from "../StyledDataGrid";
-import useCssCalc from "../../hooks/useCssCalc";
 import { Check, Close } from "@mui/icons-material";
 import { Chip } from "@mui/material";
+
+const chipScoreRender = (value) => {
+  if (value.value === null || value.value === undefined) {
+    return <Chip label="N/A" size="small" color="error" />;
+  }
+  return <Chip label={value.value.toFixed(2)} size="small" color={
+    (value.value > 0.45) ?
+      (value.value > 0.7) ? "success"
+        : "warning"
+      : "error"
+  } />;
+};
 
 const columns: GridColDef<VotingEquipmentModel[]>[] = [
   {
@@ -30,8 +41,16 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     field: "firstManufactured",
     headerName: "First Manufactured",
     width: 150,
-    valueFormatter: (value) => {
-      const parsedDate = new Date(value);
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip size="small" label="Missing" color="error" />;
+      }
+      const parsedDate = new Date(value.value);
+      const INVALID_DATE = -2208970800000;
+      const INVALID_DATE_UNIX = 0;
+      if (INVALID_DATE === parsedDate.valueOf() || INVALID_DATE_UNIX === parsedDate.valueOf()) {
+        return <Chip size="small" label="Missing" color="error" />;
+      }
       return parsedDate.toLocaleDateString(navigator.language);
     },
   },
@@ -42,6 +61,14 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     valueFormatter: (value) => {
       return value + " years";
     },
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip label="N/A" size="small" color="error" />;
+      }
+
+      return value.value + " years";
+    },
+
   },
   {
     field: "discontinued",
@@ -50,7 +77,7 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     width: 120,
     renderCell: (value) => {
       if (value.value === null || value.value === undefined) {
-        return <Chip label="Untested" color="error" />;
+        return <Chip label="Unknown" size="small" color="error" />;
       }
       return value.value ? <Check color="error" /> : <Close color="success" />;
     },
@@ -61,7 +88,7 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     width: 280,
     renderCell: (value) => {
       if (value.value === null || value.value === undefined) {
-        return <Chip label="N/A" color="error" />;
+        return <Chip label="N/A" size="small" color="error" />;
       }
 
       if (value.value.includes("Windows")) {
@@ -85,7 +112,10 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     renderCell: (params) => {
       const value = params.value;
       if (value === null || value === undefined) {
-        return <Chip label="Unknown" color="error" />;
+        return <Chip label="Unknown" size="small" color="error" />;
+      }
+      if (value === "Not Applicable") {
+        return <Chip label="N/A" size="small" color="error" />;
       }
       return <strong>{value}</strong>;
     },
@@ -97,7 +127,7 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     width: 100,
     renderCell: (value) => {
       if (value.value === null || value.value === undefined) {
-        return <Chip label="Untested" color="error" />;
+        return <Chip label="Unknown" size="small" color="error" />;
       }
       return value.value ? <Check color="success" /> : <Close color="error" />;
     },
@@ -109,21 +139,23 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     width: 80,
   },
   {
+    field: "scanRate",
+    headerName: "Scan Rate",
+    type: "number",
+    width: 100,
+  },
+  {
     field: "reliabilityScore",
     headerName: "Reliability",
     type: "number",
+    renderCell: chipScoreRender,
     width: 100,
   },
   {
     field: "errorRate",
     headerName: "Error Rate",
     type: "number",
-    width: 100,
-  },
-  {
-    field: "scanRate",
-    headerName: "Scan Rate",
-    type: "number",
+    renderCell: chipScoreRender,
     width: 100,
   },
   {
@@ -131,17 +163,7 @@ const columns: GridColDef<VotingEquipmentModel[]>[] = [
     headerName: "Quality",
     type: "number",
     width: 80,
-    renderCell: (value) => {
-      if (value.value === null || value.value === undefined) {
-        return <Chip label="N/A" color="error" />;
-      }
-      return <Chip label={value.value.toFixed(2)} size="small" color={
-        (value.value > 0.45) ?
-          (value.value > 0.7) ? "success"
-            : "warning"
-          : "error"
-      } />;
-    },
+    renderCell: chipScoreRender,
   },
   {
     field: "securityRisks",
