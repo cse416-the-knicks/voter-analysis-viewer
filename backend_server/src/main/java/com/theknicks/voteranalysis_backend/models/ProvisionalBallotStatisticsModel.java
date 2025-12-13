@@ -24,7 +24,8 @@ public record ProvisionalBallotStatisticsModel(
     @SqlColumnName(name = "prov_reason_mail_ballot_unsurrendered") int ballotReasonDidNotSurrender,
     @SqlColumnName(name = "prov_reason_hours_extended") int ballotReasonExtendedVotingHours,
     @SqlColumnName(name = "prov_reason_same_day_reg") int ballotReasonSameDayRegistration,
-    @SqlColumnName(name = "prov_other") int ballotReasonOther) {
+    @SqlColumnName(name = "prov_other") int ballotReasonOther,
+    @SqlColumnName(name = "prov_reject_total") int rejectedProvisionalBallots) {
   public ProvisionalBallotStatisticsModel(
       int totalProvisionalBallotsCast,
       int totalBallotsCast,
@@ -37,7 +38,8 @@ public record ProvisionalBallotStatisticsModel(
       int ballotReasonDidNotSurrender,
       int ballotReasonExtendedVotingHours,
       int ballotReasonSameDayRegistration,
-      int ballotReasonOther) {
+      int ballotReasonOther,
+      int rejectedProvisionalBallots) {
     this(
         "0000000000",
         "Aggregated",
@@ -52,7 +54,8 @@ public record ProvisionalBallotStatisticsModel(
         ballotReasonDidNotSurrender,
         ballotReasonExtendedVotingHours,
         ballotReasonSameDayRegistration,
-        ballotReasonOther);
+        ballotReasonOther,
+        rejectedProvisionalBallots);
   }
 
   public static class Queryable extends AutoSqlQueryable<ProvisionalBallotStatisticsModel> {

@@ -179,6 +179,7 @@ export interface ProvisionalBallotStatisticsModel {
   ballotReasonExtendedVotingHours?: number;
   ballotReasonSameDayRegistration?: number;
   ballotReasonOther?: number;
+  rejectedProvisionalBallots?: number;
 }
 
 export interface PollbookDeletionStatisticsModel {
