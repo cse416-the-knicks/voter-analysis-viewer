@@ -107,15 +107,14 @@ def build_equipment_usage(year, eavs, map_dict, groups, engine):
                 if model_col not in eavs.columns:
                     continue
 
-                raw_text = str(row.get(model_col, "")).strip()
-                if not raw_text:
-                    continue
+                main_val = str(row.get(model_col, "")).strip()
+                other_val = str(row.get(f"{model_col}other", "")).strip()
 
-                # "Other (use text box...)" is replaced with that text box if present
-                if raw_text.lower().startswith("other") and f"{model_col}other" in eavs.columns:
-                    raw_text = str(row[f"{model_col}other"]).strip()
-                if not raw_text:
-                    continue
+                raw_text = main_val
+                if main_val.lower().startswith("other"):
+                    raw_text = other_val
+                elif not main_val:
+                    raw_text = other_val
 
                 if not raw_text:
                     continue
