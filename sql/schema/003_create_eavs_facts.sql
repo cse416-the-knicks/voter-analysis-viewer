@@ -38,6 +38,7 @@ CREATE TABLE app.eavs_data (
 
     -- Provisionals E*
     prov_cast                    INT,
+    prov_reject_total            INT,
     prov_reason_not_in_roll      INT,
     prov_reason_no_id            INT,
     prov_reason_not_eligibe_official INT,
