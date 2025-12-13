@@ -183,7 +183,7 @@ function StateInformationView() {
   const maxWidthForChart = maxWidthForTable;
   const maxHeightForChart = maxHeightForTable;
 
-  const bubbleChartWidth = useCssCalc("85vw");
+  const bubbleChartWidth = useCssCalc("83.5vw");
   const bubbleChartHeight = useCssCalc("90vh");
 
   const activeDataState = activeDataStateHook[0];
@@ -317,7 +317,7 @@ function StateInformationView() {
         >
           {tryingToViewDetailedVoterRegistration && (
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <Tabs
+              {/* <Tabs
                 value={viewDetailedVoterRegistrationBubbleChart ? 1 : 0}
                 onChange={function (_, x) {
                   setViewDetailedVoterRegistrationBubbleChart(x == 1);
@@ -328,7 +328,7 @@ function StateInformationView() {
               >
                 <Tab label={"Choropleth"} />
                 <Tab label={"Bubblechart Overlay"} />
-              </Tabs>
+              </Tabs> */}
             </Box>
           )}
           <StateMap

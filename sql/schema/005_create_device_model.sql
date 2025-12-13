@@ -3,7 +3,7 @@ CREATE TABLE app.device_model (
 
     manufacturer         VARCHAR(100),
     equipment_type       VARCHAR(50)  NOT NULL,
-    model_name           VARCHAR(100) NOT NULL,
+    model_name           VARCHAR(150) NOT NULL,
 
     first_manufactured   DATE,
     last_manufactured    DATE,
