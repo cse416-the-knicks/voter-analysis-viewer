@@ -7,6 +7,7 @@ import type {
   GridSortModel,
   GridRowParams,
   GridCallbackDetails,
+  DataGridProps,
 } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
@@ -24,7 +25,7 @@ interface ServerSidePageDataProvider {
 }
 
 type RowMaker = readonly object[] | (() => Promise<object[]>) | ServerSidePageDataProvider;
-interface StyledDataGridProperties {
+type StyledDataGridProperties = {
   rows: RowMaker;
   columns: readonly GridColDef[];
   getRowId?: GridRowIdGetter;
@@ -36,7 +37,7 @@ interface StyledDataGridProperties {
   maxHeight?: number | string;
   customCssRules?: object;
   onRowDoubleClick?: onRowDoubleClickFn;
-}
+} & Omit<DataGridProps, "rows" | "columns">;
 
 function StyledDataGrid({
   rows,
@@ -50,6 +51,7 @@ function StyledDataGrid({
   maxHeight,
   customCssRules,
   onRowDoubleClick,
+  ...props
 }: StyledDataGridProperties) {
   const getRowClassNameFunction: getRowClassNameFn = function (r) {
     const colorAsAlternatingRows: getRowClassNameFn = (r) => (r.indexRelativeToCurrentPage % 2 == 0 ? "oddRowStyle" : "");
@@ -139,6 +141,7 @@ function StyledDataGrid({
             ...customCssRules,
           }}
           disableRowSelectionOnClick
+          {...props}
         />
       </Box>
     );
@@ -170,6 +173,7 @@ function StyledDataGrid({
             ...customCssRules,
           }}
           disableRowSelectionOnClick
+          {...props}
         />
       </Box>
     );
