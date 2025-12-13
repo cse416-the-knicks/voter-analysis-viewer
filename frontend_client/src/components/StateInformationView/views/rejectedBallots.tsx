@@ -20,6 +20,11 @@ export default {
           data={async () => {
             const electionResultsData = await getElectionResultsSummary(fipsCode!, 2024);
             const equipmentQuality = await getDetailedVotingEquipmentUsage(fipsCode!);
+
+            if (!equipmentQuality.some((e) => e.averageAge! > 0)) {
+              return [];
+            }
+
             const rejectionData = await getMailBallotRejections(fipsCode!);
             const mergedData = equipmentQuality.map((e, i) => ({ ...e, ...rejectionData[i], ...electionResultsData[i] }));
 
