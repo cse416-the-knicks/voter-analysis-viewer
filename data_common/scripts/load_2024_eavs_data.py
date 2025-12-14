@@ -46,11 +46,15 @@ use_columns = [
     "A12a","A12b","A12c","A12d","A12e","A12f","A12g","A12h","A12i","A12j","A12k",
     "C8a","C6a",
     "F1b","F1f",
-    "E1a", "E1d",
+    "E1a","E1d",
     "E2a","E2b","E2c","E2d","E2e","E2f","E2g","E2h","E2i","E2j","E2k","E2l",
     "B24a","B18a",
     "C9a","C9b","C9c","C9d","C9e","C9f","C9g","C9h","C9i","C9j","C9k","C9l","C9m","C9n",
-    "C9o","C9p","C9q","C9r","C9s","C9t"
+    "C9o","C9p","C9q","C9r","C9s","C9t",
+    "F3a","F3c_1","F3c_2","F3c_3",
+    "F4a","F4c_1","F4c_2","F4c_3",
+    "F5a","F5c_1","F5c_2","F5c_3",
+    "F6a","F6c_1","F6c_2","F6c_3"
 ]
 raw = pd.read_excel(
     data_path,
@@ -73,8 +77,10 @@ eavs_df.loc[(not_wi) & (eavs_df["FIPSCode"].str.len() == 5), "FIPSCode"] = (
 eavs_df.loc[is_wi, "FIPSCode"] = eavs_df.loc[is_wi, "FIPSCode"].apply(pad_wisconsin_fips)
 
 # Numeric conversion for appropriate columns
+flag_cols = ["F3a","F4a","F5a","F6a"]
 for c in use_columns[3:]:
-    eavs_df[c] = eavs_df[c].apply(safe_int)
+    if c not in flag_cols:
+        eavs_df[c] = eavs_df[c].apply(safe_int)
 
 # Derived fields for Other, Totals, and State IDs
 eavs_df["mail_reject_total"] = eavs_df[["C9a", "B24a"]].sum(axis=1, skipna=True, min_count=1)
@@ -148,12 +154,6 @@ rename_map = {
     "state_id": "state_id",
 }
 eavs_df = eavs_df.rename(columns=rename_map)
-eavs_df = eavs_df.drop(columns=[
-    "A12i","A12j","A12k",
-    "E2j","E2k","E2l",
-    "C9r","C9s","C9t",
-    "State_Abbr","B24a","B18a","C9a"
-])
 
 # Calculating missing data score with category definitions based on GUI use-case importance
 registration_cols = ["total_registered", "active_registered", "inactive_registered"]
@@ -185,39 +185,69 @@ voting_method_cols = [
     "ballots_in_person_eday","early_voting_total","total_ballots_cast"
 ]
 
+EQUIPMENT_GROUPS = {
+    "DRE_no_VVPAT": ("F3a", ["F3c_1","F3c_2","F3c_3"]),
+    "DRE_with_VVPAT": ("F4a", ["F4c_1","F4c_2","F4c_3"]),
+    "BMD": ("F5a", ["F5c_1","F5c_2","F5c_3"]),
+    "Scanner": ("F6a", ["F6c_1","F6c_2","F6c_3"]),
+}
+
 weights = {
     "registration": 0.30,
-    "mail_rej": 0.25,
-    "voting_methods": 0.25,
-    "pollbook": 0.10,
-    "provisional": 0.10
+    "mail_rej": 0.20,
+    "voting_methods": 0.20,
+    "equipment": 0.20,
+    "pollbook": 0.05,
+    "provisional": 0.05,
 }
 
 def category_score(row, cols):
-    if len(cols) == 0:
-        return 1
     missing = row[cols].isna().sum()
     return 1 - (missing / len(cols))
 
+def equipment_group_score(row, flag_col, detail_cols):
+    flag = row[flag_col]
+    if pd.isna(flag):
+        return 0
+    flag = str(flag).strip().lower()
+    if flag == "no":
+        return 1
+    if flag == "yes":
+        return any(not pd.isna(row[c]) for c in detail_cols)
+    return 0
+
+def equipment_score(row):
+    return sum(
+        equipment_group_score(row, flag, details)
+        for flag, details in EQUIPMENT_GROUPS.values()
+    ) / len(EQUIPMENT_GROUPS)
+
 def compute_missingness(row):
-    reg = category_score(row, registration_cols)
-    mailr = category_score(row, mail_reject_cols)
-    vm = category_score(row, voting_method_cols)
-    poll = category_score(row, pollbook_cols)
-    prov = category_score(row, provisional_cols)
-
     score = (
-        reg * weights["registration"] +
-        mailr * weights["mail_rej"] +
-        vm * weights["voting_methods"] +
-        poll * weights["pollbook"] +
-        prov * weights["provisional"]
+        category_score(row, registration_cols) * weights["registration"] +
+        category_score(row, mail_reject_cols) * weights["mail_rej"] +
+        category_score(row, voting_method_cols) * weights["voting_methods"] +
+        equipment_score(row) * weights["equipment"] +
+        category_score(row, pollbook_cols) * weights["pollbook"] +
+        category_score(row, provisional_cols) * weights["provisional"]
     )
-    score = round(score, 2)
-
-    return score
+    return round(score, 2)
 
 eavs_df["missing_data_score"] = eavs_df.apply(compute_missingness, axis=1)
+
+# Drop raw voting equipment columns AFTER missingness is computed
+eavs_df = eavs_df.drop(columns=[
+    "A12i","A12j","A12k",
+    "E2j","E2k","E2l",
+    "C9r","C9s","C9t",
+    "State_Abbr","B24a","B18a","C9a"
+])
+eavs_df = eavs_df.drop(columns=[
+    "F3a","F3c_1","F3c_2","F3c_3",
+    "F4a","F4c_1","F4c_2","F4c_3",
+    "F5a","F5c_1","F5c_2","F5c_3",
+    "F6a","F6c_1","F6c_2","F6c_3"
+])
 
 # Building the geounits dataframe
 geounits = pd.DataFrame({
