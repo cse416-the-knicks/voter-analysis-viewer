@@ -1,18 +1,10 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import type { DetailStateType } from "../FullBoundedUSMap/detailedStatesInfo";
-import {
-  DETAIL_STATE_TYPE_OPTIN,
-  DETAIL_STATE_TYPE_OPTOUT,
-  DETAIL_STATE_TYPE_DEMOCRAT,
-  DETAIL_STATE_TYPE_REPUBLICAN,
-  DETAIL_STATE_TYPE_VOTER_REGISTRATION,
-  DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
-} from "../FullBoundedUSMap/detailedStatesInfo";
 
-import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Chip, Stack } from "@mui/material";
+import { Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, Stack } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useNavigate } from "react-router";
-import { getCVAPStatisticsData, getEAVSDataQualityScore, getVoterRegistrationCounts } from "../../api/client";
+import { StateInfoCard, StateEAVsInfoCard, StateCVAPInfoCard } from "./DrawerCards";
 
 interface StateInformationViewDrawerItem {
   id: number;
@@ -43,101 +35,6 @@ interface StateInformationViewDrawerListItemProperties {
   onSelection: OnSelectionFn;
   stateType: DetailStateType[];
   item: StateInformationViewDrawerItem;
-}
-
-function BasicStateTypeInfoCard(title: string, text: string) {
-  return (
-    <Tooltip title={text}>
-      <Chip color="secondary" variant="outlined" label={title} />
-    </Tooltip>
-  );
-}
-
-function EAVsDataQualityInfoCard(title: string, text: string) {
-  return (
-    <Tooltip title={text}>
-      <Chip color="info" variant="outlined" label={title} />
-    </Tooltip>
-  );
-}
-
-const EAVsStateCard = () => BasicStateTypeInfoCard("EAVS-Only State", "This is not a detail state, so information will be limited compared to select states.");
-
-const VoterRegistrationStateCard = () =>
-  BasicStateTypeInfoCard(
-    "Voter Registration State",
-    "This is a selected detail state for voter registration data, you can also view voter records for this state."
-  );
-const OptInStateCard = () => BasicStateTypeInfoCard("Opt-In Voting State", "This is a selected detail state for opt-in voting data.");
-const OptOutStateCard = () => BasicStateTypeInfoCard("Opt-Out Voting State", "This is a selected detail state for opt-out voting data.");
-const RepublicanStateCard = () =>
-  BasicStateTypeInfoCard(
-    "Republican Dominated State",
-    "This is a selected detail state that is Republican dominated, you can compare this against our Democrat state."
-  );
-const DemocratStateCard = () =>
-  BasicStateTypeInfoCard(
-    "Democrat Dominated State",
-    "This is a selected detail state that is Democrat dominated, you can compare this against our Republican state."
-  );
-const PreclearanceStateCard = () =>
-  BasicStateTypeInfoCard(
-    "Preclearance State",
-    "This is a selected detail state that is subject to 'preclearance requirements' under the Voting Rights Act, due to historical voting discrimination."
-  );
-
-interface StateInfoCardProperties {
-  fipsCode: string;
-  type: DetailStateType;
-}
-
-function StateInfoCard({ type }: StateInfoCardProperties) {
-  switch (type) {
-    case DETAIL_STATE_TYPE_OPTIN:
-      return OptInStateCard();
-    case DETAIL_STATE_TYPE_OPTOUT:
-      return OptOutStateCard();
-    case DETAIL_STATE_TYPE_DEMOCRAT:
-      return DemocratStateCard();
-    case DETAIL_STATE_TYPE_REPUBLICAN:
-      return RepublicanStateCard();
-    case DETAIL_STATE_TYPE_VOTER_REGISTRATION:
-      return VoterRegistrationStateCard();
-    case DETAIL_STATE_TYPE_PRECLEARANCE_STATE:
-      return PreclearanceStateCard();
-  }
-  return EAVsStateCard();
-}
-
-function StateEAVsInfoCard({ type, fipsCode }: StateInfoCardProperties) {
-  const [score, setScore] = useState(0.0);
-
-  useEffect(function () {
-    (async function () {
-      const score = await getEAVSDataQualityScore(fipsCode);
-      setScore(score);
-    })();
-  });
-
-  return EAVsDataQualityInfoCard(`EAVS Data Score: ${score.toPrecision(4)}`, "Measure of present EAVS 2024 data");
-}
-
-function StateCVAPInfoCard({ fipsCode, type }: StateInfoCardProperties) {
-  const [cvapPercent, setCvapPercent] = useState(0.0);
-
-  useEffect(function () {
-    (async function () {
-      const cvapData = await getCVAPStatisticsData(fipsCode, { aggregate: true });
-      const voterStatistics = await getVoterRegistrationCounts(fipsCode, { aggregate: true });
-      setCvapPercent(voterStatistics[0].active! / cvapData[0].cvapTotal!);
-    })();
-  });
-
-  if (!(type === DETAIL_STATE_TYPE_REPUBLICAN || type === DETAIL_STATE_TYPE_DEMOCRAT)) {
-    return <></>;
-  }
-
-  return EAVsDataQualityInfoCard(`Active CVAP: ${(cvapPercent * 100).toPrecision(4)}%`, "Ratio of active registered voters against 2023 ACS CVAP");
 }
 
 function StateInformationViewDrawerListItem({ item, stateType, onSelection, stateHook }: StateInformationViewDrawerListItemProperties) {
