@@ -463,7 +463,13 @@ function StateInformationView() {
             ml: 0.5,
           }}
         >
-          <StateEAVSDataTable isLoaded={isLoaded} dataCols={dataCols} dataRows={dataRows} maxWidthForTable={maxWidthForTable} maxHeightForTable={maxHeightForTable} />
+          <StateEAVSDataTable
+            isLoaded={isLoaded}
+            dataCols={dataCols}
+            dataRows={dataRows}
+            maxWidthForTable={maxWidthForTable}
+            maxHeightForTable={maxHeightForTable}
+          />
           <Box width={maxWidthForTable} height={500}>
             <Paper elevation={5}>
               <BarChart width={maxWidthForChart} height={maxHeightForChart} data={barData} title={barGraphTitle} xTitle={barGraphXTitle} />
@@ -476,50 +482,52 @@ function StateInformationView() {
           // NOTE(jerry);
           // This should be it's own function, however I do want to keep
           // lots of the closure properties, so here we are.
-          function () {
+          (function () {
             const targetRow = dataRows.find((c) => c.fullRegionId === targetHighlightedRegionId);
             if (targetRow) {
               const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
               if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
                 const description = viewConfig.description;
-                const [ratioA, ratioB] = (description.ratioGenerator(targetRow));
+                const [ratioA, ratioB] = description.ratioGenerator(targetRow);
                 return (
                   <>
-                    <Typography variant="h4">
-                      {targetRow.countyName}
-                    </Typography>
+                    <Typography variant="h4">{targetRow.countyName} County</Typography>
                     <BarChart
+                      small
                       margins={{
-                        left: 130,
+                        left: 150,
                         top: 20,
                         bottom: 35,
-                        right: 50
+                        right: 50,
                       }}
-                      width={450} height={255} data={description.barDataGenerator(targetRow)} title={""} xTitle={barGraphXTitle} />
+                      width={550}
+                      height={255}
+                      data={description.barDataGenerator(targetRow)}
+                      title={""}
+                      xTitle={barGraphXTitle}
+                    />
                     <>
-                      {
-                        (activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE && activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE)
-                        &&
-                        <Typography>
-                          Data Completeness Measure: {(targetRow.eavsDataScore || (targetRow?.completedRecords!) / ((targetRow?.completedRecords!) + targetRow?.incompleteRecords!)).toFixed(3)}
+                      {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE && activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                        <Typography textAlign={"right"}>
+                          <b>Data Completeness Measure:</b>{" "}
+                          {(targetRow.eavsDataScore || targetRow.completedRecords! / (targetRow.completedRecords! + targetRow.incompleteRecords!)).toFixed(3)}
                         </Typography>
-                      }
+                      )}
                     </>
-                    {
-                      (activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE)
-                      &&
-                      <Typography>
-                        {description.ratioTitle} {((ratioA / ratioB) * 100).toFixed(2) + ((activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE) ? "%" : " years")}
+                    {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                      <Typography textAlign={"right"}>
+                        <b>{description.ratioTitle}</b>{" "}
+                        {((ratioA / ratioB) * 100).toFixed(2) + (activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE ? "%" : " years")}
                       </Typography>
-                    }
+                    )}
                   </>
                 );
               }
             }
             return <></>;
-          }()
+          })()
         }
-      </GenericTooltip >
+      </GenericTooltip>
     </>
   );
 }

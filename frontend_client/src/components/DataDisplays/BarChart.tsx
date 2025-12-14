@@ -22,14 +22,15 @@ interface BarChartProperties {
   width: number;
   height: number;
   margins?: BarChartMargins;
+  small?: boolean; // used for hover preview
 }
 
-function BarChart({ title, xTitle, data, width, height, margins }: BarChartProperties) {
+function BarChart({ title, xTitle, data, width, height, margins, small }: BarChartProperties) {
   const barMargin = {
     top: margins?.top || 25,
     right: margins?.right || 45,
     bottom: margins?.bottom || 25,
-    left: margins?.left || 150,
+    left: margins?.left || 170,
   };
 
   const barWidth = width - barMargin.left - barMargin.right;
@@ -43,13 +44,16 @@ function BarChart({ title, xTitle, data, width, height, margins }: BarChartPrope
     .scaleBand()
     .domain(data.map((x) => x.category))
     .range([0, barHeight])
-    .padding(0.3);
+    .padding(small ? 0.1 : 0.3);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
 
-  const defaultBlockColor = "hsl(288, 90%, 44%)";
-  const defaultHighlightColor = "hsl(288, 90%, 90%)";
+  // NOTE(jerry):
+  // in "small" mode it's not possible to highlight the bars, so
+  // highlighting doesn't matter.
+  const defaultBlockColor = small ? "hsl(288, 90%, 90%)" : "hsl(288, 90%, 44%)";
+  const defaultHighlightColor = small ? "white" : "hsl(288, 90%, 90%)";
 
   const svgRef = useRef<SVGSVGElement>(null);
   useEffect(() => {
@@ -73,18 +77,29 @@ function BarChart({ title, xTitle, data, width, height, margins }: BarChartPrope
 
   return (
     <>
-      <svg ref={svgRef} width={width} height={height} style={{ background: "#ffffff" }}>
+      <svg ref={svgRef} width={width} height={height} style={{ background: small ? "#0000000" : "#ffffff" }}>
         <g transform={`translate(${barMargin.left}, ${barMargin.top})`}>
           {data.map((x) => (
-            <rect
-              key={x.category}
-              data-title={x.category}
-              y={verticalAxis(x.category)!}
-              data-value={x.value}
-              width={horizontalAxis(x.value)}
-              height={verticalAxis.bandwidth()}
-              fill={defaultBlockColor}
-            />
+            <>
+              <rect
+                key={x.category}
+                data-title={x.category}
+                y={verticalAxis(x.category)!}
+                data-value={x.value}
+                width={horizontalAxis(x.value)}
+                height={verticalAxis.bandwidth()}
+                fill={defaultBlockColor}
+              />
+              {/* <text 
+              x={horizontalAxis(x.value)/2} 
+              y={verticalAxis(x.category)! + verticalAxis.bandwidth()/2 + (verticalAxis.bandwidth()*0.35)/2} 
+              fill="white" 
+              fontFamily="courier"
+              textAnchor="middle" 
+              fontSize={(small) ? verticalAxis.bandwidth()*0.35: 0} fontWeight="bold">
+                {x.value.toLocaleString(navigator.language)}
+              </text> */}
+            </>
           ))}
           {data.map((x) => (
             <text
@@ -94,28 +109,27 @@ function BarChart({ title, xTitle, data, width, height, margins }: BarChartPrope
               textAnchor="end"
               alignmentBaseline="middle"
               fontSize={13}
+              fill={small ? "white" : "black"}
             >
               {x.category}
             </text>
           ))}
           {/* Title */}
-          <text x={barWidth / 2} y={0} textAnchor="middle" fontSize={20} fontWeight="bold">
+          <text x={barWidth / 2} y={0} textAnchor="middle" fill={small ? "white" : "black"} fontSize={small ? 10 : 20} fontWeight="bold">
             {title}
           </text>
           {horizontalAxis.ticks().map((tick) => (
             <g key={tick} transform={`translate(${horizontalAxis(tick)},${barHeight})`}>
               <line x1="0" y1={barHeight - 10} y2={barHeight} stroke="black"></line>
-              <text x={0} y={barHeight + 15} textAnchor="middle" fontSize={12}>
+              <text x={0} y={barHeight + 15} textAnchor="middle" fontSize={small ? 10 : 12}>
                 {tick.toString()}
               </text>
             </g>
           ))}
           <line x1={0} y1={barHeight} x2={barWidth} y2={barHeight} stroke="darkgray" />
           <line x1={0} y1={barHeight} x2={0} y2={0} stroke="darkgray" />
-          <text transform={`rotate(-90)`} x={barHeight} y={barMargin.left} textAnchor="middle" fontSize={10}>
-            {xTitle}
-          </text>
-          <text x={barWidth / 2} y={barHeight + 20} fontSize={15}>
+
+          <text textAnchor="middle" fill={small ? "white" : "black"} x={barWidth / 2} y={barHeight + 20} fontSize={15}>
             {xTitle}
           </text>
         </g>

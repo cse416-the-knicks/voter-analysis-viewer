@@ -63,8 +63,8 @@ function StateEAVSDataTable({ dataRows, dataCols, maxWidthForTable, maxHeightFor
           loading={!isLoaded}
           slotProps={{
             loadingOverlay: {
-              variant: 'skeleton',
-              noRowsVariant: 'skeleton',
+              variant: "skeleton",
+              noRowsVariant: "skeleton",
             },
           }}
         />
