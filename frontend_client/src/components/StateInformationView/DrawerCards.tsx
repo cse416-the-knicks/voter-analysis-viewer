@@ -1,7 +1,15 @@
 import { Chip, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getEAVSDataQualityScore, getCVAPStatisticsData, getVoterRegistrationCounts } from "../../api/client";
-import { type DetailStateType, DETAIL_STATE_TYPE_OPTIN, DETAIL_STATE_TYPE_OPTOUT, DETAIL_STATE_TYPE_DEMOCRAT, DETAIL_STATE_TYPE_REPUBLICAN, DETAIL_STATE_TYPE_VOTER_REGISTRATION, DETAIL_STATE_TYPE_PRECLEARANCE_STATE } from "../FullBoundedUSMap/detailedStatesInfo";
+import {
+  type DetailStateType,
+  DETAIL_STATE_TYPE_OPTIN,
+  DETAIL_STATE_TYPE_OPTOUT,
+  DETAIL_STATE_TYPE_DEMOCRAT,
+  DETAIL_STATE_TYPE_REPUBLICAN,
+  DETAIL_STATE_TYPE_VOTER_REGISTRATION,
+  DETAIL_STATE_TYPE_PRECLEARANCE_STATE,
+} from "../FullBoundedUSMap/detailedStatesInfo";
 
 function BasicStateTypeInfoCard(title: string, text: string, fill?: boolean) {
   return (
@@ -19,12 +27,14 @@ function EAVsDataQualityInfoCard(title: string, text: string, fill?: boolean) {
   );
 }
 
-const EAVsStateCard = (fill?: boolean) => BasicStateTypeInfoCard("EAVS-Only State", "This is not a detail state, so information will be limited compared to select states.", fill);
+const EAVsStateCard = (fill?: boolean) =>
+  BasicStateTypeInfoCard("EAVS-Only State", "This is not a detail state, so information will be limited compared to select states.", fill);
 
-const VoterRegistrationStateCard = () =>
+const VoterRegistrationStateCard = (fill?: boolean) =>
   BasicStateTypeInfoCard(
     "Voter Registration State",
-    "This is a selected detail state for voter registration data, you can also view voter records for this state."
+    "This is a selected detail state for voter registration data, you can also view voter records for this state.",
+    fill
   );
 const OptInStateCard = (fill?: boolean) => BasicStateTypeInfoCard("Opt-In Voting State", "This is a selected detail state for opt-in voting data.", fill);
 const OptOutStateCard = (fill?: boolean) => BasicStateTypeInfoCard("Opt-Out Voting State", "This is a selected detail state for opt-out voting data.", fill);
@@ -103,15 +113,15 @@ function StateCVAPInfoCard({ fipsCode, type, fill }: StateInfoCardProperties) {
 }
 
 export {
-    BasicStateTypeInfoCard,
-    EAVsDataQualityInfoCard,
-    StateCVAPInfoCard,
-    DemocratStateCard,
-    RepublicanStateCard,
-    OptInStateCard,
-    OptOutStateCard,
-    VoterRegistrationStateCard,
-    PreclearanceStateCard,
-    StateInfoCard,
-    StateEAVsInfoCard,
-}
+  BasicStateTypeInfoCard,
+  EAVsDataQualityInfoCard,
+  StateCVAPInfoCard,
+  DemocratStateCard,
+  RepublicanStateCard,
+  OptInStateCard,
+  OptOutStateCard,
+  VoterRegistrationStateCard,
+  PreclearanceStateCard,
+  StateInfoCard,
+  StateEAVsInfoCard,
+};

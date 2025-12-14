@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
-import type { GeoUnitCentroidModel } from "../../api/client";
+import type { GeoUnitCentroidModel, VoterAffiliationStatisticsModel } from "../../api/client";
 
-import { getCountyGeoUnitCentroids } from "../../api/client";
+import { getCountyGeoUnitCentroids, getVoterAffiliations } from "../../api/client";
 
 // Should have more stuff in the future, just
 // not sure what that might look like right now.
@@ -14,10 +14,13 @@ import { Circle } from "react-leaflet";
 
 function GeoUnitBubbleChart({ fipsCode }: GeoUnitBubbleChartProperties) {
   const [geoUnitCenters, setGeoUnitCenters] = useState<GeoUnitCentroidModel[]>([]);
+  const [regionData, setRegionData] = useState<VoterAffiliationStatisticsModel[]>([]);
   useEffect(
     function () {
       (async function () {
         const data = await getCountyGeoUnitCentroids(fipsCode);
+        const data2 = await getVoterAffiliations(fipsCode);
+        setRegionData(data2);
         setGeoUnitCenters(Object.values(data));
       })();
     },
@@ -27,7 +30,21 @@ function GeoUnitBubbleChart({ fipsCode }: GeoUnitBubbleChartProperties) {
     <>
       {geoUnitCenters.map(
         (guc) => (
-          <Circle center={[guc.centerY!, guc.centerX!]} color={"red"} radius={16000} />
+          <Circle
+            center={[guc.centerY!, guc.centerX!]}
+            color={(() => {
+              const matchingRow = regionData.find((c) => guc.fullRegionId === c.fullRegionId);
+              if (matchingRow) {
+                const { republicanTotal, democraticTotal } = matchingRow;
+                if (republicanTotal! > democraticTotal!) {
+                  return "red";
+                }
+                return "blue";
+              }
+              return "gray";
+            })()}
+            radius={16000}
+          />
         ) /* What units are these? */
       )}
     </>

@@ -140,7 +140,8 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, styleFunction, onStateCl
             );
           })()
         }
-      </GenericTooltip></>
+      </GenericTooltip>
+    </>
   );
 }
 
