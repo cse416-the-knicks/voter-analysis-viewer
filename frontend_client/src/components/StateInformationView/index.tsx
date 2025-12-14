@@ -63,6 +63,7 @@ import {
 } from "./dataViewConfigTypes";
 import { FACT_VIEW_CONFIGURATIONS } from "./dataViewModeConfig";
 import StateEAVSDataTable from "./StateEAVSDataTable";
+import GenericTooltip from "../GenericTooltip";
 
 const DROPDOWN_SECTIONS = [
   {
@@ -170,6 +171,7 @@ function StateInformationView() {
   const location = useLocation();
   const activeDataStateHook = useState(determineInitialStateBasedOnUrl(location.pathname));
   const theme = useTheme();
+  const [targetHighlightedRegionId, setTargetHighlightedRegionId] = useState<string | null>("");
 
   /* NOTE(jerry): size tuning parameters */
   const boxMarginTop = "1.2vh";
@@ -202,10 +204,13 @@ function StateInformationView() {
   const overlayViews = Object.values(FACT_VIEW_CONFIGURATIONS).filter((cfg) => cfg.description.type === STATE_INFORMATION_VIEW_TYPE_OVERLAY);
   const shouldOpenPopup = overlayViews.some((cfg) => location.pathname.includes(cfg.path));
 
+  const [isLoaded, setLoaded] = useState(false);
+
   useEffect(
     function () {
       (async function () {
         const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
+        setLoaded(false);
         if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
           const description = viewConfig.description;
           setBarGraphTitle(`${FIPS_TO_STATES_MAP[fipsCode!]} - ${description.barGraphTitle}`);
@@ -224,6 +229,11 @@ function StateInformationView() {
             .map((x: DataFact) => ({ id: x.fullRegionId, ...x }));
 
           const aggregatedData = aggregatedDataSet.reduce((acc, entry) => ({ ...acc, ...entry[0] }), {}) as DataFact;
+          if ("eavsDataScore" in aggregatedData) {
+            // @ts-expect-error: we know the type. It's a number.
+            // This is a bit of a hack.
+            aggregatedData.eavsDataScore /= rowData.length;
+          }
 
           rowData.push({ id: aggregatedData.fullRegionId, ...aggregatedData });
           setBarData(description.barDataGenerator(aggregatedData));
@@ -235,6 +245,7 @@ function StateInformationView() {
         } else {
           setGradientMap(PERCENTAGE_CHOROPLETH_BUCKETS);
         }
+        setLoaded(true);
       })();
     },
     [activeDataState, fipsCode, navigate]
@@ -280,176 +291,244 @@ function StateInformationView() {
   }, gradientMap);
 
   return (
-    <div
-      className={styles.stateInformationPopup}
-      style={{
-        left: `calc(${selectionDrawerWidth} + 1.5em)`,
-      }}
-    >
-      <EquipmentGradientSet dataRows={dataRows} />
-      <StateInformationViewDrawer
-        stateHook={activeDataStateHook}
-        fipsCode={fipsCode!}
-        onSelection={(id) => {
-          navigate(getUrlForModeId(id, fipsCode!));
-        }}
-        sections={DROPDOWN_SECTIONS}
-        stateType={getDetailStateType(fipsCode!)}
-        drawerWidth={selectionDrawerWidth}
-        topMargin={boxMarginTop}
-      />
-      <Stack
-        spacing={7.5}
-        direction="column"
-        sx={{
-          mt: boxMarginTop,
-          left: selectionDrawerWidth,
+    <>
+      <div
+        className={styles.stateInformationPopup}
+        style={{
+          left: `calc(${selectionDrawerWidth} + 1.5em)`,
         }}
       >
-        <Paper
-          sx={{
-            mt: 0,
-            ml: "auto",
-            width: maxWidthForMap,
-            height: maxHeightForMap,
+        <EquipmentGradientSet dataRows={dataRows} />
+        <StateInformationViewDrawer
+          stateHook={activeDataStateHook}
+          fipsCode={fipsCode!}
+          onSelection={(id) => {
+            navigate(getUrlForModeId(id, fipsCode!));
           }}
-          elevation={5}
+          sections={DROPDOWN_SECTIONS}
+          stateType={getDetailStateType(fipsCode!)}
+          drawerWidth={selectionDrawerWidth}
+          topMargin={boxMarginTop}
+        />
+        <Stack
+          spacing={7.5}
+          direction="column"
+          sx={{
+            mt: boxMarginTop,
+            left: selectionDrawerWidth,
+          }}
         >
-          {tryingToViewDetailedVoterRegistration && (
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              {/* <Tabs
-                value={viewDetailedVoterRegistrationBubbleChart ? 1 : 0}
-                onChange={function (_, x) {
-                  setViewDetailedVoterRegistrationBubbleChart(x == 1);
-                }}
-                textColor="secondary"
-                indicatorColor="secondary"
-                variant="fullWidth"
-              >
-                <Tab label={"Choropleth"} />
-                <Tab label={"Bubblechart Overlay"} />
-              </Tabs> */}
-            </Box>
-          )}
-          <StateMap
-            // @ts-expect-error, the style function *is* of the right type
-            // although it's not immediately obvious to typescript atm.
-            styleFunction={activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE ? votingEquipmentMapStylingFunction : choroplethStylingFunction}
-            mapKey={activeDataState}
-            width={maxWidthForMap}
-            height={maxHeightForMap}
-            fipsCode={fipsCode}
-            onFeatureClick={function (feature: GeoJSON.Feature) {
-              const geounitFipsCode = feature.properties!.COUNTYFP;
-              const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
-
-              if (stateType.some((x) => x !== DETAIL_STATE_TYPE_VOTER_REGISTRATION)) {
-                return;
-              }
-
-              if (activeDataState === ID_SELECTION_VOTER_REGISTRATION || activeDataState === ID_SELECTION_ACTIVE_VOTERS) {
-                navigate(`/state/${fipsCode}/voter-table/${fullyPaddedFipsCode}`);
-              }
+          <Paper
+            sx={{
+              mt: 0,
+              ml: "auto",
+              width: maxWidthForMap,
+              height: maxHeightForMap,
             }}
+            elevation={5}
           >
-            {isDetailState(fipsCode!) &&
-              !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
-              activeDataState !== ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && <GradientMapLegend gradientMap={gradientMap} />}
-            {isDetailState(fipsCode!) &&
-              !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
-              activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
-                <ColorKeyLegend colors={VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.color)} labels={VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.text)} />
-              )}
-            <Typography
-              variant="h4"
-              sx={{
-                position: "relative",
-                textAlign: "center",
-                display: "inline",
-                top: `calc(100% - 1.25em)`,
-                left: `0`,
-                paddingLeft: "0.45em",
-                paddingRight: "1.0em",
-                paddingBottom: "0.35em",
-                paddingTop: "0.2em",
-                background: "white",
-                borderRadius: "0 3px 0 0",
-                color: "black",
-                fontWeight: "boldest",
-                zIndex: 1000,
-              }}
-            >
-              {FIPS_TO_STATES_MAP[fipsCode!]}
-            </Typography>
-            {activeDataState == ID_SELECTION_VIEW_CVAP_INFO && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  p: 1.5,
-                  left: `75%`,
-                  top: `0`,
-                  width: `calc(${maxWidthForMap} * 0.25)`,
-                  zIndex: 1001,
-                }}
-              >
-                <Paper>
-                  <FormControl fullWidth>
-                    <InputLabel>CVAP Demographic</InputLabel>
-                    <Select
-                      color="secondary"
-                      onChange={(event) => setCvapDemographicSelection(event.target.value)}
-                      value={cvapDemographicSelection}
-                      label="CVAP Demographic"
-                    >
-                      {["Asian", "Black", "Hispanic", "White", "Other"].map((x, i) => (
-                        <MenuItem value={i}>{x}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Paper>
+            {tryingToViewDetailedVoterRegistration && (
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs
+                  value={viewDetailedVoterRegistrationBubbleChart ? 1 : 0}
+                  onChange={function (_, x) {
+                    setViewDetailedVoterRegistrationBubbleChart(x == 1);
+                  }}
+                  textColor="secondary"
+                  indicatorColor="secondary"
+                  variant="fullWidth"
+                >
+                  <Tab label={"Choropleth"} />
+                  <Tab label={"Bubblechart Overlay"} />
+                </Tabs>
               </Box>
             )}
-            {tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart && <GeoUnitBubbleChart fipsCode={fipsCode!} />}
-          </StateMap>
-        </Paper>
-      </Stack>
+            <StateMap
+              // @ts-expect-error, the style function *is* of the right type
+              // although it's not immediately obvious to typescript atm.
+              styleFunction={activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE ? votingEquipmentMapStylingFunction : choroplethStylingFunction}
+              mapKey={activeDataState}
+              width={maxWidthForMap}
+              height={maxHeightForMap}
+              fipsCode={fipsCode}
+              onFeatureClick={function (feature: GeoJSON.Feature) {
+                const geounitFipsCode = feature.properties!.COUNTYFP;
+                const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
 
-      <Backdrop open={shouldOpenPopup} sx={{ zIndex: 1199 }} />
-      <Grow in={shouldOpenPopup}>
-        <Box
+                if (stateType.some((x) => x !== DETAIL_STATE_TYPE_VOTER_REGISTRATION)) {
+                  return;
+                }
+
+                if (activeDataState === ID_SELECTION_VOTER_REGISTRATION || activeDataState === ID_SELECTION_ACTIVE_VOTERS) {
+                  navigate(`/state/${fipsCode}/voter-table/${fullyPaddedFipsCode}`);
+                }
+              }}
+              onFeatureHover={function (feature: GeoJSON.Feature, layer: L.Layer, on: boolean) {
+                const geounitFipsCode = feature.properties!.COUNTYFP;
+                const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
+                if (on) {
+                  setTargetHighlightedRegionId(fullyPaddedFipsCode);
+                } else {
+                  setTargetHighlightedRegionId(null);
+                }
+              }}
+            >
+              {isDetailState(fipsCode!) &&
+                !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
+                activeDataState !== ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && <GradientMapLegend gradientMap={gradientMap} />}
+              {isDetailState(fipsCode!) &&
+                !(tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart) &&
+                activeDataState === ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                  <ColorKeyLegend colors={VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.color)} labels={VOTING_EQUIPMENT_TYPE_COLORS.map((x) => x.text)} />
+                )}
+              <Typography
+                variant="h4"
+                sx={{
+                  position: "relative",
+                  textAlign: "center",
+                  display: "inline",
+                  top: `calc(100% - 1.25em)`,
+                  left: `0`,
+                  paddingLeft: "0.45em",
+                  paddingRight: "1.0em",
+                  paddingBottom: "0.35em",
+                  paddingTop: "0.2em",
+                  background: "white",
+                  borderRadius: "0 3px 0 0",
+                  color: "black",
+                  fontWeight: "boldest",
+                  zIndex: 1000,
+                }}
+              >
+                {FIPS_TO_STATES_MAP[fipsCode!]}
+              </Typography>
+              {activeDataState == ID_SELECTION_VIEW_CVAP_INFO && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    p: 1.5,
+                    left: `75%`,
+                    top: `0`,
+                    width: `calc(${maxWidthForMap} * 0.25)`,
+                    zIndex: 1001,
+                  }}
+                >
+                  <Paper>
+                    <FormControl fullWidth>
+                      <InputLabel>CVAP Demographic</InputLabel>
+                      <Select
+                        color="secondary"
+                        onChange={(event) => setCvapDemographicSelection(event.target.value)}
+                        value={cvapDemographicSelection}
+                        label="CVAP Demographic"
+                      >
+                        {["Asian", "Black", "Hispanic", "White", "Other"].map((x, i) => (
+                          <MenuItem value={i}>{x}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Paper>
+                </Box>
+              )}
+              {tryingToViewDetailedVoterRegistration && viewDetailedVoterRegistrationBubbleChart && <GeoUnitBubbleChart fipsCode={fipsCode!} />}
+            </StateMap>
+          </Paper>
+        </Stack>
+
+        <Backdrop open={shouldOpenPopup} sx={{ zIndex: 1199 }} />
+        <Grow in={shouldOpenPopup}>
+          <Box
+            sx={{
+              position: "fixed",
+              display: "flex",
+              left: `calc(${selectionDrawerWidth} * 1.2)`,
+              top: boxMarginTop,
+              zIndex: 2000,
+            }}
+          >
+            <Routes>
+              {overlayViews.map((v) => (
+                <Route
+                  path={v.matcher || v.path}
+                  element={(v.description as StateInformationViewOverlayView).element?.(fipsCode!, bubbleChartWidth, bubbleChartHeight)}
+                />
+              ))}
+            </Routes>
+          </Box>
+        </Grow>
+        <Stack
+          spacing={0.2}
           sx={{
-            position: "fixed",
-            display: "flex",
-            left: `calc(${selectionDrawerWidth} * 1.2)`,
-            top: boxMarginTop,
-            zIndex: 2000,
+            mt: boxMarginTop,
+            ml: 0.5,
           }}
         >
-          <Routes>
-            {overlayViews.map((v) => (
-              <Route
-                path={v.matcher || v.path}
-                element={(v.description as StateInformationViewOverlayView).element?.(fipsCode!, bubbleChartWidth, bubbleChartHeight)}
-              />
-            ))}
-          </Routes>
-        </Box>
-      </Grow>
-      <Stack
-        spacing={0.2}
-        sx={{
-          mt: boxMarginTop,
-          ml: 0.5,
-        }}
-      >
-        <StateEAVSDataTable dataCols={dataCols} dataRows={dataRows} maxWidthForTable={maxWidthForTable} maxHeightForTable={maxHeightForTable} />
-        <Box width={maxWidthForTable} height={500}>
-          <Paper elevation={5}>
-            <BarChart width={maxWidthForChart} height={maxHeightForChart} data={barData} title={barGraphTitle} xTitle={barGraphXTitle} />
-          </Paper>
-        </Box>
-      </Stack>
-    </div>
+          <StateEAVSDataTable
+            isLoaded={isLoaded}
+            dataCols={dataCols}
+            dataRows={dataRows}
+            maxWidthForTable={maxWidthForTable}
+            maxHeightForTable={maxHeightForTable}
+          />
+          <Box width={maxWidthForTable} height={500}>
+            <Paper elevation={5}>
+              <BarChart width={maxWidthForChart} height={maxHeightForChart} data={barData} title={barGraphTitle} xTitle={barGraphXTitle} />
+            </Paper>
+          </Box>
+        </Stack>
+      </div>
+      <GenericTooltip show={targetHighlightedRegionId !== null && targetHighlightedRegionId.length}>
+        {
+          // NOTE(jerry);
+          // This should be it's own function, however I do want to keep
+          // lots of the closure properties, so here we are.
+          (function () {
+            const targetRow = dataRows.find((c) => c.fullRegionId === targetHighlightedRegionId);
+            if (targetRow) {
+              const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
+              if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
+                const description = viewConfig.description;
+                const [ratioA, ratioB] = description.ratioGenerator(targetRow);
+                return (
+                  <>
+                    <Typography variant="h4">{targetRow.countyName} County</Typography>
+                    <BarChart
+                      small
+                      margins={{
+                        left: 150,
+                        top: 20,
+                        bottom: 35,
+                        right: 50,
+                      }}
+                      width={550}
+                      height={255}
+                      data={description.barDataGenerator(targetRow)}
+                      title={""}
+                      xTitle={barGraphXTitle}
+                    />
+                    <>
+                      {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE && activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                        <Typography textAlign={"right"}>
+                          <b>Data Completeness Measure:</b>{" "}
+                          {(targetRow.eavsDataScore || targetRow.completedRecords! / (targetRow.completedRecords! + targetRow.incompleteRecords!)).toFixed(3)}
+                        </Typography>
+                      )}
+                    </>
+                    {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                      <Typography textAlign={"right"}>
+                        <b>{description.ratioTitle}</b>{" "}
+                        {((ratioA / ratioB) * 100).toFixed(2) + (activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE ? "%" : " years")}
+                      </Typography>
+                    )}
+                  </>
+                );
+              }
+            }
+            return <></>;
+          })()
+        }
+      </GenericTooltip>
+    </>
   );
 }
 

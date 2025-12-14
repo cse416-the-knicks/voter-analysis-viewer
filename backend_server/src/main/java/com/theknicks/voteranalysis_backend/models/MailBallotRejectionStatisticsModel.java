@@ -33,7 +33,8 @@ public record MailBallotRejectionStatisticsModel(
     @SqlColumnName(name = "mail_reject_no_application") int rejectNoApplication,
     @SqlColumnName(name = "mail_reject_other") int rejectOther,
     @SqlColumnName(name = "total_ballots_cast") int totalBallotsCast,
-    @SqlColumnName(name = "ballots_by_mail") int totalBallotsByMail) {
+    @SqlColumnName(name = "ballots_by_mail") int totalBallotsByMail,
+    @SqlColumnName(name = "missing_data_score") double eavsDataScore) {
   public MailBallotRejectionStatisticsModel(
       int rejectTotal,
       int rejectLate,
@@ -54,7 +55,8 @@ public record MailBallotRejectionStatisticsModel(
       int rejectNoApplication,
       int rejectOther,
       int totalBallotsCast,
-      int totalBallotsByMail) {
+      int totalBallotsByMail,
+      double eavsDataScore) {
     this(
         "0000000000",
         "Aggregated",
@@ -77,7 +79,8 @@ public record MailBallotRejectionStatisticsModel(
         rejectNoApplication,
         rejectOther,
         totalBallotsCast,
-        totalBallotsByMail);
+        totalBallotsByMail,
+        eavsDataScore);
   }
 
   public static class Queryable extends AutoSqlQueryable<MailBallotRejectionStatisticsModel> {

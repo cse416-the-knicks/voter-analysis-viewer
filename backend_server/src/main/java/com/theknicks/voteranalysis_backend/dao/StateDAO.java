@@ -122,6 +122,8 @@ public class StateDAO implements IStateDAO {
       int unaffiliatedTotal = 0;
       int totalRegisteredVoters = 0;
       int totalActiveRegisteredVoters = 0;
+      int totalCompletedRecords = 0;
+      int totalIncompletedRecords = 0;
 
       for (var item : queryResult) {
         democraticTotal += item.democraticTotal();
@@ -129,6 +131,8 @@ public class StateDAO implements IStateDAO {
         unaffiliatedTotal += item.unaffiliatedTotal();
         totalRegisteredVoters += item.registeredVotersTotal();
         totalActiveRegisteredVoters += item.activeRegisteredVotersTotal();
+        totalCompletedRecords += item.completedRecords();
+        totalIncompletedRecords += item.incompleteRecords();
       }
 
       return Collections.singletonList(
@@ -137,7 +141,9 @@ public class StateDAO implements IStateDAO {
               republicanTotal,
               unaffiliatedTotal,
               totalRegisteredVoters,
-              totalActiveRegisteredVoters));
+              totalActiveRegisteredVoters,
+              totalCompletedRecords,
+              totalIncompletedRecords));
     }
 
     return queryResult;

@@ -14,6 +14,7 @@ export default {
       barDataGenerator: bargraphDataForVotingEquipmentUsages,
       rowDataGenerators: [getDetailedVotingEquipmentUsage],
       ratioGenerator: (row: VotingEquipmentUsageStatisticsModel) => [row.averageAge!, 100],
+      ratioTitle: "Average Equipment Age:",
     },
   } as StateInformationViewDataConfiguration,
 };

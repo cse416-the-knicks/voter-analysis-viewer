@@ -165,6 +165,7 @@ export interface VoterRegistrationStatisticsModel {
   total?: number;
   active?: number;
   inactive?: number;
+  eavsDataScore?: number;
 }
 
 export interface ProvisionalBallotStatisticsModel {
@@ -183,6 +184,7 @@ export interface ProvisionalBallotStatisticsModel {
   ballotReasonSameDayRegistration?: number;
   ballotReasonOther?: number;
   rejectedProvisionalBallots?: number;
+  eavsDataScore?: number;
 }
 
 export interface PollbookDeletionStatisticsModel {
@@ -198,6 +200,7 @@ export interface PollbookDeletionStatisticsModel {
   removedReasonDuplicate?: number;
   removedOther?: number;
   totalRegisteredVoters?: number;
+  eavsDataScore?: number;
 }
 
 export interface MailBallotRejectionStatisticsModel {
@@ -223,6 +226,7 @@ export interface MailBallotRejectionStatisticsModel {
   rejectOther?: number;
   totalBallotsCast?: number;
   totalBallotsByMail?: number;
+  eavsDataScore?: number;
 }
 
 export interface BallotStatisticsModel {
@@ -272,6 +276,8 @@ export interface VoterAffiliationStatisticsModel {
   unaffiliatedTotal?: number;
   registeredVotersTotal?: number;
   activeRegisteredVotersTotal?: number;
+  completedRecords?: number;
+  incompleteRecords?: number;
 }
 
 export interface ElectionResultsSummaryModel {

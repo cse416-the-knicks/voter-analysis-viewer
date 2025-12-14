@@ -37,6 +37,7 @@ interface StateInformationViewSimpleFactView {
   // the demographic we want to target.
   ratioGenerator: ((row: DataFact, arg0: number) => number[]) | ((row: DataFact) => number[]);
   rowDataGenerators: ((fipsCode: string, params: object) => Promise<DataFact[]>)[];
+  ratioTitle: string; // Used for highlighting local view.
 }
 
 interface StateInformationViewDataConfiguration {

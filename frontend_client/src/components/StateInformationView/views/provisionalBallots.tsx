@@ -14,6 +14,7 @@ export default {
       barDataGenerator: bargraphDataForProvisionalBallots,
       rowDataGenerators: [getProvisionalBallots],
       ratioGenerator: (row: ProvisionalBallotStatisticsModel) => [row.totalProvisionalBallotsCast!, row.totalBallotsCast!],
+      ratioTitle: "Provisional Rate: ",
     },
   } as StateInformationViewDataConfiguration,
 };

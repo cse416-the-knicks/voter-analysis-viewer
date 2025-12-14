@@ -11,6 +11,7 @@ interface MapFitsToBoundsInternalParameters {
 }
 
 type StateMapOnFeatureClickHandler = (feature: GeoJSON.Feature, layer: L.Layer) => void;
+type StateMapOnFeatureHoverHandler = (feature: GeoJSON.Feature, layer: L.Layer, on: boolean) => void;
 
 interface StateMapParameters {
   mapKey?: any;
@@ -21,6 +22,7 @@ interface StateMapParameters {
   styleFunction: L.StyleFunction;
   children: React.ReactNode;
   onFeatureClick?: StateMapOnFeatureClickHandler;
+  onFeatureHover?: StateMapOnFeatureHoverHandler;
 }
 
 function MapFitToBoundsInternal({ boundsToFit }: MapFitsToBoundsInternalParameters) {
@@ -37,7 +39,7 @@ function MapFitToBoundsInternal({ boundsToFit }: MapFitsToBoundsInternalParamete
   return null;
 }
 
-function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFeatureClick, children }: StateMapParameters) {
+function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFeatureClick, onFeatureHover, children }: StateMapParameters) {
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
   const [stateMapBounds, setStateMapBounds] = useState<L.LatLngBoundsExpression | null>();
@@ -69,11 +71,18 @@ function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFe
     const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) => {
       const { properties } = feature;
       if (properties!.NAMELSAD) {
-        layer.bindTooltip(properties!.NAMELSAD);
-
+        // layer.bindTooltip(properties!.NAMELSAD);
         if (onFeatureClick) {
           layer.on("click", function () {
             onFeatureClick(feature, layer);
+          });
+        }
+        if (onFeatureHover) {
+          layer.on("mouseover", function () {
+            onFeatureHover(feature, layer, true);
+          });
+          layer.on("mouseout", function () {
+            onFeatureHover(feature, layer, false);
           });
         }
       } else {

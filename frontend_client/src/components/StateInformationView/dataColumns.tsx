@@ -34,6 +34,7 @@ const PROVISIONAL_BALLOT_COLUMNS: GridColDef<ProvisionalBallotStatisticsModel[]>
   { field: "ballotReasonExtendedVotingHours", headerName: "Extended Voter Hours", type: "number", width: 200 },
   { field: "ballotReasonSameDayRegistration", headerName: "Used SDR", type: "number", width: 140 },
   { field: "ballotReasonOther", headerName: "Other", type: "number", width: 120 },
+  { field: "eavsDataScore", headerName: "EAVS Data Score", type: "number", width: 150 },
 ];
 
 const ACTIVE_VOTER_REGISTRATION_COLUMNS: GridColDef<VoterRegistrationStatisticsModel[]>[] = [
@@ -45,6 +46,7 @@ const ACTIVE_VOTER_REGISTRATION_COLUMNS: GridColDef<VoterRegistrationStatisticsM
   { field: "total", headerName: "Total Voters", type: "number", width: 200 },
   { field: "active", headerName: "Active Voters", type: "number", width: 150 },
   { field: "inactive", headerName: "Inactive Voters", type: "number", width: 150 },
+  { field: "eavsDataScore", headerName: "EAVS Data Score", type: "number", width: 150 },
 ];
 
 const VOTER_AFFILIATION_COLUMNS: GridColDef<VoterAffiliationStatisticsModel[]>[] = [
@@ -56,6 +58,15 @@ const VOTER_AFFILIATION_COLUMNS: GridColDef<VoterAffiliationStatisticsModel[]>[]
   { field: "democraticTotal", headerName: "Democratic", type: "number", width: 200 },
   { field: "republicanTotal", headerName: "Republican", type: "number", width: 150 },
   { field: "unaffiliatedTotal", headerName: "Unaffiliated", type: "number", width: 150 },
+  { field: "completedRecords", headerName: "Completed Records", type: "number", width: 150 },
+  { field: "incompleteRecords", headerName: "Incomplete Records", type: "number", width: 150 },
+  {
+    field: "completionPercent",
+    headerName: "Registration Completion",
+    type: "number",
+    width: 150,
+    valueGetter: (value, row: VoterAffiliationStatisticsModel) => `${(row.completedRecords! / (row.completedRecords! + row.incompleteRecords!)).toFixed(5)}`,
+  },
   { field: "registeredVotersTotal", headerName: "Total Registered", type: "number", width: 150 },
 ];
 
@@ -152,8 +163,15 @@ const VOTER_REGISTRATION_INFO_COLUMNS: GridColDef<VoterRegistrationDataModel[]>[
     field: "registrationDate",
     headerName: "Registration Date",
     width: 200,
-    valueFormatter: (value) => {
-      const parsedDate = new Date(value);
+    renderCell: (value) => {
+      if (value.value === null || value.value === undefined) {
+        return <Chip label="Missing" color="error" />;
+      }
+      const parsedDate = new Date(value.value);
+      const INVALID_DATE = -2208970800000;
+      if (INVALID_DATE === parsedDate.valueOf()) {
+        return <Chip label="Missing" color="error" />;
+      }
       return parsedDate.toLocaleDateString(navigator.language);
     },
     filterable: false,
@@ -245,6 +263,7 @@ const POLL_BOOK_DELETION_COLUMNS: GridColDef<PollbookDeletionStatisticsModel[]>[
   { field: "removedReasonRequested", headerName: "Requested", type: "number", width: 150 },
   { field: "removedReasonDuplicate", headerName: "Duplicate", type: "number", width: 150 },
   { field: "removedOther", headerName: "Other", type: "number", width: 120 },
+  { field: "eavsDataScore", headerName: "EAVS Data Score", type: "number", width: 150 },
 ];
 
 const MAIL_BALLOT_REJECTION_COLUMNS: GridColDef<MailBallotRejectionStatisticsModel[]>[] = [
@@ -272,6 +291,7 @@ const MAIL_BALLOT_REJECTION_COLUMNS: GridColDef<MailBallotRejectionStatisticsMod
   { field: "rejectNotEligible", headerName: "Not Eligible", type: "number", width: 150 },
   { field: "rejectNoApplication", headerName: "No Application", type: "number", width: 160 },
   { field: "rejectOther", headerName: "Other", type: "number", width: 120 },
+  { field: "eavsDataScore", headerName: "EAVS Data Score", type: "number", width: 150 },
 ];
 
 const VOTING_EQUIPMENT_COLUMNS: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [
@@ -364,6 +384,8 @@ function bargraphDataForVoterAffiliations(aggregatedStatistics: VoterAffiliation
     { category: "Republican Voters", value: aggregatedStatistics.republicanTotal || 0 },
     { category: "Unaffiliated Voters", value: aggregatedStatistics.unaffiliatedTotal || 0 },
     { category: "Total Registered Voters", value: aggregatedStatistics.registeredVotersTotal || 0 },
+    { category: "Complete Records", value: aggregatedStatistics.completedRecords || 0 },
+    { category: "Incomplete Records", value: aggregatedStatistics.incompleteRecords || 0 },
   ];
 }
 
