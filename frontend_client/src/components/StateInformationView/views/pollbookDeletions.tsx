@@ -14,6 +14,7 @@ export default {
       barDataGenerator: bargraphDataForPollBookDeletions,
       rowDataGenerators: [getPollbookDeletions, getVoterRegistrationCounts],
       ratioGenerator: (row: PollbookDeletionStatisticsModel) => [row.totalRemoved!, row.totalRegisteredVoters!],
+      ratioTitle: "Deletion Rate: ",
     },
   } as StateInformationViewDataConfiguration,
 };

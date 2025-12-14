@@ -16,6 +16,7 @@ export default {
       barDataGenerator: bargraphDataForCVAPInfo,
       rowDataGenerators: [getCVAPStatisticsData],
       ratioGenerator: (row: CVAPStatisticsModel, arg0: number) => [row[CVAP_KEYS[arg0]]!, row.cvapTotal!],
+      ratioTitle: "Demographic CVAP: ",
     },
   } as StateInformationViewDataConfiguration,
 };

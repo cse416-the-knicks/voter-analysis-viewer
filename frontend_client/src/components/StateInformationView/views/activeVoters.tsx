@@ -14,6 +14,7 @@ export default {
       barDataGenerator: bargraphDataForActiveVoterRegistrations,
       rowDataGenerators: [getVoterRegistrationCounts],
       ratioGenerator: (row: VoterRegistrationStatisticsModel) => [row.active!, row.total!],
+      ratioTitle: "Active Voters: ",
     },
   } as StateInformationViewDataConfiguration,
 };

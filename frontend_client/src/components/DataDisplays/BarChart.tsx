@@ -26,7 +26,7 @@ interface BarChartProperties {
 
 function BarChart({ title, xTitle, data, width, height, margins }: BarChartProperties) {
   const barMargin = {
-    top: margins?.left || 25,
+    top: margins?.top || 25,
     right: margins?.right || 45,
     bottom: margins?.bottom || 25,
     left: margins?.left || 150,

@@ -14,6 +14,7 @@ export default {
       barDataGenerator: bargraphDataForMailBallotRejections,
       rowDataGenerators: [getMailBallotRejections],
       ratioGenerator: (row: MailBallotRejectionStatisticsModel) => [row.rejectTotal!, row.totalBallotsByMail!],
+      ratioTitle: "Rejection Rate: ",
     },
   } as StateInformationViewDataConfiguration,
 };
