@@ -44,7 +44,7 @@ function BarChart({ title, xTitle, data, width, height, margins, small }: BarCha
     .scaleBand()
     .domain(data.map((x) => x.category))
     .range([0, barHeight])
-    .padding(small ? 0.1 : 0.3);
+    .padding(small ? 0.2 : 0.3);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState("TEXT!");
@@ -90,15 +90,16 @@ function BarChart({ title, xTitle, data, width, height, margins, small }: BarCha
                 height={verticalAxis.bandwidth()}
                 fill={defaultBlockColor}
               />
-              {/* <text 
-              x={horizontalAxis(x.value)/2} 
+              <text 
+              x={barWidth*1.05} 
               y={verticalAxis(x.category)! + verticalAxis.bandwidth()/2 + (verticalAxis.bandwidth()*0.35)/2} 
-              fill="white" 
-              fontFamily="courier"
-              textAnchor="middle" 
-              fontSize={(small) ? verticalAxis.bandwidth()*0.35: 0} fontWeight="bold">
+              fill="white"
+              stroke="black"
+              strokeWidth={0.2} 
+              textAnchor="start" 
+              fontSize={(small) ? 14: 0} fontWeight="bolder">
                 {x.value.toLocaleString(navigator.language)}
-              </text> */}
+              </text>
             </>
           ))}
           {data.map((x) => (

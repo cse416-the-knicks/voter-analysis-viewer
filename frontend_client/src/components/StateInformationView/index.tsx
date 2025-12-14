@@ -488,26 +488,27 @@ function StateInformationView() {
               const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
               if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
                 const description = viewConfig.description;
-                const [ratioA, ratioB] = description.ratioGenerator(targetRow);
+                const [ratioA, ratioB] = description.ratioGenerator(targetRow, cvapDemographicSelection);
                 return (
                   <>
-                    <Typography variant="h4">{targetRow.countyName} County</Typography>
+                    <Typography variant="h4" fontWeight={"bolder"}>{targetRow.countyName} County</Typography>
                     <BarChart
                       small
                       margins={{
                         left: 150,
-                        top: 20,
-                        bottom: 35,
-                        right: 50,
+                        top: 16,
+                        bottom: 24,
+                        right: 80,
                       }}
-                      width={550}
+                      width={600}
                       height={255}
                       data={description.barDataGenerator(targetRow)}
                       title={""}
                       xTitle={barGraphXTitle}
                     />
                     <>
-                      {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE && activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                      {/* filter out data views without any completeness measure */}
+                      {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE && activeDataState != ID_SELECTION_VIEW_CVAP_PERCENTAGE && activeDataState != ID_SELECTION_VIEW_CVAP_INFO && activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
                         <Typography textAlign={"right"}>
                           <b>Data Completeness Measure:</b>{" "}
                           {(targetRow.eavsDataScore || targetRow.completedRecords! / (targetRow.completedRecords! + targetRow.incompleteRecords!)).toFixed(3)}
