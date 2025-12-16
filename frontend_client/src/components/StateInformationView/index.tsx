@@ -488,7 +488,7 @@ function StateInformationView() {
               const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
               if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
                 const description = viewConfig.description;
-                const [cvapDemographicTotal, cvapRegionTotal] = description.ratioGenerator(targetRow, cvapDemographicSelection);
+                const [dataCount, dataTotal] = description.ratioGenerator(targetRow, cvapDemographicSelection);
                 return (
                   <>
                     <Typography variant="h4" fontWeight={"bolder"}>
@@ -523,8 +523,7 @@ function StateInformationView() {
                     {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
                       <Typography textAlign={"right"}>
                         <b>{description.ratioTitle}</b>{" "}
-                        {((cvapDemographicTotal / cvapRegionTotal) * 100).toFixed(2) +
-                          (activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE ? "%" : " years")}
+                        {((dataCount / dataTotal) * 100).toFixed(2) + (activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE ? "%" : " years")}
                       </Typography>
                     )}
                   </>
