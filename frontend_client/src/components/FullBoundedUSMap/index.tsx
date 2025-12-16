@@ -3,15 +3,10 @@ import L from "leaflet";
 import type { MapRef } from "react-leaflet/MapContainer";
 import { GeoJSON, MapContainer, TileLayer, Pane } from "react-leaflet";
 import { FIPS_TO_STATES_MAP, STATES_BOUNDARIES_GEOMETRY } from "./boundaryData";
-import { DETAIL_STATE_TYPE_DEMOCRAT, getDetailStateType, getHumanReadableStateType, isDetailState } from "./detailedStatesInfo";
+import { getDetailStateType } from "./detailedStatesInfo";
 import { useState } from "react";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import GenericTooltip from "../GenericTooltip";
-import { BarChart } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
-import { STATE_INFORMATION_VIEW_TYPE_SIMPLE } from "../StateInformationView/dataViewConfigTypes";
-import { FACT_VIEW_CONFIGURATIONS } from "../StateInformationView/dataViewModeConfig";
-import type { ID_SELECTION_VOTING_EQUIPMENT_BY_AGE, ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE } from "../StateInformationView/views/viewIds";
 import { StateCVAPInfoCard, StateEAVsInfoCard, StateInfoCard } from "../StateInformationView/DrawerCards";
 
 // NOTE(jerry):
@@ -49,7 +44,6 @@ interface FullBoundedUSMapProperties {
 **/
 function FullBoundedUSMap({ id, mapRef, zoom, children, styleFunction, onStateClick }: FullBoundedUSMapProperties) {
   const [highlightedStateFipsId, setHighlightedStateFipsId] = useState<string | null>(null);
-  const useDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const onFeatureClickHandler = (event: L.LeafletMouseEvent) => {
     const target = event.target as L.FeatureGroup;
     const featureData = target.feature as GeoJSON.Feature;
@@ -62,24 +56,15 @@ function FullBoundedUSMap({ id, mapRef, zoom, children, styleFunction, onStateCl
     const featureData = target.feature as GeoJSON.Feature;
     setHighlightedStateFipsId(featureData.id! as FipsCode);
   };
-  const onMouseOutHandler = (event: L.LeafletMouseEvent) => {
+  const onMouseOutHandler = () => {
     setHighlightedStateFipsId(null);
   };
-  const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) => {
-    const { id } = feature; // Should not be null.
-    const stateName = FIPS_TO_STATES_MAP[id!];
-    const stateType = getDetailStateType(id! as string);
+  const onEachFeatureHandler = (_feature: GeoJSON.Feature, layer: L.Layer) => {
     const defaultHandlers = {
       click: onFeatureClickHandler,
       mouseover: onMouseOverHandler,
       mouseout: onMouseOutHandler,
     };
-
-    // if (isDetailState(id! as string)) {
-    //   layer.bindTooltip(stateName + " - " + stateType.map(getHumanReadableStateType).join(", "));
-    // } else {
-    //   layer.bindTooltip(stateName);
-    // }
 
     layer.on(defaultHandlers);
   };

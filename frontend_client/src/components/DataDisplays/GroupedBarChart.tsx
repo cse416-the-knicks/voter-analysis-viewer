@@ -132,9 +132,9 @@ function GroupedBarChart({ title, xAxisLabel, yAxisLabel, colorMap, data, width,
 
         {/* Bars */}
         {isLoaded &&
-          groups.map((g, gi) => (
+          groups.map((g) => (
             <g key={g} transform={`translate(${x0(g)}, 0)`}>
-              {categories.map((c, ci) => {
+              {categories.map((c) => {
                 const entry = transpose ? actualData.find((d) => d.title === c && d.category === g) : actualData.find((d) => d.title === g && d.category === c);
                 if (!entry) return null;
                 const barX = x1(c)!;

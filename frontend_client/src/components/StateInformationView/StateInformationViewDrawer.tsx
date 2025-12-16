@@ -69,7 +69,7 @@ function dropdownHasAnyItems(section: StateInformationViewDrawerSection, stateTy
   return section.items.some((v) => (v.requiresStateType ? v.requiresStateType.some((x) => stateType.some((y) => y === x)) : true));
 }
 
-function StateInformationViewDrawer({ fipsCode, sections, stateHook, onSelection, stateType, topMargin, drawerWidth }: StateInformationViewDrawerProperties) {
+function StateInformationViewDrawer({ fipsCode, sections, stateHook, onSelection, stateType, drawerWidth }: StateInformationViewDrawerProperties) {
   const navigate = useNavigate();
   const sectionComponents = sections.map((section) =>
     dropdownHasAnyItems(section, stateType) ? (

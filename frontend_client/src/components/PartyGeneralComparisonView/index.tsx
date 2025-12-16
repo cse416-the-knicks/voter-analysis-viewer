@@ -13,7 +13,6 @@ import {
 
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import { comparisonRow } from "../../helpers/comparisonRow";
-import useCssCalc from "../../hooks/useCssCalc";
 
 type PartyStateData = ViewStateYearSummaryModel | StateInformationModel;
 

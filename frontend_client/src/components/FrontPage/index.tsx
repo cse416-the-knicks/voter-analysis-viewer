@@ -4,7 +4,6 @@ import styles from "./FrontPage.module.css";
 import type { MapRef } from "react-leaflet/MapContainer";
 import type { FipsCode, FullBoundedUSMapStylingFn } from "../FullBoundedUSMap/";
 
-// CALIFORNI
 import { FIPS_TO_STATES_MAP } from "../FullBoundedUSMap/boundaryData";
 
 import React, { useRef, useState, useEffect } from "react";

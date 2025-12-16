@@ -107,7 +107,6 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel, descend
     .domain([0, d3.max(actualData, (x) => Math.max(...x.points.map((x1) => x1.y)))! + 5])
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
 
-  // const xAxisTicks = xAxisScale.ticks(16);
   const yAxisTicks = yAxisScale.ticks(16);
 
   const [showTooltip, setShowTooltip] = useState<boolean>(false);

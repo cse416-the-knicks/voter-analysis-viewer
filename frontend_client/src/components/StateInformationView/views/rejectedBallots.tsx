@@ -2,7 +2,6 @@ import {
   getElectionResultsSummary,
   getDetailedVotingEquipmentUsage,
   getMailBallotRejections,
-  getCVAPStatisticsData,
   getVoterRegistrationCounts,
   getProvisionalBallots,
 } from "../../../api/client";
@@ -33,9 +32,6 @@ export default {
             const republicanBubbleColor = "#d73027";
             const democraticBubbleColor = "#4575b4";
             const neutralBubbleColor = "purple";
-
-            const cvapData = await getCVAPStatisticsData(fipsCode!);
-            const maxCvap = Math.max(...cvapData.map((x) => x.cvapTotal!));
 
             const voterData = await getVoterRegistrationCounts(fipsCode!);
             const maxVoters = Math.max(...voterData.map((x) => x.total!));

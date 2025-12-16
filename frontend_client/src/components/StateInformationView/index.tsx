@@ -363,7 +363,7 @@ function StateInformationView() {
                   navigate(`/state/${fipsCode}/voter-table/${fullyPaddedFipsCode}`);
                 }
               }}
-              onFeatureHover={function (feature: GeoJSON.Feature, layer: L.Layer, on: boolean) {
+              onFeatureHover={function (feature: GeoJSON.Feature, _layer: L.Layer, on: boolean) {
                 const geounitFipsCode = feature.properties!.COUNTYFP;
                 const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
                 if (on) {
