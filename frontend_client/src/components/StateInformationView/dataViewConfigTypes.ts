@@ -10,14 +10,13 @@ import type {
 } from "../../api/client";
 import type { BarChartDataEntry } from "../DataDisplays/BarChart";
 
-type DataFact =
-  & ProvisionalBallotStatisticsModel
-  & PollbookDeletionStatisticsModel
-  & MailBallotRejectionStatisticsModel
-  & VoterRegistrationStatisticsModel
-  & VotingEquipmentUsageStatisticsModel
-  & ElectionResultsSummaryModel
-  & VoterAffiliationStatisticsModel;
+type DataFact = ProvisionalBallotStatisticsModel &
+  PollbookDeletionStatisticsModel &
+  MailBallotRejectionStatisticsModel &
+  VoterRegistrationStatisticsModel &
+  VotingEquipmentUsageStatisticsModel &
+  ElectionResultsSummaryModel &
+  VoterAffiliationStatisticsModel;
 
 const STATE_INFORMATION_VIEW_TYPE_SIMPLE = "SIMPLE";
 const STATE_INFORMATION_VIEW_TYPE_OVERLAY = "OVERLAY";

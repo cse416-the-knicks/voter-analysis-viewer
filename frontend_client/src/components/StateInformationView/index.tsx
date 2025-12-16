@@ -491,7 +491,9 @@ function StateInformationView() {
                 const [ratioA, ratioB] = description.ratioGenerator(targetRow, cvapDemographicSelection);
                 return (
                   <>
-                    <Typography variant="h4" fontWeight={"bolder"}>{targetRow.countyName} County</Typography>
+                    <Typography variant="h4" fontWeight={"bolder"}>
+                      {targetRow.countyName} County
+                    </Typography>
                     <BarChart
                       small
                       margins={{
@@ -508,12 +510,15 @@ function StateInformationView() {
                     />
                     <>
                       {/* filter out data views without any completeness measure */}
-                      {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE && activeDataState != ID_SELECTION_VIEW_CVAP_PERCENTAGE && activeDataState != ID_SELECTION_VIEW_CVAP_INFO && activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
-                        <Typography textAlign={"right"}>
-                          <b>Data Completeness Measure:</b>{" "}
-                          {(targetRow.eavsDataScore || targetRow.completedRecords! / (targetRow.completedRecords! + targetRow.incompleteRecords!)).toFixed(3)}
-                        </Typography>
-                      )}
+                      {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE &&
+                        activeDataState != ID_SELECTION_VIEW_CVAP_PERCENTAGE &&
+                        activeDataState != ID_SELECTION_VIEW_CVAP_INFO &&
+                        activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                          <Typography textAlign={"right"}>
+                            <b>Data Completeness Measure:</b>{" "}
+                            {(targetRow.eavsDataScore || targetRow.completedRecords! / (targetRow.completedRecords! + targetRow.incompleteRecords!)).toFixed(3)}
+                          </Typography>
+                        )}
                     </>
                     {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
                       <Typography textAlign={"right"}>

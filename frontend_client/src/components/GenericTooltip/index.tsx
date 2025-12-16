@@ -20,7 +20,7 @@ function GenericTooltip({ children, show }: GenericTooltipProperties) {
             top: mousePosition.y + 16 + "px",
             backgroundColor: "rgba(0.9,0.8,0.2,0.7)",
             borderRadius: "8px",
-            backdropFilter: "blur(1px)", 
+            backdropFilter: "blur(1px)",
             padding: "6px",
             pointerEvents: "none",
             color: "white",

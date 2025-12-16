@@ -211,7 +211,17 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
 
         {/* Bubble Chart Bubbles */}
         {actualData.map((x, y) => (
-          <circle key={y} data-title={x.name} cx={xAxisScale(x.x)} cy={yAxisScale(x.y)} r={x.size} stroke="white" strokeWidth={1.5} fill={x.color} opacity={0.55} />
+          <circle
+            key={y}
+            data-title={x.name}
+            cx={xAxisScale(x.x)}
+            cy={yAxisScale(x.y)}
+            r={x.size}
+            stroke="white"
+            strokeWidth={1.5}
+            fill={x.color}
+            opacity={0.55}
+          />
         ))}
 
         {/* Bubble Chart Linear Regression */}

@@ -90,14 +90,16 @@ function BarChart({ title, xTitle, data, width, height, margins, small }: BarCha
                 height={verticalAxis.bandwidth()}
                 fill={defaultBlockColor}
               />
-              <text 
-              x={barWidth*1.05} 
-              y={verticalAxis(x.category)! + verticalAxis.bandwidth()/2 + (verticalAxis.bandwidth()*0.35)/2} 
-              fill="white"
-              stroke="black"
-              strokeWidth={0.2} 
-              textAnchor="start" 
-              fontSize={(small) ? 14: 0} fontWeight="bolder">
+              <text
+                x={barWidth * 1.05}
+                y={verticalAxis(x.category)! + verticalAxis.bandwidth() / 2 + (verticalAxis.bandwidth() * 0.35) / 2}
+                fill="white"
+                stroke="black"
+                strokeWidth={0.2}
+                textAnchor="start"
+                fontSize={small ? 14 : 0}
+                fontWeight="bolder"
+              >
                 {x.value.toLocaleString(navigator.language)}
               </text>
             </>
