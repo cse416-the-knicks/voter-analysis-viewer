@@ -102,7 +102,7 @@ function StyledDataGrid({
           // NOTE: this could be memoized, but I don't think there's a need
           // to do so.
           const totalElements = await dataProvider.getTotalElements();
-          const currentPageDataSet = await dataProvider.getPage(paginationState.pageSize, paginationState.page, sortModelState);
+          const currentPageDataSet = await dataProvider.getPage(paginationState.pageSize!, paginationState.page, sortModelState);
 
           setActualRows(currentPageDataSet);
           setRowCount(totalElements);

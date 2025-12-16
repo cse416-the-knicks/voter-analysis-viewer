@@ -9,8 +9,6 @@ import { getDetailedVotingEquipmentUsage, getVotingEquipmentUsage } from "../../
 import WindowTitled from "../WindowTitled";
 import { Backdrop } from "@mui/material";
 import GroupedBarChart from "../DataDisplays/GroupedBarChart";
-import zip from "../../helpers/zip";
-import VOTING_EQUIPMENT_TYPE_COLORS from "../../helpers/votingEquipmentColorBuckets";
 import useCssCalc from "../../hooks/useCssCalc";
 
 const columns: GridColDef<VotingEquipmentUsageStatisticsModel[]>[] = [

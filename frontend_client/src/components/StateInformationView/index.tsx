@@ -363,7 +363,7 @@ function StateInformationView() {
                   navigate(`/state/${fipsCode}/voter-table/${fullyPaddedFipsCode}`);
                 }
               }}
-              onFeatureHover={function (feature: GeoJSON.Feature, layer: L.Layer, on: boolean) {
+              onFeatureHover={function (feature: GeoJSON.Feature, _layer: L.Layer, on: boolean) {
                 const geounitFipsCode = feature.properties!.COUNTYFP;
                 const fullyPaddedFipsCode = fipsCode + geounitFipsCode.padStart(3, "0") + "00000";
                 if (on) {
@@ -477,7 +477,7 @@ function StateInformationView() {
           </Box>
         </Stack>
       </div>
-      <GenericTooltip show={targetHighlightedRegionId !== null && targetHighlightedRegionId.length}>
+      <GenericTooltip show={targetHighlightedRegionId !== null && targetHighlightedRegionId.length !== 0}>
         {
           // NOTE(jerry);
           // This should be it's own function, however I do want to keep
@@ -488,10 +488,12 @@ function StateInformationView() {
               const viewConfig = FACT_VIEW_CONFIGURATIONS[activeDataState];
               if (viewConfig && viewConfig.description.type == STATE_INFORMATION_VIEW_TYPE_SIMPLE) {
                 const description = viewConfig.description;
-                const [ratioA, ratioB] = description.ratioGenerator(targetRow, cvapDemographicSelection);
+                const [dataCount, dataTotal] = description.ratioGenerator(targetRow, cvapDemographicSelection);
                 return (
                   <>
-                    <Typography variant="h4" fontWeight={"bolder"}>{targetRow.countyName} County</Typography>
+                    <Typography variant="h4" fontWeight={"bolder"}>
+                      {targetRow.countyName} County
+                    </Typography>
                     <BarChart
                       small
                       margins={{
@@ -508,17 +510,20 @@ function StateInformationView() {
                     />
                     <>
                       {/* filter out data views without any completeness measure */}
-                      {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE && activeDataState != ID_SELECTION_VIEW_CVAP_PERCENTAGE && activeDataState != ID_SELECTION_VIEW_CVAP_INFO && activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
-                        <Typography textAlign={"right"}>
-                          <b>Data Completeness Measure:</b>{" "}
-                          {(targetRow.eavsDataScore || targetRow.completedRecords! / (targetRow.completedRecords! + targetRow.incompleteRecords!)).toFixed(3)}
-                        </Typography>
-                      )}
+                      {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE &&
+                        activeDataState != ID_SELECTION_VIEW_CVAP_PERCENTAGE &&
+                        activeDataState != ID_SELECTION_VIEW_CVAP_INFO &&
+                        activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
+                          <Typography textAlign={"right"}>
+                            <b>Data Completeness Measure:</b>{" "}
+                            {(targetRow.eavsDataScore || targetRow.completedRecords! / (targetRow.completedRecords! + targetRow.incompleteRecords!)).toFixed(3)}
+                          </Typography>
+                        )}
                     </>
                     {activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_TYPE && (
                       <Typography textAlign={"right"}>
                         <b>{description.ratioTitle}</b>{" "}
-                        {((ratioA / ratioB) * 100).toFixed(2) + (activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE ? "%" : " years")}
+                        {((dataCount / dataTotal) * 100).toFixed(2) + (activeDataState != ID_SELECTION_VOTING_EQUIPMENT_BY_AGE ? "%" : " years")}
                       </Typography>
                     )}
                   </>

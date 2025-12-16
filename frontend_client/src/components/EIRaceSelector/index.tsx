@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Paper, Typography, Checkbox, ListItemText } from "@mui/material";
+import { Checkbox, ListItemText, type SelectChangeEvent } from "@mui/material";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { RACES } from "../../helpers/ecologicalInferenceChartColors.ts";
 

@@ -4,7 +4,6 @@ import L from "leaflet";
 import type { MapRef } from "react-leaflet/MapContainer";
 import { GeoJSON, MapContainer, TileLayer, Pane, useMap } from "react-leaflet";
 import { getStateGeometry } from "../../api/client";
-import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface MapFitsToBoundsInternalParameters {
   boundsToFit: L.LatLngBoundsExpression;
@@ -43,25 +42,27 @@ function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFe
   const [stateGeoJson, setStateGeoJson] = useState<GeoJSON.GeoJSON | null>(null);
   const [readyToDisplay, setReadyToDisplay] = useState(false);
   const [stateMapBounds, setStateMapBounds] = useState<L.LatLngBoundsExpression | null>();
-  const useDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-  useEffect(function () {
-    (async function () {
-      if (!fipsCode) {
-        return;
-      }
+  useEffect(
+    function () {
+      (async function () {
+        if (!fipsCode) {
+          return;
+        }
 
-      const response = await getStateGeometry(fipsCode);
-      if (response) {
-        setStateGeoJson(response as GeoJSON.GeoJSON);
-        setStateMapBounds([
-          [response.bbox![1], response.bbox![0]],
-          [response.bbox![3], response.bbox![2]],
-        ]);
-        setReadyToDisplay(true);
-      }
-    })();
-  }, []);
+        const response = await getStateGeometry(fipsCode);
+        if (response) {
+          setStateGeoJson(response as GeoJSON.GeoJSON);
+          setStateMapBounds([
+            [response.bbox![1], response.bbox![0]],
+            [response.bbox![3], response.bbox![2]],
+          ]);
+          setReadyToDisplay(true);
+        }
+      })();
+    },
+    [fipsCode]
+  );
 
   if (!fipsCode) {
     return <p>No FIPS code for state. No map!</p>;
@@ -71,7 +72,6 @@ function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFe
     const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) => {
       const { properties } = feature;
       if (properties!.NAMELSAD) {
-        // layer.bindTooltip(properties!.NAMELSAD);
         if (onFeatureClick) {
           layer.on("click", function () {
             onFeatureClick(feature, layer);

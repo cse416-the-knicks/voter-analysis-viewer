@@ -35,7 +35,7 @@ interface RegressionLine {
   color: string;
 }
 
-import { useState, useEffect, useRef, act } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale, degree }: BubbleChartProperties) {
   const chartMargin = { top: 60, right: 50, bottom: 60, left: 70 };
@@ -71,10 +71,6 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     .scaleLinear()
     .domain([0, maxYScale || d3.max(actualData, (x) => x.y)!])
     .range([chartHeight - chartMargin.bottom, chartMargin.top]);
-  const chartScale = d3
-    .scaleSqrt()
-    .domain([d3.min(actualData, (x) => x.size)!, d3.max(actualData, (x) => x.size)!])
-    .range([5, 25]);
 
   const xAxisTicks = xAxisScale.ticks(emptyData ? 0 : 1 * 30);
   const yAxisTicks = yAxisScale.ticks(emptyData ? 0 : 1 * 30);
@@ -123,7 +119,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
               ys: yVals,
             },
             { degree: degree ?? 8 }
-          ); // best fitting degree
+          );
           const regressionFunction = makePolynomial(regressionCoefficients);
 
           const minXVal = Math.min(...xVals);
@@ -156,7 +152,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     }
 
     calcRegression();
-  }, [actualData, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale]);
+  }, [actualData, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale, degree, xAxisScale, yAxisScale]);
 
   return (
     <>
@@ -211,7 +207,17 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
 
         {/* Bubble Chart Bubbles */}
         {actualData.map((x, y) => (
-          <circle key={y} data-title={x.name} cx={xAxisScale(x.x)} cy={yAxisScale(x.y)} r={x.size} stroke="white" strokeWidth={1.5} fill={x.color} opacity={0.55} />
+          <circle
+            key={y}
+            data-title={x.name}
+            cx={xAxisScale(x.x)}
+            cy={yAxisScale(x.y)}
+            r={x.size}
+            stroke="white"
+            strokeWidth={1.5}
+            fill={x.color}
+            opacity={0.55}
+          />
         ))}
 
         {/* Bubble Chart Linear Regression */}

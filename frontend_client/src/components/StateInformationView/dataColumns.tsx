@@ -65,7 +65,7 @@ const VOTER_AFFILIATION_COLUMNS: GridColDef<VoterAffiliationStatisticsModel[]>[]
     headerName: "Registration Completion",
     type: "number",
     width: 150,
-    valueGetter: (value, row: VoterAffiliationStatisticsModel) => `${(row.completedRecords! / (row.completedRecords! + row.incompleteRecords!)).toFixed(5)}`,
+    valueGetter: (_value, row: VoterAffiliationStatisticsModel) => `${(row.completedRecords! / (row.completedRecords! + row.incompleteRecords!)).toFixed(5)}`,
   },
   { field: "registeredVotersTotal", headerName: "Total Registered", type: "number", width: 150 },
 ];
@@ -326,7 +326,6 @@ function bargraphDataForProvisionalBallots(aggregatedStatistics: ProvisionalBall
 function bargraphDataForMailBallotRejections(aggregatedStatistics: MailBallotRejectionStatisticsModel): BarChartDataEntry[] {
   return [
     { category: "Total Rejections", value: aggregatedStatistics.rejectTotal || 0 },
-    // { category: "Total Mail Ballots", value: aggregatedStatistics.totalBallotsByMail || 0 },
     { category: "Late", value: aggregatedStatistics.rejectLate || 0 },
     { category: "No Signature", value: aggregatedStatistics.rejectNoSignature || 0 },
     { category: "No Witness Signature", value: aggregatedStatistics.rejectNoWitnessSignature || 0 },

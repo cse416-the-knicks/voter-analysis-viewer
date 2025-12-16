@@ -13,7 +13,8 @@ const chipScoreRender = (value) => {
   if (value.value === null || value.value === undefined) {
     return <Chip label="N/A" size="small" color="error" />;
   }
-  return <Chip label={value.value.toFixed(2)} size="small" color={value.value > 0.45 ? (value.value > 0.7 ? "success" : "warning") : "error"} />;
+  const chipColorType = value.value > 0.7 ? "success" : "warning";
+  return <Chip label={value.value.toFixed(2)} size="small" color={value.value > 0.45 ? chipColorType : "error"} />;
 };
 
 const columns: GridColDef<VotingEquipmentModel[]>[] = [
@@ -200,12 +201,15 @@ interface VotingMachineSummaryTableProperties {
 function VotingMachineSummaryTable({ fipsCode, width, height }: VotingMachineSummaryTableProperties) {
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
   // Used to approximate height of a row to dynamically calculate good page size to minimize pagination
-  useEffect(function () {
-    (async function () {
-      const equipmentList = await getAllVotingEquipment({ stateFips: fipsCode });
-      setDataRows(equipmentList);
-    })();
-  }, []);
+  useEffect(
+    function () {
+      (async function () {
+        const equipmentList = await getAllVotingEquipment({ stateFips: fipsCode });
+        setDataRows(equipmentList);
+      })();
+    },
+    [fipsCode]
+  );
 
   return (
     <StyledDataGrid

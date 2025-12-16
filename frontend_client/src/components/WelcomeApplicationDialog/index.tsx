@@ -1,4 +1,3 @@
-import styles from "./WelcomeApplicationDialog.module.css";
 import React from "react";
 
 import { useLocation } from "react-router";

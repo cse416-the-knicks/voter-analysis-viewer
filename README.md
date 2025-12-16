@@ -10,6 +10,16 @@ Fall 2025.
 - Rajvir Ghumman - rajvir.ghumman@stonybrook.edu
 - Sean Moore - sean.moore@stonybrook.edu
 
+## Next Steps
+As of the final presentation the following are items that should be done, but we did not have sufficient time to improve upon by the end of the semester:
+
+- Optimize our Gingles Chart for Texas by one of the following
+ - Render it once into an image
+ - Use the GPU to do it with WebGL
+ - Use Canvas
+
+- Update our relevant documents including our class diagram and DB Schema
+
 ## Voting Machine Google Sheets
 We source our voting machine data from the class-wide Voting Machine Spreadsheet,
 and we fetch it through a script in `/data_common/scripts/`, it's called `download_latest_voting_machine_sheet.py`,
@@ -19,6 +29,21 @@ running the script.
 
 The script will request for you to do a singular login through your SBU-email so you can get access to the
 spreadsheet, and then subsequent runs will automatically download the spreadsheet.
+
+## Environment Details 
+- There should be 1 .env file in the either the `data_common` directory or the `data_common/scripts` directory. This file is executed within docker. It should be formatted like the following:
+
+DB_USER=Leffison Members
+DB_PASSWORD=raj
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=leffison_db
+
+- There should be 1 .env file in either the `backend_server/bin/main` directory or the `backend_server/src/main/resources` directory. It should be formatted like the following:
+
+spring.datasource.url=jdbc:postgresql://localhost:5433/leffison_db
+spring.datasource.username=Leffison Members
+spring.datasource.password=raj
 
 ## OpenAPI Code Generation
 Since our project utilizes the OpenAPI standard to reduce the amount of boilerplate code

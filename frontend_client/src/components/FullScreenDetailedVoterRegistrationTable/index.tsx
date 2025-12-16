@@ -3,7 +3,7 @@ import type { GridSortModel } from "@mui/x-data-grid";
 import WindowTitledDataGrid from "../WindowTitledDataGrid";
 import StyledDataGrid from "../StyledDataGrid";
 
-import { Box, useTheme, Tabs, Tab } from "@mui/material";
+import { Box, Tabs, Tab } from "@mui/material";
 import { useState } from "react";
 
 import { getDetailedVoterRegistrationData, getDetailedVoterRegistrationDataCount } from "../../api/client";
@@ -28,7 +28,6 @@ function a11yProps(index: number) {
 function FullScreenDetailedVoterRegistrationTable({ pageSize, width, height }: FullScreenDetailedVoterRegistrationTableProperties) {
   const { fipsCode, countyCode } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
   const [partyFilterId, setPartyFilterId] = useState(0);
 
   const rowDataProvider = {

@@ -81,7 +81,7 @@ function StateInfoCard({ type, fill }: StateInfoCardProperties) {
   return EAVsStateCard(fill);
 }
 
-function StateEAVsInfoCard({ type, fipsCode, fill }: StateInfoCardProperties) {
+function StateEAVsInfoCard({ fipsCode, fill }: StateInfoCardProperties) {
   const [score, setScore] = useState(0.0);
 
   useEffect(function () {

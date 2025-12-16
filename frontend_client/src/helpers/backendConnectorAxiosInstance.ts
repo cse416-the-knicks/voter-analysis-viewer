@@ -1,4 +1,4 @@
-import type { AxiosRequestConfig, AxiosError } from "axios";
+import type { AxiosRequestConfig } from "axios";
 import Axios from "axios";
 
 // Should base off of some url...
