@@ -78,7 +78,7 @@ function GradientMapLegend({ gradientMap, positionPreference }: GradientMapLegen
 
     // Cleanup on unmount
     return () => legend.remove();
-  }, [leafletMap, gradientMap, theme.palette.secondary.main]);
+  }, [leafletMap, gradientMap, theme.palette.secondary.main, positionPreference]);
 
   return null;
 }

@@ -73,7 +73,7 @@ function BarChart({ title, xTitle, data, width, height, margins, small }: BarCha
     return () => {
       rectangleSelector.on("mouseover", null).on("mouseout", null);
     };
-  }, [data]);
+  }, [data, defaultBlockColor, defaultHighlightColor]);
 
   return (
     <>

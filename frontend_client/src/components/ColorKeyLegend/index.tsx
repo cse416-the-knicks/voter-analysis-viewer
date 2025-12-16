@@ -71,7 +71,7 @@ function ColorKeyLegend({ colors, labels }: ColorKeyLegendProperties) {
 
     // Cleanup on unmount
     return () => legend.remove();
-  }, [leafletMap, theme.palette.secondary.main]);
+  }, [leafletMap, theme.palette.secondary.main, colors, labels]);
 
   return null;
 }

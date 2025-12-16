@@ -152,7 +152,7 @@ function BubbleChart({ data, width, height, title, xAxisLabel, yAxisLabel, useRe
     }
 
     calcRegression();
-  }, [actualData, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale]);
+  }, [actualData, width, height, title, xAxisLabel, yAxisLabel, useRegression, maxXScale, maxYScale, degree, xAxisScale, yAxisScale]);
 
   return (
     <>

@@ -148,7 +148,7 @@ function LineChart({ data, width, height, title, xAxisLabel, yAxisLabel, descend
     return () => {
       circleSelector.on("mouseover", null).on("mouseout", null);
     };
-  }, [actualData]);
+  }, [actualData, height, width]);
 
   return (
     <>

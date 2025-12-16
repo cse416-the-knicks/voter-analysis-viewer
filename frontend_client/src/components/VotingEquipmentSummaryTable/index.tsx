@@ -200,12 +200,15 @@ interface VotingMachineSummaryTableProperties {
 function VotingMachineSummaryTable({ fipsCode, width, height }: VotingMachineSummaryTableProperties) {
   const [rows, setDataRows] = useState<VotingEquipmentModel[]>([]);
   // Used to approximate height of a row to dynamically calculate good page size to minimize pagination
-  useEffect(function () {
-    (async function () {
-      const equipmentList = await getAllVotingEquipment({ stateFips: fipsCode });
-      setDataRows(equipmentList);
-    })();
-  }, []);
+  useEffect(
+    function () {
+      (async function () {
+        const equipmentList = await getAllVotingEquipment({ stateFips: fipsCode });
+        setDataRows(equipmentList);
+      })();
+    },
+    [fipsCode]
+  );
 
   return (
     <StyledDataGrid

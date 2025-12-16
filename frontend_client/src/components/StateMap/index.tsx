@@ -43,23 +43,26 @@ function StateMap({ mapKey, fipsCode, mapRef, width, height, styleFunction, onFe
   const [readyToDisplay, setReadyToDisplay] = useState(false);
   const [stateMapBounds, setStateMapBounds] = useState<L.LatLngBoundsExpression | null>();
 
-  useEffect(function () {
-    (async function () {
-      if (!fipsCode) {
-        return;
-      }
+  useEffect(
+    function () {
+      (async function () {
+        if (!fipsCode) {
+          return;
+        }
 
-      const response = await getStateGeometry(fipsCode);
-      if (response) {
-        setStateGeoJson(response as GeoJSON.GeoJSON);
-        setStateMapBounds([
-          [response.bbox![1], response.bbox![0]],
-          [response.bbox![3], response.bbox![2]],
-        ]);
-        setReadyToDisplay(true);
-      }
-    })();
-  }, []);
+        const response = await getStateGeometry(fipsCode);
+        if (response) {
+          setStateGeoJson(response as GeoJSON.GeoJSON);
+          setStateMapBounds([
+            [response.bbox![1], response.bbox![0]],
+            [response.bbox![3], response.bbox![2]],
+          ]);
+          setReadyToDisplay(true);
+        }
+      })();
+    },
+    [fipsCode]
+  );
 
   if (!fipsCode) {
     return <p>No FIPS code for state. No map!</p>;
