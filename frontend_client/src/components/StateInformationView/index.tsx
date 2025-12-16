@@ -477,7 +477,7 @@ function StateInformationView() {
           </Box>
         </Stack>
       </div>
-      <GenericTooltip show={targetHighlightedRegionId !== null && targetHighlightedRegionId.length}>
+      <GenericTooltip show={targetHighlightedRegionId !== null && targetHighlightedRegionId.length !== 0}>
         {
           // NOTE(jerry);
           // This should be it's own function, however I do want to keep

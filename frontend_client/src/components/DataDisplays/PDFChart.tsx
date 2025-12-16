@@ -137,7 +137,7 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
     pathSelector
       .on("mouseover", function (_event, _d) {
         const element = this as Element;
-        if (element.getAttribute("data-title").length > 0) {
+        if (element.getAttribute("data-title")!.length > 0) {
           setShowTooltip(true);
           setTooltipText(element.getAttribute("data-title")!);
         }
@@ -150,8 +150,6 @@ function PDFChart({ width, height, title, xAxisLabel, yAxisLabel, maxXScale, max
     };
   }, [actualData]);
 
-  /* useEffect(() => {}, []);
-   */
   return (
     <>
       <svg ref={svgRef} width={width} height={height} style={{ background: "#ffff", borderRadius: "8px" }}>
