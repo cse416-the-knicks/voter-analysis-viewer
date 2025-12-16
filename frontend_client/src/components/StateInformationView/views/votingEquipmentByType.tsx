@@ -13,7 +13,7 @@ export default {
       dataColumnSet: VOTING_EQUIPMENT_COLUMNS,
       barDataGenerator: bargraphDataForVotingEquipmentUsages,
       rowDataGenerators: [getDetailedVotingEquipmentUsage],
-      ratioGenerator: (row: VotingEquipmentUsageStatisticsModel) => [0, 0],
+      ratioGenerator: (_row: VotingEquipmentUsageStatisticsModel) => [0, 0],
     },
   } as StateInformationViewDataConfiguration,
 };

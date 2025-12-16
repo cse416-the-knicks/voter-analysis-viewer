@@ -31,7 +31,7 @@ function DisplayEIRejectedBallots({ fipsCode, width, height }: DisplayEIRejected
           yAxisLabel="Relative Probability"
           data={async () => {
             return await Promise.all(
-              selectedRaces.map(async (r, i) => ({
+              selectedRaces.map(async (r) => ({
                 title: RACES[r],
                 fillColor: RACE_COLOR_MAP[RACES[r]],
                 samples: await getRejectionProbabilitiesByDemographicPDF(fipsCode, { race: r }),
