@@ -18,10 +18,10 @@ function GeoUnitBubbleChart({ fipsCode }: GeoUnitBubbleChartProperties) {
   useEffect(
     function () {
       (async function () {
-        const data = await getCountyGeoUnitCentroids(fipsCode);
-        const data2 = await getVoterAffiliations(fipsCode);
-        setRegionData(data2);
-        setGeoUnitCenters(Object.values(data));
+        const geoUnitCentroidData = await getCountyGeoUnitCentroids(fipsCode);
+        const voterAffiliationData = await getVoterAffiliations(fipsCode);
+        setRegionData(voterAffiliationData);
+        setGeoUnitCenters(Object.values(geoUnitCentroidData));
       })();
     },
     [fipsCode]
